@@ -1,7 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Contracts\Repositories\UserRepositoryInterface;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/test-repository', function (UserRepositoryInterface $users) {
+    return response()->json([
+        'count' => $users->all()->count(),
+    ]);
 });
+
