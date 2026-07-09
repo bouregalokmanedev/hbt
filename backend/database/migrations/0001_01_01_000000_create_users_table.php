@@ -12,14 +12,49 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+    $table->id();
+
+    // Public identifier
+    $table->uuid('uuid')->unique();
+
+    // Personal Information
+    $table->string('first_name', 100);
+    $table->string('last_name', 100);
+
+    // Username
+    $table->string('username', 50)->unique();
+
+    // Authentication
+    $table->string('email')->unique();
+    $table->timestamp('email_verified_at')->nullable();
+    $table->string('password');
+
+    // Contact
+    $table->string('phone', 30)->nullable();
+
+    // Profile
+    $table->string('avatar')->nullable();
+    $table->text('bio')->nullable();
+
+    // Localization
+    $table->string('country', 100)->nullable();
+    $table->string('language', 10)->default('en');
+    $table->string('timezone', 100)->default('UTC');
+
+    // Account
+    $table->enum('status', [
+        'active',
+        'inactive',
+        'suspended',
+        'pending'
+    ])->default('pending');
+
+    $table->rememberToken();
+
+    $table->softDeletes();
+
+    $table->timestamps();
+});
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
