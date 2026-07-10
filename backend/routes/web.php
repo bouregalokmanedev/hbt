@@ -8,3 +8,12 @@ Route::get('/test-repository', function (UserRepositoryInterface $users) {
     ]);
 });
 
+use App\Contracts\Services\AuthenticationServiceInterface;
+
+Route::get('/test-service', function (
+    AuthenticationServiceInterface $auth
+) {
+    return response()->json([
+        'service' => get_class($auth),
+    ]);
+});

@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Repositories\UserRepository;
 
+use App\Services\AuthenticationService;
+use App\Contracts\Services\AuthenticationServiceInterface;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -17,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
             UserRepositoryInterface::class,
             UserRepository::class
         );
+        $this->app->bind(
+    AuthenticationServiceInterface::class,
+    AuthenticationService::class
+);
     }
 
     /**
