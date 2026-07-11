@@ -2,45 +2,43 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use App\Contracts\Services\AuthenticationServiceInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
+use App\Contracts\Services\AuthenticationServiceInterface;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use App\Models\User;
+use App\DTOs\Auth\RegisterUserData;
 
 class AuthenticationService implements AuthenticationServiceInterface
 {
     public function __construct(
-        private readonly UserRepositoryInterface $users
+        protected UserRepositoryInterface $users
     ) {}
 
-    public function register(array $data): array
+    public function register(RegisterUserData $data): array
     {
-        $user = $this->users->create([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-            'status' => 'active',
-        ]);
+        $user = $this->users->create($data->toArray());
 
-        $user->assignRole('Student');
+$user->assignRole('Student');
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+$token = $user->createToken('auth_token')->plainTextToken;
 
-        return [
-            'user' => $user,
-            'token' => $token,
-        ];
+return [
+    'user' => $user,
+    'token' => $token,
+];
     }
 
-    public function login(string $email, string $password): array
+    public function login(array $credentials): array
     {
-        $user = $this->users->findByEmail($email);
-
-        if (!$user || !Hash::check($password, $user->password)) {
-            throw new \Exception('Invalid credentials.');
+        if (! Auth::attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'email' => ['Invalid credentials.'],
+            ]);
         }
+
+        /** @var User $user */
+        $user = Auth::user();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -53,10 +51,5 @@ class AuthenticationService implements AuthenticationServiceInterface
     public function logout(User $user): void
     {
         $user->currentAccessToken()?->delete();
-    }
-
-    public function me(User $user): User
-    {
-        return $user;
     }
 }

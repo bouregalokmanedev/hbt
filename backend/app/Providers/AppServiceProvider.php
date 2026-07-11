@@ -2,12 +2,13 @@
 
 namespace App\Providers;
 
+use App\Contracts\Services\AuthenticationServiceInterface;
+use App\Services\AuthenticationService;
+
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Repositories\UserRepository;
 
-use App\Services\AuthenticationService;
-use App\Contracts\Services\AuthenticationServiceInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
     AuthenticationServiceInterface::class,
     AuthenticationService::class
-);
+    );
     }
 
     /**

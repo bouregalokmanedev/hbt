@@ -52,9 +52,9 @@ class UserRepository implements UserRepositoryInterface
      * Create a new user.
      */
     public function create(array $data): User
-    {
-        return User::create($data);
-    }
+{
+    return User::query()->create($data);
+}
 
     /**
      * Update a user.
