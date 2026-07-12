@@ -1,6 +1,7 @@
 <?php
 
 namespace App\DTOs\Auth;
+use App\Enums\UserStatus;
 
 
 final readonly class RegisterUserData
@@ -44,7 +45,7 @@ final readonly class RegisterUserData
             'country' => $this->country,
             'language' => $this->language,
             'timezone' => $this->timezone,
-            'status' => 'active',
+            'status' => UserStatus::ACTIVE->value,
         ];
     }
 }

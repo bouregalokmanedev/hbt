@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\DTOs\Auth\RegisterUserData;
+use App\Support\ApiResponse;
 
 class AuthController extends Controller
 {
@@ -24,38 +25,43 @@ class AuthController extends Controller
 
 $result = $this->authService->register($dto);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User registered successfully.',
-            'token' => $result['token'],
-            'user' => new UserResource($result['user']),
-        ], 201);
+        return $this->success(
+    [
+        'user' => new UserResource($result['user']),
+        'token' => $result['token'],
+    ],
+    'User registered successfully.',
+    201
+);
     }
 
     public function login(LoginRequest $request)
     {
         $result = $this->authService->login($request->validated());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Login successful.',
-            'token' => $result['token'],
-            'user' => new UserResource($result['user']),
-        ]);
+        return $this->success(
+    [
+        'user' => new UserResource($result['user']),
+        'token' => $result['token'],
+    ],
+    'Login successful.'
+);
     }
 
     public function logout(Request $request)
     {
         $this->authService->logout($request->user());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Logged out successfully.',
-        ]);
+        return $this->success(
+    null,
+    'Logged out successfully.'
+);
     }
 
     public function me(Request $request)
     {
-        return new UserResource($request->user());
+        return $this->success(
+    new UserResource($request->user())
+);
     }
 }
