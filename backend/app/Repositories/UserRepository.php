@@ -4,73 +4,85 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserRepository implements UserRepositoryInterface
 {
-    /**
-     * Get all users.
-     */
-    public function all(): Collection
+    public function create(array $data): User
     {
-        return User::all();
+        return User::query()->create($data);
     }
 
-    /**
-     * Find user by ID.
-     */
+    public function update(User $user, array $data): User
+    {
+        $user->update($data);
+
+        return $user->refresh();
+    }
+
+    public function delete(User $user): bool
+    {
+        return (bool) $user->delete();
+    }
+
+    public function restore(int $id): bool
+    {
+        return User::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+    }
+
     public function findById(int $id): ?User
     {
         return User::find($id);
     }
 
-    /**
-     * Find user by UUID.
-     */
     public function findByUuid(string $uuid): ?User
     {
         return User::where('uuid', $uuid)->first();
     }
 
-    /**
-     * Find user by email.
-     */
     public function findByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
     }
 
-    /**
-     * Find user by username.
-     */
     public function findByUsername(string $username): ?User
     {
         return User::where('username', $username)->first();
     }
 
-    /**
-     * Create a new user.
-     */
-    public function create(array $data): User
-{
-    return User::query()->create($data);
-}
+    public function paginate(
+        int $perPage = 15,
+        array $filters = []
+    ): LengthAwarePaginator {
 
-    /**
-     * Update a user.
-     */
-    public function update(User $user, array $data): User
-    {
-        $user->update($data);
+        $query = User::query();
 
-        return $user->fresh();
-    }
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
 
-    /**
-     * Delete a user.
-     */
-    public function delete(User $user): bool
-    {
-        return $user->delete();
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'ILIKE', "%{$search}%")
+                  ->orWhere('last_name', 'ILIKE', "%{$search}%")
+                  ->orWhere('email', 'ILIKE', "%{$search}%")
+                  ->orWhere('username', 'ILIKE', "%{$search}%");
+            });
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['role'])) {
+            $query->role($filters['role']);
+        }
+
+        $sort = $filters['sort'] ?? 'created_at';
+        $direction = $filters['direction'] ?? 'desc';
+
+        return $query
+            ->orderBy($sort, $direction)
+            ->paginate($perPage);
     }
 }
