@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 final readonly class ChangePasswordAction
 {

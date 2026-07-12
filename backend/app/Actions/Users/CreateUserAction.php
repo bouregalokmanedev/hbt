@@ -8,6 +8,8 @@ use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Support\ActionResult;
+use App\Events\UserCreated;
+use Illuminate\Support\Facades\Log;
 
 final readonly class CreateUserAction
 {

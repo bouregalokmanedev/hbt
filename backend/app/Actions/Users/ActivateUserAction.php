@@ -5,6 +5,7 @@ namespace App\Actions\Users;
 use App\Models\User;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 final readonly class ActivateUserAction
 {
@@ -12,7 +13,7 @@ final readonly class ActivateUserAction
     {
         return DB::transaction(function () use ($user) {
 
-            if ($user->status === 'active') {
+            if ($user->status === UserStatus::ACTIVE->value) {
                 return ActionResult::failure(
                     'User already active.'
                 );

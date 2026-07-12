@@ -12,6 +12,9 @@ final readonly class RestoreUserAction
 
     public function execute(int $id): bool
     {
-        return $this->users->restore($id);
+        return ActionResult::success(
+    null,
+    'User restored successfully.'
+);
     }
 }

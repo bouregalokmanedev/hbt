@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Enums\UserRole;
+use Illuminate\Support\Facades\Log;
 
 final readonly class AssignRoleAction
 {
@@ -21,6 +23,15 @@ final readonly class AssignRoleAction
                     'Role does not exist.'
                 );
             }
+
+            if (
+    $role === UserRole::SUPER_ADMIN->value &&
+    ! auth()->user()?->hasRole(UserRole::SUPER_ADMIN->value)
+) {
+    return ActionResult::failure(
+        'Only Super Admin can assign this role.'
+    );
+}
 
             $user->syncRoles([$role]);
 
