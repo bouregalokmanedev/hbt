@@ -7,6 +7,7 @@ use App\DTOs\Users\CreateUserData;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Support\ActionResult;
 
 final readonly class CreateUserAction
 {
@@ -14,17 +15,21 @@ final readonly class CreateUserAction
         private UserRepositoryInterface $users
     ) {}
 
-    public function execute(CreateUserData $dto): User
+    public function execute(CreateUserData $dto): ActionResult
     {
         return DB::transaction(function () use ($dto) {
 
-            $user = $this->users->create(
-                $dto->toArray()
-            );
+    $user = $this->users->create(
+        $dto->toArray()
+    );
 
-            $user->assignRole(UserRole::STUDENT->value);
+    $user->assignRole(UserRole::STUDENT->value);
 
-            return $user->fresh();
-        });
+    return ActionResult::success(
+        data: $user->fresh(),
+        message: 'User created successfully.'
+    );
+
+});
     }
 }

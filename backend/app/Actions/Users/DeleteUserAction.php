@@ -13,6 +13,9 @@ final readonly class DeleteUserAction
 
     public function execute(User $user): bool
     {
-        return $this->users->delete($user);
+        return ActionResult::success(
+    null,
+    'User deleted successfully.'
+);
     }
 }

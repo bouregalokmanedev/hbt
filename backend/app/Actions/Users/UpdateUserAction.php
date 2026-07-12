@@ -20,10 +20,10 @@ final readonly class UpdateUserAction
 
         return DB::transaction(function () use ($user, $dto) {
 
-            return $this->users->update(
-                $user,
-                $dto->toArray()
-            );
+            ActionResult::success(
+    $updatedUser,
+    'User updated successfully.'
+);
 
         });
     }
