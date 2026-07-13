@@ -50,4 +50,10 @@ final readonly class CreateUserData
             'status' => $this->status,
         ];
     }
+    public function dto(): CreateUserData
+{
+    return CreateUserData::fromArray(
+        $this->validated()
+    );
+}
 }

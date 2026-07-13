@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Actions\Users;
+use Illuminate\Support\Facades\Log;
 
 use App\Contracts\Repositories\UserRepositoryInterface;
 
