@@ -2,64 +2,70 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    public function viewAny(User $authUser): bool
     {
-        return false;
+        return $authUser->hasAnyRole([
+            UserRole::ADMIN->value,
+            UserRole::SUPER_ADMIN->value,
+        ]);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, User $model): bool
+    public function view(User $authUser, User $user): bool
     {
-        return false;
+        return $this->viewAny($authUser);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(User $authUser): bool
     {
-        return false;
+        return $this->viewAny($authUser);
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, User $model): bool
+    public function update(User $authUser, User $user): bool
     {
-        return false;
+        if ($user->hasRole(UserRole::SUPER_ADMIN->value)
+            && ! $authUser->hasRole(UserRole::SUPER_ADMIN->value)) {
+            return false;
+        }
+
+        return $this->viewAny($authUser);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, User $model): bool
+    public function delete(User $authUser, User $user): bool
     {
-        return false;
+        if ($authUser->id === $user->id) {
+            return false;
+        }
+
+        if ($user->hasRole(UserRole::SUPER_ADMIN->value)
+            && ! $authUser->hasRole(UserRole::SUPER_ADMIN->value)) {
+            return false;
+        }
+
+        return $this->viewAny($authUser);
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, User $model): bool
+    public function restore(User $authUser): bool
     {
-        return false;
+        return $this->viewAny($authUser);
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, User $model): bool
+    public function suspend(User $authUser, User $user): bool
     {
-        return false;
+        return $this->delete($authUser, $user);
+    }
+
+    public function assignRole(User $authUser, User $user): bool
+    {
+        return $this->update($authUser, $user);
+    }
+
+    public function changePassword(User $authUser, User $user): bool
+    {
+        return $this->update($authUser, $user);
     }
 }

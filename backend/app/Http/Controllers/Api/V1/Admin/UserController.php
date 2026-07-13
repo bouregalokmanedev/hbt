@@ -13,18 +13,25 @@ use App\Models\User;
 use App\Services\Users\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
     use ApiResponse;
+    use AuthorizesRequests;
 
     public function __construct(
-        private readonly UserService $userService,
-        private readonly UserRepositoryInterface $users,
-    ) {}
+    private readonly UserManagementService $users,
+    private readonly RoleService $roles,
+    private readonly PasswordService $passwords,
+    private readonly UserRepositoryInterface $repository,
+) {
+    $this->middleware('auth:sanctum');
+}
 
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', User::class);
         $users = $this->users->paginate(
             perPage: $request->integer('per_page', 15),
             filters: $request->only([
@@ -43,6 +50,7 @@ class UserController extends Controller
 
     public function store(CreateUserRequest $request): JsonResponse
     {
+        $this->authorize('create', User::class);
         $result = $this->userService->create(
             $request->dto()
         );
@@ -64,6 +72,7 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
+        $this->authorize('view', $user);
         return $this->success(
             new UserResource($user)
         );
@@ -73,7 +82,7 @@ class UserController extends Controller
         UpdateUserRequest $request,
         User $user
     ): JsonResponse {
-
+        $this->authorize('update', $user);
         $result = $this->userService->update(
             $user,
             $request->dto()
@@ -87,6 +96,7 @@ class UserController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
+        $this->authorize('delete', $user);
         $result = $this->userService->delete($user);
 
         return $this->success(
@@ -94,4 +104,42 @@ class UserController extends Controller
             $result->message
         );
     }
+    public function changePassword(Request $request, User $user)
+{
+    $this->authorize('changePassword', $user);
+
+    $user->update([
+        'password' => bcrypt($request->password),
+    ]);
+
+    return response()->json([
+        'message' => 'Password changed successfully.',
+    ]);
+}
+public function assignRole(Request $request, User $user)
+{
+    $this->authorize('assignRole', $user);
+
+    $user->syncRoles([$request->role]);
+
+    return new UserResource($user);
+}
+public function suspend(User $user)
+{
+    $this->authorize('suspend', $user);
+
+    $user->update([
+        'status' => 'suspended',
+    ]);
+
+    return new UserResource($user);
+}
+public function restore(User $user)
+{
+    $this->authorize('restore', User::class);
+
+    $user->restore();
+
+    return new UserResource($user);
+}
 }
