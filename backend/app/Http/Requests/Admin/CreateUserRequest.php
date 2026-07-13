@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Api\BaseApiRequest;
 
-class CreateUserRequest extends FormRequest
+class CreateUserRequest extends BaseApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.

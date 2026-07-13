@@ -2,28 +2,26 @@
 
 namespace App\Http\Requests\Api\V1\Admin;
 
-use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Api\BaseApiRequest;
+use Illuminate\Validation\Rules\Password;
 
-class ChangePasswordRequest extends FormRequest
+class ChangePasswordRequest extends BaseApiRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+
+            'password' => [
+                'required',
+                'confirmed',
+                Password::defaults(),
+            ],
+
         ];
     }
 }
