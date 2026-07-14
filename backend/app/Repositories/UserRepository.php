@@ -6,6 +6,8 @@ use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
+
+
 class UserRepository implements UserRepositoryInterface
 {
     public function create(array $data): User
