@@ -7,6 +7,8 @@ use App\DTOs\Auth\Results\AuthenticationResult;
 use App\Models\User;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\UserStatus;
+
 
 final readonly class LoginAction
 {
@@ -22,7 +24,7 @@ final readonly class LoginAction
             return ActionResult::failure('Invalid credentials.');
         }
 
-        if ($user->status !== 'active') {
+        if ($user->status !== UserStatus::ACTIVE->value) {
             return ActionResult::failure('Your account is inactive.');
         }
 

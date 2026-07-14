@@ -15,7 +15,7 @@ use App\DTOs\Users\UpdateUserData;
 use App\Models\User;
 use App\Support\ActionResult;
 
-final readonly class UserService
+final readonly class UserManagementService
 {
     public function __construct(
         private CreateUserAction $createUser,
@@ -58,13 +58,4 @@ final readonly class UserService
         return $this->activateUser->execute($user);
     }
 
-    public function assignRole(User $user, string $role): ActionResult
-    {
-        return $this->assignRole->execute($user, $role);
-    }
-
-    public function changePassword(User $user, string $password): ActionResult
-    {
-        return $this->changePassword->execute($user, $password);
-    }
 }

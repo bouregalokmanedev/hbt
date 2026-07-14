@@ -9,6 +9,8 @@ use Illuminate\Auth\Events\Registered;
 use App\DTOs\Auth\Results\AuthenticationResult;
 
 use App\Actions\Auth\LogoutAction;
+use App\Services\Security\LoginThrottleService;
+
 
 
 final readonly class AuthenticationService
@@ -17,6 +19,7 @@ final readonly class AuthenticationService
     private RegisterAction $registerAction,
     private LoginAction $loginAction,
     private LogoutAction $logoutAction,
+    private LoginThrottleService $throttle,
 ) {}
 
 
@@ -59,7 +62,34 @@ return ActionResult::success(
 
     public function login(LoginData $dto): ActionResult
 {
-    return $this->loginAction->execute($dto);
+    $ip = request()->ip();
+
+    if ($this->throttle->tooManyAttempts($dto->email, $ip)) {
+
+        return ActionResult::failure(
+            'Too many login attempts. Try again in '.$this->throttle->availableIn($dto->email, $ip).' seconds.'
+        );
+
+    }
+
+    $result = $this->loginAction->execute($dto);
+
+    if (! $result->success) {
+
+        $this->throttle->hit(
+            $dto->email,
+            $ip
+        );
+
+        return $result;
+    }
+
+    $this->throttle->clear(
+        $dto->email,
+        $ip
+    );
+
+    return $result;
 }
 
 public function logout(): ActionResult
