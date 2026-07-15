@@ -11,6 +11,8 @@ use App\Services\Authentication\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Resources\Api\V1\UserResource;
+use App\Actions\Auth\ForgotPasswordAction;
+use App\Http\Requests\Api\V1\ForgotPasswordRequest;
 
 
 class AuthController extends Controller
@@ -82,6 +84,30 @@ public function me(): JsonResponse
 {
     return $this->success(
         new UserResource(auth()->user())
+    );
+}
+
+public function forgotPassword(
+    ForgotPasswordRequest $request
+): JsonResponse {
+
+    $result = $this->auth
+        ->forgotPassword(
+            $request->dto()
+        );
+
+    if (! $result->success) {
+
+        return $this->error(
+            $result->message,
+            422
+        );
+
+    }
+
+    return $this->success(
+        null,
+        $result->message
     );
 }
 }

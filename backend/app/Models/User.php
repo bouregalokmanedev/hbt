@@ -11,6 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\ResetPasswordNotification;
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory;
@@ -78,4 +80,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    public function sendPasswordResetNotification($token): void
+{
+    $this->notify(
+        new ResetPasswordNotification($token)
+    );
+}
 }

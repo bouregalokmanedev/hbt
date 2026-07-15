@@ -19,6 +19,10 @@ Route::prefix('v1')->group(function () {
     '/login',
     [AuthController::class, 'login']
 );
+Route::post(
+    '/forgot-password',
+    [AuthController::class, 'forgotPassword']
+);
 
         Route::middleware('auth:sanctum')->group(function () {
 
@@ -84,6 +88,7 @@ Route::prefix('v1/auth')->group(function () {
         [EmailVerificationController::class, 'resend']
     )
     ->middleware('auth:sanctum');
+
 
 });
 

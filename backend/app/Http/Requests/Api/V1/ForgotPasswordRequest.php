@@ -2,28 +2,32 @@
 
 namespace App\Http\Requests\Api\V1;
 
-use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\DTOs\Auth\ForgotPasswordData;
+use App\Http\Requests\Api\BaseApiRequest;
 
-class ForgotPasswordRequest extends FormRequest
+class ForgotPasswordRequest extends BaseApiRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+
+            'email' => [
+                'required',
+                'email',
+            ],
+
         ];
+    }
+
+    public function dto(): ForgotPasswordData
+    {
+        return ForgotPasswordData::fromArray(
+            $this->validated()
+        );
     }
 }

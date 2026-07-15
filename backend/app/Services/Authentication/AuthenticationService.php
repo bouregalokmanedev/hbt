@@ -11,6 +11,9 @@ use App\Actions\Auth\LogoutAction;
 use App\Actions\Auth\LoginAction;
 use App\Services\Security\LoginThrottleService;
 use App\DTOs\Auth\LoginData;
+use App\DTOs\Auth\ForgotPasswordData;
+use App\Actions\Auth\ForgotPasswordAction;
+
 
 
 
@@ -21,6 +24,7 @@ final readonly class AuthenticationService
     private LoginAction $loginAction,
     private LogoutAction $logoutAction,
     private LoginThrottleService $throttle,
+    private ForgotPasswordAction $forgotPasswordAction,
 ) {}
 
 
@@ -98,5 +102,16 @@ return ActionResult::success(
 public function logout(): ActionResult
 {
     return $this->logoutAction->execute();
+}
+
+
+
+public function forgotPassword(
+    ForgotPasswordData $dto
+): ActionResult {
+
+    return $this->forgotPasswordAction
+        ->execute($dto);
+
 }
 }
