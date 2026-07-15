@@ -110,4 +110,28 @@ public function forgotPassword(
         $result->message
     );
 }
+
+public function resetPassword(
+    ResetPasswordRequest $request
+): JsonResponse
+{
+    $result = $this->auth
+        ->resetPassword(
+            $request->dto()
+        );
+
+    if (! $result->success) {
+
+        return $this->error(
+            $result->message,
+            422
+        );
+
+    }
+
+    return $this->success(
+        null,
+        $result->message
+    );
+}
 }

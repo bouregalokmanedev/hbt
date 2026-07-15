@@ -25,6 +25,7 @@ final readonly class AuthenticationService
     private LogoutAction $logoutAction,
     private LoginThrottleService $throttle,
     private ForgotPasswordAction $forgotPasswordAction,
+    private ResetPasswordAction $resetPasswordAction,
 ) {}
 
 
@@ -113,5 +114,12 @@ public function forgotPassword(
     return $this->forgotPasswordAction
         ->execute($dto);
 
+}
+public function resetPassword(
+    ResetPasswordData $dto
+): ActionResult
+{
+    return $this->resetPasswordAction
+        ->execute($dto);
 }
 }

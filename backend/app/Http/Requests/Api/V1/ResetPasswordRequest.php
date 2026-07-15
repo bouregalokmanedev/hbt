@@ -2,28 +2,38 @@
 
 namespace App\Http\Requests\Api\V1;
 
-use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\DTOs\Auth\ResetPasswordData;
+use App\Http\Requests\Api\BaseApiRequest;
+use Illuminate\Validation\Rules\Password;
 
-class ResetPasswordRequest extends FormRequest
+class ResetPasswordRequest extends BaseApiRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+
+            'email' => ['required','email'],
+
+            'token' => ['required','string'],
+
+            'password' => [
+                'required',
+                'confirmed',
+                Password::defaults(),
+            ],
+
         ];
+    }
+
+    public function dto(): ResetPasswordData
+    {
+        return ResetPasswordData::fromArray(
+            $this->validated()
+        );
     }
 }
