@@ -6,12 +6,13 @@ use Illuminate\Support\Facades\RateLimiter;
 
 final class LoginThrottleService
 {
-    private const MAX_ATTEMPTS = 5;
-    private const DECAY_SECONDS = 300;
+    public const MAX_ATTEMPTS = 5;
+
+    public const DECAY_SECONDS = 300;
 
     public function key(string $email, string $ip): string
     {
-        return strtolower($email) . '|' . $ip;
+        return strtolower($email).'|'.$ip;
     }
 
     public function tooManyAttempts(string $email, string $ip): bool
@@ -37,7 +38,7 @@ final class LoginThrottleService
         );
     }
 
-    public function availableIn(string $email, string $ip): int
+    public function secondsRemaining(string $email, string $ip): int
     {
         return RateLimiter::availableIn(
             $this->key($email, $ip)

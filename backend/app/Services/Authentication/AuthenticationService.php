@@ -7,7 +7,6 @@ use App\DTOs\Auth\RegisterData;
 use App\Support\ActionResult;
 use Illuminate\Auth\Events\Registered;
 use App\DTOs\Auth\Results\AuthenticationResult;
-
 use App\Actions\Auth\LogoutAction;
 use App\Actions\Auth\LoginAction;
 use App\Services\Security\LoginThrottleService;
@@ -69,7 +68,9 @@ return ActionResult::success(
     if ($this->throttle->tooManyAttempts($dto->email, $ip)) {
 
         return ActionResult::failure(
-            'Too many login attempts. Try again in '.$this->throttle->availableIn($dto->email, $ip).' seconds.'
+            'Too many login attempts. Try again in '
+            .$this->throttle->secondsRemaining($dto->email, $ip)
+            .' seconds.'
         );
 
     }

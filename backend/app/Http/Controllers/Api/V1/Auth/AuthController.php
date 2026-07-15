@@ -49,11 +49,19 @@ class AuthController extends Controller
     );
 
     if (! $result->success) {
-        return $this->error(
-            $result->message,
-            401
-        );
-    }
+
+    $status = str_contains(
+        $result->message,
+        'Too many login attempts'
+    )
+        ? 429
+        : 401;
+
+    return $this->error(
+        $result->message,
+        $status
+    );
+}
 
     return $this->success(
         new AuthResource($result->data),
