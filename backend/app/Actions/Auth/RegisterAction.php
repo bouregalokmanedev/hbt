@@ -29,7 +29,7 @@ final readonly class RegisterAction
                 'username' => $dto->username,
                 'email' => $dto->email,
                 'password' => Hash::make($dto->password),
-                'status'     => UserStatus::ACTIVE->value,
+                'status' => UserStatus::PENDING->value,
                 'phone' => $dto->phone,
                 'country' => $dto->country,
                 'language' => $dto->language,

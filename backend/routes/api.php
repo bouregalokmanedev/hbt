@@ -68,6 +68,25 @@ Route::middleware([
 
 });
 
+use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
+
+Route::prefix('v1/auth')->group(function () {
+
+    Route::get(
+        '/verify-email/{id}/{hash}',
+        [EmailVerificationController::class, 'verify']
+    )
+    ->middleware(['auth:sanctum', 'signed'])
+    ->name('verification.verify');
+
+    Route::post(
+        '/email/resend',
+        [EmailVerificationController::class, 'resend']
+    )
+    ->middleware('auth:sanctum');
+
+});
+
 
 use Illuminate\Http\Request;
 

@@ -23,10 +23,16 @@ final readonly class LoginAction
         if (! Hash::check($dto->password, $user->password)) {
             return ActionResult::failure('Invalid credentials.');
         }
+        if (! $user->hasVerifiedEmail()) {
+    return ActionResult::failure(
+        'Please verify your email address.'
+    );
+}
 
         if ($user->status !== UserStatus::ACTIVE->value) {
             return ActionResult::failure('Your account is inactive.');
         }
+        
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
