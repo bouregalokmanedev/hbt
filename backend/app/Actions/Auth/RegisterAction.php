@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use App\Enums\UserStatus;
 
 final readonly class RegisterAction
 {
@@ -26,7 +28,8 @@ final readonly class RegisterAction
                 'last_name' => $dto->last_name,
                 'username' => $dto->username,
                 'email' => $dto->email,
-                'password' => $dto->password,
+                'password' => Hash::make($dto->password),
+                'status'     => UserStatus::ACTIVE->value,
                 'phone' => $dto->phone,
                 'country' => $dto->country,
                 'language' => $dto->language,

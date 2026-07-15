@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Admin\UserController;
 
 
 
@@ -67,3 +67,16 @@ Route::middleware([
     );
 
 });
+
+
+use Illuminate\Http\Request;
+
+Route::get('/v1/debug-auth', function (Request $request) {
+    return response()->json([
+        'user' => auth()->user(),
+        'bearerToken' => $request->bearerToken(),
+        'expectsJson' => $request->expectsJson(),
+        'accept' => $request->header('Accept'),
+        'authorization' => $request->header('Authorization'),
+    ]);
+})->middleware('auth:sanctum');

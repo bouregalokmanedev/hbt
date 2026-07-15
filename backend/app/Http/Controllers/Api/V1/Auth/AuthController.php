@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\RegisterRequest;
 use App\Http\Resources\Api\V1\Auth\AuthResource;
 use App\Http\Responses\ApiResponse;
 use App\Services\Authentication\AuthenticationService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Api\V1\LoginRequest;
+use App\Http\Resources\Api\V1\UserResource;
+
 
 class AuthController extends Controller
 {
