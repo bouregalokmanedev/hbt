@@ -80,11 +80,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return "{$this->first_name} {$this->last_name}";
     }
+    public function getRouteKeyName(): string
+{
+    return 'uuid';
+}
 
     public function sendPasswordResetNotification($token): void
 {
     $this->notify(
         new ResetPasswordNotification($token)
     );
+}
+
+public function sessions()
+{
+    return $this->hasMany(UserSession::class);
 }
 }

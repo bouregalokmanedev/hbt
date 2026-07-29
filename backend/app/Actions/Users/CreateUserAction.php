@@ -33,5 +33,9 @@ final readonly class CreateUserAction
     );
 
 });
+event(new ModelChanged(
+    event: 'user.created',
+    model: $user,
+));
     }
 }

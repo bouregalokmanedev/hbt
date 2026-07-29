@@ -15,6 +15,7 @@ use App\DTOs\Users\UpdateUserData;
 use App\Models\User;
 use App\Support\ActionResult;
 
+
 final readonly class UserManagementService
 {
     public function __construct(
@@ -29,13 +30,27 @@ final readonly class UserManagementService
     ) {}
 
     public function create(CreateUserData $dto): ActionResult
-    {
-        return $this->createUser->execute($dto);
-    }
+{
+    $user = $this->createUser->execute($dto);
+
+    return ActionResult::success(
+        $user,
+        'User created successfully'
+    );
+}
+
 
     public function update(User $user, UpdateUserData $dto): ActionResult
     {
-        return $this->updateUser->execute($user, $dto);
+        $updatedUser = $this->updateUser->execute(
+    $user,
+    $dto
+);
+
+    return ActionResult::success(
+        $updatedUser,
+        'User updated successfully'
+    );
     }
 
     public function delete(User $user): ActionResult

@@ -17,5 +17,9 @@ final readonly class RestoreUserAction
     null,
     'User restored successfully.'
 );
+event(new ModelChanged(
+    event: 'user.restored',
+    model: $user,
+));
     }
 }

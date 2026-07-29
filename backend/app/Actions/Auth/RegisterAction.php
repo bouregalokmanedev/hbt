@@ -4,13 +4,13 @@ namespace App\Actions\Auth;
 
 use App\DTOs\Auth\RegisterData;
 use App\Enums\UserRole;
-use App\Events\UserCreated;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\UserStatus;
+use App\Events\ModelChanged;
 
 final readonly class RegisterAction
 {
@@ -39,7 +39,7 @@ final readonly class RegisterAction
 
             $user->assignRole(UserRole::STUDENT->value);
 
-            event(new UserCreated($user));
+            event(new ModelChanged(event: 'user.created',model: $user,));
 
             return ActionResult::success(
                 $user,

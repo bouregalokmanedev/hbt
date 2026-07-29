@@ -4,14 +4,15 @@ namespace App\Providers;
 
 use App\Contracts\Services\AuthenticationServiceInterface;
 use App\Services\AuthenticationService;
-
 use Illuminate\Support\ServiceProvider;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Repositories\UserRepository;
-
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
+use App\Events\ModelChanged;
+use App\Listeners\WriteAuditLog;
+use Illuminate\Support\Facades\Event;
 
 
 
@@ -31,12 +32,14 @@ class AppServiceProvider extends ServiceProvider
     AuthenticationService::class
     );
     }
-
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
 {
-    Gate::policy(User::class, UserPolicy::class);
+    Event::listen(
+        ModelChanged::class,
+        WriteAuditLog::class,
+    );
 }
 }

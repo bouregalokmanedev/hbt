@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
+use App\Http\Controllers\Api\V1\SessionController;
 
 
 
@@ -38,63 +39,53 @@ Route::post(
 
     });
 
+     Route::middleware('auth:sanctum')
+        ->prefix('admin')
+        ->group(function () {
+
+            Route::apiResource('users', UserController::class);
+
+            Route::patch('users/{user}/restore', [UserController::class, 'restore']);
+            Route::patch('users/{user}/activate', [UserController::class, 'activate']);
+            Route::patch('users/{user}/suspend', [UserController::class, 'suspend']);
+            Route::patch('users/{user}/role', [UserController::class, 'assignRole']);
+            Route::patch('users/{user}/password', [UserController::class, 'changePassword']);
+        });
+
 });
 
-Route::middleware([
-    'auth:sanctum'
-])->prefix('admin')->group(function () {
+Route::prefix('sessions')->group(function () {
 
-    Route::apiResource(
-        'users',
-        UserController::class
+    Route::get(
+        '/',
+        [SessionController::class, 'index']
     );
 
-    Route::patch(
-        'users/{user}/restore',
-        [UserController::class,'restore']
+    Route::get(
+        '/current',
+        [SessionController::class, 'current']
     );
 
-    Route::patch(
-        'users/{user}/activate',
-        [UserController::class,'activate']
+    Route::delete(
+        '/others',
+        [SessionController::class, 'destroyOthers']
     );
 
-    Route::patch(
-        'users/{user}/suspend',
-        [UserController::class,'suspend']
-    );
-
-    Route::patch(
-        'users/{user}/role',
-        [UserController::class,'assignRole']
-    );
-
-    Route::patch(
-        'users/{user}/password',
-        [UserController::class,'changePassword']
+    Route::delete(
+        '/{session}',
+        [SessionController::class, 'destroy']
     );
 
 });
 
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 
-Route::prefix('v1/auth')->group(function () {
-
-    Route::get(
-        '/verify-email/{id}/{hash}',
-        [EmailVerificationController::class, 'verify']
-    )
-    ->middleware(['auth:sanctum', 'signed'])
-    ->name('verification.verify');
-
-    Route::post(
-        '/email/resend',
-        [EmailVerificationController::class, 'resend']
-    )
-    ->middleware('auth:sanctum');
-
-
-});
+Route::get(
+    '/verify-email/{id}/{hash}',
+    [EmailVerificationController::class, 'verify']
+)
+->middleware('signed')
+->name('verification.verify');
 
 
 use Illuminate\Http\Request;

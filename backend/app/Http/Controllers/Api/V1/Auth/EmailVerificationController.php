@@ -4,27 +4,63 @@ namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use App\Models\User;
 use App\Enums\UserStatus;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Http\JsonResponse;
+use App\Services\Security\AuthenticationLogService;
 
 class EmailVerificationController extends Controller
 {
+    public function __construct(
+    private AuthenticationLogService $authenticationLogService,
+) {}
     use ApiResponse;
 
-    
+    public function verify(Request $request, $id, $hash): JsonResponse
+{
+    $user = User::findOrFail($id);
 
-public function verify(
-    EmailVerificationRequest $request
-): JsonResponse {
+    if (! $request->hasValidSignature()) {
+        return $this->error(
+            'Invalid or expired verification link.',
+            403
+        );
+    }
 
-    $request->fulfill();
+    if (! hash_equals(
+        sha1($user->getEmailForVerification()),
+        $hash
+    )) {
+        return $this->error(
+            'Invalid verification hash.',
+            403
+        );
+    }
 
-    $user = $request->user();
+    if (! $user->hasVerifiedEmail()) {
 
-    $user->update([
-        'status' => UserStatus::ACTIVE->value,
-    ]);
+        $user->markEmailAsVerified();
+
+        $user->update([
+            'status' => UserStatus::ACTIVE->value,
+        ]);
+
+        $this->authenticationLogService->log(
+
+            event: 'email.verified',
+
+            successful: true,
+
+            user: $user,
+
+            email: $user->email,
+
+            request: $request,
+
+        );
+    }
 
     return $this->success(
         null,

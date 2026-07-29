@@ -23,5 +23,9 @@ if (auth()->id() === $user->id) {
         'You cannot delete your own account.'
     );
 }
+event(new ModelChanged(
+    event: 'user.deleted',
+    model: $user,
+));
     }
 }

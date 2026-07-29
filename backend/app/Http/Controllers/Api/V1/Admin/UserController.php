@@ -10,10 +10,12 @@ use App\Http\Requests\Api\V1\Admin\ChangePasswordRequest;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\User;
-use App\Services\Users\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Services\Users\UserManagementService;
+use App\Services\Users\RoleService;
+use App\Services\Users\PasswordService;
 
 class UserController extends Controller
 {
@@ -25,10 +27,7 @@ class UserController extends Controller
     private readonly RoleService $roles,
     private readonly PasswordService $passwords,
     private readonly UserRepositoryInterface $repository,
-) {
-    $this->middleware('auth:sanctum');
-}
-
+) {}
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', User::class);
@@ -51,9 +50,9 @@ class UserController extends Controller
     public function store(CreateUserRequest $request): JsonResponse
     {
         $this->authorize('create', User::class);
-        $result = $this->userService->create(
-            $request->dto()
-        );
+        $result = $this->users->create(
+    $request->dto()
+);
 
         if (! $result->success) {
             return $this->error(
@@ -83,10 +82,10 @@ class UserController extends Controller
         User $user
     ): JsonResponse {
         $this->authorize('update', $user);
-        $result = $this->userService->update(
-            $user,
-            $request->dto()
-        );
+        $result = $this->users->update(
+    $user,
+    $request->dto()
+);
 
         return $this->success(
             new UserResource($result->data),
@@ -97,7 +96,7 @@ class UserController extends Controller
     public function destroy(User $user): JsonResponse
     {
         $this->authorize('delete', $user);
-        $result = $this->userService->delete($user);
+        $result = $this->users->delete($user);
 
         return $this->success(
             null,

@@ -13,9 +13,9 @@ use App\Services\Security\LoginThrottleService;
 use App\DTOs\Auth\LoginData;
 use App\DTOs\Auth\ForgotPasswordData;
 use App\Actions\Auth\ForgotPasswordAction;
-
-
-
+use App\Actions\Auth\ResetPasswordAction;
+use App\DTOs\Auth\ResetPasswordData;
+use App\Services\Security\AuthenticationLogService;
 
 final readonly class AuthenticationService
 {
@@ -26,6 +26,7 @@ final readonly class AuthenticationService
     private LoginThrottleService $throttle,
     private ForgotPasswordAction $forgotPasswordAction,
     private ResetPasswordAction $resetPasswordAction,
+    private AuthenticationLogService $authenticationLogService,
 ) {}
 
 
@@ -96,6 +97,7 @@ return ActionResult::success(
         $dto->email,
         $ip
     );
+
 
     return $result;
 }

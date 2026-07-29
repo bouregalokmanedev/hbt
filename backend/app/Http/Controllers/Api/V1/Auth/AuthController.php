@@ -13,6 +13,10 @@ use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Actions\Auth\ForgotPasswordAction;
 use App\Http\Requests\Api\V1\ForgotPasswordRequest;
+use App\Http\Requests\Api\V1\resetPasswordRequest;
+use App\Models\User;
+use App\Enums\UserStatus;
+
 
 
 class AuthController extends Controller
@@ -68,6 +72,28 @@ class AuthController extends Controller
     return $this->success(
         new AuthResource($result->data),
         $result->message
+    );
+}
+
+public function verify(
+    EmailVerificationRequest $request
+): JsonResponse {
+
+    $user = User::findOrFail(
+        $request->route('id')
+    );
+
+    if (! $user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    $user->update([
+        'status' => UserStatus::ACTIVE->value,
+    ]);
+
+    return $this->success(
+        null,
+        'Email verified successfully.'
     );
 }
 
