@@ -116,6 +116,11 @@ final readonly class LoginAction
 }
         
         $newToken = $user->createToken('auth_token');
+        $this->sessionService->create(
+    $user,
+    $newToken->accessToken,
+    request()
+);
 $plainToken = $newToken->plainTextToken;
         $this->authenticationLogService->log(
 

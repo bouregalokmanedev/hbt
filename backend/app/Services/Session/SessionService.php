@@ -12,40 +12,43 @@ use Laravel\Sanctum\PersonalAccessToken;
 class SessionService
 {
     public function create(
-        User $user,
-        PersonalAccessToken $token,
-        Request $request
-    ): UserSession {
+    User $user,
+    PersonalAccessToken $token,
+    Request $request
+): UserSession {
 
-        $device = $this->deviceDetector
-    ->detect($request);
+    $agent = new Agent();
 
-        return UserSession::create([
+    $agent->setUserAgent(
+        $request->userAgent()
+    );
 
-            'user_id' => $user->id,
+    return UserSession::create([
 
-            'token_id' => $token->id,
+        'user_id' => $user->id,
 
-            'device_name' => $agent->device(),
+        'token_id' => $token->id,
 
-            'browser' => $agent->browser(),
+        'device_name' => $agent->device(),
 
-            'platform' => $agent->platform(),
+        'browser' => $agent->browser(),
 
-            'device_type' => $this->deviceType($agent),
+        'platform' => $agent->platform(),
 
-            'ip_address' => $request->ip(),
+        'device_type' => $this->deviceType($agent),
 
-            'user_agent' => $request->userAgent(),
+        'ip_address' => $request->ip(),
 
-            'logged_in_at' => now(),
+        'user_agent' => $request->userAgent(),
 
-            'last_activity_at' => now(),
+        'logged_in_at' => now(),
 
-            'is_current' => true,
+        'last_activity_at' => now(),
 
-        ]);
-    }
+        'is_current' => true,
+
+    ]);
+}
 
     private function deviceType(Agent $agent): string
     {

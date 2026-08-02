@@ -12,7 +12,7 @@ final class LogoutAction
 ) {}
     public function execute(): ActionResult
     {
-        auth()->user()->currentAccessToken()->delete();
+        $user = auth()->user();
         $this->authenticationLogService->log(
 
     event: 'logout',
@@ -26,7 +26,7 @@ final class LogoutAction
     request: request(),
 
 );
-
+$user->currentAccessToken()?->delete();
 
         return ActionResult::success(
             null,
