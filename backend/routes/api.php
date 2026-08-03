@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\SessionController;
 use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\SectionController;
-
+use App\Http\Controllers\LessonController;
 
 
 
@@ -93,6 +93,35 @@ Route::middleware([
             '/sections/{section}/reorder',
             [SectionController::class, 'reorder']
         );
+        Route::post(
+    '/lessons',
+    [LessonController::class, 'store']
+);
+
+Route::patch(
+    '/lessons/{lesson}',
+    [LessonController::class, 'update']
+);
+
+Route::delete(
+    '/lessons/{lesson}',
+    [LessonController::class, 'destroy']
+);
+
+Route::post(
+    '/lessons/{lesson}/publish',
+    [LessonController::class, 'publish']
+);
+
+Route::post(
+    '/lessons/{lesson}/unpublish',
+    [LessonController::class, 'unpublish']
+);
+
+Route::post(
+    '/lessons/{lesson}/reorder',
+    [LessonController::class, 'reorder']
+);
 
     Route::apiResource(
         'courses',

@@ -39,6 +39,16 @@ use App\Domains\Courses\Repositories\EloquentSectionRepository;
 use App\Domains\Courses\Repositories\SectionRepositoryInterface;
 use App\Domains\Courses\Policies\SectionPolicy;
 use App\Models\Section;
+use App\Domains\Lessons\Repositories\EloquentLessonRepository;
+use App\Domains\Lessons\Repositories\LessonRepositoryInterface;
+use App\Models\Lesson;
+use App\Domains\Lessons\Policies\LessonPolicy;
+use App\Domains\Lessons\Events\LessonCreated;
+use App\Domains\Lessons\Events\LessonUpdated;
+use App\Domains\Lessons\Events\LessonPublished;
+use App\Domains\Lessons\Events\LessonUnpublished;
+use App\Domains\Lessons\Events\LessonReordered; 
+
 
 
 
@@ -103,6 +113,10 @@ $this->app->bind(
     CategoryRepositoryInterface::class,
     CategoryRepository::class
 );
+$this->app->bind(
+    LessonRepositoryInterface::class,
+    EloquentLessonRepository::class
+);
 
     }
     /**
@@ -124,7 +138,10 @@ $this->app->bind(
     Section::class,
     SectionPolicy::class
 );
-
+Gate::policy(
+    Lesson::class,
+    LessonPolicy::class
+);
     Event::listen(
         ModelChanged::class,
         WriteAuditLog::class,

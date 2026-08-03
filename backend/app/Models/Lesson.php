@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
-use App\Enums\SectionStatus;
+use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Section extends Model
+class Lesson extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $fillable = [
-        'course_id',
+        'section_id',
         'title',
         'slug',
         'description',
+        'content',
         'position',
         'status',
     ];
@@ -26,21 +26,15 @@ class Section extends Model
     protected function casts(): array
     {
         return [
-            'status' => SectionStatus::class,
+            'status' => LessonStatus::class,
             'position' => 'integer',
         ];
     }
 
-    public function course(): BelongsTo
+    public function section(): BelongsTo
     {
         return $this->belongsTo(
-            Course::class
+            Section::class
         );
     }
-    public function lessons(): HasMany
-{
-    return $this->hasMany(
-        Lesson::class
-    )->orderBy('position');
-}
 }
