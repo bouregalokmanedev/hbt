@@ -37,10 +37,11 @@ class Section extends Model
             Course::class
         );
     }
+
     public function lessons(): HasMany
-{
-    return $this->hasMany(
-        Lesson::class
-    )->orderBy('position');
-}
+    {
+        return $this->hasMany(
+            Lesson::class
+        )->orderBy('position');
+    }
 }

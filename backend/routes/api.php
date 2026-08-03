@@ -123,6 +123,11 @@ Route::post(
     [LessonController::class, 'reorder']
 );
 
+Route::get(
+    'courses/{course}/curriculum',
+    [CourseController::class, 'curriculum']
+)->name('courses.curriculum');
+
     Route::apiResource(
         'courses',
         CourseController::class
