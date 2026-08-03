@@ -48,6 +48,10 @@ use App\Domains\Lessons\Events\LessonUpdated;
 use App\Domains\Lessons\Events\LessonPublished;
 use App\Domains\Lessons\Events\LessonUnpublished;
 use App\Domains\Lessons\Events\LessonReordered; 
+use App\Domains\Media\Repositories\EloquentMediaRepository;
+use App\Domains\Media\Repositories\MediaRepositoryInterface;
+use App\Models\Media;
+use App\Domains\Media\Policies\MediaPolicy;
 
 
 
@@ -117,6 +121,10 @@ $this->app->bind(
     LessonRepositoryInterface::class,
     EloquentLessonRepository::class
 );
+$this->app->bind(
+    MediaRepositoryInterface::class,
+    EloquentMediaRepository::class
+);
 
     }
     /**
@@ -141,6 +149,10 @@ $this->app->bind(
 Gate::policy(
     Lesson::class,
     LessonPolicy::class
+);
+Gate::policy(
+    Media::class,
+    MediaPolicy::class
 );
     Event::listen(
         ModelChanged::class,

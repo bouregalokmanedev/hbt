@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 
 class Course extends Model
@@ -103,5 +104,12 @@ public function sections(): HasMany
     return $this->hasMany(
         Section::class
     )->orderBy('position');
+}
+public function media(): MorphMany
+{
+    return $this->morphMany(
+        Media::class,
+        'mediable'
+    );
 }
 }

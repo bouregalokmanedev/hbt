@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\SessionController;
 use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\MediaController;
 
 
 
@@ -127,6 +128,18 @@ Route::get(
     'courses/{course}/curriculum',
     [CourseController::class, 'curriculum']
 )->name('courses.curriculum');
+Route::get(
+    '/media/{media}',
+    [MediaController::class, 'show']
+);
+Route::post(
+    '/media',
+    [MediaController::class, 'store']
+);
+Route::delete(
+    '/media/{media}',
+    [MediaController::class, 'destroy']
+);
 
     Route::apiResource(
         'courses',
