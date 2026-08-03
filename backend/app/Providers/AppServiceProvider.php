@@ -35,6 +35,10 @@ use App\Domains\Taxonomy\Listeners\IndexCategory;
 use App\Domains\Taxonomy\Listeners\RemoveCategoryFromSearch;
 use App\Models\Category;
 use App\Domains\Taxonomy\Policies\CategoryPolicy;
+use App\Domains\Courses\Repositories\EloquentSectionRepository;
+use App\Domains\Courses\Repositories\SectionRepositoryInterface;
+use App\Domains\Courses\Policies\SectionPolicy;
+use App\Models\Section;
 
 
 
@@ -85,6 +89,10 @@ protected $listen = [
     AuthenticationServiceInterface::class,
     AuthenticationService::class
     );
+    $this->app->bind(
+    SectionRepositoryInterface::class,
+    EloquentSectionRepository::class
+);
 
     $this->app->bind(
     CourseRepositoryInterface::class,
@@ -111,6 +119,11 @@ $this->app->bind(
         Category::class,
         CategoryPolicy::class
     );
+
+    Gate::policy(
+    Section::class,
+    SectionPolicy::class
+);
 
     Event::listen(
         ModelChanged::class,

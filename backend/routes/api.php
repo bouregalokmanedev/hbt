@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\SessionController;
 use App\Http\Controllers\Api\V1\CourseController;
+use App\Http\Controllers\SectionController;
+
 
 
 
@@ -53,12 +55,44 @@ Route::post(
             Route::patch('users/{user}/password', [UserController::class, 'changePassword']);
         });
 
-        
+
+
+});
 
 Route::middleware([
     'auth:sanctum',
     'verified',
 ])->prefix('v1')->group(function () {
+
+ Route::post(
+            '/sections',
+            [SectionController::class, 'store']
+        );
+
+        Route::patch(
+            '/sections/{section}',
+            [SectionController::class, 'update']
+        );
+
+        Route::delete(
+            '/sections/{section}',
+            [SectionController::class, 'destroy']
+        );
+
+        Route::post(
+            '/sections/{section}/publish',
+            [SectionController::class, 'publish']
+        );
+
+        Route::post(
+            '/sections/{section}/unpublish',
+            [SectionController::class, 'unpublish']
+        );
+
+        Route::post(
+            '/sections/{section}/reorder',
+            [SectionController::class, 'reorder']
+        );
 
     Route::apiResource(
         'courses',
@@ -68,8 +102,6 @@ Route::middleware([
     'courses/{course}/publish',
     [CourseController::class, 'publish']
 );
-
-});
 
 });
 
