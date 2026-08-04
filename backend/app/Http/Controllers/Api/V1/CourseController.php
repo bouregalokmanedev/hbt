@@ -9,6 +9,8 @@ use App\Domains\Courses\Resources\CourseResource;
 use App\Domains\Courses\Queries\CurriculumQuery;
 use App\Domains\Courses\Resources\CurriculumResource;
 use App\Models\Course;
+use App\Domains\Courses\Actions\PublishCourseAction;
+use App\Domains\Courses\DTOs\PublishCourseData;
 
 class CourseController extends Controller
 {
@@ -20,25 +22,22 @@ class CourseController extends Controller
         );
     }
 
-    public function publish(
+   public function publish(
     Course $course,
     PublishCourseAction $action
-)
-{
+): CourseResource {
     $this->authorize('publish', $course);
 
-    $dto = new PublishCourseData(
-
-        courseId: $course->id,
-
-        publisherId: auth()->id(),
-
+    $course = $action->execute(
+        new PublishCourseData(
+            courseId: $course->id,
+            publisherId: auth()->id(),
+        )
     );
-
-    $course = $action->execute($dto);
 
     return new CourseResource($course);
 }
+
 
     public function store(
         CreateCourseRequest $request,

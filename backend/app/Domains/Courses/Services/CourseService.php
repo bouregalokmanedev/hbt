@@ -7,6 +7,12 @@ use App\Domains\Courses\Repositories\CourseRepositoryInterface;
 use App\Domains\Courses\Events\CourseCreated;
 use App\Models\Course;
 use Illuminate\Support\Facades\DB;
+use App\Domains\Courses\DTOs\PublishCourseData;
+use App\Domains\Courses\Events\CoursePublished;
+use App\Domains\Courses\Exceptions\CourseAlreadyPublishedException;
+use App\Domains\Courses\Exceptions\CourseArchivedException;
+use App\Enums\Courses\CourseStatus;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CourseService
 {
@@ -70,50 +76,38 @@ class CourseService
         });
 
     }
-    public function publish(
+   public function publish(
     PublishCourseData $dto
 ): Course {
-
     return DB::transaction(function () use ($dto) {
-
-        $course = $this->courses
-            ->find($dto->courseId);
+        $course = $this->courses->find($dto->courseId);
 
         if (! $course) {
             throw new ModelNotFoundException();
         }
 
         if ($course->status === CourseStatus::PUBLISHED) {
-
             throw new CourseAlreadyPublishedException();
-
         }
 
         if ($course->status === CourseStatus::ARCHIVED) {
-
             throw new CourseArchivedException();
-
         }
 
-        $this->validator
-            ->validateForPublishing($course);
+        $this->validator->validateForPublishing($course);
 
-        $course = $this->courses->update($course, [
-
-            'status' => CourseStatus::PUBLISHED,
-
-            'published_at' => now(),
-
-        ]);
-
-        event(
-            new CoursePublished($course)
+        $course = $this->courses->update(
+            $course,
+            [
+                'status' => CourseStatus::PUBLISHED,
+                'published_at' => now(),
+            ]
         );
 
+        event(new CoursePublished($course));
+
         return $course;
-
     });
-
 }
 public function update(
 

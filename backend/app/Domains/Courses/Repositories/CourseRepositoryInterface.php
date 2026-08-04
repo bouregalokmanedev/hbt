@@ -3,27 +3,47 @@
 namespace App\Domains\Courses\Repositories;
 
 use App\Models\Course;
+use App\Domains\Courses\DTOs\UpdateCourseData;
+use App\Domains\Courses\Queries\CourseQuery;
 
 interface CourseRepositoryInterface
 {
-    public function create(CreateCourseData $dto): Course;
+    public function create(array $data): Course;
 
     public function find(string $id): ?Course;
 
-    public function paginate(int $perPage = 15);
+    public function update(
+        Course $course,
+        array $data
+    ): Course;
+
+    public function publish(
+        Course $course
+    ): Course;
+
+    public function delete(
+        Course $course
+    ): void;
+
+    public function paginate(
+        CourseQuery $query,
+        int $perPage = 15
+    );
 
     public function updateDetails(
         Course $course,
         UpdateCourseData $dto
     ): Course;
 
-    public function submitForReview(Course $course): Course;
+    public function submitForReview(
+        Course $course
+    ): Course;
 
-    public function publish(Course $course): Course;
+    public function archive(
+        Course $course
+    ): Course;
 
-    public function archive(Course $course): Course;
-
-    public function restore(Course $course): Course;
-
-    public function delete(Course $course): void;
+    public function restore(
+        Course $course
+    ): Course;
 }

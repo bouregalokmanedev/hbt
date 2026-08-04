@@ -27,13 +27,10 @@ return new class extends Migration
              * Information
              */
 
-            $table->string('title');
-
-            $table->string('slug')->unique();
-
-            $table->string('short_description',500);
-
-            $table->longText('description');
+$table->string('title');
+$table->string('slug')->unique();
+$table->string('short_description', 500);
+$table->longText('description');
 
             /*
              * Learning
