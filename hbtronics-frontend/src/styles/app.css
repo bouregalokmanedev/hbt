@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@import "./variables.css";
+@import "./typography.css";
+@import "./utilities.css";
+@import "./animations.css";
+@import "./scrollbar.css";
+
+html {
+    min-width: 320px;
+    background: var(--background);
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}

@@ -1,0 +1,17 @@
+@layer utilities {
+    .text-muted {
+        color: var(--muted);
+    }
+
+    .bg-surface {
+        background-color: var(--surface);
+    }
+
+    .bg-card {
+        background-color: var(--card);
+    }
+
+    .border-default {
+        border-color: var(--border);
+    }
+}
