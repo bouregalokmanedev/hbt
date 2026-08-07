@@ -1,5 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 
+import { UiShowcasePage } from "@/features/dev";
 import { PublicLayout } from "@/layouts/PublicLayout";
 
 function HomePage() {
@@ -13,6 +14,10 @@ export const publicRoutes: RouteObject[] = [
             {
                 path: "/",
                 element: <HomePage />,
+            },
+            {
+                path: "/dev/ui",
+                element: <UiShowcasePage />,
             },
         ],
     },
