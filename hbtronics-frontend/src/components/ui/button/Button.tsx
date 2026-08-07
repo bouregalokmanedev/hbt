@@ -14,11 +14,12 @@ export function Button({
     rightIcon,
     children,
     disabled,
+    type = "button",
     ...props
 }: ButtonProps) {
     return (
         <button
-            type={props.type ?? "button"}
+            type={type}
             className={cn(
                 buttonVariants({
                     variant,
