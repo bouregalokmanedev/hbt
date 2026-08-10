@@ -8,6 +8,10 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use App\Models\Section;
+use App\Models\Lesson;
+use App\Enums\SectionStatus;
+use App\Enums\LessonStatus;
 
 uses(RefreshDatabase::class);
 
@@ -23,6 +27,18 @@ it('dispatches CoursePublished when a course is published', function () {
         'description' => 'Complete Laravel backend course.',
         'duration_minutes' => 120,
         'thumbnail' => 'media/course.jpg',
+    ]);
+
+    $section = Section::factory()->create([
+        'course_id' => $course->id,
+        'status' => SectionStatus::PUBLISHED,
+        'position' => 1,
+    ]);
+
+    Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => LessonStatus::PUBLISHED,
+        'position' => 1,
     ]);
 
     app(PublishCourseAction::class)->execute(

@@ -1,20 +1,45 @@
 <?php
 
-namespace Tests\Feature\Feature\Auth;
+namespace Tests\Feature\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MeTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    use RefreshDatabase;
 
-        $response->assertStatus(200);
+    public function test_authenticated_user_can_get_their_profile(): void
+    {
+        $user = User::factory()->create([
+            'first_name' => 'Lokmane',
+            'last_name' => 'Bourega',
+            'email' => 'lokmane@example.com',
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        $response = $this->withToken($token)
+            ->getJson('/api/v1/auth/me');
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+            ])
+            ->assertJsonPath('data.email', 'lokmane@example.com')
+            ->assertJsonPath('data.first_name', 'Lokmane')
+            ->assertJsonPath('data.last_name', 'Bourega');
+
+        $response->assertJsonMissing([
+            'password' => $user->password,
+        ]);
+    }
+
+    public function test_me_requires_authentication(): void
+    {
+        $this->getJson('/api/v1/auth/me')
+            ->assertUnauthorized();
     }
 }

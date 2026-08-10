@@ -12,6 +12,8 @@ use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use App\Enums\LessonStatus;
+use function Pest\Laravel\actingAs;
 
 uses(RefreshDatabase::class);
 
@@ -29,6 +31,41 @@ function lessonOwner(): array
 
     return [$user, $course, $section];
 }
+
+it('returns a published lesson to draft when its content is updated', function () {
+    $instructor = User::factory()->create();
+
+    $course = Course::factory()
+        ->for($instructor, 'instructor')
+        ->create();
+
+    $section = Section::factory()
+        ->for($course)
+        ->create();
+
+    $lesson = Lesson::factory()
+        ->for($section)
+        ->create([
+            'status' => LessonStatus::PUBLISHED,
+            'title' => 'Original',
+            'slug' => 'original',
+            'content' => 'Original content',
+            'position' => 1,
+        ]);
+
+    actingAs($instructor)
+        ->patchJson(
+            "/api/v1/lessons/{$lesson->id}",
+            [
+                'content' => 'Updated content',
+            ]
+        )
+        ->assertOk()
+        ->assertJsonPath(
+            'status',
+            LessonStatus::DRAFT->value
+        );
+});
 
 it('creates a lesson', function () {
     [$user, $course, $section] = lessonOwner();

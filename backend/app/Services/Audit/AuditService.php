@@ -12,12 +12,13 @@ class AuditService
         Model $model,
         array $old = [],
         array $new = [],
-        array $metadata = []
+        array $metadata = [],
+        ?int $actorId = null,
+        ?string $ipAddress = null,
+        ?string $userAgent = null,
     ): void {
-
         AuditLog::create([
-
-            'user_id' => auth()->id(),
+            'user_id' => $actorId ?? auth()->id(),
 
             'event' => $event,
 
@@ -25,17 +26,15 @@ class AuditService
 
             'auditable_id' => (string) $model->getKey(),
 
-            'old_values' => $old,
+            'old_values' => $old ?: null,
 
-            'new_values' => $new,
+            'new_values' => $new ?: null,
 
-            'ip_address' => request()->ip(),
+            'ip_address' => $ipAddress ?? request()->ip(),
 
-            'user_agent' => request()->userAgent(),
+            'user_agent' => $userAgent ?? request()->userAgent(),
 
-            'metadata' => $metadata,
-
+            'metadata' => $metadata ?: null,
         ]);
-
     }
 }

@@ -7,12 +7,46 @@ use App\Domains\Lessons\Events\LessonReordered;
 use App\Domains\Lessons\Events\LessonUnpublished;
 use App\Domains\Lessons\Events\LessonUpdated;
 use App\Models\Lesson;
+use App\Enums\LessonStatus;
+use App\Domains\Lessons\Actions\UnpublishLessonAction;
+use App\Domains\Lessons\Repositories\LessonRepositoryInterface;
 use Illuminate\Support\Facades\Event;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHasJson;
 use function Pest\Laravel\assertDatabaseMissingJson;
+
+it('does not dispatch LessonUnpublished when persistence fails', function () {
+    Event::fake();
+
+    $lesson = Lesson::factory()->create([
+        'status' => LessonStatus::PUBLISHED,
+        'position' => 1,
+    ]);
+
+    $repository = Mockery::mock(
+        LessonRepositoryInterface::class
+    );
+
+    $repository
+        ->shouldReceive('update')
+        ->once()
+        ->andThrow(new RuntimeException('Database failure'));
+
+    app()->instance(
+        LessonRepositoryInterface::class,
+        $repository
+    );
+
+    expect(fn () =>
+        app(UnpublishLessonAction::class)->execute($lesson)
+    )->toThrow(RuntimeException::class);
+
+    Event::assertNotDispatched(
+        LessonUnpublished::class
+    );
+});
 
 it('creates the lesson created event', function () {
     $lesson = Lesson::factory()->make();
@@ -36,16 +70,12 @@ it('creates the lesson updated event', function () {
 });
 
 it('creates the lesson deleted event', function () {
-    $event = new LessonDeleted(
-        'lesson-id',
-        'section-id'
-    );
+    $lesson = Lesson::factory()->make();
 
-    expect($event->lessonId)
-        ->toBe('lesson-id');
+    $event = new LessonDeleted($lesson);
 
-    expect($event->sectionId)
-        ->toBe('section-id');
+    expect($event->lesson->is($lesson))
+        ->toBeTrue();
 });
 
 it('creates the lesson published event', function () {

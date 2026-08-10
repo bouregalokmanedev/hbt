@@ -15,13 +15,12 @@ final class RecordCategoryUpdatedAudit
         CategoryUpdated $event
     ): void {
 
-        $this->audit->record(
-            action: 'category.updated',
-            subject: $event->category,
-            actorId: $event->performedBy,
-            metadata: [
-                'changes' => $event->changes,
-            ],
-        );
+        $this->audit->log(
+    event: 'category.updated',
+    model: $event->category,
+    metadata: [
+        'category_id' => $event->category->id,
+    ],
+);
     }
 }

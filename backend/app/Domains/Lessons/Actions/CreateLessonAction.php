@@ -5,6 +5,7 @@ namespace App\Domains\Lessons\Actions;
 use App\Domains\Lessons\Events\LessonCreated;
 use App\Domains\Lessons\Repositories\LessonRepositoryInterface;
 use App\Domains\Lessons\Services\LessonService;
+use App\Enums\LessonStatus;
 use App\Models\Lesson;
 
 final class CreateLessonAction
@@ -20,6 +21,8 @@ final class CreateLessonAction
         $this->service->validatePosition(
             (int) $data['position']
         );
+
+        $data['status'] = LessonStatus::DRAFT;
 
         $lesson = $this->repository->create($data);
 

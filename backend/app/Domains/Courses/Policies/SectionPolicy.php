@@ -50,4 +50,13 @@ class SectionPolicy
         $section->course
     );
 }
+public function createLesson(
+    User $user,
+    Section $section
+): bool {
+    return $user->can(
+        'update',
+        $section->course
+    );
+}
 }

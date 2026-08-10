@@ -11,40 +11,35 @@ class UpdateLessonRequest extends FormRequest
         return $this->user() !== null;
     }
 
-    public function rules(): array
-    {
-        return [
-            'title' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:255',
-            ],
+public function rules(): array
+{
+    return [
+        'title' => [
+            'sometimes',
+            'nullable',
+            'string',
+            'max:255',
+        ],
 
-            'slug' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:255',
-            ],
+        'slug' => [
+            'sometimes',
+            'nullable',
+            'string',
+            'max:255',
+        ],
 
-            'description' => [
-                'sometimes',
-                'nullable',
-                'string',
-            ],
+        'description' => [
+            'sometimes',
+            'nullable',
+            'string',
+        ],
 
-            'content' => [
-                'sometimes',
-                'nullable',
-                'string',
-            ],
-
-            'position' => [
-                'sometimes',
-                'integer',
-                'min:1',
-            ],
-        ];
-    }
+        'content' => [
+            'sometimes',
+            'nullable',
+            'string',
+        ],
+    ];
 }
+
+    }

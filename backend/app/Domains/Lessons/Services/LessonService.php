@@ -43,23 +43,36 @@ final class LessonService
         );
     }
 
-    public function publish(
-        Lesson $lesson
-    ): Lesson {
-        $this->validatePublishable($lesson);
-
-        $lesson->status = LessonStatus::PUBLISHED;
-
-        return $lesson;
+   public function publish(
+    Lesson $lesson
+): Lesson {
+    if ($lesson->status === LessonStatus::PUBLISHED) {
+        throw new DomainException(
+            'Lesson is already published.'
+        );
     }
 
-    public function unpublish(
-        Lesson $lesson
-    ): Lesson {
-        $lesson->status = LessonStatus::DRAFT;
+    $this->validatePublishable($lesson);
 
-        return $lesson;
+    $lesson->status = LessonStatus::PUBLISHED;
+
+    return $lesson;
+}
+
+public function unpublish(
+    Lesson $lesson
+): Lesson {
+    if ($lesson->status === LessonStatus::DRAFT) {
+        throw new DomainException(
+            'Lesson is already a draft.'
+        );
     }
+
+    $lesson->status = LessonStatus::DRAFT;
+
+    return $lesson;
+}
+
     public function validateReorderPosition(
     int $position
 ): void {

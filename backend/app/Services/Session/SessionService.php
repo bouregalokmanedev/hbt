@@ -11,11 +11,17 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class SessionService
 {
-    public function create(
+   public function create(
     User $user,
     PersonalAccessToken $token,
     Request $request
 ): UserSession {
+
+    $user->sessions()
+        ->where('is_current', true)
+        ->update([
+            'is_current' => false,
+        ]);
 
     $agent = new Agent();
 
@@ -24,29 +30,21 @@ class SessionService
     );
 
     return UserSession::create([
-
         'user_id' => $user->id,
-
         'token_id' => $token->id,
 
         'device_name' => $agent->device(),
-
         'browser' => $agent->browser(),
-
         'platform' => $agent->platform(),
-
         'device_type' => $this->deviceType($agent),
 
         'ip_address' => $request->ip(),
-
         'user_agent' => $request->userAgent(),
 
         'logged_in_at' => now(),
-
         'last_activity_at' => now(),
 
         'is_current' => true,
-
     ]);
 }
 
@@ -87,22 +85,19 @@ public function current(User $user): ?UserSession
 }
 public function logout(UserSession $session): void
 {
-    if ($session->token_id) {
-
-        PersonalAccessToken::where(
-            'id',
-            $session->token_id
-        )->delete();
-
-    }
+    $tokenId = $session->token_id;
 
     $session->update([
-
         'logged_out_at' => now(),
-
         'is_current' => false,
-
     ]);
+
+    if ($tokenId) {
+        PersonalAccessToken::where(
+            'id',
+            $tokenId
+        )->delete();
+    }
 }
 public function logoutOthers(User $user): void
 {

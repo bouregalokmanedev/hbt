@@ -14,16 +14,10 @@ final class DeleteLessonAction
     }
 
     public function execute(
-        Lesson $lesson
-    ): void {
-        $lessonId = $lesson->id;
-        $sectionId = $lesson->section_id;
+    Lesson $lesson
+): void {
+    $this->repository->delete($lesson);
 
-        $this->repository->delete($lesson);
-
-        event(new LessonDeleted(
-            $lessonId,
-            $sectionId
-        ));
-    }
+    event(new LessonDeleted($lesson));
+}
 }

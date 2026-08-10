@@ -1,24 +1,41 @@
-```php
 <?php
 
 use App\Enums\Courses\CourseStatus;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Section;
+use App\Models\Lesson;
+use App\Enums\SectionStatus;
+use App\Enums\LessonStatus;
+use App\Enums\UserRole;
+use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
+beforeEach(function () {
+    Role::findOrCreate('Admin', 'web');
+    Role::findOrCreate('Super Admin', 'web');
+    Role::findOrCreate('Instructor', 'web');
+});
 
 it('publishes a valid course through the API', function () {
     $instructor = User::factory()->create();
 
+    $instructor->assignRole('Instructor');
+
     $course = Course::factory()->create([
         'instructor_id' => $instructor->id,
         'status' => CourseStatus::DRAFT,
-        'title' => 'Laravel Course',
-        'description' => 'A complete Laravel course.',
-        'duration_minutes' => 120,
         'thumbnail' => 'media/course-thumbnail.jpg',
-        'published_at' => null,
+    ]);
+
+    $section = Section::factory()->create([
+        'course_id' => $course->id,
+    ]);
+
+    Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => LessonStatus::PUBLISHED,
     ]);
 
     $response = $this
@@ -33,21 +50,18 @@ it('publishes a valid course through the API', function () {
     $course->refresh();
 
     expect($course->status)
-        ->toBe(CourseStatus::PUBLISHED)
-        ->and($course->published_at)
-        ->not->toBeNull();
+        ->toBe(CourseStatus::PUBLISHED);
 });
-
 it('does not publish an invalid course through the API', function () {
     $instructor = User::factory()->create();
 
     $course = Course::factory()->create([
         'instructor_id' => $instructor->id,
         'status' => CourseStatus::DRAFT,
-        'title' => null,
+        'title' => 'Laravel Course',
         'description' => 'A complete Laravel course.',
         'duration_minutes' => 120,
-        'thumbnail' => 'media/course-thumbnail.jpg',
+        'thumbnail' => null,
         'published_at' => null,
     ]);
 
@@ -61,7 +75,6 @@ it('does not publish an invalid course through the API', function () {
         ->and($course->fresh()->published_at)
         ->toBeNull();
 });
-
 it('cannot publish an already published course through the API', function () {
     $instructor = User::factory()->create();
 

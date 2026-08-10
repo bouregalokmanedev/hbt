@@ -29,4 +29,11 @@ class LessonFactory extends Factory
             'status' => LessonStatus::DRAFT,
         ];
     }
+
+    public function published(): static
+    {
+        return $this->state(fn () => [
+            'status' => LessonStatus::PUBLISHED,
+        ]);
+    }
 }

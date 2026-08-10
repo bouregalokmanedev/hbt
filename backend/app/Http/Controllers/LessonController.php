@@ -12,6 +12,7 @@ use App\Domains\Lessons\Requests\CreateLessonRequest;
 use App\Domains\Lessons\Requests\ReorderLessonRequest;
 use App\Domains\Lessons\Requests\UpdateLessonRequest;
 use App\Models\Lesson;
+use App\Models\Section;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
@@ -27,18 +28,32 @@ final class LessonController extends Controller
         private readonly ReorderLessonAction $reorderLesson,
     ) {}
 
-    public function store(
-        CreateLessonRequest $request
-    ): JsonResponse {
-        $lesson = $this->createLesson->execute(
-            $request->validated()
-        );
 
-        return response()->json(
-            $lesson,
-            201
-        );
-    }
+
+public function store(
+    CreateLessonRequest $request
+): JsonResponse {
+    $data = $request->validated();
+
+    $section = Section::query()->findOrFail(
+        $data['section_id']
+    );
+
+    Gate::authorize(
+    'createLesson',
+    $section
+);
+
+    $lesson = $this->createLesson->execute(
+        $data
+    );
+
+    return response()->json(
+        $lesson,
+        201
+    );
+}
+
 
     public function update(
         UpdateLessonRequest $request,
@@ -54,9 +69,7 @@ final class LessonController extends Controller
             $request->validated()
         );
 
-        return response()->json(
-            $lesson
-        );
+        return response()->json($lesson);
     }
 
     public function destroy(
@@ -67,13 +80,9 @@ final class LessonController extends Controller
             $lesson
         );
 
-        $this->deleteLesson->execute(
-            $lesson
-        );
+        $this->deleteLesson->execute($lesson);
 
-        return response()->json(
-            status: 204
-        );
+        return response()->json(status: 204);
     }
 
     public function publish(
@@ -84,13 +93,9 @@ final class LessonController extends Controller
             $lesson
         );
 
-        $lesson = $this->publishLesson->execute(
-            $lesson
-        );
+        $lesson = $this->publishLesson->execute($lesson);
 
-        return response()->json(
-            $lesson
-        );
+        return response()->json($lesson);
     }
 
     public function unpublish(
@@ -101,13 +106,9 @@ final class LessonController extends Controller
             $lesson
         );
 
-        $lesson = $this->unpublishLesson->execute(
-            $lesson
-        );
+        $lesson = $this->unpublishLesson->execute($lesson);
 
-        return response()->json(
-            $lesson
-        );
+        return response()->json($lesson);
     }
 
     public function reorder(
@@ -124,8 +125,6 @@ final class LessonController extends Controller
             $request->validated('position')
         );
 
-        return response()->json(
-            $lesson
-        );
+        return response()->json($lesson);
     }
 }

@@ -38,4 +38,8 @@ interface LessonRepositoryInterface
         int $fromPosition,
         int $toPosition
     ): void;
+
+public function countBySection(
+    string $sectionId
+): int;
 }

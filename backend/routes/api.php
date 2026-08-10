@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MediaController;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Api\V1\EnrollmentController;
 
 
 
@@ -57,8 +59,65 @@ Route::post(
         });
 
 
-
 });
+
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+])->prefix('v1')->group(function () {
+
+    Route::get(
+        '/enrollments',
+        [EnrollmentController::class, 'index']
+    )->name('enrollments.index');
+
+    Route::post(
+        '/enrollments',
+        [EnrollmentController::class, 'store']
+    )->name('enrollments.store');
+
+    Route::get(
+        '/enrollments/{enrollment}',
+        [EnrollmentController::class, 'show']
+    )->name('enrollments.show');
+
+    Route::post(
+        '/enrollments/{enrollment}/complete',
+        [EnrollmentController::class, 'complete']
+    )->name('enrollments.complete');
+
+    Route::post(
+        '/enrollments/{enrollment}/cancel',
+        [EnrollmentController::class, 'cancel']
+    )->name('enrollments.cancel');
+});
+
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+    'role:Instructor',
+])
+    ->prefix('v1/instructor')
+    ->group(function () {
+
+        Route::get(
+            '/dashboard',
+            [
+                \App\Http\Controllers\Api\V1\Instructor\DashboardController::class,
+                'show',
+            ]
+        )->name('instructor.dashboard');
+
+        Route::get(
+            '/courses',
+            [
+                \App\Http\Controllers\Api\V1\Instructor\CourseController::class,
+                'index',
+            ]
+        )->name('instructor.courses.index');
+
+    });
+
 
 Route::middleware([
     'auth:sanctum',
@@ -140,16 +199,64 @@ Route::delete(
     '/media/{media}',
     [MediaController::class, 'destroy']
 );
+Route::put(
+    'courses/{course}',
+    [CourseController::class, 'update']
+)->name('courses.update');
 
-    Route::apiResource(
-        'courses',
-        CourseController::class
-    );
+Route::patch(
+    'courses/{course}',
+    [CourseController::class, 'update']
+);
+
+Route::delete(
+    'courses/{course}',
+    [CourseController::class, 'destroy']
+)->name('courses.destroy');
+
+Route::post(
+    'courses/{course}/submit-review',
+    [CourseController::class, 'submitForReview']
+)->name('courses.submit-review');
+
+Route::post(
+    'courses/{course}/archive',
+    [CourseController::class, 'archive']
+)->name('courses.archive');
+
+Route::post(
+    'courses/{course}/restore',
+    [CourseController::class, 'restore']
+)->name('courses.restore');
+   
     Route::post(
     'courses/{course}/publish',
     [CourseController::class, 'publish']
 );
 
+
+});
+Route::prefix('v1')->group(function () {
+
+    Route::get(
+        '/courses',
+        [CourseController::class, 'index']
+    );
+    Route::post(
+    '/courses',
+    [CourseController::class, 'store']
+)->name('courses.store');
+
+});
+
+Route::prefix('v1')->group(function () {
+Route::get(
+'/catalog/courses',
+[
+\App\Http\Controllers\Api\V1\CatalogController::class,
+'courses',
+]
+)->name('catalog.courses');
 });
 
 Route::middleware('auth:sanctum')

@@ -8,6 +8,37 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+it('cannot publish an already published lesson', function () {
+    $lesson = Lesson::factory()->create([
+        'status' => LessonStatus::PUBLISHED,
+        'title' => 'Published lesson',
+        'slug' => 'published-lesson',
+        'content' => 'Content',
+        'position' => 1,
+    ]);
+
+    expect(fn () =>
+        app(PublishLessonAction::class)->execute($lesson)
+    )->toThrow(
+        DomainException::class,
+        'Lesson is already published.'
+    );
+});
+
+it('cannot unpublish a draft lesson', function () {
+    $lesson = Lesson::factory()->create([
+        'status' => LessonStatus::DRAFT,
+        'position' => 1,
+    ]);
+
+    expect(fn () =>
+        app(UnpublishLessonAction::class)->execute($lesson)
+    )->toThrow(
+        DomainException::class,
+        'Lesson is already a draft.'
+    );
+});
+
 it('publishes a valid lesson', function () {
 
     $lesson = Lesson::factory()->create([

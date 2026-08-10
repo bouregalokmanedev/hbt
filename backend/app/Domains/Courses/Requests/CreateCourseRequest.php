@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
+use App\Domains\Courses\DTOs\CreateCourseData;
 
 class CreateCourseRequest extends FormRequest
 {

@@ -16,25 +16,27 @@ final class UploadMediaAction
         private readonly MediaService $service,
     ) {}
 
-    public function execute(
-        UploadedFile $file,
-        string $mediableType,
-        string $mediableId,
-        int $uploadedBy,
-        string $disk = 'public',
-    ): Media {
+   public function execute(
+    UploadedFile $file,
+    string $mediableType,
+    string $mediableId,
+    int $uploadedBy,
+    string $disk = 'public',
+): Media {
+    $path = $this->service->store(
+        $file,
+        $disk
+    );
+
+    try {
         return DB::transaction(function () use (
             $file,
             $mediableType,
             $mediableId,
             $uploadedBy,
             $disk,
+            $path,
         ) {
-            $path = $this->service->store(
-                $file,
-                $disk
-            );
-
             $media = $this->media->create([
                 'uploaded_by' => $uploadedBy,
                 'disk' => $disk,
@@ -44,10 +46,9 @@ final class UploadMediaAction
                 'mime_type' => $file->getMimeType(),
                 'extension' => $file->extension(),
                 'size' => $file->getSize(),
-                'type' => $this->service
-                    ->determineType(
-                        $file->getMimeType()
-                    ),
+                'type' => $this->service->determineType(
+                    $file->getMimeType()
+                ),
                 'mediable_type' => $mediableType,
                 'mediable_id' => $mediableId,
             ]);
@@ -56,5 +57,13 @@ final class UploadMediaAction
 
             return $media;
         });
+    } catch (\Throwable $exception) {
+        $this->service->delete(
+            $disk,
+            $path
+        );
+
+        throw $exception;
     }
+}
 }

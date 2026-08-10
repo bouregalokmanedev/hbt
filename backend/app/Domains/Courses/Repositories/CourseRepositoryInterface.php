@@ -5,6 +5,7 @@ namespace App\Domains\Courses\Repositories;
 use App\Models\Course;
 use App\Domains\Courses\DTOs\UpdateCourseData;
 use App\Domains\Courses\Queries\CourseQuery;
+use App\Domains\Courses\Queries\InstructorCourseQuery;
 
 interface CourseRepositoryInterface
 {
@@ -46,4 +47,14 @@ interface CourseRepositoryInterface
     public function restore(
         Course $course
     ): Course;
+    public function paginateInstructorCourses(
+InstructorCourseQuery $query,
+int $perPage = 15
+);
+
+public function instructorStatistics(
+int $instructorId
+): array;
+
+
 }

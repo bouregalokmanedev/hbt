@@ -3,12 +3,78 @@
 use App\Domains\Lessons\Actions\CreateLessonAction;
 use App\Domains\Lessons\Actions\DeleteLessonAction;
 use App\Domains\Lessons\Actions\UpdateLessonAction;
+use App\Domains\Lessons\Actions\ReorderLessonAction;
 use App\Enums\LessonStatus;
 use App\Models\Lesson;
 use App\Models\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+it('returns a published lesson to draft when its content is updated', function () {
+    $lesson = Lesson::factory()->create([
+        'status' => LessonStatus::PUBLISHED,
+        'title' => 'Original title',
+        'slug' => 'original-title',
+        'content' => 'Original content',
+        'position' => 1,
+    ]);
+
+    $updated = app(UpdateLessonAction::class)->execute(
+        $lesson,
+        [
+            'content' => 'Updated content',
+        ]
+    );
+
+    expect($updated->status)
+        ->toBe(LessonStatus::DRAFT)
+        ->and($updated->content)
+        ->toBe('Updated content');
+});
+
+it('keeps a draft lesson as draft when updated', function () {
+    $lesson = Lesson::factory()->create([
+        'status' => LessonStatus::DRAFT,
+        'position' => 1,
+    ]);
+
+    $updated = app(UpdateLessonAction::class)->execute(
+        $lesson,
+        [
+            'title' => 'Updated title',
+        ]
+    );
+
+    expect($updated->status)
+        ->toBe(LessonStatus::DRAFT);
+});
+
+it('does not change publication state when a published lesson is reordered', function () {
+    $section = Section::factory()->create();
+
+    $lessonOne = Lesson::factory()->create([
+        'section_id' => $section->id,
+        'position' => 1,
+        'status' => LessonStatus::PUBLISHED,
+        'title' => 'Lesson 1',
+        'slug' => 'lesson-1',
+        'content' => 'Content',
+    ]);
+
+    Lesson::factory()->create([
+        'section_id' => $section->id,
+        'position' => 2,
+    ]);
+
+    $updated = app(ReorderLessonAction::class)->execute(
+        $lessonOne,
+        2
+    );
+
+    expect($updated->status)
+        ->toBe(LessonStatus::PUBLISHED);
+});
 
 it('creates a lesson', function () {
     $section = Section::factory()->create();

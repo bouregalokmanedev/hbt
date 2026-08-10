@@ -9,6 +9,11 @@ use App\Enums\Courses\CourseStatus;
 use App\Models\Course;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Domains\Courses\Services\CourseValidationService;
+use App\Models\Section;
+use App\Models\Lesson;
+use App\Enums\SectionStatus;
+use App\Enums\LessonStatus;
 
 uses(RefreshDatabase::class);
 
@@ -30,6 +35,18 @@ it('publishes a valid draft course', function () {
         'instructor_id' => $instructor->id,
     ]);
 
+    $section = Section::factory()->create([
+        'course_id' => $course->id,
+        'status' => SectionStatus::PUBLISHED,
+        'position' => 1,
+    ]);
+
+    Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => LessonStatus::PUBLISHED,
+        'position' => 1,
+    ]);
+
     $result = app(PublishCourseAction::class)->execute(
         new PublishCourseData(
             courseId: $course->id,
@@ -49,6 +66,7 @@ it('publishes a valid draft course', function () {
     expect($course->fresh()->published_at)
         ->not->toBeNull();
 });
+
 
 it('cannot publish an already published course', function () {
     $instructor = User::factory()->create();
@@ -83,43 +101,33 @@ it('cannot publish an archived course', function () {
     );
 })->throws(CourseArchivedException::class);
 
-it('cannot publish a course without a title', function () {
-    $instructor = User::factory()->create();
-
-    $course = publishableCourse([
-        'instructor_id' => $instructor->id,
-        'title' => null,
-    ]);
-
-    app(PublishCourseAction::class)->execute(
-        new PublishCourseData(
-            courseId: $course->id,
-            publisherId: $instructor->id,
-        )
-    );
-})->throws(
-    CourseCannotBePublishedException::class,
-    'Course title is required.'
-);
-
 it('cannot publish a course without a description', function () {
-    $instructor = User::factory()->create();
+    $course = publishableCourse();
 
-    $course = publishableCourse([
-        'instructor_id' => $instructor->id,
-        'description' => null,
-    ]);
+    $course->description = null;
 
-    app(PublishCourseAction::class)->execute(
-        new PublishCourseData(
-            courseId: $course->id,
-            publisherId: $instructor->id,
-        )
+    expect(fn () =>
+        app(CourseValidationService::class)
+            ->validateForPublishing($course)
+    )->toThrow(
+        CourseCannotBePublishedException::class,
+        'Course description is required.'
     );
-})->throws(
-    CourseCannotBePublishedException::class,
-    'Course description is required.'
-);
+});
+
+it('cannot publish a course without a title', function () {
+    $course = publishableCourse();
+
+    $course->title = null;
+
+    expect(fn () =>
+        app(CourseValidationService::class)
+            ->validateForPublishing($course)
+    )->toThrow(
+        CourseCannotBePublishedException::class,
+        'Course title is required.'
+    );
+});
 
 it('cannot publish a course without a valid duration', function () {
     $instructor = User::factory()->create();

@@ -50,4 +50,30 @@ class CoursePolicy
         ]);
 
 }
+public function submitForReview(
+    User $user,
+    Course $course
+): bool {
+    return $this->update($user, $course);
+}
+
+public function archive(
+    User $user,
+    Course $course
+): bool {
+    return $user->hasAnyRole([
+        'Admin',
+        'Super Admin',
+    ]);
+}
+
+public function restore(
+    User $user,
+    Course $course
+): bool {
+    return $user->hasAnyRole([
+        'Admin',
+        'Super Admin',
+    ]);
+}
 }

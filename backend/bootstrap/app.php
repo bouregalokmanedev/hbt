@@ -13,6 +13,13 @@ use App\Domains\Taxonomy\Exceptions\CategoryHasCoursesException;
 use App\Domains\Taxonomy\Exceptions\CategoryNotFoundException;
 use App\Domains\Taxonomy\Exceptions\CourseNotFoundException;
 use App\Domains\Courses\Exceptions\SectionCannotBePublished;
+use App\Domains\Courses\Exceptions\CourseCannotBePublishedException;
+use App\Domains\Courses\Exceptions\CourseAlreadyPublishedException;
+use App\Domains\Courses\Exceptions\CourseArchivedException;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+use App\Http\Middleware\UpdateSessionActivity;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,8 +30,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
 
     ->withMiddleware(function (Middleware $middleware): void {
-        //
-    })
+    $middleware->alias([
+        'role' => RoleMiddleware::class,
+        'permission' => PermissionMiddleware::class,
+        'role_or_permission' => RoleOrPermissionMiddleware::class,
+    ]);
+
+    $middleware->appendToGroup('api', [
+        UpdateSessionActivity::class,
+    ]);
+})
 
     ->withExceptions(function (Exceptions $exceptions): void {
 
@@ -72,7 +87,7 @@ return Application::configure(basePath: dirname(__DIR__))
 });
 
 $exceptions->render(function (
-    InactiveParentCategoryException $e
+    CourseCannotBePublishedException $e
 ) {
     return response()->json([
         'success' => false,
@@ -81,7 +96,42 @@ $exceptions->render(function (
 });
 
 $exceptions->render(function (
+    InactiveParentCategoryException $e
+) {
+    return response()->json([
+        'success' => false,
+        'message' => $e->getMessage(),
+    ], 422);
+});
+$exceptions->render(function (
+    DomainException $e,
+    Request $request
+) {
+    if ($request->is('api/*')) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ], 422);
+    }
+});
+$exceptions->render(function (
+    CourseAlreadyPublishedException $e
+) {
+    return response()->json([
+        'success' => false,
+        'message' => $e->getMessage(),
+    ], 409);
+});
+$exceptions->render(function (
     ParentCategoryNotFoundException $e
+) {
+    return response()->json([
+        'success' => false,
+        'message' => $e->getMessage(),
+    ], 422);
+});
+$exceptions->render(function (
+    CourseArchivedException $e
 ) {
     return response()->json([
         'success' => false,

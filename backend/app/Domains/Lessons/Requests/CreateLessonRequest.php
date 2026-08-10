@@ -47,12 +47,6 @@ class CreateLessonRequest extends FormRequest
                 'integer',
                 'min:1',
             ],
-
-            'status' => [
-                'nullable',
-                'string',
-                'in:draft,published',
-            ],
         ];
     }
 }

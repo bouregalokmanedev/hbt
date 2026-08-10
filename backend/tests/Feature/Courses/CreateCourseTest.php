@@ -2,6 +2,20 @@
 
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Permission\Models\Role;
+use App\Models\Section;
+use App\Models\Lesson;
+use App\Models\Course;
+
+
+beforeEach(function () {
+    Storage::fake('public');
+
+    Role::findOrCreate('Admin', 'web');
+    Role::findOrCreate('Super Admin', 'web');
+    Role::findOrCreate('Instructor', 'web');
+});
+
 
 it('allows an instructor to create a course', function () {
 

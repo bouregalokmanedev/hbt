@@ -4,8 +4,68 @@ use App\Domains\Lessons\Actions\ReorderLessonAction;
 use App\Models\Lesson;
 use App\Models\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use App\Models\Course;
+use function Pest\Laravel\actingAs;
 
 uses(RefreshDatabase::class);
+
+it('rejects a position beyond the number of lessons', function () {
+    $section = Section::factory()->create();
+
+    $lessons = Lesson::factory()
+        ->count(3)
+        ->for($section)
+        ->sequence(
+            ['position' => 1],
+            ['position' => 2],
+            ['position' => 3],
+        )
+        ->create();
+
+    $action = app(ReorderLessonAction::class);
+
+    expect(fn () => $action->execute(
+        $lessons[0],
+        4
+    ))->toThrow(
+        DomainException::class,
+        'Lesson position must be within the section lesson range.'
+    );
+});
+
+it('rejects a lesson reorder beyond the section lesson count', function () {
+    $instructor = User::factory()->create();
+
+    $course = Course::factory()
+        ->for($instructor, 'instructor')
+        ->create();
+
+    $section = Section::factory()
+        ->for($course)
+        ->create();
+
+    $lesson = Lesson::factory()
+        ->for($section)
+        ->create([
+            'position' => 1,
+        ]);
+
+    Lesson::factory()
+        ->for($section)
+        ->create(['position' => 2]);
+
+    Lesson::factory()
+        ->for($section)
+        ->create(['position' => 3]);
+
+    actingAs($instructor)
+    ->postJson(
+        "/api/v1/lessons/{$lesson->id}/reorder",
+        ['position' => 4]
+    )
+        ->assertStatus(422);
+});
 
 it('moves a lesson upward', function () {
     $section = Section::factory()->create();

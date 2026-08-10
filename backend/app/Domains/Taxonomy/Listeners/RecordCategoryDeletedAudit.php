@@ -15,13 +15,12 @@ final class RecordCategoryDeletedAudit
         CategoryDeleted $event
     ): void {
 
-        $this->audit->record(
-            action: 'category.deleted',
-            subject: $event->category,
-            actorId: $event->performedBy,
-            metadata: [
-                'category_id' => $event->category->id,
-            ],
-        );
+        $this->audit->log(
+    event: 'category.deleted',
+    model: $event->category,
+    metadata: [
+        'category_id' => $event->category->id,
+    ],
+);
     }
 }

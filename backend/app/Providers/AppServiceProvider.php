@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Domains\Enrollments\Repositories\EnrollmentRepository;
+use App\Domains\Enrollments\Repositories\EnrollmentRepositoryInterface;
+use App\Domains\Enrollments\Repositories\EloquentEnrollmentRepository;
+use App\Domains\Enrollments\Policies\EnrollmentPolicy;
+use App\Models\Enrollment;
+
 use App\Contracts\Services\AuthenticationServiceInterface;
 use App\Services\AuthenticationService;
 use Illuminate\Support\ServiceProvider;
@@ -15,8 +21,8 @@ use App\Listeners\WriteAuditLog;
 use Illuminate\Support\Facades\Event;
 use App\Models\Course;
 use App\Domains\Courses\Policies\CoursePolicy;
-use App\Contracts\Repositories\CourseRepositoryInterface;
-use App\Repositories\CourseRepository;
+use App\Domains\Courses\Repositories\CourseRepositoryInterface;
+use App\Domains\Courses\Repositories\CourseRepository;
 use App\Domains\Taxonomy\Repositories\CategoryRepository;
 use App\Domains\Taxonomy\Repositories\CategoryRepositoryInterface;
 use App\Domains\Taxonomy\Events\CategoryCreated;
@@ -52,14 +58,46 @@ use App\Domains\Media\Repositories\EloquentMediaRepository;
 use App\Domains\Media\Repositories\MediaRepositoryInterface;
 use App\Models\Media;
 use App\Domains\Media\Policies\MediaPolicy;
+use App\Domains\Courses\Repositories\EloquentCourseRepository;
+use App\Domains\Courses\Events\CourseArchived;
+use App\Domains\Courses\Events\CourseCreated;
+use App\Domains\Courses\Events\CourseDeleted;
+use App\Domains\Courses\Events\CoursePublished;
+use App\Domains\Courses\Events\CourseRestored;
+use App\Domains\Courses\Events\CourseSubmittedForReview;
+use App\Domains\Courses\Events\CourseUpdated;
+use App\Domains\Lessons\Events\LessonDeleted;
 
+use App\Domains\Courses\Listeners\RecordCourseArchivedAudit;
+use App\Domains\Courses\Listeners\RecordCourseCreatedAudit;
+use App\Domains\Courses\Listeners\RecordCourseDeletedAudit;
+use App\Domains\Courses\Listeners\RecordCoursePublishedAudit;
+use App\Domains\Courses\Listeners\RecordCourseRestoredAudit;
+use App\Domains\Courses\Listeners\RecordCourseSubmittedForReviewAudit;
+use App\Domains\Courses\Listeners\RecordCourseUpdatedAudit;
 
+use App\Domains\Lessons\Listeners\RecordLessonCreatedAudit;
+use App\Domains\Lessons\Listeners\RecordLessonUpdatedAudit;
+use App\Domains\Lessons\Listeners\RecordLessonPublishedAudit;
+use App\Domains\Lessons\Listeners\RecordLessonUnpublishedAudit;
+use App\Domains\Lessons\Listeners\RecordLessonReorderedAudit;
+use App\Domains\Lessons\Listeners\RecordLessonDeletedAudit;
+
+use App\Domains\Enrollments\Events\EnrollmentCreated;
+use App\Domains\Enrollments\Events\EnrollmentCompleted;
+use App\Domains\Enrollments\Events\EnrollmentCancelled;
+
+use App\Domains\Enrollments\Listeners\RecordEnrollmentCreatedAudit;
+use App\Domains\Enrollments\Listeners\RecordEnrollmentCompletedAudit;
+use App\Domains\Enrollments\Listeners\RecordEnrollmentCancelledAudit;
 
 
 class AppServiceProvider extends ServiceProvider
 {
 
+
 protected $listen = [
+
 
     CategoryCreated::class => [
         RecordCategoryAudit::class,
@@ -108,10 +146,9 @@ protected $listen = [
     EloquentSectionRepository::class
 );
 
-    $this->app->bind(
+$this->app->bind(
     CourseRepositoryInterface::class,
     CourseRepository::class
-
 );
 $this->app->bind(
     CategoryRepositoryInterface::class,
@@ -126,6 +163,10 @@ $this->app->bind(
     EloquentMediaRepository::class
 );
 
+$this->app->bind(
+    EnrollmentRepositoryInterface::class,
+    EloquentEnrollmentRepository::class
+);
     }
     /**
      * Bootstrap any application services.
@@ -136,6 +177,11 @@ $this->app->bind(
         Course::class,
         CoursePolicy::class
     );
+
+   Gate::policy(
+    Enrollment::class,
+    EnrollmentPolicy::class
+);
 
     Gate::policy(
         Category::class,
@@ -158,5 +204,83 @@ Gate::policy(
         ModelChanged::class,
         WriteAuditLog::class,
     );
+   Event::listen(
+CourseCreated::class,
+RecordCourseCreatedAudit::class,
+);
+
+Event::listen(
+CourseUpdated::class,
+RecordCourseUpdatedAudit::class,
+);
+
+Event::listen(
+CoursePublished::class,
+RecordCoursePublishedAudit::class,
+);
+
+Event::listen(
+CourseSubmittedForReview::class,
+RecordCourseSubmittedForReviewAudit::class,
+);
+
+Event::listen(
+CourseArchived::class,
+RecordCourseArchivedAudit::class,
+);
+
+Event::listen(
+CourseRestored::class,
+RecordCourseRestoredAudit::class,
+);
+
+Event::listen(
+CourseDeleted::class,
+RecordCourseDeletedAudit::class,
+);
+Event::listen(
+    LessonCreated::class,
+    RecordLessonCreatedAudit::class,
+);
+
+Event::listen(
+    LessonUpdated::class,
+    RecordLessonUpdatedAudit::class,
+);
+
+Event::listen(
+    LessonPublished::class,
+    RecordLessonPublishedAudit::class,
+);
+
+Event::listen(
+    LessonUnpublished::class,
+    RecordLessonUnpublishedAudit::class,
+);
+
+Event::listen(
+    LessonReordered::class,
+    RecordLessonReorderedAudit::class,
+);
+
+Event::listen(
+    LessonDeleted::class,
+    RecordLessonDeletedAudit::class,
+);
+
+Event::listen(
+    EnrollmentCreated::class,
+    RecordEnrollmentCreatedAudit::class,
+);
+
+Event::listen(
+    EnrollmentCompleted::class,
+    RecordEnrollmentCompletedAudit::class,
+);
+
+Event::listen(
+    EnrollmentCancelled::class,
+    RecordEnrollmentCancelledAudit::class,
+);
 }
 }
