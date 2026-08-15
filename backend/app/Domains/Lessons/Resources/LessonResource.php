@@ -17,6 +17,8 @@ class LessonResource extends JsonResource
             'content' => $this->content,
             'position' => $this->position,
             'status' => $this->status->value,
+            'duration_minutes' => $this->duration_minutes,
+            'is_preview' => $this->is_preview,
         ];
     }
 }

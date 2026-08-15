@@ -16,6 +16,8 @@ use App\Http\Requests\Api\V1\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\resetPasswordRequest;
 use App\Models\User;
 use App\Enums\UserStatus;
+use App\Actions\Users\UpdateUserAction;
+use App\Http\Requests\Api\V1\Auth\UpdateProfileRequest;
 
 
 
@@ -25,6 +27,7 @@ class AuthController extends Controller
 
     public function __construct(
         private readonly AuthenticationService $auth,
+    private readonly UpdateUserAction $updateUser,
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
@@ -94,6 +97,20 @@ public function verify(
     return $this->success(
         null,
         'Email verified successfully.'
+    );
+}
+
+public function updateProfile(
+    UpdateProfileRequest $request
+): JsonResponse {
+    $user = $this->updateUser->execute(
+        $request->user(),
+        $request->dto()
+    );
+
+    return $this->success(
+        new UserResource($user),
+        'Profile updated successfully.'
     );
 }
 

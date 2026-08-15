@@ -8,7 +8,7 @@ final readonly class UpdateUserData
         public string $firstName,
         public string $lastName,
         public string $username,
-        public string $email,
+       
         public ?string $phone = null,
         public ?string $country = null,
         public ?string $bio = null,
@@ -24,7 +24,7 @@ final readonly class UpdateUserData
             firstName: trim($data['first_name']),
             lastName: trim($data['last_name']),
             username: strtolower(trim($data['username'])),
-            email: strtolower(trim($data['email'])),
+            
             phone: $data['phone'] ?? null,
             country: $data['country'] ?? null,
             bio: $data['bio'] ?? null,
@@ -41,7 +41,7 @@ final readonly class UpdateUserData
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
             'username' => $this->username,
-            'email' => $this->email,
+            
             'phone' => $this->phone,
             'country' => $this->country,
             'bio' => $this->bio,

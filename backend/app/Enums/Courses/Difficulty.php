@@ -11,5 +11,5 @@ enum Difficulty:string
 
     case ADVANCED='advanced';
 
-    case ALL_LEVELS='all_levels';
+    case ALL_LEVELS='all levels';
 }

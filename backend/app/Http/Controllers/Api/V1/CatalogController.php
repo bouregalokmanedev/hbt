@@ -8,6 +8,9 @@ use App\Domains\Courses\Resources\CourseResource;
 use App\Enums\Courses\Difficulty;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Course;
+use App\Enums\Courses\CourseStatus;
+use App\Enums\Courses\Visibility;
 
 final class CatalogController extends Controller
 {
@@ -66,4 +69,15 @@ final class CatalogController extends Controller
             )
         );
     }
+public function show(Course $course): CourseResource
+{
+    if (
+        $course->status !== CourseStatus::PUBLISHED ||
+        $course->visibility !== Visibility::PUBLIC
+    ) {
+        abort(404);
+    }
+
+    return new CourseResource($course);
+}
 }

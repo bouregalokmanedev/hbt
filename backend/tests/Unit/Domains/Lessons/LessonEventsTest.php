@@ -16,6 +16,9 @@ use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHasJson;
 use function Pest\Laravel\assertDatabaseMissingJson;
+use App\Domains\Lessons\Events\LessonCompleted;
+use App\Models\LessonProgress;
+
 
 it('does not dispatch LessonUnpublished when persistence fails', function () {
     Event::fake();
@@ -113,4 +116,12 @@ it('creates the lesson reordered event', function () {
 
     expect($event->newPosition)
         ->toBe(1);
+});
+it('creates the lesson completed event', function () {
+    $progress = LessonProgress::factory()->make();
+
+    $event = new LessonCompleted($progress);
+
+    expect($event->progress->is($progress))
+        ->toBeTrue();
 });

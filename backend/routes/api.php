@@ -10,6 +10,8 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MediaController;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Api\V1\EnrollmentController;
+use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
+
 
 
 
@@ -42,6 +44,21 @@ Route::post(
             Route::get('/me', [AuthController::class, 'me']);
 
         });
+
+        Route::middleware('auth:sanctum')->group(function () {
+    Route::get(
+        '/dashboard',
+        DashboardController::class
+    );
+    Route::patch(
+    '/profile',
+    [AuthController::class, 'updateProfile']
+);
+Route::put('/profile', [
+    AuthController::class,
+    'updateProfile',
+]);
+});
 
     });
 
@@ -124,6 +141,11 @@ Route::middleware([
     'verified',
 ])->prefix('v1')->group(function () {
 
+Route::post(
+    'courses',
+    [CourseController::class, 'store']
+)->name('courses.store');
+
  Route::post(
             '/sections',
             [SectionController::class, 'store']
@@ -153,6 +175,10 @@ Route::middleware([
             '/sections/{section}/reorder',
             [SectionController::class, 'reorder']
         );
+        Route::get(
+    '/lessons/{lesson}',
+    [LessonController::class, 'show']
+);
         Route::post(
     '/lessons',
     [LessonController::class, 'store']
@@ -182,7 +208,14 @@ Route::post(
     '/lessons/{lesson}/reorder',
     [LessonController::class, 'reorder']
 );
-
+Route::post(
+    '/lessons/{lesson}/complete',
+    [LessonController::class, 'complete']
+);
+Route::patch(
+    '/lessons/{lesson}/progress',
+    [LessonController::class, 'updateProgress']
+);
 Route::get(
     'courses/{course}/curriculum',
     [CourseController::class, 'curriculum']
@@ -207,6 +240,10 @@ Route::put(
 Route::patch(
     'courses/{course}',
     [CourseController::class, 'update']
+);
+Route::get(
+    '/lessons/{lesson}/progress',
+    [LessonController::class, 'progress']
 );
 
 Route::delete(
@@ -236,27 +273,40 @@ Route::post(
 
 
 });
-Route::prefix('v1')->group(function () {
 
+
+use App\Http\Controllers\Api\CourseProgressController;
+
+Route::middleware('auth:sanctum')->group(function () {
     Route::get(
-        '/courses',
-        [CourseController::class, 'index']
+        '/courses/{course}/progress',
+        [CourseProgressController::class, 'show']
     );
-    Route::post(
-    '/courses',
-    [CourseController::class, 'store']
-)->name('courses.store');
 
+    Route::post(
+        '/courses/{course}/progress/sync',
+        [CourseProgressController::class, 'sync']
+    );
 });
 
 Route::prefix('v1')->group(function () {
-Route::get(
-'/catalog/courses',
-[
-\App\Http\Controllers\Api\V1\CatalogController::class,
-'courses',
-]
-)->name('catalog.courses');
+
+    Route::get(
+        '/catalog/courses',
+        [
+            \App\Http\Controllers\Api\V1\CatalogController::class,
+            'courses'
+        ]
+    )->name('catalog.courses');
+
+    Route::get(
+        '/catalog/courses/{course}',
+        [
+            \App\Http\Controllers\Api\V1\CatalogController::class,
+            'show'
+        ]
+    )->name('catalog.courses.show');
+
 });
 
 Route::middleware('auth:sanctum')

@@ -23,6 +23,10 @@ use App\Models\Course;
 use App\Domains\Courses\Policies\CoursePolicy;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
 use App\Domains\Courses\Repositories\CourseRepository;
+use App\Domains\Courses\Repositories\SectionProgressRepositoryInterface;
+use App\Domains\Courses\Repositories\EloquentSectionProgressRepository;
+use App\Domains\Courses\Repositories\CourseProgressRepositoryInterface;
+use App\Domains\Courses\Repositories\EloquentCourseProgressRepository;
 use App\Domains\Taxonomy\Repositories\CategoryRepository;
 use App\Domains\Taxonomy\Repositories\CategoryRepositoryInterface;
 use App\Domains\Taxonomy\Events\CategoryCreated;
@@ -87,9 +91,21 @@ use App\Domains\Enrollments\Events\EnrollmentCreated;
 use App\Domains\Enrollments\Events\EnrollmentCompleted;
 use App\Domains\Enrollments\Events\EnrollmentCancelled;
 
+use App\Domains\Lessons\Events\LessonCompleted;
+use App\Domains\Lessons\Events\LessonProgressUpdated;
+
+use App\Domains\Lessons\Listeners\RecordLessonCompletedAudit;
+use App\Domains\Courses\Listeners\SyncSectionProgress;
+
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCreatedAudit;
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCompletedAudit;
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCancelledAudit;
+
+use App\Domains\Lessons\Repositories\LessonProgressRepositoryInterface;
+use App\Domains\Lessons\Repositories\EloquentLessonProgressRepository;
+
+use App\Domains\Courses\Events\SectionProgressUpdated;
+use App\Domains\Courses\Listeners\SyncCourseProgress;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -98,6 +114,10 @@ class AppServiceProvider extends ServiceProvider
 
 protected $listen = [
 
+
+     LessonProgressUpdated::class => [
+        SyncSectionProgress::class,
+    ],
 
     CategoryCreated::class => [
         RecordCategoryAudit::class,
@@ -167,6 +187,19 @@ $this->app->bind(
     EnrollmentRepositoryInterface::class,
     EloquentEnrollmentRepository::class
 );
+$this->app->bind(
+    LessonProgressRepositoryInterface::class,
+    EloquentLessonProgressRepository::class
+);
+$this->app->bind(
+    SectionProgressRepositoryInterface::class,
+    EloquentSectionProgressRepository::class
+);
+$this->app->bind(
+CourseProgressRepositoryInterface::class,
+EloquentCourseProgressRepository::class
+);
+
     }
     /**
      * Bootstrap any application services.
@@ -233,11 +266,23 @@ Event::listen(
 CourseRestored::class,
 RecordCourseRestoredAudit::class,
 );
-
+Event::listen(
+    LessonCompleted::class,
+    RecordLessonCompletedAudit::class,
+);
+Event::listen(
+    LessonProgressUpdated::class,
+    SyncSectionProgress::class,
+);
+Event::listen(
+    SectionProgressUpdated::class,
+    SyncCourseProgress::class
+);
 Event::listen(
 CourseDeleted::class,
 RecordCourseDeletedAudit::class,
 );
+
 Event::listen(
     LessonCreated::class,
     RecordLessonCreatedAudit::class,

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use App\Notifications\ResetPasswordNotification;
 
@@ -95,5 +96,11 @@ class User extends Authenticatable implements MustVerifyEmail
 public function sessions()
 {
     return $this->hasMany(UserSession::class);
+}
+public function lessonProgress(): HasMany
+{
+    return $this->hasMany(
+        LessonProgress::class
+    );
 }
 }

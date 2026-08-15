@@ -47,6 +47,16 @@ class CreateLessonRequest extends FormRequest
                 'integer',
                 'min:1',
             ],
+            'duration_minutes' => [
+    'nullable',
+    'integer',
+    'min:0',
+],
+
+'is_preview' => [
+    'sometimes',
+    'boolean',
+],
         ];
     }
 }
