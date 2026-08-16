@@ -1,79 +1,106 @@
 import {
     Bell,
     Menu,
-    Moon,
-    Sun,
+    Search,
 } from "lucide-react";
 
-import { Button } from "@/components/ui";
-import { useTheme } from "@/providers/ThemeProvider";
+import {
+    useAuth,
+} from "@/features/auth";
 
 interface TopbarProps {
-    onMenuClick?: () => void;
+    onMenuClick: () => void;
 }
 
 export function Topbar({
     onMenuClick,
 }: TopbarProps) {
-    const { theme, setTheme } = useTheme();
+    const {
+        user,
+    } = useAuth();
 
-    const toggleTheme = () => {
-        setTheme(
-            theme === "dark"
-                ? "light"
-                : "dark",
-        );
-    };
+    const initials =
+        [
+            user?.first_name,
+            user?.last_name,
+        ]
+            .filter(Boolean)
+            .map(
+                (name) =>
+                    name?.[0],
+            )
+            .join("")
+            .toUpperCase() || "U";
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--card)]/95 px-4 backdrop-blur sm:px-6">
-            <div className="flex items-center gap-3">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="lg:hidden"
-                    onClick={onMenuClick}
-                    aria-label="Open navigation"
-                >
-                    <Menu className="size-5" />
-                </Button>
+        <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
+            <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 
-                <div className="hidden sm:block">
-                    <span className="text-sm font-medium text-[var(--muted)]">
-                        HBTronics Learning Platform
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleTheme}
-                    aria-label="Toggle theme"
-                >
-                    {theme === "dark" ? (
-                        <Sun className="size-5" />
-                    ) : (
-                        <Moon className="size-5" />
-                    )}
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Notifications"
-                >
-                    <Bell className="size-5" />
-                </Button>
-
+                {/* Mobile menu */}
                 <button
                     type="button"
-                    className="ml-2 grid size-9 place-items-center rounded-full bg-[var(--primary)] text-sm font-semibold text-white"
-                    aria-label="Open profile menu"
+                    onClick={onMenuClick}
+                    aria-label="Open navigation"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground lg:hidden"
                 >
-                    L
+                    <Menu
+                        size={20}
+                    />
                 </button>
+
+                {/* Search */}
+                <div className="relative hidden max-w-md flex-1 md:block">
+                    <Search
+                        size={18}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+
+                    <input
+                        type="search"
+                        placeholder="Search courses, lessons..."
+                        className="h-10 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none transition focus:border-primary"
+                    />
+                </div>
+
+                {/* Right actions */}
+                <div className="ml-auto flex items-center gap-3">
+
+                    {/* Notifications */}
+                    <button
+                        type="button"
+                        className="relative flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                        aria-label="Notifications"
+                    >
+                        <Bell
+                            size={19}
+                        />
+
+                        <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-primary" />
+                    </button>
+
+                    <div className="h-8 w-px bg-border" />
+
+                    {/* User */}
+                    <button
+                        type="button"
+                        className="flex items-center gap-3 rounded-xl px-2 py-1.5 transition hover:bg-muted"
+                    >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                            {initials}
+                        </div>
+
+                        <div className="hidden text-left sm:block">
+                            <div className="text-sm font-medium">
+                                {user?.first_name}{" "}
+                                {user?.last_name}
+                            </div>
+
+                            <div className="text-xs text-muted-foreground">
+                                Student
+                            </div>
+                        </div>
+                    </button>
+                </div>
             </div>
         </header>
     );

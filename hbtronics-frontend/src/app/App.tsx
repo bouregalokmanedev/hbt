@@ -1,7 +1,21 @@
-import { RouterProvider } from "react-router-dom";
+import {
+    RouterProvider,
+} from "react-router-dom";
 
-import { router } from "./router";
+import {
+    router,
+} from "@/routes";
 
-export function App() {
-    return <RouterProvider router={router} />;
+import {
+    AuthProvider,
+} from "./providers";
+
+export default function App() {
+    return (
+        <AuthProvider>
+            <RouterProvider
+                router={router}
+            />
+        </AuthProvider>
+    );
 }

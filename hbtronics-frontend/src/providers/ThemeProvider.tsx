@@ -2,79 +2,86 @@ import {
     createContext,
     useContext,
     useEffect,
-    useMemo,
     useState,
-    type PropsWithChildren,
+    type ReactNode,
 } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme = "light" | "dark";
 
 interface ThemeContextValue {
     theme: Theme;
-    setTheme: (theme: Theme) => void;
+    toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(
-    undefined,
-);
-
-const STORAGE_KEY = "hbtronics_theme";
-
-function getInitialTheme(): Theme {
-    const stored = localStorage.getItem(STORAGE_KEY);
-
-    if (
-        stored === "light" ||
-        stored === "dark" ||
-        stored === "system"
-    ) {
-        return stored;
-    }
-
-    return "system";
-}
-
-function applyTheme(theme: Theme) {
-    const root = document.documentElement;
-
-    const resolvedTheme =
-        theme === "system"
-            ? window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light"
-            : theme;
-
-    root.classList.toggle("dark", resolvedTheme === "dark");
-}
-
-export function ThemeProvider({ children }: PropsWithChildren) {
-    const [theme, setThemeState] = useState<Theme>(getInitialTheme);
-
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, theme);
-        applyTheme(theme);
-    }, [theme]);
-
-    const value = useMemo(
-        () => ({
-            theme,
-
-            setTheme: (nextTheme: Theme) => {
-                setThemeState(nextTheme);
-            },
-        }),
-        [theme],
+const ThemeContext =
+    createContext<ThemeContextValue | undefined>(
+        undefined,
     );
 
+interface ThemeProviderProps {
+    children: ReactNode;
+}
+
+export function ThemeProvider({
+    children,
+}: ThemeProviderProps) {
+    const [theme, setTheme] = useState<Theme>(() => {
+        const savedTheme =
+            localStorage.getItem("hbt-theme");
+
+        if (
+            savedTheme === "light" ||
+            savedTheme === "dark"
+        ) {
+            return savedTheme;
+        }
+
+        return window.matchMedia(
+            "(prefers-color-scheme: dark)",
+        ).matches
+            ? "dark"
+            : "light";
+    });
+
+    useEffect(() => {
+        const root =
+            document.documentElement;
+
+        if (theme === "dark") {
+            root.classList.add("dark");
+        } else {
+            root.classList.remove("dark");
+        }
+
+        localStorage.setItem(
+            "hbt-theme",
+            theme,
+        );
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme((currentTheme) =>
+            currentTheme === "light"
+                ? "dark"
+                : "light",
+        );
+    };
+
     return (
-        <ThemeContext.Provider value={value}>
+        <ThemeContext.Provider
+            value={{
+                theme,
+                toggleTheme,
+            }}
+        >
             {children}
         </ThemeContext.Provider>
     );
 }
 
 export function useTheme() {
-    const context = useContext(ThemeContext);
+    const context =
+        useContext(ThemeContext);
 
     if (!context) {
         throw new Error(

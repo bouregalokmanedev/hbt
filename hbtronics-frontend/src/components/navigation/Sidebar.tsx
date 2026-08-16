@@ -1,121 +1,195 @@
-import { X } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import {
+    NavLink,
+} from "react-router-dom";
 
-import { cn } from "@/lib/cn";
-import type { NavigationItem } from "@/config/navigation";
-import { Logo } from "./Logo";
+import {
+    LayoutDashboard,
+    BookOpen,
+    Award,
+    Gauge,
+    ClipboardCheck,
+    Bot,
+    Settings,
+    HelpCircle,
+    LogOut,
+} from "lucide-react";
+
+import {
+    useAuth,
+} from "@/features/auth";
+
+import type {
+    NavigationItem,
+} from "@/config/navigation";
 
 interface SidebarProps {
     items: NavigationItem[];
-    open?: boolean;
-    onClose?: () => void;
-    collapsed?: boolean;
+    open: boolean;
+    onClose: () => void;
 }
+
+const navigation = [
+    {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+    },
+    {
+        label: "My Learning",
+        href: "/learning",
+        icon: BookOpen,
+    },
+    {
+        label: "Courses",
+        href: "/courses",
+        icon: BookOpen,
+    },
+    {
+        label: "Certifications",
+        href: "/certifications",
+        icon: Award,
+    },
+    {
+        label: "Simulator",
+        href: "/simulator",
+        icon: Gauge,
+    },
+    {
+        label: "Assessments",
+        href: "/assessments",
+        icon: ClipboardCheck,
+    },
+    {
+        label: "AI Assistant",
+        href: "/ai",
+        icon: Bot,
+    },
+];
+
+const secondaryNavigation: NavigationItem[] = [
+    {
+        label: "Settings",
+        href: "/settings",
+        icon: Settings,
+    },
+    {
+        label: "Help & Support",
+        href: "/help",
+        icon: HelpCircle,
+    },
+];
 
 export function Sidebar({
     items,
-    open = true,
+    open,
     onClose,
-    collapsed = false,
 }: SidebarProps) {
+    const {
+        logout,
+    } = useAuth();
+
     return (
-        <>
-            {open && (
-                <button
-                    type="button"
-                    aria-label="Close navigation"
-                    onClick={onClose}
-                    className="fixed inset-0 z-40 bg-black/40 lg:hidden"
-                />
-            )}
+        <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-border bg-card lg:flex lg:flex-col">
+            <div className="flex h-16 items-center border-b border-border px-6">
+                <div>
+                    <div className="text-lg font-bold tracking-tight">
+                        HBTronics
+                    </div>
 
-            <aside
-                className={cn(
-                    "fixed inset-y-0 left-0 z-50",
-                    "flex flex-col",
-                    "border-r border-[var(--border)]",
-                    "bg-[var(--card)]",
-                    "transition-transform duration-200",
-                    "lg:static lg:z-auto",
-                    collapsed
-                        ? "w-20"
-                        : "w-64",
-                    open
-                        ? "translate-x-0"
-                        : "-translate-x-full lg:translate-x-0",
-                )}
-            >
-                <div
-                    className={cn(
-                        "flex h-16 items-center border-b border-[var(--border)] px-4",
-                        collapsed
-                            ? "justify-center"
-                            : "justify-between",
-                    )}
-                >
-                    <Logo collapsed={collapsed} />
+                    <div className="text-[11px] text-muted-foreground">
+                        Learning Platform
+                    </div>
+                </div>
+            </div>
 
-                    {!collapsed && (
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="rounded-md p-2 text-[var(--muted)] hover:bg-[var(--surface)] lg:hidden"
-                            aria-label="Close navigation"
-                        >
-                            <X className="size-5" />
-                        </button>
+            <nav className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-1">
+                    {navigation.map(
+                        ({
+                            label,
+                            href,
+                            icon: Icon,
+                        }) => (
+                            <NavLink
+                                key={href}
+                                to={href}
+                                className={({
+                                    isActive,
+                                }) =>
+                                    [
+                                        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                                        isActive
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    ].join(" ")
+                                }
+                            >
+                                <Icon
+                                    size={18}
+                                    strokeWidth={1.8}
+                                />
+
+                                <span>
+                                    {label}
+                                </span>
+                            </NavLink>
+                        ),
                     )}
                 </div>
 
-                <nav
-                    aria-label="Main navigation"
-                    className="flex-1 space-y-1 overflow-y-auto p-3"
-                >
-                    {items.map((item) => {
-                        const Icon = item.icon;
+                <div className="my-6 h-px bg-border" />
 
-                        return (
+                <div className="space-y-1">
+                    {secondaryNavigation.map(
+                        ({
+                            label,
+                            href,
+                            icon: Icon,
+                        }) => (
                             <NavLink
-                                key={item.href}
-                                to={item.href}
-                                end={item.href === "/dashboard" || item.href === "/admin"}
-                                onClick={onClose}
-                                title={
-                                    collapsed
-                                        ? item.label
-                                        : undefined
-                                }
-                                className={({ isActive }) =>
-                                    cn(
-                                        "flex items-center gap-3 rounded-[var(--radius-md)]",
-                                        "px-3 py-2.5",
-                                        "text-sm font-medium",
-                                        "transition-colors",
-                                        collapsed &&
-                                            "justify-center px-2",
+                                key={href}
+                                to={href}
+                                className={({
+                                    isActive,
+                                }) =>
+                                    [
+                                        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
                                         isActive
-                                            ? [
-                                                  "bg-[var(--primary)]/10",
-                                                  "text-[var(--primary)]",
-                                              ]
-                                            : [
-                                                  "text-[var(--muted)]",
-                                                  "hover:bg-[var(--surface)]",
-                                                  "hover:text-[var(--foreground)]",
-                                              ],
-                                    )
+                                            ? "bg-muted text-foreground"
+                                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                                    ].join(" ")
                                 }
                             >
-                                <Icon className="size-5 shrink-0" />
+                                <Icon
+                                    size={18}
+                                    strokeWidth={1.8}
+                                />
 
-                                {!collapsed && (
-                                    <span>{item.label}</span>
-                                )}
+                                <span>
+                                    {label}
+                                </span>
                             </NavLink>
-                        );
-                    })}
-                </nav>
-            </aside>
-        </>
+                        ),
+                    )}
+                </div>
+            </nav>
+
+            <div className="border-t border-border p-4">
+                <button
+                    type="button"
+                    onClick={() =>
+                        void logout()
+                    }
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                >
+                    <LogOut
+                        size={18}
+                        strokeWidth={1.8}
+                    />
+
+                    Logout
+                </button>
+            </div>
+        </aside>
     );
 }

@@ -1,19 +1,49 @@
-import type { RouteObject } from "react-router-dom";
+import type {
+    RouteObject,
+} from "react-router-dom";
 
-import { AuthLayout } from "@/layouts/AuthLayout";
+import {
+    GuestGuard,
+} from "@/features/auth";
 
-function LoginPage() {
-    return <div>Login</div>;
-}
+import {
+    LoginPage,
+    RegisterPage,
+    ForgotPasswordPage,
+    ResetPasswordPage,
+} from "@/features/auth/pages";
 
-export const authRoutes: RouteObject[] = [
-    {
-        element: <AuthLayout />,
-        children: [
-            {
-                path: "/login",
-                element: <LoginPage />,
-            },
-        ],
-    },
-];
+export const authRoutes:
+    RouteObject[] = [
+        {
+            element: <GuestGuard />,
+            children: [
+               
+                        {
+                            path: "/login",
+                            element:
+                                <LoginPage />,
+                        },
+
+                        {
+                            path: "/register",
+                            element:
+                                <RegisterPage />,
+                        },
+
+                        {
+                            path: "/forgot-password",
+                            element:
+                                <ForgotPasswordPage />,
+                        },
+
+                        {
+                            path: "/reset-password",
+                            element:
+                                <ResetPasswordPage />,
+                        },
+                    ],
+                },
+            
+        
+    ];

@@ -1,19 +1,53 @@
-import type { RouteObject } from "react-router-dom";
+import type {
+    RouteObject,
+} from "react-router-dom";
 
-import { DashboardLayout } from "@/layouts/DashboardLayout";
+import {
+    AuthGuard,
+} from "@/features/auth";
 
-function DashboardPage() {
-    return <div>Dashboard</div>;
-}
+import {
+    DashboardLayout,
+} from "@/layouts/DashboardLayout";
 
-export const dashboardRoutes: RouteObject[] = [
-    {
-        element: <DashboardLayout />,
-        children: [
-            {
-                path: "/dashboard",
-                element: <DashboardPage />,
-            },
-        ],
-    },
-];
+import {
+    DashboardPage,
+} from "@/features/dashboard/pages";
+
+import { SettingsPage } from "@/features/settings/pages/SettingsPage";
+import {
+    ProfilePage,
+} from "@/features/profile/pages/ProfilePage";
+
+
+export const dashboardRoutes:
+    RouteObject[] = [
+        {
+            element: <AuthGuard />,
+            children: [
+                {
+                    element:
+                        <DashboardLayout />,
+                    children: [
+                        {
+                            path: "/dashboard",
+                            element:
+                                <DashboardPage />,
+
+                        },
+                       
+                        {
+                             path: "/settings",
+                                 element:
+                                 <SettingsPage />
+                        },
+                        {
+                            path:"/profile",
+                            element:
+                            <ProfilePage />
+                        }
+                    ],
+                },
+            ],
+        },
+    ];
