@@ -58,7 +58,13 @@ class Lesson extends Model
 
 public function progressForUser(): HasOne
 {
+    // Curriculum is intentionally a public endpoint so guests can inspect
+    // previews. Resolve Sanctum lazily here so authenticated SPA requests
+    // still receive the learner's progress without requiring auth middleware
+    // on the whole curriculum route.
+    $user = auth('sanctum')->user() ?? auth()->user();
+
     return $this->hasOne(LessonProgress::class)
-        ->where('user_id', auth()->id());
+        ->where('user_id', $user?->id ?? '');
 }
 }

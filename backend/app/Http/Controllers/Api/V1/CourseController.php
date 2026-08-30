@@ -178,9 +178,14 @@ public function index(Request $request)
 
         // Curriculum is shared by Course Details and the lesson player.
         // Pass the student so each lesson includes that student's progress.
+        // This endpoint remains public for guest preview browsing, so it is
+        // not wrapped in auth:sanctum middleware. Resolve the Sanctum guard
+        // explicitly to include progress for signed-in SPA learners.
+        $user = auth('sanctum')->user() ?? $request->user();
+
         $course = $query->getForCourse(
             $course,
-            $request->user(),
+            $user,
         );
 
         return new CurriculumResource($course);

@@ -85,6 +85,11 @@ export function LessonVideoPlayer({
     const lastSavedTime =
         useRef(0);
 
+    // Keep a local checkpoint as a safety net for refreshes, route changes,
+    // and sign-out flows where the final network request may be interrupted.
+    const latestTime = useRef(0);
+    const positionStorageKey = `hbt:lesson-position:${lesson.id}`;
+
     const [
         isPlaying,
         setIsPlaying,
@@ -241,16 +246,24 @@ export function LessonVideoPlayer({
         const videoElement =
             videoRef.current;
 
-        if (
-            !videoElement ||
-            hasRestoredProgress.current ||
-            !progress
-        ) {
+        if (!videoElement || hasRestoredProgress.current) {
             return;
         }
 
-        const savedTime =
-            Number(progress.time_spent ?? 0);
+        let localTime = 0;
+        try {
+            localTime = Number(
+                window.localStorage.getItem(positionStorageKey) ?? 0,
+            );
+        } catch {
+            localTime = 0;
+        }
+
+        const serverTime = Number(progress?.time_spent ?? 0);
+        const savedTime = Math.max(
+            Number.isFinite(serverTime) ? serverTime : 0,
+            Number.isFinite(localTime) ? localTime : 0,
+        );
 
         if (
             savedTime > 0 &&
@@ -289,7 +302,7 @@ export function LessonVideoPlayer({
             hasRestoredProgress.current =
                 true;
         }
-    }, [progress]);
+    }, [positionStorageKey, progress]);
 
     /**
      * Reset state when lesson changes.
@@ -307,10 +320,53 @@ export function LessonVideoPlayer({
         lastSavedTime.current =
             0;
 
+        latestTime.current = 0;
+
         setCurrentTime(0);
         setDuration(0);
         setIsPlaying(false);
     }, [lesson.id]);
+
+    // Flush the latest position when the player unmounts or the document is
+    // being hidden. The local checkpoint guarantees restore even if the API
+    // request is cancelled during navigation.
+    useEffect(() => {
+        const flushPosition = () => {
+            const time = latestTime.current;
+            const videoDuration = videoRef.current?.duration ?? duration;
+
+            if (!Number.isFinite(time) || time <= 0) {
+                return;
+            }
+
+            try {
+                window.localStorage.setItem(positionStorageKey, String(Math.floor(time)));
+            } catch {
+                // Storage can be unavailable in private/restricted contexts.
+            }
+
+            if (Number.isFinite(videoDuration) && videoDuration > 0) {
+                onProgress?.(
+                    Math.min(100, Math.round((time / videoDuration) * 100)),
+                    Math.floor(time),
+                );
+            }
+        };
+
+        window.addEventListener("pagehide", flushPosition);
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "hidden") {
+                flushPosition();
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            flushPosition();
+            window.removeEventListener("pagehide", flushPosition);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [duration, onProgress, positionStorageKey]);
 
     /**
      * Video metadata loaded.
@@ -344,11 +400,20 @@ export function LessonVideoPlayer({
                 if (
                     !hasRestoredProgress.current
                 ) {
-                    const savedTime =
-                        Number(
-                            progress?.time_spent ??
-                                0,
+                    let localTime = 0;
+                    try {
+                        localTime = Number(
+                            window.localStorage.getItem(positionStorageKey) ?? 0,
                         );
+                    } catch {
+                        localTime = 0;
+                    }
+
+                    const serverTime = Number(progress?.time_spent ?? 0);
+                    const savedTime = Math.max(
+                        Number.isFinite(serverTime) ? serverTime : 0,
+                        Number.isFinite(localTime) ? localTime : 0,
+                    );
 
                     if (
                         savedTime > 0 &&
@@ -368,13 +433,14 @@ export function LessonVideoPlayer({
                         setCurrentTime(
                             safeTime,
                         );
+                        latestTime.current = safeTime;
                     }
 
                     hasRestoredProgress.current =
                         true;
                 }
             },
-            [progress?.time_spent],
+            [positionStorageKey, progress?.time_spent],
         );
 
     /**
@@ -395,6 +461,17 @@ export function LessonVideoPlayer({
                     videoElement.duration;
 
                 setCurrentTime(time);
+                latestTime.current = time;
+
+                // Persist immediately; the API remains throttled below.
+                try {
+                    window.localStorage.setItem(
+                        positionStorageKey,
+                        String(Math.floor(time)),
+                    );
+                } catch {
+                    // Ignore storage failures and continue saving remotely.
+                }
 
                 /**
                  * Do not save progress while
@@ -440,7 +517,7 @@ export function LessonVideoPlayer({
                     );
                 }
             },
-            [onProgress],
+            [onProgress, positionStorageKey],
         );
 
     /**
@@ -458,6 +535,13 @@ export function LessonVideoPlayer({
             setCurrentTime(
                 finalDuration,
             );
+            latestTime.current = finalDuration;
+
+            try {
+                window.localStorage.removeItem(positionStorageKey);
+            } catch {
+                // Ignore storage failures.
+            }
 
             setIsPlaying(false);
 
@@ -475,10 +559,11 @@ export function LessonVideoPlayer({
                 onComplete?.();
             }
         }, [
-            duration,
-            onComplete,
-            onProgress,
-        ]);
+        duration,
+        onComplete,
+        onProgress,
+        positionStorageKey,
+    ]);
 
     /**
      * Play / pause.

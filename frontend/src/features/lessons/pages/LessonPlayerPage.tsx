@@ -138,7 +138,7 @@ function LessonPlayerContent({
     courseId,
 }: LessonPlayerContentProps) {
     const navigate = useNavigate();
-    const { curriculum } = useLearningCurriculum(courseId);
+    const { curriculum, reload: reloadCurriculum } = useLearningCurriculum(courseId);
     const {
         lesson,
         isLoading,
@@ -181,6 +181,11 @@ function LessonPlayerContent({
                 // lesson, section, course, and enrollment completion data.
                 await reload();
 
+                // Keep the curriculum sidebar in sync before navigating. The
+                // curriculum endpoint is also used by Course Details, so a
+                // fresh response here prevents stale play/locked icons.
+                await reloadCurriculum();
+
                 const curriculum = await getLearningCurriculum(courseId);
                 const lessons = curriculum.sections.flatMap(
                     (section) => section.lessons,
@@ -202,7 +207,7 @@ function LessonPlayerContent({
                 );
             }
         },
-        [courseId, lessonId, navigate, reload],
+        [courseId, lessonId, navigate, reload, reloadCurriculum],
     );
 
     /*

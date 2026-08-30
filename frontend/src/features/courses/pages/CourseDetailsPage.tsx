@@ -159,7 +159,9 @@ const handleStartLearning = async () => {
     const lessons = curriculum?.sections
         .flatMap((section) => section.lessons) ?? [];
     const nextLesson = lessons.find(
-        (lesson) => !lesson.progress?.is_completed,
+        (lesson) =>
+            !lesson.progress?.is_completed &&
+            lesson.progress?.completed_at == null,
     ) ?? lessons[0];
 
     if (nextLesson) {
