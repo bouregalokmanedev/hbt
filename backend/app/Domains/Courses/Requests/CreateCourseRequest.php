@@ -4,6 +4,7 @@ namespace App\Domains\Courses\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
 use App\Domains\Courses\DTOs\CreateCourseData;
@@ -46,6 +47,7 @@ class CreateCourseRequest extends FormRequest
             ],
 
             'difficulty'=>[
+                'required',
                 Rule::enum(Difficulty::class)
             ],
 
@@ -64,7 +66,8 @@ class CreateCourseRequest extends FormRequest
             'discount_price'=>[
                 'nullable',
                 'integer',
-                'min:0'
+                'min:0',
+                'lte:price',
             ],
 
             'currency'=>[
@@ -74,10 +77,12 @@ class CreateCourseRequest extends FormRequest
             ],
 
             'is_free'=>[
+                'required',
                 'boolean'
             ],
 
             'visibility'=>[
+                'required',
                 Rule::enum(Visibility::class)
             ],
 
@@ -111,6 +116,21 @@ class CreateCourseRequest extends FormRequest
             ],
 
         ];
+    }
+
+    public function after(): array
+    {
+        return [function (Validator $validator): void {
+            if ($this->boolean('is_free') && (
+                (int) $this->input('price', 0) !== 0
+                || $this->filled('discount_price')
+            )) {
+                $validator->errors()->add(
+                    'price',
+                    'A free course must have a price of 0 and no discount price.'
+                );
+            }
+        }];
     }
     
     public function toDto(): CreateCourseData

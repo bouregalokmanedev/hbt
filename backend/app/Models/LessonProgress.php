@@ -26,6 +26,15 @@ final class LessonProgress extends Model
     'video_position',
     'completed_at',
 ];
+protected $appends = [
+    'is_completed',
+];
+
+public function getIsCompletedAttribute(): bool
+{
+    return $this->completed_at !== null;
+}
+
 
     protected function casts(): array
 {

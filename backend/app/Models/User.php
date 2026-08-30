@@ -6,11 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Domains\DiagnosticScenarios\Models\DiagnosticScenarioAttempt;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Enrollment;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Domains\Students\Models\StudentSetting;
+use App\Domains\Students\Models\StudentNotificationSetting;
+use App\Domains\Students\Models\StudentPrivacySetting;
+use App\Domains\Students\Models\StudentLearningPreference;
+use App\Domains\Students\Models\StudentSecuritySetting;
+use App\Domains\Students\Models\StudentAssessmentPreference;
 
 use App\Notifications\ResetPasswordNotification;
 
@@ -102,5 +111,43 @@ public function lessonProgress(): HasMany
     return $this->hasMany(
         LessonProgress::class
     );
+}
+public function diagnosticScenarioAttempts(): HasMany
+{
+    return $this->hasMany(
+        DiagnosticScenarioAttempt::class,
+        'user_id'
+    );
+}
+public function enrollments(): HasMany
+{
+    return $this->hasMany(Enrollment::class);
+}
+public function studentSetting(): HasOne
+{
+    return $this->hasOne(StudentSetting::class);
+}
+
+public function studentNotificationSetting(): HasOne
+{
+    return $this->hasOne(StudentNotificationSetting::class);
+}
+
+public function studentPrivacySetting(): HasOne
+{
+    return $this->hasOne(StudentPrivacySetting::class);
+}
+
+public function studentLearningPreference(): HasOne
+{
+    return $this->hasOne(StudentLearningPreference::class);
+}
+public function studentSecuritySetting(): HasOne
+{
+    return $this->hasOne(StudentSecuritySetting::class);
+}
+public function studentAssessmentPreference(): HasOne
+{
+    return $this->hasOne(StudentAssessmentPreference::class);
 }
 }

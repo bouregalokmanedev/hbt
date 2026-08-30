@@ -2,71 +2,51 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Contracts\Repositories\UserRepositoryInterface;
+use App\Domains\Admin\Queries\AdminUserQuery;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\CreateUserRequest;
 use App\Http\Requests\Api\V1\Admin\UpdateUserRequest;
 use App\Http\Requests\Api\V1\Admin\ChangePasswordRequest;
 use App\Http\Resources\Api\V1\UserResource;
-use App\Http\Responses\ApiResponse;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Services\Users\UserManagementService;
-use App\Services\Users\RoleService;
-use App\Services\Users\PasswordService;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    use ApiResponse;
     use AuthorizesRequests;
 
-    public function __construct(
-    private readonly UserManagementService $users,
-    private readonly RoleService $roles,
-    private readonly PasswordService $passwords,
-    private readonly UserRepositoryInterface $repository,
-) {}
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', User::class);
-        $users = $this->users->paginate(
-            perPage: $request->integer('per_page', 15),
-            filters: $request->only([
-                'search',
-                'status',
-                'role',
-                'sort',
-                'direction',
-            ]),
-        );
 
-        return $this->success(
-            UserResource::collection($users)
-        );
+        return UserResource::collection(
+            app(AdminUserQuery::class)->paginate(
+                $request->only([
+                    'search', 'status', 'role', 'email_verified', 'created_from',
+                    'created_to', 'deleted', 'sort', 'direction',
+                ]),
+                $request->integer('per_page', 15),
+            )
+        )->response();
     }
 
     public function store(CreateUserRequest $request): JsonResponse
     {
         $this->authorize('create', User::class);
-        $result = $this->users->create(
-    $request->dto()
-);
+        $attributes = $request->validated();
+        $attributes['status'] ??= 'active';
 
-        if (! $result->success) {
-            return $this->error(
-                $result->message,
-                422,
-                $result->errors ?? []
-            );
-        }
+        $user = User::query()->create($attributes);
+        $user->assignRole(UserRole::STUDENT->value);
 
-        return $this->success(
-            new UserResource($result->data),
-            $result->message,
-            201
-        );
+        return (new UserResource($user->fresh()->load('roles')))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(User $user): JsonResponse
@@ -82,63 +62,73 @@ class UserController extends Controller
         User $user
     ): JsonResponse {
         $this->authorize('update', $user);
-        $result = $this->users->update(
-    $user,
-    $request->dto()
-);
+        $user->update($request->validated());
 
-        return $this->success(
-            new UserResource($result->data),
-            $result->message
-        );
+        return new UserResource($user->fresh()->load('roles'));
     }
 
     public function destroy(User $user): JsonResponse
     {
         $this->authorize('delete', $user);
-        $result = $this->users->delete($user);
+        $user->delete();
 
-        return $this->success(
-            null,
-            $result->message
-        );
+        return response()->json(['message' => 'User deleted successfully.']);
     }
-    public function changePassword(Request $request, User $user)
-{
-    $this->authorize('changePassword', $user);
 
-    $user->update([
-        'password' => bcrypt($request->password),
-    ]);
+    public function changePassword(ChangePasswordRequest $request, User $user): JsonResponse
+    {
+        $this->authorize('changePassword', $user);
 
-    return response()->json([
-        'message' => 'Password changed successfully.',
-    ]);
-}
-public function assignRole(Request $request, User $user)
-{
-    $this->authorize('assignRole', $user);
+        $user->tokens()->delete();
+        $user->sessions()->update(['logged_out_at' => now(), 'is_current' => false]);
+        $user->update(['password' => Hash::make($request->validated('password'))]);
 
-    $user->syncRoles([$request->role]);
+        return response()->json(['message' => 'Password changed successfully.']);
+    }
 
-    return new UserResource($user);
-}
-public function suspend(User $user)
-{
-    $this->authorize('suspend', $user);
+    public function assignRole(Request $request, User $user): UserResource
+    {
+        $this->authorize('assignRole', $user);
+        $data = $request->validate(['role' => ['required', Rule::enum(UserRole::class)]]);
 
-    $user->update([
-        'status' => 'suspended',
-    ]);
+        $privilegedRole = in_array($data['role'], [
+            UserRole::ADMIN->value,
+            UserRole::SUPER_ADMIN->value,
+        ], true);
+        abort_if($privilegedRole && ! $request->user()->hasRole(UserRole::SUPER_ADMIN->value), 403);
 
-    return new UserResource($user);
-}
-public function restore(User $user)
-{
-    $this->authorize('restore', User::class);
+        $user->syncRoles([$data['role']]);
 
-    $user->restore();
+        return new UserResource($user->fresh()->load('roles'));
+    }
 
-    return new UserResource($user);
-}
+    public function suspend(User $user): UserResource
+    {
+        $this->authorize('suspend', $user);
+
+        $user->tokens()->delete();
+        $user->sessions()->update(['logged_out_at' => now(), 'is_current' => false]);
+        $user->update(['status' => 'suspended']);
+
+        return new UserResource($user->fresh()->load('roles'));
+    }
+
+    public function activate(User $user): UserResource
+    {
+        $this->authorize('suspend', $user);
+
+        $user->update(['status' => 'active']);
+
+        return new UserResource($user->fresh()->load('roles'));
+    }
+
+    public function restore(User $user): UserResource
+    {
+        $this->authorize('restore', User::class);
+        abort_unless($user->trashed(), 422, 'This user has not been deleted.');
+
+        $user->restore();
+
+        return new UserResource($user->fresh()->load('roles'));
+    }
 }

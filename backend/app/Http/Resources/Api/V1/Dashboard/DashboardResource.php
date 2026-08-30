@@ -33,6 +33,9 @@ class DashboardResource extends JsonResource
             'achievements' =>
                 $this->achievements,
 
+            'progression' =>
+                $this->progression,
+
             'ai_mentor' =>
                 $this->aiMentor,
         ];

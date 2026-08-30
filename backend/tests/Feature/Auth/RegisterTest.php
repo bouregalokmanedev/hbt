@@ -46,4 +46,5 @@ class RegisterTest extends TestCase
             'email' => 'lokmane@example.com',
         ]);
     }
+
 }

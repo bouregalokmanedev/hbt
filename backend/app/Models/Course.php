@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Courses\CourseStatus;
 use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
+use App\Domains\DiagnosticScenarios\Models\DiagnosticScenario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+
 
 
 class Course extends Model
@@ -105,11 +107,24 @@ public function sections(): HasMany
         Section::class
     )->orderBy('position');
 }
+public function enrollments(): HasMany
+{
+    return $this->hasMany(
+        Enrollment::class
+    );
+}
 public function media(): MorphMany
 {
     return $this->morphMany(
         Media::class,
         'mediable'
     );
+}
+public function diagnosticScenarios(): HasMany
+{
+    return $this->hasMany(
+        DiagnosticScenario::class,
+        'course_id'
+    )->orderBy('position');
 }
 }

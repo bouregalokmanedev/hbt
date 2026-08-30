@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Enums\UserStatus;
 use App\Services\Session\SessionService;
 use App\Services\Security\AuthenticationLogService;
+use App\Services\Security\OtpService;
+use App\Notifications\TwoFactorCodeNotification;
+use App\Services\Security\TwoFactorDeliveryService;
 
 
 
@@ -92,7 +95,7 @@ final readonly class LoginAction
     );
 }
 
-       if ($user->status !== UserStatus::ACTIVE->value) {
+        if ($user->status !== UserStatus::ACTIVE->value) {
 
     $this->authenticationLogService->log(
 
@@ -114,6 +117,14 @@ final readonly class LoginAction
         'Your account is inactive.'
     );
 }
+        $security = $user->studentSecuritySetting()->first();
+        if ($security?->two_factor_enabled && $security->two_factor_verified_at) {
+            $otp = app(OtpService::class)->generate($user, 'two_factor_login');
+            $method = $security->two_factor_method ?? 'email';
+            app(TwoFactorDeliveryService::class)->send($user, $otp->code, $method);
+            $this->authenticationLogService->log('login.mfa_challenge', true, $user, $dto->email, request());
+            return ActionResult::failure('Two-factor verification is required. A six-digit code was sent to your '.($method === 'phone' ? 'phone number' : 'email').'.');
+        }
         
         $newToken = $user->createToken('auth_token');
 

@@ -39,6 +39,12 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->appendToGroup('api', [
         UpdateSessionActivity::class,
     ]);
+
+    $middleware->redirectGuestsTo(
+        fn (Request $request) => $request->is('api/*')
+            ? null
+            : '/login',
+    );
 })
 
     ->withExceptions(function (Exceptions $exceptions): void {

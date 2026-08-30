@@ -10,6 +10,7 @@ use App\Domains\Enrollments\Requests\CreateEnrollmentRequest;
 use App\Domains\Enrollments\Resources\EnrollmentResource;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseProgress;
 use App\Models\Enrollment;
 use Illuminate\Http\JsonResponse;
 
@@ -22,8 +23,42 @@ final class EnrollmentController extends Controller
 
     public function index()
     {
+        $enrollments = $this->enrollments
+            ->findByUser(auth()->id());
+
+        $enrollments->load('course.sections.lessons');
+
+        $progressByCourse = CourseProgress::query()
+            ->where('user_id', auth()->id())
+            ->whereIn('course_id', $enrollments->pluck('course_id'))
+            ->get()
+            ->keyBy('course_id');
+
+        $enrollments->each(
+            function (Enrollment $enrollment) use ($progressByCourse): void {
+                $enrollment->setRelation(
+                    'progress',
+                    $progressByCourse->get($enrollment->course_id)
+                );
+
+                $totalLessons = $enrollment->course?->sections
+                    ->sum(fn ($section) => $section->lessons->count()) ?? 0;
+                $completedLessons = \App\Models\LessonProgress::query()
+                    ->where('user_id', auth()->id())
+                    ->whereNotNull('completed_at')
+                    ->whereHas(
+                        'lesson.section',
+                        fn ($query) => $query->where('course_id', $enrollment->course_id)
+                    )
+                    ->count();
+
+                $enrollment->setAttribute('total_lessons', $totalLessons);
+                $enrollment->setAttribute('completed_lessons', $completedLessons);
+            }
+        );
+
         return EnrollmentResource::collection(
-            $this->enrollments->findByUser(auth()->id())
+            $enrollments
         );
     }
 

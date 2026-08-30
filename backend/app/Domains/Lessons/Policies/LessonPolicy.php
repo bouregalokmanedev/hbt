@@ -12,61 +12,58 @@ final class LessonPolicy
         User $user,
         Lesson $lesson
     ): bool {
-        return $lesson->section
-            ->course
-            ->instructor_id === $user->id;
+        return $this->canManage($user, $lesson);
     }
 
     public function create(
         User $user,
         Section $section
     ): bool {
-        return $section
-            ->course
-            ->instructor_id === $user->id;
+        return $user->can('update', $section->course);
     }
 
     public function update(
         User $user,
         Lesson $lesson
     ): bool {
-        return $lesson->section
-            ->course
-            ->instructor_id === $user->id;
+        return $this->canManage($user, $lesson);
     }
 
     public function delete(
         User $user,
         Lesson $lesson
     ): bool {
-        return $lesson->section
-            ->course
-            ->instructor_id === $user->id;
+        return $this->canManage($user, $lesson);
     }
 
     public function reorder(
         User $user,
         Lesson $lesson
     ): bool {
-        return $lesson->section
-            ->course
-            ->instructor_id === $user->id;
+        return $this->canManage($user, $lesson);
     }
 
     public function publish(
         User $user,
         Lesson $lesson
     ): bool {
-        return $lesson->section
-            ->course
-            ->instructor_id === $user->id;
+        return $this->canManage($user, $lesson);
     }
+
     public function unpublish(
-    User $user,
-    Lesson $lesson
-): bool {
-    return $lesson->section
-        ->course
-        ->instructor_id === $user->id;
-}
+        User $user,
+        Lesson $lesson
+    ): bool {
+        return $this->canManage($user, $lesson);
+    }
+
+    private function canManage(
+        User $user,
+        Lesson $lesson
+    ): bool {
+        return $user->can(
+            'update',
+            $lesson->section->course
+        );
+    }
 }

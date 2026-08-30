@@ -7,6 +7,7 @@ use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdateCourseRequest extends FormRequest
 {
@@ -72,6 +73,7 @@ class UpdateCourseRequest extends FormRequest
                 'nullable',
                 'integer',
                 'min:0',
+                'lte:price',
             ],
 
             'currency' => [
@@ -120,6 +122,21 @@ class UpdateCourseRequest extends FormRequest
                 'array',
             ],
         ];
+    }
+
+    public function after(): array
+    {
+        return [function (Validator $validator): void {
+            if ($this->boolean('is_free') && (
+                (int) $this->input('price', 0) !== 0
+                || $this->filled('discount_price')
+            )) {
+                $validator->errors()->add(
+                    'price',
+                    'A free course must have a price of 0 and no discount price.'
+                );
+            }
+        }];
     }
 
     public function toDto(): UpdateCourseData

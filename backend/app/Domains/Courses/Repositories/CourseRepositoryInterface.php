@@ -45,6 +45,10 @@ interface CourseRepositoryInterface
     ): Course;
 
     public function restore(
+    Course $course
+): Course;
+
+    public function unpublish(
         Course $course
     ): Course;
     public function paginateInstructorCourses(

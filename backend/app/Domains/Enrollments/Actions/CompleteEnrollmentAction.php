@@ -7,6 +7,7 @@ use App\Domains\Enrollments\Events\EnrollmentCompleted;
 use App\Domains\Enrollments\Services\EnrollmentService;
 use App\Enums\EnrollmentStatus;
 use App\Models\Enrollment;
+use App\Domains\Notifications\Services\StudentNotificationService;
 use Illuminate\Support\Facades\DB;
 
 final class CompleteEnrollmentAction
@@ -34,6 +35,16 @@ final class CompleteEnrollmentAction
 );
 
 event(new EnrollmentCompleted($enrollment));
+
+            $enrollment->loadMissing(['user', 'course']);
+            app(StudentNotificationService::class)->send(
+                $enrollment->user,
+                'course_completed',
+                'Course completed',
+                "You completed {$enrollment->course?->title}. Your next milestone is waiting.",
+                '/my-courses',
+                "course-completed:{$enrollment->id}",
+            );
 
 return $enrollment;
         });

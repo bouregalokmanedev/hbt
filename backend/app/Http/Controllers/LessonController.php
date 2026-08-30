@@ -64,9 +64,8 @@ public function store(
     );
 }
 
-public function show(
-    Lesson $lesson
-): JsonResponse {
+public function show(Lesson $lesson): JsonResponse
+{
     abort_unless(
         $this->lessonAccess->canAccess(
             auth()->user(),
@@ -74,6 +73,12 @@ public function show(
         ),
         403
     );
+
+    $lesson->load([
+    'media',
+    'section.course',
+    'progressForUser',
+]);
 
     return response()->json(
         new LessonResource($lesson)

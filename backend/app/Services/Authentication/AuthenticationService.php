@@ -85,6 +85,10 @@ return ActionResult::success(
 
     if (! $result->success) {
 
+        if (str_contains($result->message, 'Two-factor verification is required')) {
+            return $result;
+        }
+
         $this->throttle->hit(
             $dto->email,
             $ip

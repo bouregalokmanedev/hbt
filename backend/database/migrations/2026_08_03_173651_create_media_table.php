@@ -9,40 +9,41 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('media', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+    $table->uuid('id')->primary();
 
-            $table->foreignId('uploaded_by')
-                ->constrained('users')
-                ->cascadeOnDelete();
+    $table->foreignId('uploaded_by')
+        ->constrained('users')
+        ->cascadeOnDelete();
 
-            $table->string('disk');
-            $table->string('path');
+    $table->string('disk');
+    $table->string('path');
 
-            $table->string('original_name');
-            $table->string('filename');
+    $table->string('original_name');
+    $table->string('filename');
 
-            $table->string('mime_type');
-            $table->string('extension')->nullable();
-            $table->unsignedBigInteger('size');
+    $table->string('mime_type');
+    $table->string('extension')->nullable();
+    $table->unsignedBigInteger('size');
 
-            $table->string('type');
+    $table->string('type');
 
-            $table->nullableMorphs('mediable');
+    // IMPORTANT: Lesson uses UUID
+    $table->nullableUuidMorphs('mediable');
 
-            $table->json('metadata')->nullable();
+    $table->json('metadata')->nullable();
 
-            $table->timestamps();
+    $table->timestamps();
 
-            $table->index([
-                'uploaded_by',
-                'type',
-            ]);
+    $table->index([
+        'uploaded_by',
+        'type',
+    ]);
 
-            $table->index([
-                'disk',
-                'path',
-            ]);
-        });
+    $table->index([
+        'disk',
+        'path',
+    ]);
+});
     }
 
     public function down(): void

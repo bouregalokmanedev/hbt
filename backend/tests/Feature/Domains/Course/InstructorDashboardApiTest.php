@@ -3,7 +3,12 @@
 use App\Enums\Courses\CourseStatus;
 use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
+use App\Domains\Quizzes\Models\Quiz;
+use App\Domains\Quizzes\Models\QuizAttempt;
 use App\Models\Course;
+use App\Models\CourseProgress;
+use App\Models\Enrollment;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
@@ -338,6 +343,81 @@ describe('Instructor dashboard', function () {
                 'data.statistics.archived',
                 0
             );
+    });
+
+    it('includes only owned-course learning activity and performance', function () {
+        $instructor = instructorUser();
+        $otherInstructor = instructorUser();
+        $student = User::factory()->create([
+            'first_name' => 'Maya',
+            'last_name' => 'Diaz',
+        ]);
+
+        $course = Course::factory()->create([
+            'instructor_id' => $instructor->id,
+            'title' => 'Owned Course',
+        ]);
+
+        $otherCourse = Course::factory()->create([
+            'instructor_id' => $otherInstructor->id,
+            'title' => 'Other Course',
+        ]);
+
+        Enrollment::factory()->create([
+            'course_id' => $course->id,
+            'user_id' => $student->id,
+            'enrolled_at' => now()->subHour(),
+        ]);
+
+        CourseProgress::factory()->create([
+            'course_id' => $course->id,
+            'user_id' => $student->id,
+            'progress_percentage' => 100,
+            'time_spent' => 5400,
+            'completed_at' => now()->subMinutes(10),
+        ]);
+
+        $quiz = Quiz::factory()->create([
+            'section_id' => Section::factory()->create([
+                'course_id' => $course->id,
+            ])->id,
+        ]);
+
+        QuizAttempt::factory()->submitted()->create([
+            'quiz_id' => $quiz->id,
+            'user_id' => $student->id,
+            'percentage' => 92,
+            'passed' => true,
+            'submitted_at' => now(),
+        ]);
+
+        $otherQuiz = Quiz::factory()->create([
+            'section_id' => Section::factory()->create([
+                'course_id' => $otherCourse->id,
+            ])->id,
+        ]);
+
+        QuizAttempt::factory()->submitted()->create([
+            'quiz_id' => $otherQuiz->id,
+            'percentage' => 20,
+            'submitted_at' => now(),
+        ]);
+
+        $response = $this
+            ->actingAs($instructor)
+            ->getJson('/api/v1/instructor/dashboard');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.students.active', 1)
+            ->assertJsonPath('data.learning.total_time_seconds', 5400)
+            ->assertJsonPath('data.learning.average_quiz_score', 92)
+            ->assertJsonFragment([
+                'course_title' => 'Owned Course',
+            ])
+            ->assertJsonMissing([
+                'course_title' => 'Other Course',
+            ]);
     });
 });
 

@@ -27,7 +27,7 @@ class UserPolicy
 
     public function update(User $authUser, User $user): bool
     {
-        if ($user->hasRole(UserRole::SUPER_ADMIN->value)
+        if ($this->isPrivileged($user)
             && ! $authUser->hasRole(UserRole::SUPER_ADMIN->value)) {
             return false;
         }
@@ -41,7 +41,7 @@ class UserPolicy
             return false;
         }
 
-        if ($user->hasRole(UserRole::SUPER_ADMIN->value)
+        if ($this->isPrivileged($user)
             && ! $authUser->hasRole(UserRole::SUPER_ADMIN->value)) {
             return false;
         }
@@ -67,5 +67,13 @@ class UserPolicy
     public function changePassword(User $authUser, User $user): bool
     {
         return $this->update($authUser, $user);
+    }
+
+    private function isPrivileged(User $user): bool
+    {
+        return $user->hasAnyRole([
+            UserRole::ADMIN->value,
+            UserRole::SUPER_ADMIN->value,
+        ]);
     }
 }

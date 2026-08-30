@@ -10,6 +10,7 @@ use App\Enums\Courses\CourseStatus;
 use App\Enums\Courses\Visibility;
 use App\Enums\EnrollmentStatus;
 use App\Models\Course;
+use App\Models\CourseProgress;
 use App\Models\Enrollment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,6 +38,13 @@ it('returns only the authenticated users enrollments', function () {
         'user_id' => $user->id,
     ]);
 
+    CourseProgress::factory()->create([
+        'user_id' => $user->id,
+        'course_id' => $ownEnrollment->course_id,
+        'progress_percentage' => 35,
+        'time_spent' => 900,
+    ]);
+
     Enrollment::factory()->create([
         'user_id' => $otherUser->id,
     ]);
@@ -53,6 +61,14 @@ it('returns only the authenticated users enrollments', function () {
         ->assertJsonPath(
             'data.0.user_id',
             $user->id
+        )
+        ->assertJsonPath(
+            'data.0.course.id',
+            $ownEnrollment->course_id
+        )
+        ->assertJsonPath(
+            'data.0.progress.progress_percentage',
+            35
         );
 });
 

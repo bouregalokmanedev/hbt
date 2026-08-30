@@ -2,7 +2,8 @@
 
 namespace App\Domains\Courses\Resources;
 
-use App\Domains\Lessons\Resources\LessonResource;
+use App\Domains\Lessons\Resources\CurriculumLessonResource;
+use App\Domains\Quizzes\Http\Resources\QuizResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,8 +19,12 @@ class SectionResource extends JsonResource
             'position' => $this->position,
             'status' => $this->status->value,
 
-            'lessons' => LessonResource::collection(
+            'lessons' => CurriculumLessonResource::collection(
                 $this->whenLoaded('lessons')
+            ),
+
+            'quizzes' => QuizResource::collection(
+                $this->whenLoaded('quizzes')
             ),
         ];
     }

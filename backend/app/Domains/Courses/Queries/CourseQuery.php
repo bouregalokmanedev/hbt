@@ -96,4 +96,5 @@ class CourseQuery extends Query
             $categoryId
         );
     }
+
 }

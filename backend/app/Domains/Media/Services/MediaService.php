@@ -19,7 +19,15 @@ final class MediaService
             str_starts_with($mimeType, 'video/') =>
                 MediaType::VIDEO,
 
-            $mimeType === 'application/pdf' =>
+            in_array($mimeType, [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            ], true) =>
                 MediaType::DOCUMENT,
 
             default =>
@@ -29,15 +37,28 @@ final class MediaService
         };
     }
 
-    public function store(
-        UploadedFile $file,
-        string $disk = 'public'
-    ): string {
-        return $file->store(
-            'media',
-            $disk
-        );
-    }
+public function store(
+    UploadedFile $file,
+    string $disk = 'public',
+    ?string $directory = null,
+): string {
+    $directory ??= match (true) {
+        str_starts_with($file->getMimeType(), 'video/') => 'lessons',
+        str_starts_with($file->getMimeType(), 'image/') => 'images',
+        in_array($file->getMimeType(), [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        ], true) => 'documents',
+        default => 'media',
+    };
+
+    return $file->store($directory, $disk);
+}
 
     public function delete(
         string $disk,

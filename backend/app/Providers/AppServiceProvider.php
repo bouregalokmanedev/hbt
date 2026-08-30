@@ -7,6 +7,9 @@ use App\Domains\Enrollments\Repositories\EnrollmentRepositoryInterface;
 use App\Domains\Enrollments\Repositories\EloquentEnrollmentRepository;
 use App\Domains\Enrollments\Policies\EnrollmentPolicy;
 use App\Models\Enrollment;
+use App\Domains\Courses\Events\CourseCompleted;
+use App\Domains\Enrollments\Listeners\CompleteEnrollmentOnCourseCompleted;
+use App\Domains\Enrollments\Listeners\CompleteEnrollmentWhenCourseCompleted;
 
 use App\Contracts\Services\AuthenticationServiceInterface;
 use App\Services\AuthenticationService;
@@ -19,6 +22,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Events\ModelChanged;
 use App\Listeners\WriteAuditLog;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Validation\Rules\Password;
 use App\Models\Course;
 use App\Domains\Courses\Policies\CoursePolicy;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
@@ -107,6 +111,20 @@ use App\Domains\Lessons\Repositories\EloquentLessonProgressRepository;
 use App\Domains\Courses\Events\SectionProgressUpdated;
 use App\Domains\Courses\Listeners\SyncCourseProgress;
 
+use App\Domains\Assessments\Events\AssessmentPassed;
+use App\Domains\Certificates\Listeners\IssueCertificateForPassedAssessment;
+
+use App\Domains\AI\Contracts\MentorAIProvider;
+use App\Domains\AI\Providers\OpenAIMentorAIProvider;
+use App\Domains\AI\RAG\Contracts\MentorContentRetriever;
+use App\Domains\AI\RAG\Services\DatabaseMentorContentRetriever;
+
+use App\Domains\AI\Models\MentorConversation;
+use App\Policies\MentorConversationPolicy;
+use App\Domains\Messaging\Models\MessageConversation;
+use App\Policies\MessageConversationPolicy;
+
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -146,6 +164,9 @@ protected $listen = [
         RecordCategoryDetachedAudit::class,
         InvalidateCourseCategoryCache::class,
     ],
+    AssessmentPassed::class => [
+    IssueCertificateForPassedAssessment::class,
+],
 ];
     /**
      * Register any application services.
@@ -200,16 +221,34 @@ CourseProgressRepositoryInterface::class,
 EloquentCourseProgressRepository::class
 );
 
+$this->app->bind(
+    MentorAIProvider::class,
+    OpenAIMentorAIProvider::class
+);
+$this->app->bind(
+    MentorContentRetriever::class,
+    DatabaseMentorContentRetriever::class,
+);
+
     }
     /**
      * Bootstrap any application services.
      */
    public function boot(): void
 {
+    Password::defaults(fn () => Password::min(8)->mixedCase()->numbers()->symbols());
+
     Gate::policy(
         Course::class,
         CoursePolicy::class
     );
+
+   Gate::policy(
+    MentorConversation::class,
+    MentorConversationPolicy::class,
+);
+
+    Gate::policy(MessageConversation::class, MessageConversationPolicy::class);
 
    Gate::policy(
     Enrollment::class,
@@ -292,7 +331,10 @@ Event::listen(
     LessonUpdated::class,
     RecordLessonUpdatedAudit::class,
 );
-
+Event::listen(
+    
+    CompleteEnrollmentOnCourseCompleted::class,
+);
 Event::listen(
     LessonPublished::class,
     RecordLessonPublishedAudit::class,
@@ -322,7 +364,14 @@ Event::listen(
     EnrollmentCompleted::class,
     RecordEnrollmentCompletedAudit::class,
 );
-
+Event::listen(
+    AssessmentPassed::class,
+    IssueCertificateForPassedAssessment::class,
+);
+Event::listen(
+    CourseCompleted::class,
+    CompleteEnrollmentWhenCourseCompleted::class,
+);
 Event::listen(
     EnrollmentCancelled::class,
     RecordEnrollmentCancelledAudit::class,

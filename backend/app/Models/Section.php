@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SectionStatus;
+use App\Domains\Quizzes\Models\Quiz;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -44,4 +45,11 @@ class Section extends Model
             Lesson::class
         )->orderBy('position');
     }
+public function quizzes(): HasMany
+{
+    return $this->hasMany(
+        Quiz::class,
+        'section_id'
+    )->orderBy('position');
+}
 }

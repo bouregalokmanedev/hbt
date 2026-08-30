@@ -23,11 +23,15 @@ final class UploadMediaAction
     int $uploadedBy,
     string $disk = 'public',
 ): Media {
-    $path = $this->service->store(
-        $file,
-        $disk
-    );
+   $directory = $mediableType === \App\Models\Lesson::class
+    ? 'lessons'
+    : 'courses';
 
+$path = $this->service->store(
+    $file,
+    $disk,
+    $directory
+);
     try {
         return DB::transaction(function () use (
             $file,

@@ -95,6 +95,7 @@ foreach ($query->filters() as $key => $value) {
             }
         ),
 
+
         'search' => $builder->where(function ($q) use ($value) {
             $q->where(
                 'title',
@@ -173,6 +174,17 @@ return $builder
 ): Course {
     $course->update([
         'status' => CourseStatus::DRAFT,
+    ]);
+
+    return $course->refresh();
+}
+
+public function unpublish(
+    Course $course
+): Course {
+    $course->update([
+        'status' => CourseStatus::DRAFT,
+        'published_at' => null,
     ]);
 
     return $course->refresh();

@@ -58,7 +58,52 @@ it('rejects an unauthenticated user from accessing a lesson', function () {
     ]);
 
     $this->getJson("/api/v1/lessons/{$lesson->id}")
-        ->assertUnauthorized();
+        ->assertForbidden();
+});
+
+it('allows a guest to access an explicit preview lesson in a public paid course', function () {
+    $course = Course::factory()->create([
+        'status' => CourseStatus::PUBLISHED,
+        'visibility' => Visibility::PUBLIC,
+        'is_free' => false,
+        'price' => 99,
+    ]);
+    $section = Section::factory()->create([
+        'course_id' => $course->id,
+        'status' => SectionStatus::PUBLISHED,
+    ]);
+    $lesson = Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => LessonStatus::PUBLISHED,
+        'is_preview' => true,
+        'content' => 'A safe course preview.',
+    ]);
+
+    $this->getJson("/api/v1/lessons/{$lesson->id}")
+        ->assertOk()
+        ->assertJsonPath('id', $lesson->id)
+        ->assertJsonPath('content', 'A safe course preview.');
+});
+
+it('allows students with a completed enrollment to revisit paid course lessons', function () {
+    $student = User::factory()->create();
+    $course = Course::factory()->create([
+        'status' => CourseStatus::PUBLISHED,
+        'visibility' => Visibility::PUBLIC,
+        'is_free' => false,
+        'price' => 99,
+    ]);
+    $section = Section::factory()->create(['course_id' => $course->id, 'status' => SectionStatus::PUBLISHED]);
+    $lesson = Lesson::factory()->create(['section_id' => $section->id, 'status' => LessonStatus::PUBLISHED, 'is_preview' => false]);
+    Enrollment::factory()->create([
+        'user_id' => $student->id,
+        'course_id' => $course->id,
+        'status' => EnrollmentStatus::COMPLETED,
+    ]);
+
+    actingAs($student)
+        ->getJson("/api/v1/lessons/{$lesson->id}")
+        ->assertOk();
 });
 it('rejects a user without an active enrollment', function () {
     $student = User::factory()->create();

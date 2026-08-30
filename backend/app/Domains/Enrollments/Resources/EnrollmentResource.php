@@ -23,6 +23,25 @@ final class EnrollmentResource extends JsonResource
 
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+
+            'course' => $this->relationLoaded('course') && $this->course
+                ? [
+                    'id' => $this->course->id,
+                    'title' => $this->course->title,
+                    'thumbnail' => $this->course->thumbnail,
+                ]
+                : null,
+
+            'progress' => $this->relationLoaded('progress') && $this->progress
+                ? [
+                    'progress_percentage' => $this->progress->progress_percentage,
+                    'time_spent' => $this->progress->time_spent,
+                    'completed_at' => $this->progress->completed_at?->toISOString(),
+                ]
+                : null,
+
+            'completed_lessons' => $this->completed_lessons,
+            'total_lessons' => $this->total_lessons,
         ];
     }
 }

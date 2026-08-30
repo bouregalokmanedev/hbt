@@ -2,12 +2,12 @@
 
 namespace App\Domains\Courses\Services;
 
-use App\Domains\Lessons\Repositories\LessonProgressRepositoryInterface;
+use App\Domains\Courses\Events\SectionProgressUpdated;
 use App\Domains\Courses\Repositories\SectionProgressRepositoryInterface;
+use App\Domains\Lessons\Repositories\LessonProgressRepositoryInterface;
 use App\Models\Section;
 use App\Models\SectionProgress;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 
 final class SectionProgressService
 {
@@ -25,8 +25,8 @@ final class SectionProgressService
             ->orderBy('position')
             ->get();
 
-        $lessonProgress = $lessons
-            ->mapWithKeys(function ($lesson) use ($user) {
+        $lessonProgress = $lessons->mapWithKeys(
+            function ($lesson) use ($user) {
                 return [
                     $lesson->id => $this->lessonProgressRepository
                         ->findByUserAndLesson(
@@ -34,22 +34,34 @@ final class SectionProgressService
                             $lesson->id
                         ),
                 ];
-            });
+            }
+        );
 
         $lessonCount = $lessons->count();
 
+        /*
+         * Calculate section progress.
+         */
         $progressPercentage = $lessonCount === 0
             ? 0
             : (int) floor(
                 $lessonProgress->sum(
-                    fn ($progress) => $progress?->progress_percentage ?? 0
+                    fn ($progress) =>
+                        $progress?->progress_percentage ?? 0
                 ) / $lessonCount
             );
 
+        /*
+         * Calculate total time spent.
+         */
         $timeSpent = $lessonProgress->sum(
-            fn ($progress) => $progress?->time_spent ?? 0
+            fn ($progress) =>
+                $progress?->time_spent ?? 0
         );
 
+        /*
+         * Find first lesson start time.
+         */
         $startedAt = $lessonProgress
             ->filter()
             ->pluck('started_at')
@@ -57,7 +69,11 @@ final class SectionProgressService
             ->sort()
             ->first();
 
-        $allLessonsCompleted = $lessonCount > 0
+        /*
+         * Check whether every lesson is completed.
+         */
+        $allLessonsCompleted =
+            $lessonCount > 0
             && $lessonProgress->count() === $lessonCount
             && $lessonProgress->every(
                 fn ($progress) =>
@@ -66,6 +82,17 @@ final class SectionProgressService
                     && $progress->completed_at !== null
             );
 
+        /*
+         * Keep completed_at only when the whole section
+         * is actually completed.
+         */
+        $completedAt = $allLessonsCompleted
+            ? now()
+            : null;
+
+        /*
+         * Find existing section progress.
+         */
         $existing = $this->sectionProgressRepository
             ->findByUserAndSection(
                 $user->id,
@@ -78,27 +105,35 @@ final class SectionProgressService
             'progress_percentage' => $progressPercentage,
             'time_spent' => $timeSpent,
             'started_at' => $startedAt,
-            'completed_at' => $allLessonsCompleted
-                ? now()
-                : null,
+            'completed_at' => $completedAt,
         ];
 
+        /*
+         * Create or update section progress.
+         */
         if ($existing !== null) {
-            return $this->sectionProgressRepository->update(
+            $result = $this->sectionProgressRepository->update(
                 $existing,
+                $data
+            );
+        } else {
+            $result = $this->sectionProgressRepository->create(
                 $data
             );
         }
 
-        return $this->sectionProgressRepository->create($data);
+        /*
+         * IMPORTANT:
+         *
+         * This event was missing before.
+         *
+         * It tells SyncCourseProgress to recalculate
+         * CourseProgress for this course.
+         */
+        event(
+            new SectionProgressUpdated($result)
+        );
 
-        $result = $this->repository->update(
-    $progress,
-    $data
-);
-
-event(new SectionProgressUpdated($result));
-
-return $result;
+        return $result;
     }
 }

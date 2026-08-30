@@ -14,6 +14,7 @@ final readonly class DashboardData
         public array $recentActivity,
         public array $weeklyActivity,
         public array $achievements,
+        public array $progression,
         public array $aiMentor,
     ) {}
 }

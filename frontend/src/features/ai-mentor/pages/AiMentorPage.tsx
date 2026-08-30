@@ -1,0 +1,28 @@
+import { Calculator, CheckCircle2, ClipboardList, Gauge, ShieldCheck } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { MentorChatPanel } from "../components/MentorChatPanel";
+import { mentorApi } from "../api/mentor-api";
+import type { MentorToolResult } from "../types/mentor";
+
+export function AiMentorPage() {
+    const [tool, setTool] = useState<"voltage" | "checklist" | null>(null);
+    const [source, setSource] = useState("12.6");
+    const [loaded, setLoaded] = useState("12.2");
+    const [symptom, setSymptom] = useState("");
+    const [result, setResult] = useState<MentorToolResult | null>(null);
+    const [toolLoading, setToolLoading] = useState(false);
+
+    const runTool = async () => {
+        setToolLoading(true);
+        try {
+            setResult(tool === "voltage"
+                ? await mentorApi.voltageDrop(Number(source), Number(loaded))
+                : await mentorApi.checklist(symptom));
+        } finally { setToolLoading(false); }
+    };
+
+    return <main className="min-h-full bg-[#F3F3F3]"><div className="mx-auto grid max-w-[1480px] gap-5 px-4 py-5 sm:px-7 sm:py-7 xl:grid-cols-[minmax(0,1fr)_320px]"><MentorChatPanel context={{ title: "AI learning session" }} subtitle="Ask, reason, and practise with guidance grounded in your HBT course content." /><aside className="space-y-5"><section className="rounded-[28px] border border-[#3A3A3A]/10 bg-white p-5 shadow-[0_14px_35px_rgba(58,58,58,.06)]"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">Diagnostic utilities</p><h2 className="mt-2 text-lg font-bold text-[#3A3A3A]">Work through a check</h2><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50">Use measured values and symptoms to structure your next safe step.</p></div><Gauge className="h-5 w-5 text-[#F47822]" /></div><div className="mt-5 grid gap-2"><ToolButton active={tool === "voltage"} icon={<Calculator className="h-4 w-4" />} label="Voltage-drop helper" onClick={() => { setTool("voltage"); setResult(null); }} /><ToolButton active={tool === "checklist"} icon={<ClipboardList className="h-4 w-4" />} label="Diagnostic checklist" onClick={() => { setTool("checklist"); setResult(null); }} /></div>{tool === "voltage" && <div className="mt-4 space-y-3"><Field label="Source voltage" value={source} onChange={setSource} /><Field label="Loaded voltage" value={loaded} onChange={setLoaded} /><button disabled={toolLoading} onClick={() => void runTool()} className="w-full rounded-xl bg-[#F47822] py-2.5 text-xs font-bold text-white transition hover:bg-[#df6817] disabled:opacity-50">{toolLoading ? "Calculating…" : "Calculate voltage drop"}</button></div>}{tool === "checklist" && <div className="mt-4 space-y-3"><textarea value={symptom} onChange={(event) => setSymptom(event.target.value)} placeholder="Describe the symptom…" className="min-h-24 w-full resize-none rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] p-3 text-xs outline-none transition focus:border-[#F47822]" /><button disabled={toolLoading || !symptom.trim()} onClick={() => void runTool()} className="w-full rounded-xl bg-[#F47822] py-2.5 text-xs font-bold text-white transition hover:bg-[#df6817] disabled:opacity-50">{toolLoading ? "Building…" : "Build checklist"}</button></div>}</section>{result && <section className="rounded-[28px] border border-[#F47822]/15 bg-[#F47822]/[.05] p-5"><div className="flex items-center gap-2 text-[#F47822]"><CheckCircle2 className="h-4 w-4" /><b className="text-xs">Guided result</b></div>{result.drop_volts !== undefined && <p className="mt-3 text-2xl font-bold text-[#3A3A3A]">{result.drop_volts} V <span className="text-sm font-medium text-[#3A3A3A]/50">({result.drop_percentage}%)</span></p>}{result.interpretation && <p className="mt-2 text-xs leading-5 text-[#3A3A3A]/65">{result.interpretation}</p>}{result.steps && <ol className="mt-4 space-y-2 text-xs leading-5 text-[#3A3A3A]/65">{result.steps.map((step, index) => <li key={step} className="flex gap-2"><span className="font-bold text-[#F47822]">{index + 1}.</span>{step}</li>)}</ol>}<p className="mt-4 border-t border-[#F47822]/15 pt-3 text-[10px] leading-4 text-[#3A3A3A]/50">{result.safety_note}</p></section>}<section className="rounded-[28px] bg-[#3A3A3A] p-5 text-white shadow-lg"><div className="flex items-center gap-2 text-[#F47822]"><ShieldCheck className="h-4 w-4" /><p className="text-[10px] font-bold uppercase tracking-[.18em]">Mentor promise</p></div><p className="mt-3 text-sm font-bold">Learn the process, not just the answer.</p><p className="mt-2 text-xs leading-5 text-white/55">Explanations stay grounded in your enrolled content and encourage measured, safe verification.</p></section></aside></div></main>;
+}
+
+function ToolButton({ active, icon, label, onClick }: { active: boolean; icon: ReactNode; label: string; onClick: () => void }) { return <button onClick={onClick} className={`flex items-center gap-3 rounded-xl border p-3 text-left text-xs font-semibold transition ${active ? "border-[#F47822] bg-[#F47822]/5 text-[#F47822]" : "border-[#3A3A3A]/8 text-[#3A3A3A]/65 hover:border-[#F47822]/30 hover:text-[#F47822]"}`}>{icon}{label}</button>; }
+function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <label className="block text-[11px] font-semibold text-[#3A3A3A]/65">{label}<input value={value} onChange={(event) => onChange(event.target.value)} inputMode="decimal" className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 text-sm font-normal outline-none transition focus:border-[#F47822]" /></label>; }

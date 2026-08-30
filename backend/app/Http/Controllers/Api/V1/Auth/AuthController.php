@@ -18,6 +18,11 @@ use App\Models\User;
 use App\Enums\UserStatus;
 use App\Actions\Users\UpdateUserAction;
 use App\Http\Requests\Api\V1\Auth\UpdateProfileRequest;
+use Illuminate\Http\Request;
+use App\Services\Security\OtpService;
+use App\Services\Session\SessionService;
+use App\Services\Security\AuthenticationLogService;
+use App\DTOs\Auth\Results\AuthenticationResult;
 
 
 
@@ -51,7 +56,7 @@ class AuthController extends Controller
         );
     }
 
-    public function login(LoginRequest $request): JsonResponse
+public function login(LoginRequest $request): JsonResponse
 {
     $result = $this->auth->login(
         $request->dto()
@@ -76,6 +81,18 @@ class AuthController extends Controller
         new AuthResource($result->data),
         $result->message
     );
+}
+
+public function verifyTwoFactorLogin(Request $request, OtpService $otp, SessionService $sessions, AuthenticationLogService $logs): JsonResponse
+{
+    $data = $request->validate(['email' => ['required', 'email'], 'code' => ['required', 'digits:6']]);
+    $user = User::where('email', strtolower($data['email']))->first();
+    abort_unless($user && $user->studentSecuritySetting?->two_factor_enabled, 422, 'Two-factor authentication is not enabled for this account.');
+    abort_unless($otp->verify($user, 'two_factor_login', $data['code']), 422, 'That verification code is invalid or expired.');
+    $token = $user->createToken('auth_token');
+    $sessions->create($user, $token->accessToken, $request);
+    $logs->log('login.success', true, $user, $user->email, $request, metadata: ['mfa' => true]);
+    return $this->success(new AuthResource(new AuthenticationResult($user, $token->plainTextToken)), 'Two-factor verification successful.');
 }
 
 public function verify(
@@ -107,6 +124,10 @@ public function updateProfile(
         $request->user(),
         $request->dto()
     );
+
+    if (filled($user->first_name) && filled($user->last_name) && filled($user->username) && filled($user->phone) && filled($user->country) && filled($user->bio)) {
+        app(\App\Domains\Progression\Services\StudentProgressionService::class)->award($user, 'profile_completed', 25, 40, 'profile-completed', ['label' => 'Profile completed']);
+    }
 
     return $this->success(
         new UserResource($user),

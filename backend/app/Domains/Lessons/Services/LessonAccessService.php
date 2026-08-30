@@ -3,58 +3,40 @@
 namespace App\Domains\Lessons\Services;
 
 use App\Enums\Courses\CourseStatus;
-use App\Enums\EnrollmentStatus;
 use App\Enums\LessonStatus;
 use App\Enums\SectionStatus;
-use App\Models\Enrollment;
+use App\Domains\Courses\Services\CourseAccessService;
 use App\Models\Lesson;
 use App\Models\User;
 
 final class LessonAccessService
 {
+    public function __construct(
+        private readonly CourseAccessService $courseAccess,
+    ) {
+    }
+
     public function canAccess(
-        User $user,
+        ?User $user,
         Lesson $lesson
     ): bool {
+        $lesson->loadMissing('section.course');
         $section = $lesson->section;
         $course = $section->course;
 
-        /*
-         * The lesson itself must be published.
-         */
-        if ($lesson->status !== LessonStatus::PUBLISHED) {
+    if ($lesson->status !== LessonStatus::PUBLISHED) {
+        return false;
+    }
+
+    if ($section->status !== SectionStatus::PUBLISHED) {
+        return false;
+    }
+
+        if (! $this->courseAccess->canBrowse($user, $course)) {
             return false;
         }
 
-        /*
-         * The section must be published.
-         */
-        if ($section->status !== SectionStatus::PUBLISHED) {
-            return false;
-        }
-
-        /*
-         * The course must be published.
-         */
-        if ($course->status !== CourseStatus::PUBLISHED) {
-            return false;
-        }
-
-        /*
-         * Preview lessons are accessible
-         * without enrollment.
-         */
-        if ($lesson->is_preview) {
-            return true;
-        }
-
-        /*
-         * Normal lessons require an active enrollment.
-         */
-        return Enrollment::query()
-            ->where('user_id', $user->id)
-            ->where('course_id', $course->id)
-            ->where('status', EnrollmentStatus::ACTIVE)
-            ->exists();
+        return $lesson->is_preview
+            || $this->courseAccess->hasFullAccess($user, $course);
     }
 }

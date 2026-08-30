@@ -22,14 +22,6 @@ class RegisterRequest extends BaseApiRequest
 
             'last_name' => ['required','string','max:100'],
 
-            'username' => [
-                'required',
-                'alpha_dash',
-                'min:3',
-                'max:30',
-                Rule::unique('users'),
-            ],
-
             'email' => [
                 'required',
                 'email',
@@ -56,7 +48,6 @@ class RegisterRequest extends BaseApiRequest
     {
         $this->merge([
             'email' => strtolower(trim($this->email)),
-            'username' => strtolower(trim($this->username)),
         ]);
     }
 

@@ -9,6 +9,7 @@ use App\Enums\EnrollmentStatus;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\User;
+use App\Domains\Progression\Services\StudentProgressionService;
 use Illuminate\Support\Facades\DB;
 
 final class EnrollStudentAction
@@ -48,6 +49,7 @@ final class EnrollStudentAction
             ]);
 
             event(new EnrollmentCreated($enrollment));
+            app(StudentProgressionService::class)->award($user, 'course_enrolled', 15, 25, "enrollment:{$enrollment->id}", ['course' => $course->title, 'label' => 'Course enrolled']);
 
             return $enrollment;
         });

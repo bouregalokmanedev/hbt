@@ -6,6 +6,7 @@ use App\Domains\Courses\Actions\CreateCourseAction;
 use App\Domains\Courses\DTOs\PublishCourseData;
 use App\Domains\Courses\Queries\CourseQuery;
 use App\Domains\Courses\Queries\CurriculumQuery;
+use App\Domains\Courses\Services\CourseAccessService;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
 use App\Domains\Courses\Requests\CreateCourseRequest;
 use App\Domains\Courses\Resources\CourseResource;
@@ -166,11 +167,21 @@ public function index(Request $request)
 
     public function curriculum(
         Course $course,
-        CurriculumQuery $query
+        CurriculumQuery $query,
+        Request $request,
+        CourseAccessService $access,
     ): CurriculumResource {
-        $this->authorize('view', $course);
+        abort_unless(
+            $access->canBrowse($request->user(), $course),
+            404,
+        );
 
-        $course = $query->getForCourse($course);
+        // Curriculum is shared by Course Details and the lesson player.
+        // Pass the student so each lesson includes that student's progress.
+        $course = $query->getForCourse(
+            $course,
+            $request->user(),
+        );
 
         return new CurriculumResource($course);
     }

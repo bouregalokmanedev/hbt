@@ -12,6 +12,7 @@ use App\Domains\Courses\Events\CoursePublished;
 use App\Domains\Courses\Events\CourseRestored;
 use App\Domains\Courses\Events\CourseSubmittedForReview;
 use App\Domains\Courses\Events\CourseUpdated;
+use App\Domains\Courses\Events\CourseUnpublished;
 use App\Domains\Courses\Exceptions\CourseAlreadyPublishedException;
 use App\Domains\Courses\Exceptions\CourseArchivedException;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
@@ -195,6 +196,23 @@ final class CourseService
             $course = $this->courses->restore($course);
 
             event(new CourseRestored($course));
+
+            return $course;
+        });
+    }
+
+    public function unpublish(Course $course): Course
+    {
+        return DB::transaction(function () use ($course) {
+            if ($course->status !== CourseStatus::PUBLISHED) {
+                throw new CourseReviewStateException(
+                    'Only published courses can be unpublished.'
+                );
+            }
+
+            $course = $this->courses->unpublish($course);
+
+            event(new CourseUnpublished($course));
 
             return $course;
         });

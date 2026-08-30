@@ -14,55 +14,49 @@ final class MediaPolicy
         string $mediableType,
         string $mediableId
     ): bool {
-        if ($user->hasAnyRole([
-            'Admin',
-            'Super Admin',
-        ])) {
-            return true;
-        }
-
         $model = $mediableType::query()->find($mediableId);
 
         if (! $model) {
             return false;
         }
 
-        return $this->ownsMediable(
+        return $this->canManageMediable(
             $user,
             $model
         );
     }
-    public function view(
-    User $user,
-    Media $media
-): bool {
-    if ($user->hasAnyRole([
-        'Admin',
-        'Super Admin',
-    ])) {
-        return true;
-    }
 
-    return $this->ownsMediable(
-        $user,
-        $media->mediable
-    );
-}
+    public function view(
+        User $user,
+        Media $media
+    ): bool {
+        return $this->canManageMediable(
+            $user,
+            $media->mediable
+        );
+    }
 
     public function delete(
         User $user,
         Media $media
     ): bool {
-        if ($user->hasAnyRole([
-            'Admin',
-            'Super Admin',
-        ])) {
+        return $this->canManageMediable(
+            $user,
+            $media->mediable
+        );
+    }
+
+    private function canManageMediable(
+        User $user,
+        mixed $model
+    ): bool {
+        if ($user->hasAnyRole(['Admin', 'Super Admin'])) {
             return true;
         }
 
         return $this->ownsMediable(
             $user,
-            $media->mediable
+            $model
         );
     }
 

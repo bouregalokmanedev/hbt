@@ -8,6 +8,7 @@ use App\Models\UserSession;
 use App\Services\Session\SessionService;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
@@ -17,15 +18,14 @@ class SessionController extends Controller
         private SessionService $sessions
     ) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         return $this->success(
 
             UserSessionResource::collection(
 
-                $this->sessions->all(
-                    auth()->user()
-                )
+                $this->sessions->all(auth()->user())
+                    ->when(! $request->boolean('all'), fn ($sessions) => $sessions->take(3))
 
             )
 

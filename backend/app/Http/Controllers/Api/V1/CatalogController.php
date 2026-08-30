@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Domains\Courses\Queries\CourseQuery;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
 use App\Domains\Courses\Resources\CourseResource;
-use App\Enums\Courses\Difficulty;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Course;
 use App\Enums\Courses\CourseStatus;
+use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
+use App\Http\Controllers\Controller;
+use App\Models\Course;
+use Illuminate\Http\Request;
 
 final class CatalogController extends Controller
 {
@@ -62,22 +62,61 @@ final class CatalogController extends Controller
             100
         );
 
+        $paginator = $this->courses->paginate(
+            $query,
+            $perPage
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Current student's enrollment state
+        |--------------------------------------------------------------------------
+        |
+        | Only load enrollment information when a student is authenticated.
+        | Public visitors don't need this relationship.
+        |
+        */
+
+        if ($request->user()) {
+            $paginator
+                ->getCollection()
+                ->load([
+                    'enrollments' => function ($query) use ($request) {
+                        $query->where(
+                            'user_id',
+                            $request->user()->id
+                        );
+                    },
+                ]);
+        }
+
         return CourseResource::collection(
-            $this->courses->paginate(
-                $query,
-                $perPage
-            )
+            $paginator
         );
     }
-public function show(Course $course): CourseResource
-{
-    if (
-        $course->status !== CourseStatus::PUBLISHED ||
-        $course->visibility !== Visibility::PUBLIC
-    ) {
-        abort(404);
-    }
 
-    return new CourseResource($course);
-}
+    public function show(
+        Request $request,
+        Course $course
+    ): CourseResource {
+        if (
+            $course->status !== CourseStatus::PUBLISHED ||
+            $course->visibility !== Visibility::PUBLIC
+        ) {
+            abort(404);
+        }
+
+        if ($request->user()) {
+            $course->load([
+                'enrollments' => function ($query) use ($request) {
+                    $query->where(
+                        'user_id',
+                        $request->user()->id
+                    );
+                },
+            ]);
+        }
+
+        return new CourseResource($course);
+    }
 }

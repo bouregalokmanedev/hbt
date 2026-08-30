@@ -50,13 +50,11 @@ class Lesson extends Model
         'mediable'
     );
 }
-public function progress(): HasMany
-{
-    return $this->hasMany(
-        LessonProgress::class
-    );
-    }
     
+    public function progress(): HasOne
+{
+    return $this->hasOne(LessonProgress::class);
+}
 
 public function progressForUser(): HasOne
 {

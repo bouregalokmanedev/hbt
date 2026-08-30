@@ -7,7 +7,6 @@ final readonly class RegisterData
     public function __construct(
         public string $first_name,
         public string $last_name,
-        public string $username,
         public string $email,
         public string $password,
         public ?string $phone = null,
@@ -21,7 +20,6 @@ final readonly class RegisterData
         return new self(
             first_name: $data['first_name'],
             last_name: $data['last_name'],
-            username: $data['username'],
             email: $data['email'],
             password: $data['password'],
             phone: $data['phone'] ?? null,

@@ -2,6 +2,12 @@
 
 return [
 
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_AUTH_TOKEN'),
+        'from' => env('TWILIO_FROM'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -28,6 +34,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
@@ -35,4 +47,15 @@ return [
         ],
     ],
 
+    'openai' => [
+    'key' => env('OPENAI_API_KEY'),
+    'url' => env(
+        'OPENAI_API_URL',
+        'https://api.openai.com/v1/chat/completions'
+    ),
+    'model' => env(
+        'OPENAI_MODEL',
+        'gpt-4o-mini'
+    ),
+],
 ];
