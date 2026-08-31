@@ -43,18 +43,22 @@ function LearnerRow({ item }: { item: Awaited<ReturnType<typeof getInstructorStu
     gap-2
     overflow-hidden
     rounded-xl
-    bg-[#F1F1F1]
+    border
+    border-[#F47822]/20
+    bg-white
     px-4
     text-xs
     font-bold
     uppercase
     tracking-[0.04em]
-    text-white
-    shadow-[0_6px_18px_rgba(58,58,58,0.12)]
+    text-[#F47822]
+    shadow-[0_5px_14px_rgba(58,58,58,0.05)]
     transition-all
     duration-300
     hover:-translate-y-0.5
+    hover:border-[#F47822]
     hover:bg-[#F47822]
+    hover:text-white
     hover:shadow-[0_10px_25px_rgba(244,120,34,0.2)]
     focus-visible:outline-none
     focus-visible:ring-2
