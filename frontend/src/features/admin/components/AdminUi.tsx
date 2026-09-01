@@ -10,8 +10,8 @@ export function AdminPanel({ children, className = "" }: { children: ReactNode; 
     return <section className={`rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6 ${className}`}>{children}</section>;
 }
 
-export function Metric({ label, value, detail, accent = false }: { label: string; value: string | number; detail: string; accent?: boolean }) {
-    return <div className={`rounded-2xl border p-4 ${accent ? "border-[#F47822]/18 bg-[#FFF8F4]" : "border-[#3A3A3A]/8 bg-white"}`}><p className="text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/42">{label}</p><p className="mt-2 text-2xl font-semibold tracking-tight text-[#3A3A3A]">{value}</p><p className="mt-1 text-[11px] text-[#3A3A3A]/45">{detail}</p></div>;
+export function Metric({ label, value, detail, accent = false, icon }: { label: string; value: string | number; detail: string; accent?: boolean; icon?: ReactNode }) {
+    return <div className={`group relative overflow-hidden rounded-2xl border p-4 shadow-[0_8px_22px_rgba(58,58,58,.035)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_13px_28px_rgba(58,58,58,.08)] ${accent ? "border-[#F47822]/20 bg-[#FFF8F4]" : "border-[#3A3A3A]/8 bg-white"}`}><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/42">{label}</p><p className="mt-2 text-2xl font-semibold tracking-tight text-[#3A3A3A]">{value}</p></div>{icon && <span className={`grid h-9 w-9 place-items-center rounded-xl ${accent ? "bg-[#F47822] text-white" : "bg-[#FFF1E8] text-[#F47822]"}`}>{icon}</span>}</div><p className="mt-2 text-[11px] text-[#3A3A3A]/45">{detail}</p><div className={`absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${accent ? "bg-[#F47822]" : "bg-[#F47822]/60"}`} /></div>;
 }
 
 export function Status({ value }: { value: string }) {
