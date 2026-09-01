@@ -20,6 +20,7 @@ use App\Domains\Students\Models\StudentPrivacySetting;
 use App\Domains\Students\Models\StudentLearningPreference;
 use App\Domains\Students\Models\StudentSecuritySetting;
 use App\Domains\Students\Models\StudentAssessmentPreference;
+use App\Notifications\VerifyEmailNotification;
 
 use App\Notifications\ResetPasswordNotification;
 
@@ -100,6 +101,14 @@ class User extends Authenticatable implements MustVerifyEmail
     $this->notify(
         new ResetPasswordNotification($token)
     );
+}
+
+/**
+ * Send the email verification notification.
+ */
+public function sendEmailVerificationNotification(): void
+{
+    $this->notify(new VerifyEmailNotification());
 }
 
 public function sessions()
