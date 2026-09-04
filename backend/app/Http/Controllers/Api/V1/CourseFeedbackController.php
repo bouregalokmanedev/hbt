@@ -11,6 +11,32 @@ use Illuminate\Http\Request;
 
 final class CourseFeedbackController extends Controller
 {
+    public function index(Course $course): JsonResponse
+    {
+        $feedback = CourseFeedback::query()
+            ->with('user:id,first_name,last_name')
+            ->where('course_id', $course->id)
+            ->latest()
+            ->take(50)
+            ->get();
+
+        return response()->json([
+            'data' => [
+                'summary' => [
+                    'count' => $feedback->count(),
+                    'average_rating' => round((float) ($feedback->avg('rating') ?? 0), 1),
+                ],
+                'reviews' => $feedback->map(fn (CourseFeedback $item) => [
+                    'id' => $item->id,
+                    'rating' => $item->rating,
+                    'comment' => $item->comment,
+                    'reviewer' => trim(($item->user?->first_name ?? '') . ' ' . ($item->user?->last_name ?? '')) ?: 'Learner',
+                    'created_at' => $item->created_at?->toISOString(),
+                ])->values(),
+            ],
+        ]);
+    }
+
     public function store(Request $request, Course $course): JsonResponse
     {
         $data = $request->validate([

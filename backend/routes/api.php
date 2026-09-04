@@ -45,6 +45,7 @@ use App\Domains\Admin\Controllers\AdminNotificationController;
 use App\Domains\Instructor\Controllers\InstructorAnnouncementController;
 use App\Domains\Messaging\Controllers\ConversationController as MessagingConversationController;
 use App\Domains\Messaging\Controllers\MessageController as MessagingMessageController;
+use App\Http\Controllers\Api\V1\LocaleController;
 
 
 
@@ -100,6 +101,7 @@ Route::put('/profile', [
     AuthController::class,
     'updateProfile',
 ]);
+Route::patch('/locale', [LocaleController::class, 'update']);
 });
 
     });
@@ -606,6 +608,11 @@ Route::get(
     [LessonController::class, 'progress']
 );
 
+Route::get('/lessons/{lesson}/notes', [\App\Http\Controllers\Api\V1\LessonNoteController::class, 'index']);
+Route::post('/lessons/{lesson}/notes', [\App\Http\Controllers\Api\V1\LessonNoteController::class, 'store']);
+Route::patch('/lessons/{lesson}/notes/{note}', [\App\Http\Controllers\Api\V1\LessonNoteController::class, 'update']);
+Route::delete('/lessons/{lesson}/notes/{note}', [\App\Http\Controllers\Api\V1\LessonNoteController::class, 'destroy']);
+
 Route::delete(
     'courses/{course}',
     [CourseController::class, 'destroy']
@@ -660,6 +667,11 @@ Route::prefix('v1')->group(function () {
         '/courses/{course}/curriculum',
         [CourseController::class, 'curriculum']
     )->name('courses.curriculum');
+
+    Route::get(
+        '/courses/{course}/reviews',
+        [CourseFeedbackController::class, 'index']
+    )->name('courses.feedback.index');
 
     Route::get(
         '/lessons/{lesson}',

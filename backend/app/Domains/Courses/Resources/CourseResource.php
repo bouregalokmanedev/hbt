@@ -45,6 +45,7 @@ class CourseResource extends JsonResource
             'thumbnail' => $this->thumbnail,
             'cover_image' => $this->cover_image,
             'preview_video' => $this->preview_video,
+            'metadata' => $this->metadata,
 
             'published_at' => $this->published_at,
             'created_at' => $this->created_at,

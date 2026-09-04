@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Domains\Quizzes;
 
 use App\Domains\Quizzes\Actions\CreateQuizAction;
 use App\Domains\Quizzes\Actions\DeleteQuizAction;
