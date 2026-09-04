@@ -42,6 +42,11 @@ export function LoginPage() {
   const [mfaEmail, setMfaEmail] = useState<string | null>(null);
   const [mfaCode, setMfaCode] = useState("");
   const [lastLoginEmail, setLastLoginEmail] = useState("");
+  const challengeEmail =
+    mfaEmail ||
+    (lastLoginEmail && error?.toLowerCase().includes("two-factor")
+      ? lastLoginEmail
+      : null);
 
   useEffect(() => {
     if (lastLoginEmail && error?.toLowerCase().includes("two-factor")) {
@@ -102,9 +107,9 @@ export function LoginPage() {
 
   const submitMfa = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!mfaEmail || mfaCode.length !== 6) return;
+    if (!challengeEmail || mfaCode.length !== 6) return;
     try {
-      await verifyTwoFactorLogin(mfaEmail, mfaCode);
+      await verifyTwoFactorLogin(challengeEmail, mfaCode);
       continueAfterAuthentication(
         useAuthStore.getState().user ?? { roles: [] },
       );
@@ -130,14 +135,14 @@ export function LoginPage() {
           description={t.login.description}
         />
 
-        {mfaEmail ? (
+        {challengeEmail ? (
           <form onSubmit={submitMfa} className="space-y-4">
             <div className="rounded-2xl border border-[#F47822]/20 bg-[#F47822]/5 p-4">
               <p className="text-sm font-bold text-[#3A3A3A]">
                 Verify your sign-in
               </p>
               <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60">
-                Enter the six-digit security code sent to {mfaEmail}.
+                Enter the six-digit security code sent to {challengeEmail}.
               </p>
             </div>
             <OtpInput
@@ -157,6 +162,7 @@ export function LoginPage() {
               onClick={() => {
                 setMfaEmail(null);
                 setMfaCode("");
+                setLastLoginEmail("");
                 clearError();
               }}
               className="w-full text-xs font-semibold text-[#3A3A3A]/55 transition hover:text-[#F47822]"
