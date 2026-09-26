@@ -16,11 +16,11 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->foreignUuid('diagnostic_scenario_attempt_id')
-                ->constrained('diagnostic_scenario_attempts')
+                ->constrained('diagnostic_scenario_attempts', 'id', 'dsr_attempt_fk')
                 ->cascadeOnDelete();
 
             $table->foreignUuid('diagnostic_scenario_step_id')
-                ->constrained('diagnostic_scenario_steps')
+                ->constrained('diagnostic_scenario_steps', 'id', 'dsr_step_fk')
                 ->cascadeOnDelete();
 
             $table->foreignId('user_id')

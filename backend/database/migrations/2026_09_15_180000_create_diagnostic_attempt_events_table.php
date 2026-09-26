@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('diagnostic_attempt_events', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('diagnostic_scenario_attempt_id')->constrained('diagnostic_scenario_attempts')->cascadeOnDelete();
+            $table->foreignUuid('diagnostic_scenario_attempt_id')->constrained('diagnostic_scenario_attempts', 'id', 'dae_attempt_fk')->cascadeOnDelete();
             $table->foreignUuid('diagnostic_scenario_id')->constrained('diagnostic_scenarios')->cascadeOnDelete();
             $table->unsignedBigInteger('sequence');
             $table->string('event_type', 40); // scenario_loaded|tool_opened|probe_connected|measurement_taken|trace_step|hint_used|step_completed|completed
@@ -18,8 +18,8 @@ return new class extends Migration
             $table->json('payload')->nullable();
             $table->timestamp('occurred_at')->useCurrent();
             $table->timestamps();
-            $table->unique(['diagnostic_scenario_attempt_id', 'sequence']);
-            $table->index(['diagnostic_scenario_id', 'event_type']);
+            $table->unique(['diagnostic_scenario_attempt_id', 'sequence'], 'dae_attempt_seq_uq');
+            $table->index(['diagnostic_scenario_id', 'event_type'], 'dae_scenario_event_idx');
         });
     }
 

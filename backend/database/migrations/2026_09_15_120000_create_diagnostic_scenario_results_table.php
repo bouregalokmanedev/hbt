@@ -16,9 +16,9 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->foreignUuid('diagnostic_scenario_attempt_id')
-                ->constrained('diagnostic_scenario_attempts')
+                ->constrained('diagnostic_scenario_attempts', 'id', 'dsres_attempt_fk')
                 ->cascadeOnDelete()
-                ->unique();
+                ->unique('dsres_attempt_uq');
 
             $table->foreignId('user_id')
                 ->constrained('users')

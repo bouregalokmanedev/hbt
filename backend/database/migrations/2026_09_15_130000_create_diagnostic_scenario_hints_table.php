@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index(['diagnostic_scenario_id', 'diagnostic_scenario_step_id']);
+            $table->index(['diagnostic_scenario_id', 'diagnostic_scenario_step_id'], 'dsh_step_idx');
             $table->index(['diagnostic_scenario_id', 'level']);
         });
     }

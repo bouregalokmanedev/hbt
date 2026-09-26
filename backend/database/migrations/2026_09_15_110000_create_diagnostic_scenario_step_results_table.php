@@ -16,11 +16,11 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->foreignUuid('diagnostic_scenario_attempt_id')
-                ->constrained('diagnostic_scenario_attempts')
+                ->constrained('diagnostic_scenario_attempts', 'id', 'dssr_attempt_fk')
                 ->cascadeOnDelete();
 
             $table->foreignUuid('diagnostic_scenario_step_id')
-                ->constrained('diagnostic_scenario_steps')
+                ->constrained('diagnostic_scenario_steps', 'id', 'dssr_step_fk')
                 ->cascadeOnDelete();
 
             $table->unsignedInteger('points_earned')->default(0);
@@ -40,7 +40,7 @@ return new class extends Migration
                 'diagnostic_scenario_step_id',
             ], 'dssr_attempt_step_unique');
 
-            $table->index('diagnostic_scenario_attempt_id');
+            $table->index('diagnostic_scenario_attempt_id', 'dssr_attempt_idx');
         });
     }
 
