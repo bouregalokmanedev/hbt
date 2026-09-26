@@ -57,6 +57,53 @@ final class AdminDashboardQuery
                 'generated_at' => now()->toISOString(),
             ],
             'statistics' => $this->statistics(),
+            'governance' => $this->governance(),
+        ];
+    }
+
+    /**
+     * Super Admin-only platform governance: staff distribution, escalated
+     * support load, and integration health. Returns null for plain admins
+     * so the permission model stays invisible to them.
+     */
+    private function governance(): ?array
+    {
+        if (! $this->administrator->hasRole(UserRole::SUPER_ADMIN->value)) {
+            return null;
+        }
+
+        $staff = fn (string $role) => $this->usersWithAnyRole([$role])->count();
+
+        return [
+            'staff' => [
+                'super_admins' => $staff(UserRole::SUPER_ADMIN->value),
+                'admins' => $staff(UserRole::ADMIN->value),
+                'support' => $staff(UserRole::SUPPORT->value),
+                'instructors' => $staff(UserRole::INSTRUCTOR->value),
+            ],
+            'escalations' => \App\Domains\Support\Models\SupportTicket::query()
+                ->whereIn('level', [
+                    \App\Domains\Support\Enums\TicketLevel::ADMIN->value,
+                    \App\Domains\Support\Enums\TicketLevel::SUPER_ADMIN->value,
+                ])
+                ->whereIn('status', [
+                    \App\Domains\Support\Enums\TicketStatus::OPEN->value,
+                    \App\Domains\Support\Enums\TicketStatus::PENDING->value,
+                ])
+                ->count(),
+            'failed_webhooks' => \App\Domains\Payments\Models\WebhookEvent::query()
+                ->where('status', 'failed')
+                ->count(),
+            'recent_privileged_actions' => \App\Models\AuditLog::query()
+                ->latest()
+                ->take(6)
+                ->get(['id', 'event', 'auditable_type', 'created_at'])
+                ->map(fn ($log) => [
+                    'event' => $log->event,
+                    'subject' => class_basename((string) $log->auditable_type),
+                    'at' => $log->created_at?->toISOString(),
+                ])
+                ->all(),
         ];
     }
 

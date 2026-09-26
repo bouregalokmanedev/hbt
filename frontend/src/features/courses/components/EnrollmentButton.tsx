@@ -2,17 +2,20 @@ interface EnrollmentButtonProps {
     isEnrolled: boolean;
     isEnrolling: boolean;
     onEnroll: () => void;
+    onStart?: () => void;
 }
 
 export function EnrollmentButton({
     isEnrolled,
     isEnrolling,
     onEnroll,
+    onStart,
 }: EnrollmentButtonProps) {
     if (isEnrolled) {
         return (
             <button
                 type="button"
+                onClick={onStart}
                 className="w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
             >
                 Start learning →

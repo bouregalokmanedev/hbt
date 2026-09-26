@@ -72,7 +72,7 @@ it('denies a cancelled enrollment', function () {
     )->toBeFalse();
 });
 
-it('denies a completed enrollment', function () {
+it('allows a completed enrollment to retain content access', function () {
     Enrollment::factory()->create([
         'user_id' => $this->user->id,
         'course_id' => $this->course->id,
@@ -84,7 +84,7 @@ it('denies a completed enrollment', function () {
             $this->user,
             $this->lesson
         )
-    )->toBeFalse();
+    )->toBeTrue();
 });
 
 it('denies a draft lesson', function () {

@@ -69,6 +69,25 @@ export const authTranslations = {
 
 backToLogin:
     "Back to sign in",
+
+            nameLettersOnly:
+                "Names can't contain numbers or symbols. Use letters only (you can use spaces, hyphens, and apostrophes).",
+
+            nameInvalid:
+                "Enter a valid name using letters only.",
+
+            passwordStrength:
+                "Use 8+ characters with an uppercase letter, number, and symbol.",
+        },
+
+        shell: {
+            backHome: "Back home",
+            eyebrow: "Automotive Diagnostics",
+            titleA: "Build stronger",
+            titleB: "diagnostic skills.",
+            description:
+                "Learn automotive diagnostics through structured courses, practical scenarios and real technical knowledge.",
+            platformTag: "E-learning Platform",
         },
 
         login: {
@@ -77,6 +96,38 @@ backToLogin:
             description:
                 "Continue learning and building your automotive diagnostic skills.",
             submit: "Sign in",
+            mfaTitle: "Verify your sign-in",
+            mfaDescription:
+                "Enter the six-digit security code sent to {{email}}.",
+            mfaCodeLabel: "Verification code",
+            mfaHint: "Paste the full code or enter each digit.",
+            mfaSubmit: "Verify and sign in",
+            mfaDifferentAccount: "Use a different account",
+            mfaResend: "Resend code",
+            mfaResending: "Sending…",
+            mfaResent: "A new code was sent.",
+            mfaResendFail: "Could not resend the code. Please try again.",
+            mfaDigitAria: "Verification digit {{index}}",
+        },
+
+        errors: {
+            invalidCredentials:
+                "Email or password is incorrect. Check your details, or reset your password.",
+            emailNotVerified:
+                "Please verify your email address before signing in. Check your inbox for the verification link.",
+            accountInactive:
+                "Your account is disabled. Please contact support to regain access.",
+            rateLimited:
+                "Too many sign-in attempts. Please wait a moment and try again.",
+            validationFailed:
+                "Please correct the highlighted fields and try again.",
+            resendVerification: "Resend verification email",
+            resendVerificationSending: "Sending…",
+            resendVerificationSent:
+                "If this email needs verification, a new link has been sent.",
+            resendVerificationFailed:
+                "Could not resend the verification email. Please try again.",
+            unknown: "Something went wrong. Please try again.",
         },
 
         register: {
@@ -113,6 +164,14 @@ backToLogin:
 
             success:
                 "If an account exists for this email address, you'll receive instructions to reset your password.",
+        },
+
+        google: {
+            title: "Unable to sign in with Google",
+            signingIn: "Signing you in securely",
+            finishing: "Finishing your Google authentication…",
+            genericError:
+                "Google sign-in could not be completed. Please try again.",
         },
 
         reset: {
@@ -220,6 +279,25 @@ invalidEmail:
 
 backToLogin:
     "العودة إلى تسجيل الدخول",
+
+            nameLettersOnly:
+                "لا يمكن أن يحتوي الاسم على أرقام أو رموز. استخدم الحروف فقط (يمكنك استخدام المسافات والشرطات وعلامات الاقتباس).",
+
+            nameInvalid:
+                "أدخل اسمًا صالحًا باستخدام الحروف فقط.",
+
+            passwordStrength:
+                "استخدم 8 أحرف على الأقل تتضمن حرفًا كبيرًا ورقمًا ورمزًا.",
+        },
+
+        shell: {
+            backHome: "العودة للرئيسية",
+            eyebrow: "تشخيص السيارات",
+            titleA: "ابنِ مهارات",
+            titleB: "تشخيصية أقوى.",
+            description:
+                "تعلم تشخيص السيارات عبر دورات منظمة وسيناريوهات عملية ومعرفة تقنية حقيقية.",
+            platformTag: "منصة التعليم الإلكتروني",
         },
 
         login: {
@@ -234,6 +312,39 @@ backToLogin:
 
             submit:
                 "تسجيل الدخول",
+
+            mfaTitle: "تحقق من تسجيل الدخول",
+            mfaDescription:
+                "أدخل رمز الأمان المكون من ستة أرقام المرسل إلى {{email}}.",
+            mfaCodeLabel: "رمز التحقق",
+            mfaHint: "الصق الرمز كاملا أو أدخل كل رقم.",
+            mfaSubmit: "تحقق وسجل الدخول",
+            mfaDifferentAccount: "استخدام حساب مختلف",
+            mfaResend: "إعادة إرسال الرمز",
+            mfaResending: "جارٍ الإرسال…",
+            mfaResent: "تم إرسال رمز جديد.",
+            mfaResendFail: "تعذّرت إعادة إرسال الرمز. حاول مجددا.",
+            mfaDigitAria: "رقم التحقق {{index}}",
+        },
+
+        errors: {
+            invalidCredentials:
+                "البريد الإلكتروني أو كلمة المرور غير صحيحة. تحقق من بياناتك أو أعد تعيين كلمة المرور.",
+            emailNotVerified:
+                "يرجى التحقق من بريدك الإلكتروني قبل تسجيل الدخول. تحقق من صندوق الوارد لرابط التحقق.",
+            accountInactive:
+                "حسابك معطّل. يرجى التواصل مع الدعم لاستعادة الوصول.",
+            rateLimited:
+                "محاولات دخول كثيرة. يرجى الانتظار قليلاً ثم المحاولة مجدداً.",
+            validationFailed:
+                "يرجى تصحيح الحقول المحددة والمحاولة مجدداً.",
+            resendVerification: "إعادة إرسال رابط التحقق",
+            resendVerificationSending: "جارٍ الإرسال…",
+            resendVerificationSent:
+                "إذا كان هذا البريد بحاجة إلى تحقق، فقد تم إرسال رابط جديد.",
+            resendVerificationFailed:
+                "تعذّرت إعادة إرسال رابط التحقق. حاول مجدداً.",
+            unknown: "حدث خطأ ما. حاول مجدداً.",
         },
 
         register: {
@@ -280,6 +391,14 @@ backToLogin:
 
             success:
                 "إذا كان هناك حساب مرتبط بهذا البريد الإلكتروني، فستتلقى تعليمات لإعادة تعيين كلمة المرور.",
+        },
+
+        google: {
+            title: "تعذر تسجيل الدخول عبر Google",
+            signingIn: "جارٍ تسجيل دخولك بأمان",
+            finishing: "جارٍ إتمام مصادقة Google الخاصة بك…",
+            genericError:
+                "تعذر إتمام تسجيل الدخول عبر Google. حاول مجددا.",
         },
 
         reset: {

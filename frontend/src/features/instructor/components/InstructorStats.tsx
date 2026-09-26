@@ -5,6 +5,7 @@ import {
     TrendingUp,
     Users,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import type {
     InstructorDashboard,
@@ -15,11 +16,12 @@ interface InstructorStatsProps {
 }
 
 export function InstructorStats({ data }: InstructorStatsProps) {
+    const { t } = useTranslation();
     const stats = [
-        { label: "Active learners", value: data.students.active, detail: `${data.students.new_this_month} joined this month`, icon: Users, tone: "orange" },
-        { label: "Course completion", value: `${data.overview.completion_rate}%`, detail: `${data.progress.completed} learner journeys completed`, icon: GraduationCap, tone: "dark" },
-        { label: "Average progress", value: `${data.progress.average_percentage}%`, detail: `${data.progress.in_progress} learners are in progress`, icon: TrendingUp, tone: "orange" },
-        { label: "Learning time", value: `${data.learning.total_time_hours}h`, detail: `${data.learning.average_quiz_score}% average quiz score`, icon: Clock3, tone: "dark" },
+        { label: t("instructor.dashboard.stats.active"), value: data.students.active, detail: t("instructor.dashboard.stats.joined", { count: data.students.new_this_month }), icon: Users, tone: "orange" },
+        { label: t("instructor.dashboard.stats.completion"), value: `${data.overview.completion_rate}%`, detail: t("instructor.dashboard.stats.journeys", { count: data.progress.completed }), icon: GraduationCap, tone: "dark" },
+        { label: t("instructor.dashboard.stats.avgProgress"), value: `${data.progress.average_percentage}%`, detail: t("instructor.dashboard.stats.inProgress", { count: data.progress.in_progress }), icon: TrendingUp, tone: "orange" },
+        { label: t("instructor.dashboard.stats.time"), value: `${data.learning.total_time_hours}h`, detail: t("instructor.dashboard.stats.quizScore", { count: data.learning.average_quiz_score }), icon: Clock3, tone: "dark" },
     ] as const;
 
     return (

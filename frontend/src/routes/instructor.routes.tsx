@@ -8,15 +8,22 @@ import {
 } from "@/features/auth";
 
 import {
-    InstructorDashboardPage,
-    InstructorCoursePage,
+    InstructorAssessmentWorkspacePage,
+    InstructorCourseAnalyticsPage,
     InstructorCourseEditorPage,
+    InstructorCourseOutcomesPage,
+    InstructorCoursePage,
     InstructorCurriculumPage,
+    InstructorDashboardPage,
+    InstructorDiagnosticsPage,
+    InstructorSimulatorPage,
+    InstructorLoungePage,
+    InstructorProfilePage,
     InstructorQuizWorkspacePage,
+    InstructorRevenuePage,
+    InstructorSettingsPage,
     InstructorStudentProfilePage,
     InstructorStudentsPage,
-    InstructorCourseAnalyticsPage,
-    InstructorCourseOutcomesPage,
 } from "@/features/instructor/pages";
 
 import {
@@ -53,6 +60,11 @@ export const instructorRoutes: RouteObject[] = [
                                     <InstructorCoursePage />,
                             },
                             {
+                                path: "/instructor/courses/new",
+                                element:
+                                    <InstructorCourseEditorPage />,
+                            },
+                            {
                                 path: "/instructor/courses/:courseId",
                                 element:
                                     <InstructorCourseEditorPage />,
@@ -66,6 +78,11 @@ export const instructorRoutes: RouteObject[] = [
                                 path: "/instructor/courses/:courseId/quizzes",
                                 element:
                                     <InstructorQuizWorkspacePage />,
+                            },
+                            {
+                                path: "/instructor/courses/:courseId/assessments",
+                                element:
+                                    <InstructorAssessmentWorkspacePage />,
                             },
                             {
                                 path: "/instructor/courses/:courseId/analytics",
@@ -87,8 +104,15 @@ export const instructorRoutes: RouteObject[] = [
                                 element:
                                     <InstructorStudentProfilePage />,
                             },
-                            { path: "/instructor/messages", element: <MessagesPage /> },
-                            { path: "/instructor/announcements", element: <InstructorAnnouncementsPage /> },
+                            { path: "/instructor/messages", element: <MessagesPage basePath="/instructor" getProfilePath={(participant) => participant.role === "Student" && participant.user_id ? `/instructor/students/${participant.user_id}` : null} /> },
+                            { path: "/instructor/announcements", element: <MessagesPage mode="announcements" basePath="/instructor" announceHref="/instructor/announcements/new" /> },
+                            { path: "/instructor/announcements/new", element: <InstructorAnnouncementsPage /> },
+                            { path: "/instructor/diagnostics", element: <InstructorDiagnosticsPage /> },
+                            { path: "/instructor/simulator", element: <InstructorSimulatorPage /> },
+                            { path: "/instructor/lounge", element: <InstructorLoungePage /> },
+                            { path: "/instructor/revenue", element: <InstructorRevenuePage /> },
+                            { path: "/instructor/profile", element: <InstructorProfilePage /> },
+                            { path: "/instructor/settings", element: <InstructorSettingsPage /> },
                         ],
                     },
                 ],

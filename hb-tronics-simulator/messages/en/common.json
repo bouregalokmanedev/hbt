@@ -1,0 +1,33 @@
+{
+  "action": {
+    "start": "Start",
+    "stop": "Stop",
+    "reset": "Reset",
+    "next": "Next",
+    "previous": "Previous",
+    "continue": "Continue",
+    "review": "Review",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "export": "Export",
+    "close": "Close",
+    "install": "Install data pack",
+    "request": "Request coverage",
+    "run": "Run",
+    "record": "Record",
+    "locked": "Locked"
+  },
+  "status": {
+    "pass": "Pass",
+    "fault": "Fault",
+    "warning": "Warning",
+    "inSpec": "In spec",
+    "outOfSpec": "Out of spec",
+    "belowTarget": "Below target",
+    "ok": "OK",
+    "current": "Current",
+    "stored": "Stored",
+    "pending": "Pending",
+    "intermittent": "Intermittent"
+  }
+}

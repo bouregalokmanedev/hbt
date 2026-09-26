@@ -3,6 +3,8 @@ import {
     useState,
 } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import {
     Check,
     X,
@@ -15,6 +17,11 @@ import {
 import {
     useAuthStore,
 } from "@/features/auth";
+
+import {
+    authApi,
+} from "@/features/auth/api/auth.api";
+
 import { dashboardApi } from "@/features/dashboard/api/dashboard.api";
 import type { DashboardData } from "@/features/dashboard/types/dashboard.types";
 
@@ -198,6 +205,8 @@ function createFormData(
 
 export function ProfilePage() {
 
+    const { t } = useTranslation();
+
     const {
         user,
     } = useAuth();
@@ -207,6 +216,13 @@ export function ProfilePage() {
         useAuthStore(
             (state) =>
                 state.updateProfile,
+        );
+
+
+    const updateUser =
+        useAuthStore(
+            (state) =>
+                state.updateUser,
         );
 
 
@@ -255,7 +271,7 @@ export function ProfilePage() {
 
     useEffect(() => {
 
-        if (user) {
+        if (user && !isEditing) {
 
             setForm(
                 createFormData(
@@ -265,7 +281,7 @@ export function ProfilePage() {
 
         }
 
-    }, [user]);
+    }, [user, isEditing]);
 
     useEffect(() => {
         void dashboardApi.getDashboard()
@@ -369,6 +385,91 @@ export function ProfilePage() {
 
     /*
     |--------------------------------------------------------------------------
+    | Avatar change
+    |--------------------------------------------------------------------------
+    |
+    | The avatar is persisted right away (it is independent from the rest of
+    | the form) so the new picture survives navigation and shows up in the
+    | navbar/sidebar immediately. Edit mode is intentionally left untouched.
+    */
+
+    const handleAvatarChange = async (
+        avatar: string | null,
+    ) => {
+
+        setSaveError(
+            null,
+        );
+
+        setSaveSuccess(
+            false,
+        );
+
+        setForm(
+            (current) =>
+                current
+                    ? {
+                          ...current,
+                          avatar,
+                      }
+                    : current,
+        );
+
+        try {
+
+            const updated =
+                await authApi.updateProfile(
+                    {
+                        first_name:
+                            user.first_name,
+                        last_name:
+                            user.last_name,
+                        username:
+                            user.username ?? "",
+                        phone:
+                            user.phone ?? null,
+                        country:
+                            user.country ?? null,
+                        bio:
+                            user.bio ?? null,
+                        avatar,
+                        language:
+                            user.language ?? "en",
+                        timezone:
+                            user.timezone ?? "UTC",
+                    },
+                );
+
+            updateUser(
+                updated,
+            );
+
+        } catch (error) {
+
+            setSaveError(
+                error instanceof Error
+                    ? error.message
+                    : t("profilePage.toast.failed"),
+            );
+
+            setForm(
+                (current) =>
+                    current
+                        ? {
+                              ...current,
+                              avatar:
+                                  user.avatar ?? null,
+                          }
+                        : current,
+            );
+
+        }
+
+    };
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Save
     |--------------------------------------------------------------------------
     */
@@ -403,11 +504,6 @@ export function ProfilePage() {
                     : null;
 
 
-            console.log(
-                "Saving profile...",
-            );
-
-
             await updateProfile({
 
                 first_name:
@@ -437,11 +533,6 @@ export function ProfilePage() {
                 timezone:
                     form.timezone,
             });
-
-
-            console.log(
-                "Profile update API succeeded",
-            );
 
 
             /*
@@ -486,16 +577,10 @@ export function ProfilePage() {
 
         } catch (error) {
 
-            console.error(
-                "Profile update failed:",
-                error,
-            );
-
-
             setSaveError(
                 error instanceof Error
                     ? error.message
-                    : "Unable to save your profile.",
+                    : t("profilePage.toast.failed"),
             );
 
 
@@ -519,7 +604,7 @@ export function ProfilePage() {
             className="
                 relative
                 min-h-full
-                bg-[#F3F3F3]
+                bg-[#F3F3F3] dark:bg-[#101013]
             "
         >
 
@@ -547,7 +632,7 @@ export function ProfilePage() {
                             rounded-2xl
                             border
                             border-emerald-500/20
-                            bg-white
+                            bg-white dark:bg-[#1b1b20]
                             shadow-[0_20px_60px_rgba(0,0,0,0.16)]
                         "
                     >
@@ -572,7 +657,7 @@ export function ProfilePage() {
                                     justify-center
                                     rounded-full
                                     bg-emerald-500/10
-                                    text-emerald-600
+                                    text-emerald-600 dark:text-emerald-400
                                 "
                             >
 
@@ -597,10 +682,10 @@ export function ProfilePage() {
                                     className="
                                         text-sm
                                         font-semibold
-                                        text-[#3A3A3A]
+                                        text-[#3A3A3A] dark:text-[#ececef]
                                     "
                                 >
-                                    Profile updated
+                                    {t("profilePage.toast.updated")}
                                 </p>
 
 
@@ -609,12 +694,10 @@ export function ProfilePage() {
                                         mt-1
                                         text-xs
                                         leading-5
-                                        text-[#3A3A3A]/55
+                                        text-[#3A3A3A]/55 dark:text-white/55
                                     "
                                 >
-                                    Your profile changes
-                                    have been saved
-                                    successfully.
+                                    {t("profilePage.toast.updatedDesc")}
                                 </p>
 
                             </div>
@@ -635,12 +718,12 @@ export function ProfilePage() {
                                     items-center
                                     justify-center
                                     rounded-lg
-                                    text-[#3A3A3A]/30
+                                    text-[#3A3A3A]/30 dark:text-white/30
                                     transition
-                                    hover:bg-[#3A3A3A]/5
-                                    hover:text-[#3A3A3A]
+                                    hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5
+                                    hover:text-[#3A3A3A] dark:hover:text-[#ececef]
                                 "
-                                aria-label="Close notification"
+                                aria-label={t("profilePage.toast.close")}
                             >
 
                                 <X
@@ -708,7 +791,7 @@ export function ProfilePage() {
                             rounded-2xl
                             border
                             border-red-500/20
-                            bg-white
+                            bg-white dark:bg-[#1b1b20]
                             shadow-[0_20px_60px_rgba(0,0,0,0.16)]
                         "
                     >
@@ -758,10 +841,10 @@ export function ProfilePage() {
                                     className="
                                         text-sm
                                         font-semibold
-                                        text-[#3A3A3A]
+                                        text-[#3A3A3A] dark:text-[#ececef]
                                     "
                                 >
-                                    Unable to save
+                                    {t("profilePage.toast.failed")}
                                 </p>
 
 
@@ -770,7 +853,7 @@ export function ProfilePage() {
                                         mt-1
                                         text-xs
                                         leading-5
-                                        text-[#3A3A3A]/55
+                                        text-[#3A3A3A]/55 dark:text-white/55
                                     "
                                 >
                                     {saveError}
@@ -794,12 +877,12 @@ export function ProfilePage() {
                                     items-center
                                     justify-center
                                     rounded-lg
-                                    text-[#3A3A3A]/30
+                                    text-[#3A3A3A]/30 dark:text-white/30
                                     transition
-                                    hover:bg-[#3A3A3A]/5
-                                    hover:text-[#3A3A3A]
+                                    hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5
+                                    hover:text-[#3A3A3A] dark:hover:text-[#ececef]
                                 "
-                                aria-label="Close notification"
+                                aria-label={t("profilePage.toast.close")}
                             >
 
                                 <X
@@ -847,6 +930,8 @@ export function ProfilePage() {
                         user={user}
                         isEditing={isEditing}
                         onEdit={handleEdit}
+                        onAvatarChange={handleAvatarChange}
+                        avatar={form.avatar}
                         badges={profileBadges}
                     />
 
@@ -877,9 +962,7 @@ export function ProfilePage() {
                             />
 
 
-                            <MessagesCard
-                                unreadCount={0}
-                            />
+                            <MessagesCard />
 
                         </div>
 
@@ -892,7 +975,7 @@ export function ProfilePage() {
 
                             <LearningOverview stats={dashboard?.stats} />
 
-                            <FeedbackCard courses={dashboard?.current_learning} />
+                            <FeedbackCard />
 
                         </div>
 

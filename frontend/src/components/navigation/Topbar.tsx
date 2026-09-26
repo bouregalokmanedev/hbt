@@ -8,6 +8,10 @@ import {
     useAuth,
 } from "@/features/auth";
 
+import {
+    UserAvatar,
+} from "@/components/ui";
+
 interface TopbarProps {
     onMenuClick: () => void;
 }
@@ -18,19 +22,6 @@ export function Topbar({
     const {
         user,
     } = useAuth();
-
-    const initials =
-        [
-            user?.first_name,
-            user?.last_name,
-        ]
-            .filter(Boolean)
-            .map(
-                (name) =>
-                    name?.[0],
-            )
-            .join("")
-            .toUpperCase() || "U";
 
     return (
         <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
@@ -85,9 +76,11 @@ export function Topbar({
                         type="button"
                         className="flex items-center gap-3 rounded-xl px-2 py-1.5 transition hover:bg-muted"
                     >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                            {initials}
-                        </div>
+                        <UserAvatar
+                            user={user}
+                            className="h-9 w-9"
+                            fallbackClassName="bg-primary text-xs font-semibold text-primary-foreground"
+                        />
 
                         <div className="hidden text-left sm:block">
                             <div className="text-sm font-medium">

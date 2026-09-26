@@ -304,6 +304,10 @@ export interface InstructorStudentProfile {
     assessment_attempts: Array<{ id: string; assessment_title: string; course_title: string; score: number | null; passed: boolean | null; status: string; submitted_at: string | null }>;
     certificates: Array<{ id: string; course_id: string; course_title: string; certificate_number: string; issued_at: string | null }>;
     activity: Array<{ type: string; title: string; detail: string; occurred_at: string | null }>;
+    simulator?: {
+        summary: SimulatorActivitySummary;
+        sessions: SimulatorSessionRow[];
+    };
 }
 
 export interface InstructorCourseFeedback {
@@ -337,4 +341,140 @@ export interface InstructorCourseCertificates {
         student_email: string | null;
         issued_at: string | null;
     }>;
+}
+
+export type AssessmentMode = "diagnostic" | "formative" | "practice" | "summative" | "final";
+
+export interface InstructorAssessment {
+    id: string;
+    title: string;
+    description?: string | null;
+    status: string;
+    minimum_score?: number | null;
+    max_attempts?: number | null;
+    assessment_mode?: AssessmentMode | string;
+    is_required?: boolean;
+    questions?: Array<{
+        question_id: string;
+        points: number;
+        competency_id?: string | null;
+    }>;
+    competencies?: Array<{
+        id: string;
+        code: string;
+        name: string;
+        pivot: { weight: number };
+    }>;
+    [key: string]: any;
+}
+
+export interface AvailableAssessmentQuestion {
+    id: string;
+    question: string;
+    points?: number | null;
+    [key: string]: any;
+}
+
+export interface AvailableCompetency {
+    id: string;
+    code: string;
+    name: string;
+    [key: string]: any;
+}
+
+export interface PendingReview {
+    id: string;
+    attempt_id: string;
+    [key: string]: any;
+}
+
+export interface FlaggedAttempt {
+    id: string;
+    attempt_id: string;
+    issues: any[];
+    [key: string]: any;
+}
+
+export interface SimulatorSessionResult {
+    outcome: string | null;
+    verdict: string | null;
+    score: number | null;
+    attempts: number | null;
+    hints_used: number | null;
+    duration_seconds: number | null;
+    created_at: string | null;
+}
+
+export interface SimulatorSessionRow {
+    id: string;
+    student: { id: number; name: string; email: string; avatar: string | null } | null;
+    tool: string;
+    vehicle_key: string | null;
+    scenario_key: string | null;
+    status: string;
+    score: number | null;
+    duration_seconds: number | null;
+    started_at: string | null;
+    ended_at: string | null;
+    result: SimulatorSessionResult | null;
+}
+
+export interface SimulatorActivitySummary {
+    sessions: number;
+    completed: number;
+    results: number;
+    average_score: number;
+    pass_rate: number;
+    average_hints: number;
+    average_duration_seconds: number;
+}
+
+export interface SimulatorAnalyticsTotals extends SimulatorActivitySummary {
+    active: number;
+    students: number;
+    total_duration_seconds: number;
+}
+
+export interface SimulatorToolAnalytics {
+    tool: string;
+    sessions: number;
+    completed: number;
+    results: number;
+    average_score: number;
+    pass_rate: number;
+    average_hints: number;
+    average_duration_seconds: number;
+}
+
+export interface SimulatorAnalytics {
+    totals: SimulatorAnalyticsTotals;
+    by_tool: SimulatorToolAnalytics[];
+    by_vehicle?: Array<{ vehicle_key: string; sessions: number; label?: string | null }>;
+}
+
+export interface SimulatorStudentActivity {
+    student_id: number;
+    summary: SimulatorActivitySummary;
+    sessions: SimulatorSessionRow[];
+}
+
+export interface SimulatorSessionsPage {
+    data: SimulatorSessionRow[];
+    meta: {
+        current_page: number;
+        last_page: number;
+        per_page: number;
+        total: number;
+    };
+}
+
+export interface InstructorSimulatorSessionsParams {
+    search?: string;
+    tool?: string;
+    status?: string;
+    vehicle?: string;
+    date_from?: string;
+    date_to?: string;
+    page?: number;
+    per_page?: number;
 }

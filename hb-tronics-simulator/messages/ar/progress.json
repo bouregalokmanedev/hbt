@@ -1,0 +1,14 @@
+{
+  "title": "التقدّم",
+  "kicker": "سجل التعلّم",
+  "overall": "التقدّم الإجمالي",
+  "skillLevels": "مستويات المهارة لكل وحدة",
+  "stats": "الإحصائيات",
+  "certifications": "الشهادات",
+  "weakSpots": "نقاط الضعف",
+  "recommendedPath": "المسار الموصى به",
+  "coach": "المدرّب",
+  "focus": "التركيز الحالي",
+  "cert": { "earned": "مكتسبة", "in-progress": "قيد التقدّم" },
+  "open": "فتح"
+}

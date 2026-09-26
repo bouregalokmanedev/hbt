@@ -60,6 +60,7 @@ final class GetDashboardAction
             ->get()
             ->map(fn (AuditLog $activity): array => [
                 'id' => $activity->id,
+                'event' => $activity->event,
                 'description' => match ($activity->event) {
                     'enrollment.created' => 'Enrolled in a course',
                     'enrollment.completed' => 'Completed a course',
@@ -116,6 +117,10 @@ final class GetDashboardAction
                 app(StudentNotificationService::class)->send($user, 'assessment_ready', 'Final assessment is ready', "You have completed the requirements for {$assessment->title}.", "/assessments/{$assessment->id}/exam", "assessment-ready:{$assessment->id}");
             }
         }
+
+        $skillGaps = $this->skillGaps($user, $enrollments);
+        $reviewDue = $this->reviewDue($user);
+        $cohortOverview = $this->cohortOverview($user);
 
         return new DashboardData(
             user: $user,
@@ -180,6 +185,192 @@ final class GetDashboardAction
 
                 'queries_remaining' => 0,
             ],
+
+            skillGaps: $skillGaps,
+            cohortOverview: $cohortOverview,
+            reviewDue: $reviewDue,
         );
+    }
+
+    /**
+     * Review queue: the student's most recent failed quiz attempts and how
+     * many questions they still miss, so the dashboard can offer a short
+     * "review due" loop instead of a passive score display.
+     *
+     * @return list<array{id:string,title:string,course_title:string,wrong_count:int,action_url:string}>
+     */
+    private function reviewDue(User $user): array
+    {
+        try {
+            $latestFailed = \App\Domains\Quizzes\Models\QuizAttempt::query()
+                ->where('user_id', $user->getKey())
+                ->where('status', 'submitted')
+                ->orderByDesc('submitted_at')
+                ->get()
+                ->groupBy('quiz_id')
+                ->map(fn ($group) => $group->first())
+                ->filter(fn ($attempt) => ! $attempt->passed)
+                ->take(3);
+
+            if ($latestFailed->isEmpty()) {
+                return [];
+            }
+
+            $wrongCounts = \App\Domains\Quizzes\Models\QuizAttemptAnswer::query()
+                ->whereIn('attempt_id', $latestFailed->pluck('id'))
+                ->where('is_correct', false)
+                ->groupBy('attempt_id')
+                ->selectRaw('attempt_id, count(*) as wrong_count')
+                ->pluck('wrong_count', 'attempt_id');
+
+            $quizzes = \App\Domains\Quizzes\Models\Quiz::query()
+                ->with('section.course:id,title')
+                ->whereIn('id', $latestFailed->pluck('quiz_id'))
+                ->get()
+                ->keyBy('id');
+
+            return $latestFailed
+                ->map(function ($attempt) use ($wrongCounts, $quizzes) {
+                    $quiz = $quizzes->get($attempt->quiz_id);
+
+                    if (! $quiz) {
+                        return null;
+                    }
+
+                    $courseId = $quiz->section?->course?->id ?? null;
+
+                    return [
+                        'id' => $quiz->id,
+                        'title' => $quiz->title,
+                        'course_title' => $quiz->section?->course?->title ?? 'Course',
+                        'wrong_count' => (int) $wrongCounts->get($attempt->id, 0),
+                        'action_url' => $courseId
+                            ? "/courses/{$courseId}/quizzes/{$quiz->id}"
+                            : '/assessments',
+                    ];
+                })
+                ->filter()
+                ->values()
+                ->all();
+        } catch (\Throwable) {
+            // Tables may be empty during early setup — the queue stays empty
+            return [];
+        }
+    }
+
+    /**
+     * Student-facing skill gaps: weak quizzes, stalled lessons,
+     * and failed diagnostic scenarios requiring retakes.
+     *
+     * @return list<array{type:string,title:string,course_title:string,score:int|null,required:int|null,action_url:string}>
+     */
+    private function skillGaps(User $user, $enrollments): array
+    {
+        $gaps = collect();
+
+        // Weak quizzes: latest submitted attempt below pass threshold
+        try {
+            $quizAttempts = \App\Domains\Quizzes\Models\QuizAttempt::query()
+                ->with(['quiz.section.course:id,title'])
+                ->where('user_id', $user->getKey())
+                ->where('status', 'submitted')
+                ->orderByDesc('submitted_at')
+                ->get()
+                ->groupBy('quiz_id')
+                ->map(fn ($group) => $group->first());
+
+            foreach ($quizAttempts as $attempt) {
+                $quiz = $attempt->quiz;
+                if (! $quiz || $attempt->passed) {
+                    continue;
+                }
+                $courseTitle = $quiz->section?->course?->title ?? 'Course';
+                $courseId = $quiz->section?->course?->id ?? null;
+                $gaps->push([
+                    'type' => 'quiz',
+                    'title' => $quiz->title,
+                    'course_title' => $courseTitle,
+                    'score' => $attempt->percentage,
+                    'required' => $quiz->pass_percentage,
+                    'action_url' => $courseId ? "/courses/{$courseId}/quizzes/{$quiz->id}" : '/assessments',
+                ]);
+                if ($gaps->count() >= 5) {
+                    break;
+                }
+            }
+        } catch (\Throwable) {
+            // Tables may be empty during early setup — gaps remain empty
+        }
+
+        // Stalled lessons: in-progress but not completed for > 3 days
+        if ($gaps->count() < 5) {
+            try {
+                $stalled = \App\Models\LessonProgress::query()
+                    ->with(['lesson.section.course:id,title'])
+                    ->where('user_id', $user->getKey())
+                    ->whereNotNull('progress_percentage')
+                    ->whereNull('completed_at')
+                    ->where('updated_at', '<', now()->subDays(3))
+                    ->orderBy('updated_at')
+                    ->limit(5 - $gaps->count())
+                    ->get();
+
+                foreach ($stalled as $progress) {
+                    $lesson = $progress->lesson ?? null;
+                    if (! $lesson) {
+                        continue;
+                    }
+                    $courseTitle = $lesson->section?->course?->title ?? 'Course';
+                    $courseId = $lesson->section?->course?->id ?? null;
+                    $gaps->push([
+                        'type' => 'lesson',
+                        'title' => $lesson->title,
+                        'course_title' => $courseTitle,
+                        'score' => (int) ($progress->progress_percentage ?? 0),
+                        'required' => 100,
+                        'action_url' => $courseId ? "/courses/{$courseId}/lessons/{$lesson->id}" : '/my-courses',
+                    ]);
+                }
+            } catch (\Throwable) {
+            }
+        }
+
+        return $gaps->values()->all();
+    }
+
+    private function cohortOverview(User $user): ?array
+    {
+        if (! $user->hasAnyRole(['Instructor', 'Admin', 'Super Admin'])) {
+            return null;
+        }
+
+        try {
+            $courseIds = \App\Models\Course::query()
+                ->when($user->hasRole('Instructor'), fn ($query) => $query->where('instructor_id', $user->id))
+                ->pluck('id');
+
+            if ($courseIds->isEmpty()) {
+                return null;
+            }
+
+            $enrollmentStats = \App\Models\Enrollment::query()
+                ->whereIn('course_id', $courseIds)
+                ->selectRaw("status, count(*) as count")
+                ->groupBy('status')
+                ->pluck('count', 'status');
+
+            $avgProgress = \App\Models\CourseProgress::query()
+                ->whereIn('course_id', $courseIds)
+                ->avg('progress_percentage');
+
+            return [
+                'total_enrollments' => (int) array_sum($enrollmentStats->toArray()),
+                'by_status' => $enrollmentStats->toArray(),
+                'avg_progress' => $avgProgress !== null ? (int) round($avgProgress) : 0,
+                'courses' => $courseIds->count(),
+            ];
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

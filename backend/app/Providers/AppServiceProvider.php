@@ -8,8 +8,16 @@ use App\Domains\Enrollments\Repositories\EloquentEnrollmentRepository;
 use App\Domains\Enrollments\Policies\EnrollmentPolicy;
 use App\Models\Enrollment;
 use App\Domains\Courses\Events\CourseCompleted;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticFailed;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticPassed;
+use App\Domains\DiagnosticScenarios\Listeners\UpdateDiagnosticProgress;
 use App\Domains\Enrollments\Listeners\CompleteEnrollmentOnCourseCompleted;
 use App\Domains\Enrollments\Listeners\CompleteEnrollmentWhenCourseCompleted;
+use App\Domains\Payments\Events\PaymentFailed;
+use App\Domains\Payments\Events\PaymentRefunded;
+use App\Domains\Payments\Events\PaymentSucceeded;
+use App\Domains\Payments\Listeners\EnrollUserAfterSuccessfulPayment;
+use App\Domains\Payments\Listeners\RecordPaymentAudit;
 
 use App\Contracts\Services\AuthenticationServiceInterface;
 use App\Services\AuthenticationService;
@@ -23,6 +31,9 @@ use App\Events\ModelChanged;
 use App\Listeners\WriteAuditLog;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Http\Request;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use App\Models\Course;
 use App\Domains\Courses\Policies\CoursePolicy;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
@@ -99,6 +110,7 @@ use App\Domains\Lessons\Events\LessonCompleted;
 use App\Domains\Lessons\Events\LessonProgressUpdated;
 
 use App\Domains\Lessons\Listeners\RecordLessonCompletedAudit;
+use App\Domains\Lessons\Listeners\SendLessonCompletedNotification;
 use App\Domains\Courses\Listeners\SyncSectionProgress;
 
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCreatedAudit;
@@ -230,6 +242,17 @@ $this->app->bind(
     DatabaseMentorContentRetriever::class,
 );
 
+$this->app->bind(
+    \App\Domains\Assessments\Contracts\AnswerEvaluationProvider::class,
+    function ($app) {
+        $key = $app['config']->get('services.openai.key');
+
+        return empty($key)
+            ? new \App\Domains\Assessments\Providers\NullAnswerEvaluationProvider()
+            : new \App\Domains\Assessments\Providers\OpenAIAnswerEvaluationProvider();
+    },
+);
+
     }
     /**
      * Bootstrap any application services.
@@ -237,6 +260,25 @@ $this->app->bind(
    public function boot(): void
 {
     Password::defaults(fn () => Password::min(8)->mixedCase()->numbers()->symbols());
+
+    RateLimiter::for('api', function (Request $request) {
+        return Limit::perMinute(120)->by($request->user()?->getAuthIdentifier() ?: $request->ip());
+    });
+
+    RateLimiter::for('auth', function (Request $request) {
+        return [
+            Limit::perMinute(10)->by($request->ip()),
+            Limit::perMinute(5)->by(strtolower((string) $request->input('email', '')).'|'.$request->ip()),
+        ];
+    });
+
+    RateLimiter::for('password-reset', function (Request $request) {
+        return Limit::perMinute(5)->by($request->ip());
+    });
+
+    RateLimiter::for('two-factor-verify', function (Request $request) {
+        return Limit::perMinute(5)->by($request->ip().'|'.strtolower((string) $request->input('email', '')));
+    });
 
     Gate::policy(
         Course::class,
@@ -271,6 +313,10 @@ Gate::policy(
 Gate::policy(
     Media::class,
     MediaPolicy::class
+);
+Gate::policy(
+    \App\Models\SimulatorDataPack::class,
+    \App\Domains\Simulator\Policies\SimulatorDataPackPolicy::class
 );
     Event::listen(
         ModelChanged::class,
@@ -308,6 +354,10 @@ RecordCourseRestoredAudit::class,
 Event::listen(
     LessonCompleted::class,
     RecordLessonCompletedAudit::class,
+);
+Event::listen(
+    LessonCompleted::class,
+    SendLessonCompletedNotification::class,
 );
 Event::listen(
     LessonProgressUpdated::class,
@@ -369,12 +419,39 @@ Event::listen(
     IssueCertificateForPassedAssessment::class,
 );
 Event::listen(
+    DiagnosticPassed::class,
+    [UpdateDiagnosticProgress::class, 'handlePassed'],
+);
+Event::listen(
+    DiagnosticFailed::class,
+    [UpdateDiagnosticProgress::class, 'handleFailed'],
+);
+Event::listen(
     CourseCompleted::class,
     CompleteEnrollmentWhenCourseCompleted::class,
 );
 Event::listen(
     EnrollmentCancelled::class,
     RecordEnrollmentCancelledAudit::class,
+);
+// Commerce: course unlocks after a successful payment, plus the payment
+// audit trail. These live in PaymentServiceProvider-less deployments, so
+// they are wired here where every other event listener already is.
+Event::listen(
+    PaymentSucceeded::class,
+    EnrollUserAfterSuccessfulPayment::class,
+);
+Event::listen(
+    PaymentSucceeded::class,
+    RecordPaymentAudit::class,
+);
+Event::listen(
+    PaymentFailed::class,
+    RecordPaymentAudit::class,
+);
+Event::listen(
+    PaymentRefunded::class,
+    RecordPaymentAudit::class,
 );
 }
 }

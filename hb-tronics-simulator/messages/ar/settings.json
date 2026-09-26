@@ -1,0 +1,36 @@
+{
+  "title": "الإعدادات",
+  "kicker": "التفضيلات",
+  "groups": {
+    "training": "التدريب",
+    "instruments": "الأجهزة",
+    "session": "الجلسة",
+    "account": "الحساب والواجهة"
+  },
+  "training": {
+    "difficulty": "الصعوبة",
+    "hints": "تلميحات المدرّب",
+    "outlines": "حدود المكوّنات"
+  },
+  "instruments": {
+    "layout": "تخطيط المتعدّد",
+    "probeMode": "التعامل مع المجسّات",
+    "noise": "ضوضاء الإشارة"
+  },
+  "session": {
+    "randomFault": "حقن عطل عشوائي",
+    "hubLayout": "تخطيط المركز"
+  },
+  "account": {
+    "railLabels": "تسميات التنقّل",
+    "language": "لغة الواجهة"
+  },
+  "options": {
+    "difficulty": { "Easy": "سهل", "Medium": "متوسط", "Hard": "صعب" },
+    "noise": { "Off": "إيقاف", "Normal": "عادي", "High": "مرتفع" },
+    "instrument": { "Bench replica": "نسخة المنضدة", "Handheld": "محمول" },
+    "probeMode": { "Drag probes": "سحب المجسّات", "Click to place": "النقر للوضع" },
+    "hubLayout": { "cards": "بطاقات", "rows": "صفوف مضغوطة" }
+  },
+  "languageHint": "الواجهة فقط — تبقى البيانات التقنية بالإنجليزية. العربية والفرنسية تصدران مع التغطية 2026.9."
+}

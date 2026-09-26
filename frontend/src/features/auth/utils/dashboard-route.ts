@@ -12,6 +12,10 @@ export function dashboardRouteFor(user: Pick<User, "roles"> | null | undefined):
         return "/admin";
     }
 
+    if (roles.includes("Support")) {
+        return "/support-desk";
+    }
+
     if (roles.includes("Instructor")) {
         return "/instructor";
     }

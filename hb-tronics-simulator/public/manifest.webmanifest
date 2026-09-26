@@ -1,0 +1,12 @@
+{
+  "name": "HB TRONICS SaaS Simulator",
+  "short_name": "HB TRONICS",
+  "description": "Five specialised tools. One diagnostic bench.",
+  "start_url": "/en/hub",
+  "display": "standalone",
+  "background_color": "#0E1114",
+  "theme_color": "#0E1114",
+  "icons": [
+    { "src": "/assets/svg/hb-logo-splash.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

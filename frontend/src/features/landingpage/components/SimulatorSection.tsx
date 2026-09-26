@@ -1,754 +1,523 @@
 import {
     ArrowRight,
     ChevronRight,
-    CircleAlert,
     Gauge,
+    MonitorCog,
     Play,
     ScanLine,
     Wrench,
+    Zap,
 } from "lucide-react";
-
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
+import heroImage from "@/assets/landing/heropic2.jpg";
+
+import {
+    Eyebrow,
+    LandingContainer,
+    LandingSection,
+    SectionTitle,
+} from "./landing-ui";
+
+/* =====================================================================
+   SIMULATOR SECTION
+   ---------------------------------------------------------------------
+   Purpose:
+   - Keep the original simulator concept.
+   - Keep one large diagnostic scenario.
+   - Keep scenario information + tools + CTA.
+   - Visually match the new Courses section.
+   - Use a different background from Courses.
+===================================================================== */
+
+type SimulatorTool = {
+    label: string;
+};
+
+type SimulatorStep = {
+    title: string;
+    description: string;
+};
 
 export function SimulatorSection() {
-    return (
-        <section
-            className={[
-                "relative isolate overflow-hidden",
-                "bg-[#191919]",
-                "text-white",
-            ].join(" ")}
-        >
+    const { t } = useTranslation();
 
+    const toolItems = t("landingPage.simulator.tools", {
+        returnObjects: true,
+    }) as SimulatorTool[];
+
+    const stepItems = t("landingPage.simulator.steps", {
+        returnObjects: true,
+    }) as SimulatorStep[];
+
+    const toolIcons = [MonitorCog, ScanLine, Zap, Wrench];
+    const stepIcons = [ScanLine, Wrench, Gauge];
+
+    return (
+        <LandingSection className="bg-[#EEEAE4] text-[#3A3A3A]">
             {/* =========================================================
                 BACKGROUND
             ========================================================== */}
 
             <div
                 aria-hidden="true"
-                className={[
-                    "pointer-events-none absolute inset-0 -z-10",
-                ].join(" ")}
+                className="pointer-events-none absolute inset-0 -z-10"
             >
+                {/* Technical grid */}
 
                 <div
-                    className={[
-                        "absolute inset-0 opacity-[0.035]",
-                        "[background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)]",
-                        "[background-size:64px_64px]",
-                    ].join(" ")}
+                    className="absolute inset-0 opacity-[0.018]"
+                    style={{
+                        backgroundImage:
+                            "linear-gradient(#3A3A3A 1px, transparent 1px), linear-gradient(90deg, #3A3A3A 1px, transparent 1px)",
+                        backgroundSize: "70px 70px",
+                    }}
                 />
 
+                {/* Large background word */}
 
-                <span
-                    className={[
-                        "absolute -bottom-16 right-[-4%]",
-                        "select-none font-black uppercase",
-                        "leading-none tracking-[-0.1em]",
-                        "text-[18rem] text-white/[0.025]",
-                        "sm:text-[26rem]",
-                    ].join(" ")}
-                >
+                <span className="absolute -bottom-24 right-[-4%] select-none font-black uppercase leading-none tracking-[-0.12em] text-[#3A3A3A]/[0.025] text-[18rem] sm:text-[27rem] rtl:left-[-4%] rtl:right-auto">
                     SIM
                 </span>
 
+                {/* Orange atmosphere */}
+
+                <div className="absolute -left-48 top-[18%] h-[500px] w-[500px] rounded-full bg-[#F47822]/[0.045] blur-[130px] rtl:-right-48 rtl:left-auto" />
+
+                <div className="absolute -right-48 bottom-[8%] h-[450px] w-[450px] rounded-full bg-[#F47822]/[0.035] blur-[120px] rtl:-left-48 rtl:right-auto" />
             </div>
 
+            {/* =========================================================
+                CONTAINER
+            ========================================================== */}
 
-            <div
-                className={[
-                    "mx-auto max-w-[1600px]",
-                    "px-5 py-20",
-                    "sm:px-8 sm:py-24",
-                    "lg:px-12 lg:py-32",
-                    "xl:px-16",
-                ].join(" ")}
-            >
+            <LandingContainer>
+                {/* =====================================================
+                    TOP LABEL
+                ====================================================== */}
+
 
                 {/* =====================================================
                     HEADER
                 ====================================================== */}
 
-                <div
-                    className={[
-                        "flex items-center justify-between",
-                        "border-b border-white/10",
-                        "pb-4",
-                    ].join(" ")}
-                >
-
-                    <div className="flex items-center gap-3">
-
-                        <span className="h-2 w-2 rounded-full bg-hbt-orange" />
-
-                        <span
-                            className={[
-                                "text-[9px] font-bold uppercase",
-                                "tracking-[0.3em]",
-                            ].join(" ")}
-                        >
-                            The Simulator
-                        </span>
-
-                    </div>
-
-
-                    <span
-                        className={[
-                            "font-mono text-[9px]",
-                            "tracking-widest text-white/30",
-                        ].join(" ")}
-                    >
-                        04 / 04
-                    </span>
-
-                </div>
-
-
-                {/* =====================================================
-                    TITLE
-                ====================================================== */}
-
-                <div
-                    className={[
-                        "mt-12 grid gap-10",
-                        "lg:grid-cols-12 lg:items-end",
-                        "xl:mt-16",
-                    ].join(" ")}
-                >
-
+                <div className="mt-12 grid gap-8 lg:grid-cols-12 lg:items-end xl:mt-16">
                     <div className="lg:col-span-8">
+                        <Eyebrow>
+                            {t("landingPage.simulator.eyebrow")}
+                        </Eyebrow>
 
-                        <p
-                            className={[
-                                "mb-5 text-[9px] font-bold uppercase",
-                                "tracking-[0.3em] text-hbt-orange",
-                            ].join(" ")}
-                        >
-                            Theory meets practice
-                        </p>
-
-
-                        <h2
-                            className={[
-                                "font-black uppercase",
-                                "leading-[0.8]",
-                                "tracking-[-0.07em]",
-                                "text-[4.5rem]",
-                                "sm:text-[6rem]",
-                                "md:text-[7rem]",
-                                "lg:text-[8rem]",
-                                "xl:text-[9rem]",
-                            ].join(" ")}
-                        >
-                            The Workshop
+                        <SectionTitle size="display" className="lowercase">
+                            {t("landingPage.simulator.titleA")}
                             <span className="block">
-                                Is Your
+                                {t("landingPage.simulator.titleB")}
                             </span>
 
-                            <span className="ml-[10%] block text-hbt-orange">
-                                Classroom.
+                            <span className="block text-[#F47822]">
+                                {t("landingPage.simulator.titleC")}
                             </span>
-                        </h2>
-
+                        </SectionTitle>
                     </div>
 
-
-                    <div
-                        className={[
-                            "lg:col-span-3 lg:col-start-10",
-                            "border-l border-white/15",
-                            "pl-5 sm:pl-7",
-                        ].join(" ")}
-                    >
-
-                        <p
-                            className={[
-                                "text-sm font-medium leading-7",
-                                "text-white/80",
-                            ].join(" ")}
-                        >
-                            Step into realistic diagnostic cases
-                            and make the decisions yourself.
+                    <div className="lg:col-span-3 lg:col-start-10">
+                        <p className="border-l-2 border-[#F47822] pl-5 text-sm leading-6 text-[#3A3A3A]/45 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-5">
+                            {t("landingPage.simulator.description")}
                         </p>
-
                     </div>
-
                 </div>
 
-
                 {/* =====================================================
-                    MAIN SIMULATOR EXPERIENCE
+                    MAIN WORKSHOP
                 ====================================================== */}
 
-                <div
-                    className={[
-                        "mt-14",
-                        "grid",
-                        "lg:grid-cols-12",
-                        "lg:gap-6",
-                        "xl:mt-20",
-                    ].join(" ")}
-                >
-
+                <div className="relative mt-16 lg:mt-24">
                     {/* =================================================
-                        IMAGE / SCENARIO
+                        OUTER GLASS FRAME
                     ================================================== */}
 
-                    <div
-                        className={[
-                            "relative",
-                            "lg:col-span-8",
-                        ].join(" ")}
-                    >
-
-                        <div
-                            className={[
-                                "relative aspect-[16/10]",
-                                "overflow-hidden",
-                                "bg-[#222]",
-                            ].join(" ")}
-                        >
-
-                            <img
-                                src="/src/assets/landing/heropic2.jpg"
-                                alt="Automotive diagnostic workshop"
-                                className={[
-                                    "h-full w-full object-cover",
-                                    "grayscale",
-                                    "transition-all duration-700",
-                                    "hover:scale-[1.02]",
-                                    "hover:grayscale-0",
-                                ].join(" ")}
-                            />
-
-
-                            <div
-                                className={[
-                                    "absolute inset-0",
-                                    "bg-gradient-to-t",
-                                    "from-black via-black/10 to-transparent",
-                                ].join(" ")}
-                            />
-
-
-                            {/* Scenario marker */}
-
-                            <div
-                                className={[
-                                    "absolute left-5 top-5",
-                                    "sm:left-7 sm:top-7",
-                                ].join(" ")}
-                            >
-
-                                <div
-                                    className={[
-                                        "flex items-center gap-2",
-                                        "border border-white/20",
-                                        "bg-black/50 backdrop-blur-sm",
-                                        "px-3 py-2",
-                                    ].join(" ")}
-                                >
-
-                                    <span className="h-1.5 w-1.5 rounded-full bg-hbt-orange" />
-
-                                    <span
-                                        className={[
-                                            "text-[8px] font-bold uppercase",
-                                            "tracking-[0.2em]",
-                                        ].join(" ")}
-                                    >
-                                        Scenario 04
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* Scenario content */}
-
-                            <div
-                                className={[
-                                    "absolute bottom-0 left-0 right-0",
-                                    "p-5 sm:p-8",
-                                ].join(" ")}
-                            >
-
-                                <p
-                                    className={[
-                                        "text-[8px] font-bold uppercase",
-                                        "tracking-[0.25em]",
-                                        "text-hbt-orange",
-                                    ].join(" ")}
-                                >
-                                    Engine Management
-                                </p>
-
-
-                                <h3
-                                    className={[
-                                        "mt-2 max-w-2xl",
-                                        "font-black uppercase",
-                                        "leading-none tracking-[-0.05em]",
-                                        "text-3xl text-white",
-                                        "sm:text-5xl",
-                                    ].join(" ")}
-                                >
-                                    Intermittent
-                                    <span className="block">
-                                        Engine Hesitation
-                                    </span>
-                                </h3>
-
-
-                                <div
-                                    className={[
-                                        "mt-5 flex flex-wrap",
-                                        "items-center gap-4",
-                                    ].join(" ")}
-                                >
-
-                                    <span
-                                        className={[
-                                            "flex items-center gap-2",
-                                            "text-[8px] font-bold uppercase",
-                                            "tracking-wider text-white/60",
-                                        ].join(" ")}
-                                    >
-                                        <Gauge className="h-3.5 w-3.5 text-hbt-orange" />
-                                        Engine management
-                                    </span>
-
-                                    <span className="h-3 w-px bg-white/20" />
-
-                                    <span
-                                        className={[
-                                            "flex items-center gap-2",
-                                            "text-[8px] font-bold uppercase",
-                                            "tracking-wider text-white/60",
-                                        ].join(" ")}
-                                    >
-                                        <ScanLine className="h-3.5 w-3.5 text-hbt-orange" />
-                                        Level 02
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* Orange frame */}
+                    <div className="relative rounded-[34px] border border-[#3A3A3A]/[0.07] bg-white/55 p-2.5 shadow-[0_30px_90px_rgba(58,58,58,0.08)] backdrop-blur-xl sm:p-3">
+                        {/* Top reflection */}
 
                         <div
                             aria-hidden="true"
-                            className={[
-                                "absolute",
-                                "-bottom-4",
-                                "-right-4",
-                                "h-full",
-                                "w-full",
-                                "border",
-                                "border-hbt-orange",
-                                "-z-10",
-                            ].join(" ")}
+                            className="pointer-events-none absolute left-[25%] right-[10%] top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"
                         />
 
+                        <div className="grid overflow-hidden rounded-[28px] bg-[#252525] lg:grid-cols-12">
+                            {/* =================================================
+                                WORKSHOP IMAGE
+                            ================================================== */}
+
+                            <div className="relative min-h-[420px] lg:col-span-8 lg:min-h-[590px]">
+                                <img
+                                    src={heroImage}
+                                    alt={t("landingPage.simulator.imageAlt")}
+                                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 hover:scale-[1.025]"
+                                />
+
+                                {/* Image treatment */}
+
+                                <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-transparent to-black/30" />
+
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+
+                                {/* =================================================
+                                    IMAGE TOP BAR
+                                ================================================== */}
+
+                                <div className="absolute left-5 right-5 top-5 flex items-center justify-between sm:left-7 sm:right-7 sm:top-7">
+                                    <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-3 py-2 backdrop-blur-md">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
+
+                                        <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/70">
+                                            {t("landingPage.simulator.scenarioBadge")}
+                                        </span>
+                                    </div>
+
+                                    <span className="rounded-full border border-white/15 bg-black/25 px-3 py-2 font-mono text-[8px] tracking-[0.15em] text-white/50 backdrop-blur-md">
+                                        04 / 04
+                                    </span>
+                                </div>
+
+                                {/* =================================================
+                                    IMAGE CONTENT
+                                ================================================== */}
+
+                                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-10">
+                                    <p className="text-[8px] font-bold uppercase tracking-[0.25em] text-[#F47822]">
+                                        {t("landingPage.simulator.category")}
+                                    </p>
+
+                                    <h3 className="mt-3 max-w-3xl text-4xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+                                        {t("landingPage.simulator.scenarioTitleA")}
+                                        <span className="block">
+                                            {t("landingPage.simulator.scenarioTitleB")}
+                                        </span>
+                                    </h3>
+
+                                    {/* Scenario meta */}
+
+                                    <div className="mt-6 flex flex-wrap items-center gap-3">
+                                        <ScenarioMeta
+                                            icon={Gauge}
+                                            label={t("landingPage.simulator.metaEngine")}
+                                        />
+
+                                        <span className="h-3 w-px bg-white/20" />
+
+                                        <ScenarioMeta
+                                            icon={ScanLine}
+                                            label={t("landingPage.simulator.metaLevel")}
+                                        />
+
+                                        <span className="h-3 w-px bg-white/20" />
+
+                                        <ScenarioMeta
+                                            icon={Wrench}
+                                            label={t("landingPage.simulator.metaTools")}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* =================================================
+                                    ORANGE IMAGE INDICATOR
+                                ================================================== */}
+
+                                <div className="absolute bottom-0 left-0 h-1 w-32 bg-[#F47822] sm:w-44 rtl:left-auto rtl:right-0" />
+                            </div>
+
+                            {/* =================================================
+                                DIAGNOSTIC PANEL
+                            ================================================== */}
+
+                            <div className="flex flex-col bg-[#202020] lg:col-span-4">
+                                {/* Panel header */}
+
+                                <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-5 sm:px-7">
+                                    <div className="flex items-center gap-3">
+                                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F47822]/10">
+                                            <MonitorCog className="h-4 w-4 text-[#F47822]" />
+                                        </span>
+
+                                        <div>
+                                            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/35">
+                                                {t("landingPage.simulator.panelEyebrow")}
+                                            </p>
+
+                                            <p className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white/75">
+                                                {t("landingPage.simulator.panelTitle")}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <span className="font-mono text-[8px] text-white/20">
+                                        EMS-04
+                                    </span>
+                                </div>
+
+                                {/* =================================================
+                                    CUSTOMER COMPLAINT
+                                ================================================== */}
+
+                                <div className="px-5 py-6 sm:px-7 sm:py-8">
+                                    <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#F47822]">
+                                        {t("landingPage.simulator.complaintLabel")}
+                                    </p>
+
+                                    <p className="mt-4 text-sm leading-7 text-white/65">
+                                        {t("landingPage.simulator.complaintText")}
+                                    </p>
+                                </div>
+
+                                {/* =================================================
+                                    DIAGNOSTIC TOOLS
+                                ================================================== */}
+
+                                <div className="border-t border-white/[0.08] px-5 py-6 sm:px-7">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30">
+                                            {t("landingPage.simulator.toolsLabel")}
+                                        </p>
+
+                                        <span className="font-mono text-[8px] text-white/20">
+                                            04
+                                        </span>
+                                    </div>
+
+                                    <div className="mt-5 space-y-2">
+                                        {toolItems.map((tool, index) => {
+                                            const Icon = toolIcons[index % toolIcons.length];
+
+                                            return (
+                                                <DiagnosticTool
+                                                    key={tool.label}
+                                                    number={String(index + 1).padStart(2, "0")}
+                                                    icon={Icon}
+                                                    label={tool.label}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* =================================================
+                                    DIAGNOSTIC PRINCIPLE
+                                ================================================== */}
+
+                                <div className="mx-5 border-t border-white/[0.08] py-6 sm:mx-7">
+                                    <div className="flex items-start gap-3">
+                                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F47822]" />
+
+                                        <p className="text-[10px] leading-5 text-white/35">
+                                            {t("landingPage.simulator.principle")}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* =================================================
+                                    CTA
+                                ================================================== */}
+
+                                <div className="mt-auto p-5 sm:p-7">
+                                    <Link
+                                        to="/simulator"
+                                        className="group flex items-center justify-between rounded-2xl bg-[#F47822] px-5 py-4 text-white transition-all duration-300 hover:bg-[#e96916] hover:shadow-[0_12px_35px_rgba(244,120,34,0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822] focus-visible:ring-offset-2 focus-visible:ring-offset-[#202020]"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
+                                                <Play
+                                                    className="ml-0.5 h-3.5 w-3.5 rtl:ml-0 rtl:mr-0.5 rtl:-scale-x-100"
+                                                    fill="currentColor"
+                                                />
+                                            </span>
+
+                                            <div>
+                                                <p className="text-[9px] font-bold uppercase tracking-[0.18em]">
+                                                    {t("landingPage.simulator.ctaTitle")}
+                                                </p>
+
+                                                <p className="mt-0.5 text-[7px] font-medium uppercase tracking-[0.1em] text-white/60">
+                                                    {t("landingPage.simulator.ctaSub")}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0">
+                                            <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                                        </span>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-
                     {/* =================================================
-                        CASE PANEL
+                        OFFSET ORANGE FRAME
                     ================================================== */}
 
                     <div
-                        className={[
-                            "flex flex-col",
-                            "border border-white/10",
-                            "bg-[#202020]",
-                            "lg:col-span-4",
-                        ].join(" ")}
-                    >
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -bottom-4 -right-4 -z-10 hidden h-[70%] w-[45%] rounded-[34px] border border-[#F47822]/40 lg:block rtl:-left-4 rtl:right-auto"
+                    />
+                </div>
 
-                        {/* Panel header */}
+                {/* =====================================================
+                    HOW IT WORKS
+                ====================================================== */}
 
-                        <div
-                            className={[
-                                "flex items-center justify-between",
-                                "border-b border-white/10",
-                                "px-5 py-4",
-                            ].join(" ")}
-                        >
+                <div className="mt-16 border-y border-[#3A3A3A]/10 xl:mt-20">
+                    <div className="grid sm:grid-cols-3">
+                        {stepItems.map((step, index) => {
+                            const Icon = stepIcons[index % stepIcons.length];
 
-                            <div className="flex items-center gap-3">
-
-                                <Wrench className="h-4 w-4 text-hbt-orange" />
-
-                                <span
-                                    className={[
-                                        "text-[8px] font-bold uppercase",
-                                        "tracking-[0.2em]",
-                                    ].join(" ")}
-                                >
-                                    Diagnostic Case
-                                </span>
-
-                            </div>
-
-                            <span className="font-mono text-[8px] text-white/30">
-                                04
-                            </span>
-
-                        </div>
-
-
-                        {/* Complaint */}
-
-                        <div className="p-5 sm:p-7">
-
-                            <p
-                                className={[
-                                    "text-[8px] font-bold uppercase",
-                                    "tracking-[0.2em]",
-                                    "text-hbt-orange",
-                                ].join(" ")}
-                            >
-                                Customer complaint
-                            </p>
-
-
-                            <p
-                                className={[
-                                    "mt-4 text-sm leading-7",
-                                    "text-white/70",
-                                ].join(" ")}
-                            >
-                                “The engine hesitates when
-                                accelerating and occasionally
-                                runs rough after warming up.”
-                            </p>
-
-
-                            {/* Divider */}
-
-                            <div className="my-7 h-px bg-white/10" />
-
-
-                            {/* What you can inspect */}
-
-                            <p
-                                className={[
-                                    "text-[8px] font-bold uppercase",
-                                    "tracking-[0.2em]",
-                                    "text-white/30",
-                                ].join(" ")}
-                            >
-                                Available tools
-                            </p>
-
-
-                            <div className="mt-4 space-y-3">
-
-                                <Tool
-                                    number="01"
-                                    label="Live Data"
+                            return (
+                                <ProcessStep
+                                    key={step.title}
+                                    number={String(index + 1).padStart(2, "0")}
+                                    title={step.title}
+                                    description={step.description}
+                                    icon={Icon}
                                 />
-
-                                <Tool
-                                    number="02"
-                                    label="Fault Codes"
-                                />
-
-                                <Tool
-                                    number="03"
-                                    label="Oscilloscope"
-                                />
-
-                                <Tool
-                                    number="04"
-                                    label="Component Tests"
-                                />
-
-                            </div>
-
-                        </div>
-
-
-                        {/* Start */}
-
-                        <div
-                            className={[
-                                "mt-auto",
-                                "border-t border-white/10",
-                                "p-5 sm:p-7",
-                            ].join(" ")}
-                        >
-
-                            <Link
-                                to="/simulator"
-                                className={[
-                                    "group flex items-center",
-                                    "justify-between",
-                                    "bg-hbt-orange",
-                                    "px-5 py-4",
-                                    "transition-all duration-200",
-                                    "hover:bg-[#e96916]",
-                                ].join(" ")}
-                            >
-
-                                <div className="flex items-center gap-3">
-
-                                    <span
-                                        className={[
-                                            "flex h-8 w-8",
-                                            "items-center justify-center",
-                                            "rounded-full",
-                                            "bg-white/15",
-                                        ].join(" ")}
-                                    >
-                                        <Play
-                                            className={[
-                                                "ml-0.5 h-3.5 w-3.5",
-                                                "fill-white",
-                                            ].join(" ")}
-                                        />
-                                    </span>
-
-                                    <span
-                                        className={[
-                                            "text-[9px] font-bold uppercase",
-                                            "tracking-[0.2em]",
-                                        ].join(" ")}
-                                    >
-                                        Start Scenario
-                                    </span>
-
-                                </div>
-
-
-                                <ArrowRight
-                                    className={[
-                                        "h-4 w-4",
-                                        "transition-transform",
-                                        "group-hover:translate-x-1",
-                                    ].join(" ")}
-                                />
-
-                            </Link>
-
-                        </div>
-
+                            );
+                        })}
                     </div>
-
                 </div>
 
-
                 {/* =====================================================
-                    PROCESS
+                    FOOTER
                 ====================================================== */}
 
-                <div
-                    className={[
-                        "mt-14",
-                        "grid",
-                        "border-y border-white/10",
-                        "sm:grid-cols-3",
-                        "xl:mt-20",
-                    ].join(" ")}
-                >
+                <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 
-                    <Process
-                        number="01"
-                        title="Observe"
-                        description="Understand the symptoms and inspect the available data."
-                    />
-
-                    <Process
-                        number="02"
-                        title="Test"
-                        description="Choose the right diagnostic path and perform the tests."
-                    />
-
-                    <Process
-                        number="03"
-                        title="Diagnose"
-                        description="Make your decision and discover whether your reasoning was correct."
-                    />
-
-                </div>
-
-
-                {/* =====================================================
-                    BOTTOM LINE
-                ====================================================== */}
-
-                <div
-                    className={[
-                        "mt-8 flex items-center",
-                        "justify-between",
-                    ].join(" ")}
-                >
-
-                    <span
-                        className={[
-                            "text-[8px] font-bold uppercase",
-                            "tracking-[0.25em] text-white/30",
-                        ].join(" ")}
-                    >
-                        Learn → Practice → Diagnose
-                    </span>
-
+                        <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#3A3A3A]/30">
+                            {t("landingPage.simulator.pathLabel")}
+                        </span>
+                    </div>
 
                     <Link
                         to="/simulator"
-                        className={[
-                            "group flex items-center gap-3",
-                            "text-[8px] font-bold uppercase",
-                            "tracking-[0.2em]",
-                        ].join(" ")}
+                        className="group inline-flex items-center gap-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]"
                     >
+                        {t("landingPage.simulator.explore")}
 
-                        Explore simulator
-
-                        <ChevronRight
-                            className={[
-                                "h-3.5 w-3.5 text-hbt-orange",
-                                "transition-transform",
-                                "group-hover:translate-x-1",
-                            ].join(" ")}
-                        />
-
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3A3A3A]/10 bg-white/60 transition-all duration-300 group-hover:border-[#F47822] group-hover:bg-[#F47822] group-hover:text-white">
+                            <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
+                        </span>
                     </Link>
-
                 </div>
+            </LandingContainer>
 
-            </div>
-
+            {/* =========================================================
+                SECTION ACCENTS
+            ========================================================== */}
 
             <div
                 aria-hidden="true"
-                className="absolute bottom-0 right-0 h-1 w-[28%] bg-hbt-orange"
+                className="absolute bottom-0 left-0 h-[2px] w-[24%] bg-[#F47822] rtl:left-auto rtl:right-0"
             />
 
-        </section>
+            <div
+                aria-hidden="true"
+                className="absolute bottom-0 right-0 h-[2px] w-[10%] bg-[#3A3A3A]/10 rtl:left-0 rtl:right-auto"
+            />
+        </LandingSection>
     );
 }
 
-
 /* =====================================================================
-   TOOL
+   SCENARIO META
 ===================================================================== */
 
-interface ToolProps {
-    number: string;
+function ScenarioMeta({
+    icon: Icon,
+    label,
+}: {
+    icon: typeof Gauge;
     label: string;
+}) {
+    return (
+        <span className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-[0.12em] text-white/55">
+            <Icon className="h-3.5 w-3.5 text-[#F47822]" />
+
+            {label}
+        </span>
+    );
 }
 
-function Tool({
-    number,
-    label,
-}: ToolProps) {
-    return (
-        <div
-            className={[
-                "flex items-center gap-3",
-                "border-b border-white/5",
-                "pb-3",
-            ].join(" ")}
-        >
+/* =====================================================================
+   DIAGNOSTIC TOOL
+===================================================================== */
 
-            <span
-                className={[
-                    "font-mono text-[8px]",
-                    "text-hbt-orange",
-                ].join(" ")}
-            >
+function DiagnosticTool({
+    number,
+    icon: Icon,
+    label,
+}: {
+    number: string;
+    icon: typeof Gauge;
+    label: string;
+}) {
+    return (
+        <div className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3.5 py-3 transition-all duration-300 hover:border-[#F47822]/20 hover:bg-[#F47822]/[0.05]">
+            <span className="font-mono text-[8px] text-[#F47822]">
                 {number}
             </span>
 
-            <span
-                className={[
-                    "text-xs font-medium",
-                    "text-white/70",
-                ].join(" ")}
-            >
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04]">
+                <Icon className="h-3.5 w-3.5 text-white/40 transition-colors duration-300 group-hover:text-[#F47822]" />
+            </span>
+
+            <span className="text-[10px] font-medium text-white/55 transition-colors duration-300 group-hover:text-white/80">
                 {label}
             </span>
 
+            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white/10 transition-colors duration-300 group-hover:bg-[#F47822] rtl:ml-0 rtl:mr-auto" />
         </div>
     );
 }
 
-
 /* =====================================================================
-   PROCESS
+   PROCESS STEP
 ===================================================================== */
 
-interface ProcessProps {
-    number: string;
-    title: string;
-    description: string;
-}
-
-function Process({
+function ProcessStep({
     number,
     title,
     description,
-}: ProcessProps) {
+    icon: Icon,
+}: {
+    number: string;
+    title: string;
+    description: string;
+    icon: typeof Gauge;
+}) {
     return (
-        <div
-            className={[
-                "border-b border-white/10",
-                "p-6",
-                "sm:border-b-0",
-                "sm:border-r",
-                "sm:last:border-r-0",
-                "sm:p-7",
-                "lg:p-8",
-            ].join(" ")}
-        >
-
+        <div className="group border-b border-[#3A3A3A]/10 p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 sm:p-7 lg:p-8 rtl:sm:border-l rtl:sm:border-r-0 rtl:sm:last:border-l-0">
             <div className="flex items-start justify-between">
-
-                <span
-                    className={[
-                        "font-mono text-[9px]",
-                        "text-hbt-orange",
-                    ].join(" ")}
-                >
+                <span className="font-mono text-[9px] font-bold text-[#F47822]">
                     {number}
                 </span>
 
-
-                <span className="h-px w-12 bg-white/10" />
-
+                <span className="h-px w-10 bg-[#3A3A3A]/10 transition-all duration-300 group-hover:w-16 group-hover:bg-[#F47822]/40" />
             </div>
 
+            <div className="mt-7 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-[#3A3A3A]/[0.05]">
+                <Icon className="h-4 w-4 text-[#F47822]" />
+            </div>
 
-            <h3
-                className={[
-                    "mt-8 font-black uppercase",
-                    "tracking-[-0.04em]",
-                    "text-2xl",
-                ].join(" ")}
-            >
+            <h3 className="mt-5 text-2xl font-black uppercase tracking-[-0.04em] text-[#3A3A3A]">
                 {title}
             </h3>
 
-
-            <p
-                className={[
-                    "mt-3 max-w-xs",
-                    "text-xs leading-6",
-                    "text-white/35",
-                ].join(" ")}
-            >
+            <p className="mt-3 max-w-xs text-xs leading-6 text-[#3A3A3A]/40">
                 {description}
             </p>
-
         </div>
     );
 }
+
+export default SimulatorSection;

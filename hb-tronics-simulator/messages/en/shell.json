@@ -1,0 +1,55 @@
+{
+  "skipToContent": "Skip to content",
+  "rail": {
+    "hub": "Simulator Hub",
+    "simulators": "Simulators",
+    "learningRecord": "Learning record",
+    "progress": "Progress",
+    "reports": "Reports",
+    "garage": "Garage",
+    "settings": "Settings",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "module": {
+    "kicker": "Module 0{index} · {title}",
+    "brand": "HB TRONICS SAAS SIMULATOR"
+  },
+  "context": {
+    "underTest": "Under test",
+    "noComponent": "No component",
+    "pick": "Choose a component",
+    "change": "Change",
+    "jumpTo": "Open {tool} on this component",
+    "noData": "No data for this component in {tool}"
+  },
+  "picker": {
+    "title": "Component picker",
+    "search": "Search components",
+    "system": "System",
+    "availability": "Availability",
+    "clear": "Clear component"
+  },
+  "user": {
+    "name": "H. Barakat",
+    "role": "Master technician",
+    "xp": "XP {xp}",
+    "signOut": "Sign out"
+  },
+  "gate": {
+    "kicker": "Coverage gate",
+    "notInstalled": "Data pack not installed",
+    "noData": "No coverage for this vehicle",
+    "body": "This tool has no installed data pack for the active vehicle. Install the pack or switch to a covered vehicle.",
+    "switch": "Switch to Corolla"
+  },
+  "toast": {
+    "contextSet": "Component context set to {name}",
+    "vehicleSwitched": "Active vehicle switched to {vehicle}",
+    "exported": "Report exported to PDF",
+    "installRequested": "Data pack install requested",
+    "coverageRequested": "Coverage requested",
+    "localeLocked": "{lang} interface ships with coverage 2026.9 — English only in this build",
+    "noToolData": "No data for this component in {tool}"
+  }
+}

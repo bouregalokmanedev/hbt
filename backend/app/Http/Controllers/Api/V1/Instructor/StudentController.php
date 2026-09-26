@@ -11,11 +11,16 @@ final class StudentController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $perPage = min(max($request->integer('per_page', 20), 1), 100);
+        $data = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $perPage = min(max((int) ($data['per_page'] ?? 20), 1), 100);
 
         return response()->json(
             InstructorStudentQuery::for((int) $request->user()->id)
-                ->paginate($request->string('search')->toString() ?: null, $perPage)
+                ->paginate(isset($data['search']) && $data['search'] !== '' ? (string) $data['search'] : null, $perPage)
         );
     }
 

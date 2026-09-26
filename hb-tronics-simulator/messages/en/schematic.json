@@ -1,0 +1,156 @@
+{
+  "brand": "SCHEMATIC",
+  "loading": "Loading diagram…",
+  "legend": "Legend",
+  "mode": {
+    "study": "Study",
+    "trace": "Trace",
+    "training": "Training",
+    "practice": "Practice",
+    "exam": "Exam"
+  },
+  "view": {
+    "schematic": "Schematic",
+    "circuit": "Circuit view"
+  },
+  "sheet": "SHEET 1/1 · UPLOADED",
+  "layout": {
+    "label": "LAYOUT",
+    "a": "Three-column workspace",
+    "b": "Canvas-first, floating inspector",
+    "c": "Bottom inspector dock"
+  },
+  "device": {
+    "desktop": "Desktop",
+    "tablet": "Tablet 1024×768",
+    "mobile": "Mobile 390×844"
+  },
+  "controls": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit",
+    "reset": "Reset",
+    "print": "Print",
+    "export": "Export",
+    "menu": "Menu",
+    "fullscreen": "Fullscreen",
+    "minimap": "MINIMAP"
+  },
+  "search": {
+    "button": "Search wire, pin, ECU, fuse, ground…",
+    "placeholder": "Search wire colour, ECU pin, fuse, ground, component…",
+    "footer": "Searches the uploaded pin table only",
+    "results": "{n} results",
+    "kind": {
+      "component": "COMP",
+      "wire": "WIRE"
+    }
+  },
+  "layers": {
+    "title": "Layers",
+    "count": "{n}/11 layers",
+    "noData": "NO DATA",
+    "labels": "Component labels",
+    "pins": "ECU pin numbers",
+    "colours": "Wire colours",
+    "grounds": "Grounds",
+    "power": "Power feeds & fuses",
+    "canh": "CAN High",
+    "canl": "CAN Low",
+    "lin": "LIN",
+    "flexray": "FlexRay",
+    "wirenum": "Wire numbers",
+    "circuit": "Circuit names"
+  },
+  "trace": {
+    "kicker": "TRACE",
+    "play": "Play",
+    "pause": "Pause",
+    "next": "Next step",
+    "picker": "Guided traces"
+  },
+  "sidebar": {
+    "systems": "VEHICLE SYSTEMS",
+    "components": "COMPONENTS ON SHEET",
+    "recent": "RECENT",
+    "progress": "TRAINING PROGRESS",
+    "bookmarks": "BOOKMARKS",
+    "filter": "Filter components",
+    "attempts": "{n} attempts",
+    "progressNote": "{done} of {total} training tasks located correctly."
+  },
+  "systems": {
+    "engine": "Engine management",
+    "ecu": "ECU & connectors",
+    "can": "CAN network",
+    "power": "Power distribution & grounds"
+  },
+  "bookmarks": {
+    "ecu": "ECU E1 — connector A pinout",
+    "ground": "Grounding point BA (B 16 / B 51 / B 59)",
+    "relay": "Ignition coil relay R16"
+  },
+  "inspector": {
+    "connections": "CONNECTIONS",
+    "ecuPins": "ECU PINS",
+    "sheet": "SHEET",
+    "selectedWire": "SELECTED WIRE",
+    "from": "E1 Engine control unit",
+    "pinRows": "PIN-TABLE ROWS",
+    "allRows": "ECU PIN TABLE — ALL ROWS",
+    "rows": "{n} rows",
+    "sharedGround": "SHARED GROUND — ECU PINS BONDED HERE",
+    "related": "RELATED COMPONENTS",
+    "oem": "OEM DATA",
+    "information": "INFORMATION",
+    "sheetSummary": "SHEET SUMMARY",
+    "connectors": "ECU CONNECTORS",
+    "mismatchNote": "Colour changes at the joint — {a} on the ECU side, {b} on the component side.",
+    "clear": "Clear selection",
+    "pin": "pin {n}"
+  },
+  "oem": {
+    "image": "Component image",
+    "housing": "Connector housing image",
+    "location": "Location on vehicle",
+    "rating": "Fuse rating",
+    "repair": "Repair notes",
+    "notes": "OEM notes"
+  },
+  "summary": {
+    "components": "Components on sheet",
+    "rows": "Pin-table rows",
+    "connectors": "ECU connectors",
+    "pins": "Distinct ECU pins",
+    "grounds": "Grounding points",
+    "can": "CAN systems",
+    "connectorsValue": "A · B",
+    "groundsValue": "AB · BA · BB · EB"
+  },
+  "task": {
+    "trainingKicker": "TRAINING TASK",
+    "practiceKicker": "PRACTICE — GENERATED FROM PIN TABLE",
+    "examKicker": "EXAM",
+    "counter": "{n} / {total}",
+    "next": "Next task",
+    "nextQuestion": "Next question",
+    "submit": "Submit exam",
+    "restart": "Restart exam",
+    "showAnswer": "Show answer",
+    "wrongPicks": "WRONG PICKS",
+    "accuracy": "ACCURACY",
+    "option": "ECU pin {pin}",
+    "examSubmitted": "Exam submitted — score {pct}"
+  },
+  "connector": {
+    "title": "Engine control unit E1 — connector {code}",
+    "meta": "from uploaded pin table",
+    "tab": "Connector {code}",
+    "pinsInTable": "Connector {code} — {n} pins in table"
+  },
+  "vehicle": {
+    "title": "Vehicle",
+    "name": "TOYOTA Corolla 1.6 16V VVT-i (1ZR-FE)",
+    "years": "2013 – 2018 · Wiring diagram · 1 sheet uploaded"
+  }
+}

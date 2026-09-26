@@ -24,22 +24,22 @@ export const studentNavigation: NavigationItem[] = [
     },
     {
         label: "My Courses",
-        href: "/dashboard/courses",
+        href: "/my-courses",
         icon: BookOpen,
     },
     {
         label: "Certificates",
-        href: "/dashboard/certificates",
+        href: "/certificates",
         icon: Award,
     },
     {
         label: "Progress",
-        href: "/dashboard/progress",
+        href: "/achievements",
         icon: ChartNoAxesCombined,
     },
     {
         label: "Settings",
-        href: "/dashboard/settings",
+        href: "/settings",
         icon: Settings,
     },
 ];

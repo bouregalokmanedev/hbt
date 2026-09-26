@@ -148,7 +148,10 @@ foreach ($submittedOptionIds as $optionId) {
                 'submitted_at' => now(),
             ]);
 
-            if ($passed) app(StudentProgressionService::class)->award($attempt->user, 'quiz_passed', 20, 35, "quiz-attempt:{$attempt->id}", ['label' => 'Quiz passed']);
+            if ($passed) {
+                app(StudentProgressionService::class)->award($attempt->user, 'quiz_passed', 20, 35, "quiz-attempt:{$attempt->id}", ['label' => 'Quiz passed']);
+                app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($attempt->user, 'quiz_complete', ['title' => $attempt->quiz->title ?? 'Quiz', 'score' => $percentage]);
+            }
 
             return $attempt->fresh([
                 'quiz.questions.options',

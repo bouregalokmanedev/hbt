@@ -83,6 +83,14 @@ class UserController extends Controller
         $user->sessions()->update(['logged_out_at' => now(), 'is_current' => false]);
         $user->update(['password' => Hash::make($request->validated('password'))]);
 
+        app(\App\Services\Audit\AuditService::class)->log(
+            'admin.user.password_changed',
+            $user,
+            [],
+            [],
+            ['actor_id' => request()->user()?->id],
+        );
+
         return response()->json(['message' => 'Password changed successfully.']);
     }
 
@@ -97,7 +105,16 @@ class UserController extends Controller
         ], true);
         abort_if($privilegedRole && ! $request->user()->hasRole(UserRole::SUPER_ADMIN->value), 403);
 
+        $oldRoles = $user->getRoleNames()->all();
         $user->syncRoles([$data['role']]);
+
+        app(\App\Services\Audit\AuditService::class)->log(
+            'admin.user.role_assigned',
+            $user,
+            ['roles' => $oldRoles],
+            ['roles' => [$data['role']]],
+            ['actor_id' => $request->user()->id],
+        );
 
         return new UserResource($user->fresh()->load('roles'));
     }
@@ -110,6 +127,13 @@ class UserController extends Controller
         $user->sessions()->update(['logged_out_at' => now(), 'is_current' => false]);
         $user->update(['status' => 'suspended']);
 
+        app(\App\Services\Audit\AuditService::class)->log(
+            'admin.user.suspended',
+            $user,
+            ['status' => 'active'],
+            ['status' => 'suspended'],
+        );
+
         return new UserResource($user->fresh()->load('roles'));
     }
 
@@ -118,6 +142,13 @@ class UserController extends Controller
         $this->authorize('suspend', $user);
 
         $user->update(['status' => 'active']);
+
+        app(\App\Services\Audit\AuditService::class)->log(
+            'admin.user.activated',
+            $user,
+            ['status' => 'suspended'],
+            ['status' => 'active'],
+        );
 
         return new UserResource($user->fresh()->load('roles'));
     }

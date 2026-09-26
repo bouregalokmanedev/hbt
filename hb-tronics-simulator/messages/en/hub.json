@@ -1,0 +1,48 @@
+{
+  "title": "Simulator hub",
+  "kicker": "HB TRONICS SAAS SIMULATOR",
+  "overall": "Overall progress",
+  "streak": "7-day streak",
+  "activeVehicle": "Active vehicle",
+  "packs": "Installed packs",
+  "scan": "Scan this vehicle",
+  "sheets": "Open wiring sheets",
+  "layout": {
+    "cards": "Cards",
+    "rows": "Compact rows"
+  },
+  "cta": {
+    "start": "Start",
+    "continue": "Continue",
+    "review": "Review",
+    "locked": "Locked"
+  },
+  "level": {
+    "high": "Advanced",
+    "mid": "Intermediate",
+    "low": "Beginner"
+  },
+  "lastActivity": "Last: {activity}",
+  "moduleTitle": "Modules",
+  "heading": "Choose your simulator",
+  "subtitle": "Professional automotive technical training platform. Every tool works on the same vehicle and the same component under test — start anywhere, carry your findings across.",
+  "platformProgress": "Platform progress",
+  "practiceStreak": "Practice streak",
+  "days": "days",
+  "continueCta": "Continue",
+  "sessionContext": "Session context",
+  "sharedByAll": "Shared by all five tools",
+  "componentUnderTest": "Component under test",
+  "openGarage": "Open garage",
+  "changeComponent": "Change component",
+  "coachLabel": "Coach",
+  "continuePath": "Continue your path",
+  "allSkills": "All skills",
+  "status": {
+    "resume": "Resume",
+    "new": "New",
+    "retry": "Retry",
+    "guided": "Guided"
+  },
+  "cardProgress": "Progress"
+}

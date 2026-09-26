@@ -2,11 +2,12 @@ import {
     Outlet,
 } from "react-router-dom";
 
-import { Logo } from "@/components/navigation";
+import { Logo, ScrollToTop } from "@/components/navigation";
 
 export function AuthLayout() {
     return (
         <div className="min-h-screen bg-[var(--background)]">
+            <ScrollToTop />
             <div className="flex min-h-screen">
                 <div className="hidden w-1/2 bg-[var(--foreground)] p-10 lg:flex lg:flex-col">
                     <Logo />

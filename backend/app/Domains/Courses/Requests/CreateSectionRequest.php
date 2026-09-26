@@ -8,7 +8,12 @@ class CreateSectionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        $courseId = $this->input('course_id');
+        $course = filled($courseId)
+            ? \App\Models\Course::query()->find($courseId)
+            : null;
+
+        return $course !== null && $this->user()?->can('update', $course) === true;
     }
 
     public function rules(): array

@@ -1,0 +1,48 @@
+{
+  "title": "Centre de simulation",
+  "kicker": "SIMULATEUR SAAS HB TRONICS",
+  "overall": "Progression globale",
+  "streak": "Série de 7 jours",
+  "activeVehicle": "Véhicule actif",
+  "packs": "Packs installés",
+  "scan": "Scanner ce véhicule",
+  "sheets": "Ouvrir les schémas",
+  "layout": {
+    "cards": "Cartes",
+    "rows": "Lignes compactes"
+  },
+  "cta": {
+    "start": "Démarrer",
+    "continue": "Continuer",
+    "review": "Revoir",
+    "locked": "Verrouillé"
+  },
+  "level": {
+    "high": "Avancé",
+    "mid": "Intermédiaire",
+    "low": "Débutant"
+  },
+  "lastActivity": "Dernier : {activity}",
+  "moduleTitle": "Modules",
+  "heading": "Choisissez votre simulateur",
+  "subtitle": "Plateforme professionnelle de formation technique automobile. Chaque outil fonctionne sur le même véhicule et le même composant sous test — commencez où vous voulez, gardez vos résultats.",
+  "platformProgress": "Progression de la plateforme",
+  "practiceStreak": "Série de pratique",
+  "days": "jours",
+  "continueCta": "Continuer",
+  "sessionContext": "Contexte de session",
+  "sharedByAll": "Partagé par les cinq outils",
+  "componentUnderTest": "Composant sous test",
+  "openGarage": "Ouvrir le garage",
+  "changeComponent": "Changer de composant",
+  "coachLabel": "Coach",
+  "continuePath": "Continuez votre parcours",
+  "allSkills": "Toutes les compétences",
+  "status": {
+    "resume": "Reprendre",
+    "new": "Nouveau",
+    "retry": "Réessayer",
+    "guided": "Guidé"
+  },
+  "cardProgress": "Progression"
+}

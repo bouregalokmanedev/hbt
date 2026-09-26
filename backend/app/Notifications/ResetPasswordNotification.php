@@ -16,8 +16,11 @@ class ResetPasswordNotification extends ResetPassword
             . urlencode($notifiable->email);
 
         return (new MailMessage)
-            ->subject('Reset Password')
-            ->line('Click the button below to reset your password.')
-            ->action('Reset Password', $url);
+            ->subject('Reset your password - HBTronics')
+            ->view('emails.reset-password', [
+                'user' => $notifiable,
+                'resetUrl' => $url,
+                'expiresIn' => (int) config('auth.passwords.users.expire', 60),
+            ]);
     }
 }

@@ -22,6 +22,17 @@ final class AssessmentAttemptAnswer extends Model
         'question_id',
         'is_correct',
         'points_earned',
+        'started_at',
+        'answered_at',
+        'time_spent_seconds',
+        'confidence_level',
+        'is_flagged',
+        'status',
+        'response_type',
+        'evaluation_status',
+        'feedback',
+        'answer',
+        'answer_metadata',
     ];
 
     protected function casts(): array
@@ -29,6 +40,10 @@ final class AssessmentAttemptAnswer extends Model
         return [
             'is_correct' => 'boolean',
             'points_earned' => 'integer',
+            'time_spent_seconds' => 'integer',
+            'is_flagged' => 'boolean',
+            'answer' => 'array',
+            'answer_metadata' => 'array',
         ];
     }
 

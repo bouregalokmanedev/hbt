@@ -1,0 +1,41 @@
+{
+  "skipToContent": "Aller au contenu",
+  "rail": {
+    "hub": "Centre de simulation",
+    "simulators": "Simulateurs",
+    "learningRecord": "Dossier d'apprentissage",
+    "progress": "Progression",
+    "reports": "Rapports",
+    "garage": "Garage",
+    "settings": "Paramètres",
+    "collapse": "Réduire",
+    "expand": "Développer"
+  },
+  "module": { "kicker": "Module 0{index} · {title}", "brand": "SIMULATEUR SAAS HB TRONICS" },
+  "context": {
+    "underTest": "En test",
+    "noComponent": "Aucun composant",
+    "pick": "Choisir un composant",
+    "change": "Changer",
+    "jumpTo": "Ouvrir {tool} sur ce composant",
+    "noData": "Aucune donnée pour ce composant dans {tool}"
+  },
+  "picker": { "title": "Sélecteur de composant", "search": "Rechercher des composants", "system": "Système", "availability": "Disponibilité", "clear": "Effacer le composant" },
+  "user": { "name": "H. Barakat", "role": "Technicien expert", "xp": "XP {xp}", "signOut": "Se déconnecter" },
+  "gate": {
+    "kicker": "Barrière de couverture",
+    "notInstalled": "Pack de données non installé",
+    "noData": "Aucune couverture pour ce véhicule",
+    "body": "Cet outil n'a aucun pack de données installé pour le véhicule actif. Installez le pack ou changez de véhicule.",
+    "switch": "Passer à la Corolla"
+  },
+  "toast": {
+    "contextSet": "Composant défini sur {name}",
+    "vehicleSwitched": "Véhicule actif changé pour {vehicle}",
+    "exported": "Rapport exporté en PDF",
+    "installRequested": "Installation du pack demandée",
+    "coverageRequested": "Couverture demandée",
+    "localeLocked": "L'interface {lang} arrive avec la couverture 2026.9 — anglais uniquement dans cette version",
+    "noToolData": "Aucune donnée pour ce composant dans {tool}"
+  }
+}

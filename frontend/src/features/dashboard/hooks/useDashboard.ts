@@ -19,8 +19,6 @@ export function useDashboard() {
         });
 
     const loadDashboard = useCallback(async () => {
-        console.log("[Dashboard] Requesting dashboard...");
-
         setState((current) => ({
             ...current,
             isLoading: true,
@@ -31,22 +29,12 @@ export function useDashboard() {
             const response =
                 await dashboardApi.getDashboard();
 
-            console.log(
-                "[Dashboard] Response:",
-                response,
-            );
-
             setState({
                 dashboard: response,
                 isLoading: false,
                 error: null,
             });
         } catch (error) {
-            console.error(
-                "[Dashboard] Failed:",
-                error,
-            );
-
             setState({
                 dashboard: null,
                 isLoading: false,

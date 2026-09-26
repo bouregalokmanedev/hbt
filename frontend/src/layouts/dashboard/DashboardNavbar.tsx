@@ -1,7 +1,10 @@
-import { Home, Menu } from "lucide-react";
+import { Globe, Home, Menu, SlidersHorizontal } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { changeLanguage } from "@/i18n";
 import { NotificationMenu } from "@/features/notifications/components/NotificationMenu";
+import { useDashboardUiStore } from "@/features/dashboard/stores/dashboard-ui.store";
 
 interface DashboardNavbarProps {
   onMenuClick: () => void;
@@ -12,80 +15,102 @@ interface SectionConfig {
   description: string;
 }
 
-const sectionConfig: Record<string, SectionConfig> = {
-  "/dashboard": {
-    title: "Learning Dashboard",
-    description: "Continue your learning journey",
-  },
+function useSectionConfig(): Record<string, SectionConfig> {
+  const { t } = useTranslation();
 
-  "/my-courses": {
-    title: "My Courses",
-    description: "Continue learning and track your progress",
-  },
+  return {
+    "/dashboard": {
+      title: t("dashboard.nav.dashboardTitle"),
+      description: t("dashboard.nav.dashboardDesc"),
+    },
 
-  "/catalog": {
-    title: "Course Catalog",
-    description: "Explore courses and expand your skills",
-  },
+    "/my-courses": {
+      title: t("dashboard.nav.coursesTitle"),
+      description: t("dashboard.nav.coursesDesc"),
+    },
 
-  "/assessments": {
-    title: "Assessments",
-    description: "Test your knowledge and diagnostic skills",
-  },
+    "/catalog": {
+      title: t("dashboard.nav.catalogTitle"),
+      description: t("dashboard.nav.catalogDesc"),
+    },
 
-  "/achievements": {
-    title: "Achievements",
-    description: "Track your learning milestones",
-  },
+    "/assessments": {
+      title: t("dashboard.nav.assessmentsTitle"),
+      description: t("dashboard.nav.assessmentsDesc"),
+    },
 
-  "/certificates": {
-    title: "Certificates",
-    description: "View your earned certificates",
-  },
+    "/achievements": {
+      title: t("dashboard.nav.achievementsTitle"),
+      description: t("dashboard.nav.achievementsDesc"),
+    },
 
-  "/simulator": {
-    title: "Simulator",
-    description: "Practice real-world diagnostic scenarios",
-  },
+    "/certificates": {
+      title: t("dashboard.nav.certificatesTitle"),
+      description: t("dashboard.nav.certificatesDesc"),
+    },
 
-  "/ai-mentor": {
-    title: "AI Mentor",
-    description: "Get personalized help with your learning",
-  },
+    "/simulator": {
+      title: t("dashboard.nav.simulatorTitle"),
+      description: t("dashboard.nav.simulatorDesc"),
+    },
 
-  "/messages": {
-    title: "Messages",
-    description: "Stay connected with your learning community",
-  },
+    "/diagnostics": {
+      title: t("dashboard.nav.diagnosticsTitle"),
+      description: t("dashboard.nav.diagnosticsDesc"),
+    },
 
-  "/announcements": {
-    title: "Announcements",
-    description: "Stay up to date with HBT Learning",
-  },
+    "/support": {
+      title: t("dashboard.nav.supportTitle"),
+      description: t("dashboard.nav.supportDesc"),
+    },
 
-  "/favourite": {
-    title: "Favourite",
-    description: "Access your saved learning resources",
-  },
+    "/ai-mentor": {
+      title: t("dashboard.nav.mentorTitle"),
+      description: t("dashboard.nav.mentorDesc"),
+    },
 
-  "/subscription": {
-    title: "Subscription",
-    description: "Manage your HBT learning plan",
-  },
+    "/messages": {
+      title: t("dashboard.nav.messagesTitle"),
+      description: t("dashboard.nav.messagesDesc"),
+    },
 
-  "/settings": {
-    title: "Settings",
-    description: "Manage your account preferences",
-  },
+    "/announcements": {
+      title: t("dashboard.nav.announcementsTitle"),
+      description: t("dashboard.nav.announcementsDesc"),
+    },
 
-  "/profile": {
-    title: "Profile",
-    description: "Manage your personal information",
-  },
-};
+    "/favourite": {
+      title: t("dashboard.nav.favouriteTitle"),
+      description: t("dashboard.nav.favouriteDesc"),
+    },
+
+    "/subscription": {
+      title: t("dashboard.nav.subscriptionTitle"),
+      description: t("dashboard.nav.subscriptionDesc"),
+    },
+
+    "/settings": {
+      title: t("dashboard.nav.settingsTitle"),
+      description: t("dashboard.nav.settingsDesc"),
+    },
+
+    "/profile": {
+      title: t("dashboard.nav.profileTitle"),
+      description: t("dashboard.nav.profileDesc"),
+    },
+  };
+}
 
 export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
+  const { t, i18n } = useTranslation();
   const location = useLocation();
+  const sectionConfig = useSectionConfig();
+  const isArabic = i18n.language === "ar";
+  const customizing = useDashboardUiStore((state) => state.customizing);
+  const toggleCustomizing = useDashboardUiStore(
+    (state) => state.toggleCustomizing,
+  );
+  const onDashboard = location.pathname === "/dashboard";
 
   const currentSection =
     sectionConfig[location.pathname] ?? sectionConfig["/dashboard"];
@@ -101,8 +126,8 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
                 shrink-0
                 items-center
                 border-b
-                border-[#3A3A3A]/8
-                bg-white/90
+                border-[#3A3A3A]/8 dark:border-white/8
+                bg-white/90 dark:bg-[#1b1b20]/90
                 transition-colors
         duration-300
                 px-5
@@ -121,7 +146,7 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
           <button
             type="button"
             onClick={onMenuClick}
-            aria-label="Open navigation"
+            aria-label={t("dashboard.sidebar.openAria")}
             className="
                             flex
                             h-9
@@ -130,10 +155,10 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
                             items-center
                             justify-center
                             rounded-xl
-                            text-[#3A3A3A]/50
+                            text-[#3A3A3A]/50 dark:text-white/50
                             transition
-                            hover:bg-[#3A3A3A]/5
-                            hover:text-[#3A3A3A]
+                            hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5
+                            hover:text-[#3A3A3A] dark:hover:text-[#ececef]
                             lg:hidden
                         "
           >
@@ -148,7 +173,7 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
                                 truncate
                                 text-sm
                                 font-semibold
-                                text-[#3A3A3A]
+                                text-[#3A3A3A] dark:text-[#ececef]
                                 sm:text-[15px]
                             "
               >
@@ -174,7 +199,7 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
                             hidden
                             truncate
                             text-[10px]
-                            text-[#3A3A3A]/40
+                            text-[#3A3A3A]/40 dark:text-white/40
                             sm:block
                         "
             >
@@ -188,13 +213,47 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
         {/* ================================================== */}
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => changeLanguage(isArabic ? "en" : "ar")}
+            aria-label={isArabic ? "Switch to English" : "التبديل إلى العربية"}
+            title={isArabic ? "Switch to English" : "التبديل إلى العربية"}
+            className="flex h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-[#3A3A3A]/60 dark:text-white/60 shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:hover:bg-[#F47822]/[0.08] hover:text-[#F47822]"
+          >
+            <Globe className="h-4 w-4" />
+            <span className="text-[11px] font-bold">
+              {isArabic ? "EN" : "AR"}
+            </span>
+          </button>
           <Link
             to="/"
-            aria-label="Go to home page"
-            className="grid h-9 w-9 place-items-center rounded-xl border border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822]"
+            aria-label={t("dashboard.sidebar.homeAria")}
+            className="grid h-9 w-9 place-items-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/60 dark:text-white/60 shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:hover:bg-[#F47822]/[0.08] hover:text-[#F47822]"
           >
             <Home className="h-4 w-4" />
           </Link>
+          {onDashboard && (
+            <button
+              type="button"
+              data-testid="dashboard-customize"
+              aria-label={t("dashboard.personalize.customize")}
+              aria-pressed={customizing}
+              title={
+                customizing
+                  ? t("dashboard.personalize.done")
+                  : t("dashboard.personalize.customize")
+              }
+              onClick={toggleCustomizing}
+              className={[
+                "grid h-9 w-9 place-items-center rounded-xl border shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all",
+                customizing
+                  ? "border-[#F47822]/50 bg-[#F47822] text-white"
+                  : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:bg-[#F47822]/[0.08]",
+              ].join(" ")}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </button>
+          )}
           <NotificationMenu />
         </div>
       </div>

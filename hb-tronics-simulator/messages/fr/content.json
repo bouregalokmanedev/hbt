@@ -1,0 +1,1113 @@
+{
+  "oscFault": {
+    "none": "Aucune panne injectée — signal nominal.",
+    "open": "Circuit ouvert — le signal s'effondre en ligne plate.",
+    "shortGnd": "Court-circuit à la masse — signal bloqué près de 0 V.",
+    "shortBat": "Court-circuit au + batterie — signal bloqué haut.",
+    "highRes": "Résistance élevée — amplitude réduite et fronts adoucis.",
+    "weak": "Signal faible — faible amplitude.",
+    "noise": "Bruit électrique superposé au tracé.",
+    "poorGnd": "Mauvaise masse — dérive d'offset et parasites.",
+    "dropout": "Coupures intermittentes — cycles manquants périodiques.",
+    "intermittent": "Intermittent — événements manquants aléatoires.",
+    "missing": "Dents / événements manquants dans le motif.",
+    "coilWeak": "Bobine faible — pic primaire et ligne de combustion réduits.",
+    "injShort": "Court-circuit d'enroulement d'injecteur — pic réduit, courant élevé."
+  },
+  "dtc": {
+    "P2118": {
+      "overview": "L'ECM surveille le courant du moteur d'actionneur de papillon. Un défaut de résistance/performance déclenche P2118 lorsque le courant mesuré sort de la plage modélisée pour la position de papillon commandée.",
+      "cause": {
+        "winding": "Enroulement du moteur de papillon ouvert ou à résistance élevée",
+        "connector": "Bornes de connecteur corrodées / écartées",
+        "wiring": "Câblage d'alimentation ou de masse du moteur endommagé",
+        "ecu": "Défaut interne du pont en H de l'ECM"
+      },
+      "repair": "Remplacez le corps de papillon (moteur d'actionneur intégré). Effacez les codes, réalisez l'adaptation de l'actionneur, et confirmez la corrélation TP1/TP2 et le retour du courant en spec."
+    }
+  },
+  "location": {
+    "verdict": {
+      "training": {
+        "pass": "Bon travail — vous avez localisé les composants avec précision. Continuez ou augmentez la difficulté.",
+        "retry": "Continuez à vous entraîner — relisez les notes d'emplacement et réessayez les composants manqués."
+      },
+      "quiz": {
+        "pass": "Quiz réussi — vous savez où se trouvent ces composants.",
+        "retry": "Pas encore réussi — révisez l'atlas et repassez le quiz."
+      }
+    },
+    "train": {
+      "prompt": "Localisez : {name}",
+      "instruction": "Cliquez le composant sur le schéma. Changez de vue si besoin.",
+      "correct": "Emplacement correct.",
+      "wrong": "Pas là — regardez à nouveau."
+    },
+    "quiz": {
+      "prompt": "Où est : {name} ?",
+      "instruction": "Choisissez le bon point.",
+      "correct": "Correct.",
+      "wrong": "Faux — réessayez."
+    },
+    "difficulty": {
+      "Easy": "Points contourés",
+      "Medium": "Sans contours",
+      "Hard": "Sans indices",
+      "Expert": "Référence uniquement"
+    },
+    "L3": {
+      "location": "Compartiment moteur — dans le conduit de sortie du filtre à air, entre le boîtier de filtre et le boîtier papillon.",
+      "mount": "Serré dans le conduit d'admission nervuré, sur le boîtier de filtre à air."
+    },
+    "L1": {
+      "location": "Compartiment moteur — sur le collecteur d'admission, près du boîtier papillon et de la durite de refroidissement supérieure.",
+      "mount": "Boulonné sur le corps du collecteur d'admission."
+    },
+    "H3": {
+      "location": "Compartiment moteur — le boîtier papillon lui-même, côté collecteur d'admission du conduit d'air.",
+      "mount": "Bride du boîtier papillon sur le collecteur d'admission."
+    },
+    "T1": {
+      "location": "Compartiment moteur — vissé dans la culasse, sous la bobine d'allumage côté admission.",
+      "mount": "Vissé dans la culasse / sortie de liquide de refroidissement."
+    },
+    "I2": {
+      "location": "Compartiment moteur — vissé dans le bloc-cylindres, derrière et sous le collecteur d'admission.",
+      "mount": "Vissé dans le bloc-cylindres, à côté du tuyau de refroidissement."
+    },
+    "X1": {
+      "location": "Compartiment moteur — à l'avant du moteur, sur le carter de distribution près de la poulie de vilebrequin.",
+      "mount": "Boulonné sur le carter de distribution à la poulie de vilebrequin."
+    },
+    "X7": {
+      "location": "Compartiment moteur — dans le cache-culbuteurs côté distribution, sur l'arbre à cames d'admission.",
+      "mount": "Boulonné dans le cache-culbuteurs, arbre à cames d'admission."
+    },
+    "X8": {
+      "location": "Compartiment moteur — dans la culasse côté distribution, sur l'arbre à cames d'échappement.",
+      "mount": "Vissé dans la culasse, arbre à cames d'échappement."
+    },
+    "V1": {
+      "location": "Compartiment moteur — sur un support du collecteur d'admission, avec des durites de purge vers le canister à charbon.",
+      "mount": "Monté sur support sur le collecteur d'admission."
+    },
+    "U2": {
+      "location": "Sous le véhicule — vissé dans le tuyau d'échappement en aval du catalyseur.",
+      "mount": "Vissé dans le tuyau d'échappement derrière le catalyseur."
+    }
+  },
+  "multimeter": {
+    "verdict": {
+      "clear": "Toutes les mesures sont dans les spécifications — ce composant est sain.",
+      "found": "Vous avez localisé le défaut. Consignez le résultat et remplacez ou réparez selon l'indication."
+    },
+    "feedback": {
+      "takeMeasurement": "Prenez d'abord la mesure — réglez le commutateur rotatif sur la fonction requise et placez les deux sondes sur les bons points.",
+      "wrongYes": "Cela ne correspond pas à votre lecture — la valeur est hors spécification. Comparez la lecture à la spécification avant de répondre.",
+      "wrongNo": "Regardez à nouveau — la lecture est dans la spécification. Ce circuit est bon ; passez à l'étape suivante."
+    },
+    "L3": {
+      "step": {
+        "0": {
+          "instruction": "Appliquez différentes températures au capteur. Mesurez la résistance entre les broches 2 et 5. Comparez la résistance avec ce tableau :",
+          "fail": "La thermistance est en circuit ouvert. Remplacez le débitmètre d'air massique avec capteur de température d'air.",
+          "question": "La résistance correspond-elle aux spécifications ci-dessus ?"
+        },
+        "1": {
+          "instruction": "Débranchez le débitmètre d'air massique avec capteur de température d'air. Mettez le contact. Mesurez la tension sur la broche 2 dans le connecteur femelle. Est-elle entre 4.8 et 5.2 V ?",
+          "fail": "Pas de référence 5 V à la broche 2. Réparez le circuit ouvert entre la broche 2 et la broche B 122 de E1, puis refaites le test."
+        },
+        "2": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 3. Est-elle entre 12 et 14.4 V ?",
+          "fail": "Pas d'alimentation batterie à la broche 3. Vérifiez le fusible O7 (INJ/EFI-B) et le relais R1, puis réparez le circuit d'alimentation."
+        },
+        "3": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 5. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du capteur est en circuit ouvert. Réparez le fil entre la broche 5 et la broche B 90 de E1."
+        },
+        "4": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 1. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du débitmètre est en circuit ouvert. Réparez le fil entre la broche 1 et la broche B 91 de E1."
+        },
+        "5": {
+          "instruction": "Mesurez la résistance entre la broche 4 et B 92 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Le fil de signal est en circuit ouvert. Réparez le fil entre la broche 4 et la broche B 92 de E1."
+        }
+      },
+      "complaint": "Le moteur hésite à l'accélération et manque de puissance. Voyant moteur allumé. Code mémorisé P0102 — circuit du débitmètre d'air massique, entrée basse."
+    },
+    "L1": {
+      "step": {
+        "0": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 3. Est-elle entre 4.8 et 5.2 V ?",
+          "fail": "Pas de référence 5 V. Réparez le circuit ouvert entre la broche 3 et la broche B 118 de E1."
+        },
+        "1": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 1. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du capteur est en circuit ouvert. Réparez le fil entre la broche 1 et la broche B 119 de E1."
+        },
+        "2": {
+          "instruction": "Mesurez la résistance entre la broche 2 et B 87 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Le fil de signal est en circuit ouvert. Réparez le fil entre la broche 2 et la broche B 87 de E1."
+        }
+      },
+      "complaint": "Ralenti irrégulier, fumée noire en charge. Code mémorisé P0107 — circuit de pression absolue du collecteur, entrée basse."
+    },
+    "A1": {
+      "step": {
+        "0": {
+          "instruction": "Débranchez le composant. Mesurez la résistance entre les broches 1 et 2. Est-elle entre 11.6 et 12.4 Ω ?",
+          "fail": "L'enroulement de l'injecteur est en circuit ouvert. Remplacez l'injecteur 1."
+        },
+        "1": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 1. Est-elle entre 12 et 14.4 V ?",
+          "fail": "Pas d'alimentation à la broche 1. Vérifiez le fusible O7 (INJ/EFI-B) et le relais R1."
+        },
+        "2": {
+          "instruction": "Démarrez le moteur. Mesurez la tension sur la broche 2, moteur au ralenti. Est-elle entre 0.5 et 2 V ?",
+          "fail": "Le calculateur ne commute pas l'injecteur à la masse. Vérifiez le fil vers la broche B 20 de E1, puis le calculateur."
+        },
+        "3": {
+          "instruction": "Réglez le commutateur rotatif sur mA et branchez le multimètre en série avec la broche 1. Démarrez le moteur. Le courant de crête est-il entre 0.8 et 1.4 A ?",
+          "fail": "Le courant est trop faible pour la résistance mesurée. Remplacez l'injecteur 1 et refaites le test."
+        },
+        "4": {
+          "instruction": "Mesurez la résistance entre la broche 2 et B 20 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Le fil de commutation est en circuit ouvert. Réparez le fil entre la broche 2 et la broche B 20 de E1."
+        }
+      },
+      "complaint": "Raté d'allumage cylindre 1 et forte odeur de carburant au ralenti. Code mémorisé P0201 — défaut du circuit de l'injecteur 1."
+    },
+    "H3": {
+      "step": {
+        "0": {
+          "instruction": "Mesurez la résistance entre les broches 2 et 1. Est-elle entre 0.3 et 100 Ω ?",
+          "fail": "L'enroulement du moteur est en circuit ouvert. Remplacez le moteur de commande du papillon."
+        },
+        "1": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 5. Est-elle entre 4.5 et 5.5 V ?",
+          "fail": "Pas de référence 5 V. Réparez le circuit ouvert entre la broche 5 et la broche B 84 de E1."
+        },
+        "2": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 3. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du potentiomètre est en circuit ouvert. Réparez le fil entre la broche 3 et la broche B 83 de E1."
+        },
+        "3": {
+          "instruction": "Débranchez le composant. Appliquez brièvement 12 V aux bornes des broches 2 et 1 et mesurez la tension aux bornes du moteur. Le papillon se déplace-t-il régulièrement sur toute sa course ?",
+          "fail": "Le moteur est grippé ou en circuit ouvert. Remplacez le boîtier papillon complet."
+        },
+        "4": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 6, papillon fermé. Est-elle entre 0.4 et 1.0 V ?",
+          "fail": "Pas de signal de position 1. Remplacez le boîtier papillon complet."
+        },
+        "5": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 4, papillon fermé. Est-elle entre 3.9 et 4.7 V ?",
+          "fail": "Pas de signal de position 2. Remplacez le boîtier papillon complet."
+        },
+        "6": {
+          "instruction": "Mesurez la résistance entre la broche 6 et B 116 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 6 et la broche B 116 de E1. Réparez le câblage."
+        },
+        "7": {
+          "instruction": "Mesurez la résistance entre la broche 4 et B 115 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 4 et la broche B 115 de E1. Réparez le câblage."
+        },
+        "8": {
+          "instruction": "Mesurez la résistance entre la broche 1 et B 30 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 1 et la broche B 30 de E1. Réparez le câblage."
+        },
+        "9": {
+          "instruction": "Mesurez la résistance entre la broche 2 et B 60 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 2 et la broche B 60 de E1. Réparez le câblage."
+        }
+      },
+      "complaint": "Le papillon ne s'ouvre pas, moteur en mode puissance réduite. Code mémorisé P2101 — performance/plage du circuit du moteur de commande du papillon."
+    },
+    "I1": {
+      "step": {
+        "0": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche A2. Est-elle entre 12 et 14.4 V ?",
+          "fail": "Pas d'alimentation à la broche A2. Vérifiez le fusible et le relais alimentant les bobines, puis réparez le circuit d'alimentation."
+        },
+        "1": {
+          "instruction": "Mesurez la résistance entre la broche A3 et B 57 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Le fil de commande est en circuit ouvert. Réparez le fil entre la broche A3 et la broche B 57 de E1."
+        }
+      },
+      "complaint": "Raté d'allumage cylindre 1 à tous les régimes. Code mémorisé P0351 — circuit primaire/secondaire de la bobine d'allumage A."
+    },
+    "I2": {
+      "step": {
+        "0": {
+          "instruction": "Mesurez la résistance entre les broches 2 et 1. Est-elle entre 120 et 280 kΩ ?",
+          "fail": "L'élément piézoélectrique est en circuit ouvert. Remplacez le capteur de cliquetis."
+        },
+        "1": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 1. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du capteur est en circuit ouvert. Réparez le fil entre la broche 1 et la broche B 124 de E1."
+        },
+        "2": {
+          "instruction": "Mesurez la résistance entre la broche 2 et B 123 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Le fil de signal est en circuit ouvert. Réparez le fil entre la broche 2 et la broche B 123 de E1."
+        },
+        "3": {
+          "instruction": "Mesurez la résistance entre le blindage à la broche 1 et le point de masse moteur. Est-elle inférieure à 1 Ω ?",
+          "fail": "Le blindage n'est pas mis à la masse. Réparez la connexion du blindage au point de masse moteur."
+        },
+        "4": {
+          "instruction": "Mesurez la résistance entre le blindage à la broche 1 et le fil de signal à la broche 2. Est-elle supérieure à 1 MΩ ?",
+          "fail": "Le blindage est en court-circuit avec le fil de signal. Remplacez le tronçon de faisceau du capteur."
+        }
+      },
+      "complaint": "Perte de puissance en charge, aucun contrôle du cliquetis. Code mémorisé P0325 — circuit du capteur de cliquetis 1."
+    },
+    "X1": {
+      "step": {
+        "0": {
+          "instruction": "Débranchez le composant. Mesurez la résistance entre les broches 1 et 2. Est-elle entre 1.63 et 2.74 kΩ ?",
+          "fail": "L'enroulement du capteur est en circuit ouvert. Remplacez le capteur de position vilebrequin."
+        },
+        "1": {
+          "instruction": "Mesurez la résistance entre la broche 1 et B 78 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 1 et la broche B 78 de E1. Réparez le câblage."
+        },
+        "2": {
+          "instruction": "Mesurez la résistance entre la broche 2 et B 110 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 2 et la broche B 110 de E1. Réparez le câblage."
+        },
+        "3": {
+          "instruction": "Mesurez la résistance entre le blindage et le point de masse moteur. Est-elle inférieure à 1 Ω ?",
+          "fail": "Le blindage n'est pas mis à la masse. Réparez la connexion du blindage au point de masse moteur."
+        },
+        "4": {
+          "instruction": "Mesurez la résistance entre le blindage et la broche 1. Est-elle supérieure à 1 MΩ ?",
+          "fail": "Le blindage est en court-circuit avec le fil de signal. Remplacez le tronçon de faisceau du capteur."
+        }
+      },
+      "complaint": "Le moteur tourne mais ne démarre pas, aucun signal de régime sur l'outil de diagnostic. Code mémorisé P0335."
+    },
+    "X7": {
+      "step": {
+        "0": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 1. Est-elle entre 4.8 et 5.2 V ?",
+          "fail": "Pas de référence 5 V. Réparez le circuit ouvert entre la broche 1 et la broche B 82 de E1."
+        },
+        "1": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 2. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du capteur est en circuit ouvert. Réparez le fil entre la broche 2 et la broche B 114 de E1."
+        },
+        "2": {
+          "instruction": "Lancez le moteur au démarreur. Mesurez la tension sur la broche 3. Bascule-t-elle entre 0.3 V et 4.8 V au passage de chaque dent ?",
+          "fail": "Pas de signal Hall. Vérifiez l'entrefer et la cible, puis remplacez le capteur."
+        },
+        "3": {
+          "instruction": "Mesurez la résistance entre la broche 3 et B 113 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Le fil de signal est en circuit ouvert. Réparez le fil entre la broche 3 et la broche B 113 de E1."
+        }
+      },
+      "complaint": "Temps de démarrage long, VVT-i inactif, le moteur tourne irrégulièrement après un démarrage à chaud. Code mémorisé P0340."
+    },
+    "G1": {
+      "step": {
+        "0": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 4. Est-elle entre 4.8 et 5.2 V ?",
+          "fail": "Pas de référence 5 V sur la piste 2. Réparez le circuit ouvert entre la broche 4 et la broche A 56 de E1."
+        },
+        "1": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 1. Est-elle entre 4.8 et 5.2 V ?",
+          "fail": "Pas de référence 5 V sur la piste 1. Réparez le circuit ouvert entre la broche 1 et la broche A 53 de E1."
+        },
+        "2": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 5. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse de la piste 1 est en circuit ouvert. Réparez le fil entre la broche 5 et la broche A 52 de E1."
+        },
+        "3": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 2. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse de la piste 2 est en circuit ouvert. Réparez le fil entre la broche 2 et la broche A 55 de E1."
+        },
+        "4": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche A 51 (E1 calculateur moteur) et comparez les résultats avec ce tableau :",
+          "fail": "Pas de sortie sur la piste 1. Remplacez le capteur de position de la pédale d'accélérateur.",
+          "question": "Cette tension correspond-elle aux spécifications ci-dessus ?"
+        },
+        "5": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche A 54 (E1 calculateur moteur) et comparez les résultats avec ce tableau :",
+          "fail": "Pas de sortie sur la piste 2. Remplacez le capteur de position de la pédale d'accélérateur.",
+          "question": "Cette tension correspond-elle aux spécifications ci-dessus ?"
+        }
+      },
+      "complaint": "Le moteur reste au ralenti, la pédale d'accélérateur n'a aucun effet, véhicule en mode dégradé. Code mémorisé P2135."
+    },
+    "U1": {
+      "step": {
+        "0": {
+          "instruction": "Mesurez la résistance entre les broches 2 et 1. Est-elle entre 1.8 et 3.4 Ω ?",
+          "fail": "L'élément chauffant est en circuit ouvert. Remplacez la sonde à oxygène."
+        },
+        "1": {
+          "instruction": "Démarrez le moteur. Mesurez la tension sur la broche 2. Est-elle entre 12 et 14.4 V ?",
+          "fail": "Pas d'alimentation du réchauffeur. Vérifiez le fusible O7 (EFI 2) et le relais R1, puis réparez le circuit d'alimentation."
+        },
+        "2": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 4. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du réchauffeur n'est pas commutée. Vérifiez le fil depuis la broche 4, puis le calculateur."
+        },
+        "3": {
+          "instruction": "Mesurez la résistance entre la broche 1 et B 22 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 1 et la broche B 22 de E1. Réparez le câblage."
+        },
+        "4": {
+          "instruction": "Mesurez la résistance entre la broche 3 et B 103 (E1 calculateur moteur). Est-elle inférieure à 1 Ω ?",
+          "fail": "Circuit ouvert entre la broche 3 et la broche B 103 de E1. Réparez le câblage."
+        }
+      },
+      "complaint": "Voyant moteur allumé, consommation élevée, correction de richesse à la limite. Code mémorisé P0135 — circuit de chauffage de la sonde à oxygène, banc 1 capteur 1."
+    },
+    "T1": {
+      "step": {
+        "0": {
+          "instruction": "Débranchez le composant. Mesurez la résistance entre les broches 1 et 2. Comparez la résistance avec ce tableau :",
+          "fail": "La thermistance est en circuit ouvert. Remplacez le capteur de température de liquide de refroidissement.",
+          "question": "La résistance correspond-elle aux spécifications ci-dessus ?"
+        },
+        "1": {
+          "instruction": "Débranchez le capteur de température de liquide de refroidissement. Mettez le contact. Mesurez la tension sur la broche 1 dans le connecteur femelle. Est-elle entre 4.8 et 5.2 V ?",
+          "fail": "Pas de référence 5 V. Réparez le circuit ouvert entre la broche 1 et la broche B 93 de E1."
+        },
+        "2": {
+          "instruction": "Mettez le contact. Mesurez la tension sur la broche 2. Est-elle entre 0 et 0.2 V ?",
+          "fail": "La masse du capteur est en circuit ouvert. Réparez le fil entre la broche 2 et la broche B 94 de E1."
+        }
+      },
+      "complaint": "Démarrage à froid difficile, le ventilateur tourne en permanence, la jauge indique froid. Code mémorisé P0117."
+    }
+  },
+  "scanner": {
+    "tree": {
+      "supply": {
+        "label": "Tension d'alimentation au connecteur du corps de papillon",
+        "hint": "Contact mis, moteur arrêté."
+      },
+      "connector": {
+        "label": "Intégrité du connecteur et tension des bornes",
+        "hint": "Rétro-sondez les deux broches du moteur."
+      },
+      "motorSupply": {
+        "label": "Alimentation du moteur depuis l'ECU",
+        "hint": "L'ECM pilote le pont en H."
+      },
+      "ground": {
+        "label": "Résistance du circuit de masse",
+        "hint": "Chemin de retour du moteur."
+      },
+      "can": {
+        "label": "Communication CAN avec l'ECM",
+        "hint": "Écartez le réseau."
+      },
+      "winding": {
+        "label": "Résistance de l'enroulement du moteur de papillon",
+        "hint": "Enroulement ouvert / à résistance élevée."
+      },
+      "correlation": {
+        "label": "Corrélation du capteur TP",
+        "hint": "Non atteint — défaut trouvé."
+      },
+      "verdict": "Enroulement du moteur de papillon ouvert — 6,42 Ω contre spec 0,3–1,8 Ω."
+    },
+    "treeFeedback": {
+      "recheck": "Revérifiez : {hint}",
+      "correct": "Correct — avancez.",
+      "confirmed": "Défaut confirmé à cette branche."
+    },
+    "adas": {
+      "calibType": {
+        "static": "Calibrage statique"
+      },
+      "item": {
+        "camera": {
+          "name": "Caméra avant — LDW / LKA / AEB",
+          "note": "Pare-brise remplacé le 21 juil."
+        },
+        "frontRadar": {
+          "name": "Radar avant — ACC / FCW",
+          "note": "Calibré le 02 mai 2026"
+        },
+        "blindL": {
+          "name": "Radar d'angle mort — gauche",
+          "note": "Calibré le 02 mai 2026"
+        },
+        "blindR": {
+          "name": "Radar d'angle mort — droite",
+          "note": "Pare-chocs repeint"
+        },
+        "park": {
+          "name": "Capteurs de stationnement — 8 canaux",
+          "note": "Aucune action requise"
+        },
+        "surround": {
+          "name": "Vue à 360°",
+          "note": "Non équipé sur cette finition"
+        }
+      },
+      "precondition": {
+        "0": "Véhicule à niveau, pneus à 2,4 bar",
+        "1": "Réservoir au-dessus de ½, pas de charge en cabine",
+        "2": "Mire à 1,28 m du centre de l'essieu avant",
+        "3": "Décalage latéral dans ± 5 mm",
+        "4": "Qualité d'image caméra acceptée par l'ECU",
+        "5": "Valeurs de calibrage écrites et vérifiées"
+      },
+      "status": {
+        "idle": "Le pare-brise a été remplacé le 21 juil., la caméra avant nécessite donc un calibrage statique avant que le maintien de voie et le freinage d'urgence automatique soient réactivés. Placez la mire, puis démarrez.",
+        "success": "Lacet 0,12° · tangage −0,04° · roulis 0,03°, tout dans la tolérance. B1483 effacé. Confirmez par un essai routier au-dessus de 40 km/h."
+      }
+    },
+    "training": {
+      "step": {
+        "codes": {
+          "label": "Lisez tous les codes de défaut et notez le statut",
+          "detail": "ECM P0087 actuel, 11 occurrences · P2118 actuel"
+        },
+        "live": {
+          "label": "Comparez la pression de rampe demandée et réelle au ralenti",
+          "detail": "Demandé 330 bar · réel 284 bar · écart −46 bar"
+        },
+        "graph": {
+          "label": "Observez l'écart en charge",
+          "detail": "Tracez les deux signaux lors d'un coup d'accélérateur à 3 000 tr/min"
+        },
+        "supply": {
+          "label": "Mesurez l'alimentation basse pression",
+          "detail": "Pression d'alimentation 2,1 bar contre spec 4,5 – 5,5 bar"
+        },
+        "isolate": {
+          "label": "Écartez le circuit de contrôle haute pression",
+          "detail": "Rapport cyclique du régulateur plausible, pas de défaut électrique"
+        },
+        "confirm": {
+          "label": "Énoncez la cause racine et la réparation",
+          "detail": "Sélectionnez une réponse ci-dessous — vous avez un seul essai"
+        }
+      },
+      "answer": {
+        "pump": "Pompe à carburant haute pression défectueuse",
+        "filter": "Filtre à carburant obstrué privant la pompe HP",
+        "injector": "Injecteur de carburant fuyard",
+        "sensor": "Capteur de pression de carburant défaillant"
+      },
+      "result": {
+        "correct": "Correct — un filtre à carburant obstrué privait la pompe HP en charge.",
+        "wrong": "Pas la cause racine. La pression de rampe s'est effondrée en charge parce que l'alimentation était restreinte en amont de la pompe HP."
+      },
+      "verdict": {
+        "correct": "Filtre à carburant obstrué privant la pompe HP.",
+        "wrong": "Identification incorrecte de la cause racine."
+      },
+      "scenario": {
+        "title": "Perte de puissance intermittente en charge",
+        "desc": "Une Camry 2019 arrive avec une plainte de perte de puissance en côte et un voyant moteur allumé. Deux codes de défaut sont présents dans l'ECM et ils ne sont pas aussi pertinents l'un que l'autre. Suivez le processus dans l'ordre et justifiez chaque conclusion par une mesure — le simulateur note votre démarche, pas seulement votre réponse."
+      },
+      "obj": {
+        "0": "Distinguez un code lié au symptôme d'un code consécutif.",
+        "1": "Utilisez la comparaison consigne/réel plutôt que des valeurs absolues.",
+        "2": "Testez la dépendance à la charge avant de condamner un composant.",
+        "3": "Remontez du point de défaillance vers le côté alimentation."
+      },
+      "instructorNote": "Les stagiaires remplacent souvent la pompe haute pression ici. Surveillez quiconque saute l'étape 4 — la mesure basse pression est le seul test décisif de ce scénario.",
+      "lib": {
+        "11": "Raté sur le cylindre 3",
+        "12": "Perte de puissance en charge",
+        "13": "Bus CAN-C désactivé après montage",
+        "14": "ADAS après remplacement du pare-brise"
+      }
+    },
+    "ws": {
+      "header": {
+        "kicker": "Poste de diagnostic",
+        "heading": "Sélectionnez une fonction de diagnostic"
+      },
+      "hero": {
+        "cloudOnline": "Cloud en ligne",
+        "startHere": "Commencer ici",
+        "routines38": "38 routines",
+        "intelligent": {
+          "title": "Diagnostic intelligent",
+          "desc": "Identification auto du VIN, arbre de panne guidé depuis le cloud de connaissances HB, statistiques de réparations confirmées."
+        },
+        "local": {
+          "title": "Diagnostic local",
+          "desc": "Sélection manuelle du véhicule, scan complet des systèmes, réseau des calculateurs, DTC, données en direct et rapports."
+        },
+        "reset": {
+          "title": "Fonctions de réinitialisation et service",
+          "desc": "Reset huile, EPB, SAS, régénération DPF, codage injecteurs, enregistrement batterie, réapprentissage papillon."
+        }
+      },
+      "mod": {
+        "adas": {
+          "title": "Calibrage ADAS",
+          "subtitle": "Caméra, radar, BSM, 360°"
+        },
+        "immobilizer": {
+          "title": "Antidémarrage et clés",
+          "subtitle": "Apprentissage clé, PIN, toutes clés perdues"
+        },
+        "tpms": {
+          "title": "TPMS",
+          "subtitle": "ID capteur, réapprentissage, programmation"
+        },
+        "history": {
+          "title": "Historique de diagnostic",
+          "subtitle": "184 sessions · comparer"
+        },
+        "software": {
+          "title": "Mise à jour logicielle",
+          "subtitle": "Bases de données véhicules"
+        },
+        "coverage": {
+          "title": "Couverture véhicules",
+          "subtitle": "Matrice de fonctions par modèle"
+        },
+        "training": {
+          "title": "Simulateur de formation",
+          "subtitle": "64 scénarios · examens"
+        },
+        "knowledge": {
+          "title": "Base de connaissances",
+          "subtitle": "Câblage, bulletins, procédures"
+        },
+        "other": {
+          "title": "Autres modules",
+          "subtitle": "VE, oscilloscope, test batterie"
+        },
+        "ecu": {
+          "title": "Programmation calculateur",
+          "subtitle": "Nécessite une licence HB PRO+"
+        }
+      },
+      "meta": {
+        "vci": "Interface VCI",
+        "os": "OS de diagnostic",
+        "coverage": "Couverture"
+      },
+      "recent": {
+        "title": "Sessions récentes",
+        "viewAll": "Tout voir",
+        "dtc": "DTC"
+      },
+      "status": {
+        "connected": "HB-LINK 3 connecté · contact ON · moteur tournant",
+        "coverage": "Couverture véhicule",
+        "start": "Démarrer le diagnostic local"
+      }
+    },
+    "report": {
+      "customerComplaint": "Perte de puissance en charge dans les côtes, ralenti irrégulier occasionnel à chaud, voyant moteur allumé. Panne signalée comme intermittente au cours des trois dernières semaines.",
+      "measurement": {
+        "throttleR": "Résistance du moteur de papillon",
+        "motorSupply": "Tension d'alimentation moteur",
+        "ground": "Circuit de masse",
+        "tp1": "Capteur TP 1"
+      }
+    },
+    "assist": {
+      "seed": "Vous avez P0087 et P2118 dans l'ECM. Avant de parler de pièces : quelle est la pression de rampe réelle par rapport à la valeur demandée au ralenti ?",
+      "t0a": "284 bar réels contre 330 bar demandés",
+      "t0b": "Je ne l'ai pas encore mesurée",
+      "r0": "La pression de rampe est inférieure de 46 bar à la consigne au ralenti. Un défaut de régulation et une restriction d'alimentation semblent identiques d'ici. Accélérez d'un coup jusqu'à 3 000 rpm — l'écart se creuse-t-il ou reste-t-il constant ?",
+      "t1a": "L'écart se creuse jusqu'à environ 120 bar",
+      "t1b": "Il reste à peu près constant",
+      "r1": "Un écart qui augmente avec la demande est un problème de débit, pas de régulation. Passez ensuite au côté basse pression : quelle est la pression d'alimentation avant la pompe haute pression ?",
+      "t2a": "2.1 bar — sous la spécification de 4.5 bar",
+      "t2b": "4.8 bar — dans la spécification",
+      "r2": "2.1 bar contre une spécification de 4.5 – 5.5 bar affame la pompe haute pression, qui ne peut donc jamais atteindre la pression de rampe demandée. Confirmez la restriction du filtre et le débit de la pompe avant d'incriminer quoi que ce soit côté haute pression.",
+      "t3a": "Compris — je consigne le test de débit",
+      "t3b": "Montrez-moi le câblage de la pompe basse pression",
+      "r3": "Votre raisonnement est solide : symptôme → écart de consigne → dépendance à la charge → alimentation en amont. Consignez le test de débit dans le rapport pour que le prochain technicien voie pourquoi la pompe haute pression n'a pas été remplacée."
+    }
+  },
+  "record": {
+    "r-2026-0731": {
+      "finding": "Circuit ouvert du moteur d'actionneur de papillon (P2118)",
+      "verdict": "Résistance moteur 6,42 Ω contre spec 0,3–1,8 Ω — actionneur remplacé.",
+      "step": {
+        "0": "Tension d'alimentation au connecteur",
+        "1": "Intégrité du connecteur",
+        "2": "Alimentation moteur",
+        "3": "Résistance de masse",
+        "4": "Communication CAN",
+        "5": "Résistance moteur"
+      }
+    },
+    "r-2026-0729": {
+      "finding": "Continuité du signal MAF L3 vers l'ECU B92",
+      "verdict": "Toutes les mesures dans les spécifications ; continuité du faisceau confirmée.",
+      "step": {
+        "0": "Résistance de température d'air",
+        "1": "Référence 5 V",
+        "2": "Alimentation +12 V",
+        "3": "Continuité du signal broche 4 → B92"
+      }
+    },
+    "r-2026-0727": {
+      "finding": "Forme d'onde crête et maintien de l'injecteur 1",
+      "verdict": "Crête ~3 A, maintien ~1,5 A, pic inductif ~68 V — nominal.",
+      "step": {
+        "0": "Brancher les pointes A / GND / CLAMP",
+        "1": "Déclenchement et base de temps",
+        "2": "Lire le courant de crête",
+        "3": "Diagnostic"
+      }
+    },
+    "r-2026-0724": {
+      "finding": "Quiz d'emplacement boîte à fusibles et capteurs",
+      "verdict": "9 / 10 cibles localisées dans la tolérance.",
+      "step": {
+        "0": "Boîte à fusibles sous capot",
+        "1": "Capteur MAF",
+        "2": "Capteur de cliquetis",
+        "3": "Capteur de liquide de refroidissement"
+      }
+    },
+    "r-2026-0722": {
+      "finding": "Scénario 12 — perte de puissance intermittente en charge",
+      "verdict": "Filtre à carburant obstrué privant la pompe HP — bon diagnostic.",
+      "step": {
+        "0": "Lire les codes de défaut",
+        "1": "Inspecter les données en direct",
+        "2": "Tracer la pression de rampe",
+        "3": "Réponse cause racine"
+      }
+    },
+    "r-2026-0719": {
+      "finding": "Traçage du faisceau de la bobine d'allumage 1",
+      "verdict": "A3 → B57, A2 → B102 tracés correctement.",
+      "step": {
+        "0": "Localiser le nœud COIL1",
+        "1": "Tracer le déclencheur primaire",
+        "2": "Tracer l'alimentation"
+      }
+    },
+    "r-2026-0715": {
+      "finding": "Température-résistance du capteur de liquide de refroidissement T1",
+      "verdict": "La résistance a suivi la table de température sur toute la plage.",
+      "step": {
+        "0": "Résistance à 20 °C",
+        "1": "Résistance à 80 °C",
+        "2": "Signal vers l'ECU"
+      }
+    }
+  },
+  "progress": {
+    "cert": {
+      "0": "Diagnostic du groupe motopropulseur",
+      "1": "Fondamentaux de l'oscilloscope",
+      "2": "Réseaux et systèmes CAN"
+    },
+    "weak": {
+      "0": "Dwell et pic de la bobine d'allumage",
+      "1": "Mise à l'échelle du capteur MAP",
+      "2": "Routage du faisceau d'injecteur"
+    },
+    "rec": {
+      "0": "Revoir la forme d'onde primaire de bobine",
+      "1": "Alimentation et résistance d'injecteur",
+      "2": "Corrélation des données MAF en direct"
+    },
+    "coach": "Votre travail sur les arbres de défaut est solide. Concentrez-vous ensuite sur l'interprétation des formes d'onde de l'oscilloscope — le dwell primaire de bobine et le courant d'injecteur sont vos lectures les plus faibles."
+  },
+  "hub": {
+    "mod": {
+      "scanner": {
+        "subtitle": "Scanner de diagnostic automobile",
+        "features": "DTC · Données en direct · Tests d'actionneurs",
+        "lastActivity": "Hier · arbre de panne P2118"
+      },
+      "multimeter": {
+        "subtitle": "Banc de multimètre numérique",
+        "features": "Résistance · Tension · Continuité",
+        "lastActivity": "Il y a 3 jours · contrôle du signal MAF"
+      },
+      "oscilloscope": {
+        "subtitle": "Labo de signaux à quatre voies",
+        "features": "Signaux · Déclencheurs · Références",
+        "lastActivity": "Aujourd'hui · crête et maintien injecteur"
+      },
+      "location": {
+        "subtitle": "Atlas de localisation des composants",
+        "features": "Compartiment moteur · Boîte à fusibles · Masses",
+        "lastActivity": "Aujourd'hui · quiz 9/10 correct"
+      },
+      "schematic": {
+        "subtitle": "Espace de schémas de câblage",
+        "features": "Circuits · Broches · Mode traçage",
+        "lastActivity": "Non commencé cette semaine"
+      }
+    },
+    "task": {
+      "0": {
+        "title": "Terminer l'exercice de courant d'injecteur",
+        "meta": "Oscilloscope · 2 étapes restantes"
+      },
+      "1": {
+        "title": "Tracer le circuit du relais de bobine d'allumage",
+        "meta": "Schéma · non commencé"
+      },
+      "2": {
+        "title": "Mesurer le circuit du capteur d'arbre à cames",
+        "meta": "Multimètre · 1 échec à corriger"
+      },
+      "3": {
+        "title": "Résoudre le P0301 en attente avec un arbre de panne",
+        "meta": "Scanner · guidé"
+      }
+    },
+    "coach": "Votre contexte est Injecteur de carburant — cylindre 1. Un flux propre : trouvez-le dans Localisation, lisez le circuit dans Schéma, mesurez-le statiquement avec le Multimètre, puis observez-le en direct sur l'Oscilloscope."
+  },
+  "oscilloscope": {
+    "fault": {
+      "none": {
+        "label": "Sain",
+        "desc": "Aucun défaut injecté. La capture doit rester dans les valeurs du manuel."
+      },
+      "open": {
+        "label": "Circuit ouvert",
+        "desc": "Circuit coupé entre le composant et le calculateur. Le driver ne tire jamais la ligne vers le bas."
+      },
+      "shortGnd": {
+        "label": "Court-circuit à la masse",
+        "desc": "La ligne mesurée est en court-circuit à la masse châssis — elle ne peut plus monter."
+      },
+      "shortBat": {
+        "label": "Court-circuit au +",
+        "desc": "La ligne mesurée est en court-circuit à une alimentation — elle ne peut plus être tirée vers le bas."
+      },
+      "highRes": {
+        "label": "Résistance élevée",
+        "desc": "Corrosion ou sertissage médiocre ajoute de la résistance ; l'amplitude s'effondre et les fronts s'adoucissent."
+      },
+      "weak": {
+        "label": "Capteur faible",
+        "desc": "La sortie du composant s'est dégradée avec l'usure. La forme est correcte, l'amplitude non."
+      },
+      "noise": {
+        "label": "Bruit",
+        "desc": "Un câblage non blindé ou une masse défaillante injecte des interférences sur le signal."
+      },
+      "poorGnd": {
+        "label": "Mauvaise masse",
+        "desc": "La masse capteur est décalée au-dessus du châssis ; toute la trace est soulevée et instable."
+      },
+      "dropout": {
+        "label": "Décrochage",
+        "desc": "Le signal disparaît pendant des cycles entiers puis revient."
+      },
+      "intermittent": {
+        "label": "Intermittent",
+        "desc": "Le défaut apparaît par salves — visible uniquement sur une longue capture."
+      },
+      "missing": {
+        "label": "Impulsions manquantes",
+        "desc": "Des impulsions manquent au motif ; le calculateur perd la synchronisation."
+      },
+      "coilWeak": {
+        "label": "Bobine endommagée",
+        "desc": "La surtension inductive primaire est bien en dessous des specs — étincelle faible, claquage secondaire."
+      },
+      "injShort": {
+        "label": "Bobinage d'injecteur",
+        "desc": "Bobinage d'injecteur partiellement court-circuité : le courant monte trop vite et trop haut."
+      }
+    },
+    "verdict": {
+      "correct": "Diagnostic correct — la capture correspond à ce défaut. Consignez le résultat et continuez.",
+      "wrong": "Pas tout à fait. Relisez la trace par rapport à la référence et aux valeurs du manuel avant de choisir à nouveau."
+    },
+    "ai": {
+      "supply": "Ch A est sur une borne d'alimentation — une ligne plate à la tension d'alimentation signifie que la sonde est sur l'alimentation, pas le signal. Déplacez Ch A vers la borne de signal.",
+      "ground": "Ch A est sur une borne de masse — la trace reste à 0 V avec seulement du bruit. Rien n'est mesuré.",
+      "none": "Aucune sonde de signal connectée — la trace n'est que du bruit. Connectez Ch A à la borne de signal et la pince de masse.",
+      "spec": "Le signal correspond à la référence pour ce composant — forme, amplitude et timing sont dans les valeurs du manuel. Enregistrez-le comme référence connue-bonne."
+    },
+    "step": {
+      "probe": "Connectez les sondes aux bonnes bornes",
+      "vdiv": "Réglez Ch A sur le bon V/div",
+      "timebase": "Réglez la base de temps pour ce composant",
+      "trigger": "Déclenchez sur le bon front, niveau dans le signal",
+      "capture": "Figez une capture avec SINGLE",
+      "cursors": "Mesurez avec les curseurs A et B",
+      "diagnosis": "Soumettez un diagnostic sur l'onglet Score"
+    },
+    "ex": {
+      "inj": {
+        "sub": "Saturé / peak & hold · injection indirecte",
+        "instruction": "Ch A sur la borne de commande d'injecteur, pince de masse au négatif batterie, pince ampèremétrique autour du fil d'alimentation. Déclenchez sur front descendant en A, puis lisez la hauteur du pic et la largeur d'impulsion entre les curseurs.",
+        "function": "Le calculateur commute le côté bas de l'injecteur à la masse. Le courant s'établit dans le bobinage, l'aiguille se lève, et à la coupure le champ qui s'effondre produit le pic de tension inductif. Hauteur du pic et largeur d'impulsion révèlent l'état du bobinage et le dosage.",
+        "bullets": [
+          "Bobinage solénoïde avec aiguille à ressort",
+          "Côté bas commuté par le driver du calculateur",
+          "Les drivers peak & hold limitent le courant après ouverture",
+          "La hauteur du pic dépend de l'inductance du bobinage"
+        ],
+        "probeNotes": [
+          "Rétro-sondez la borne 2 ; ne percez pas l'isolant.",
+          "Pince de masse au négatif batterie, pas sur un support peint.",
+          "Pincez le fil d'alimentation seul — les deux fils dans la pince s'annulent."
+        ],
+        "anim1": "Levée d'aiguille",
+        "anim2": "Courant bobinage",
+        "animEvent": "Pic inductif"
+      },
+      "coil": {
+        "sub": "Bobine sur bougie, allumage séquentiel",
+        "instruction": "Ch A sur la borne primaire commutée, pince sur l'alimentation +B. Observez la limitation de courant pendant le dwell, puis la surtension inductive et la ligne de combustion à la coupure.",
+        "function": "Le module commute le primaire à la masse ; le champ magnétique s'établit jusqu'à la limite de courant, puis s'effondre pour induire la haute tension secondaire. La tension primaire montre le dwell, la limitation de courant et la surtension.",
+        "bullets": [
+          "Électroaimant primaire et secondaire haute tension",
+          "Module à courant limité avec bobine basse résistance",
+          "Une bobine par cylindre, commandée individuellement",
+          "La hauteur de surtension chute si le bobinage ou la masse se dégrade"
+        ],
+        "probeNotes": [
+          "Utilisez un atténuateur ou une sonde ×10 : la surtension primaire dépasse 300 V.",
+          "Pincez le fil +B pour voir le plateau de limitation de courant.",
+          "Ne débranchez jamais une bobine moteur tournant."
+        ],
+        "anim1": "Dwell",
+        "anim2": "Courant primaire",
+        "animEvent": "Événement d'étincelle"
+      },
+      "cam": {
+        "sub": "Effet Hall / type MRE · numérique",
+        "instruction": "Ch A sur la borne de signal, pince de masse sur la masse capteur. Confirmez les deux niveaux, puis comptez le motif de segments sur un tour d'arbre à cames.",
+        "function": "Un semi-conducteur convertit le champ magnétique variable du rotor en tension commutée. Comme c'est un capteur à effet Hall, l'amplitude ne varie pas avec le régime — seul le timing du motif change.",
+        "bullets": [
+          "Élément Hall avec amplificateur et étage de sortie internes",
+          "Niveau de sortie fixé par la tension d'alimentation, pas le régime",
+          "Les segments du rotor donnent un motif asymétrique pour l'ID cylindre",
+          "Les variantes MRE se comportent de façon identique à l'oscillo"
+        ],
+        "probeNotes": [
+          "Mesurez le connecteur branché — une sortie Hall à vide lit faux.",
+          "Masse sur la borne 3, la masse capteur, pour voir le vrai niveau bas.",
+          "Un carré propre avec un mauvais motif signifie quand même un défaut de calage mécanique."
+        ],
+        "anim1": "Angle rotor",
+        "anim2": "État sortie",
+        "animEvent": "Front détecté"
+      },
+      "app": {
+        "sub": "Double potentiomètre · pistes redondantes",
+        "instruction": "Ch A sur VPA, Ch B sur VPA2, masse sur EPA. Balayez la pédale lentement sur toute la course et retour ; les deux traces doivent bouger ensemble sans marches ni décrochages.",
+        "function": "Deux diviseurs de tension indépendants suivent l'angle de la pédale. Le calculateur compare les deux signaux pour la plausibilité, donc le rapport entre les pistes compte autant que les valeurs.",
+        "bullets": [
+          "Contacts glissants sur deux pistes résistives",
+          "Alimentations et résistances séparées par piste",
+          "Signaux indépendants pour la détection de panne",
+          "L'usure apparaît en pics ou plats en milieu de course"
+        ],
+        "probeNotes": [
+          "Chaque piste référencée à sa propre masse — ne partagez pas EPA et EPA2.",
+          "Balayez lentement : une piste usée apparaît en pic étroit, vite manqué.",
+          "Comparez le rapport, pas seulement les extrémités."
+        ],
+        "anim1": "Course pédale",
+        "anim2": "VPA",
+        "animEvent": "Contact ralenti"
+      },
+      "map": {
+        "sub": "Pression absolue collecteur analogique",
+        "instruction": "Ch A sur PIM, masse sur E2. Capturez un coup d'accélérateur : la trace doit suivre la charge sans marches et revenir à la valeur de ralenti.",
+        "function": "Une membrane silicone à jauges de contrainte intégrées compare la pression collecteur à un vide de référence scellé. La variation de résistance est convertie en tension proportionnelle à la charge moteur.",
+        "bullets": [
+          "Membrane silicone à quatre jauges de contrainte",
+          "Vide de référence scellé d'un côté",
+          "Alimentation 5 V d'un régulateur dans le calculateur",
+          "Une variante numérique sort une fréquence au lieu d'une tension"
+        ],
+        "probeNotes": [
+          "Vérifiez l'alimentation 5 V sur la borne 1 avant de condamner le capteur.",
+          "Masse sur E2 au capteur, pour révéler une mauvaise masse capteur.",
+          "Une fuite de durite ressemble à un capteur lent — vérifiez d'abord la ligne de dépression."
+        ],
+        "anim1": "Charge collecteur",
+        "anim2": "Signal",
+        "animEvent": "Coup d'accélérateur"
+      },
+      "knock": {
+        "sub": "Piézoélectrique · couplage AC",
+        "instruction": "Ch A sur la borne de signal, masse sur le blindage. Couplage AC uniquement. Tapez près du capteur avec un petit marteau et comparez l'amplitude de la salve au bruit de fond.",
+        "function": "Un cristal piézoélectrique entre le corps et une masse sismique produit une tension proportionnelle à la force variable. Le calculateur amplifie et filtre le signal pour isoler les fréquences de cliquetis.",
+        "bullets": [
+          "Cristal piézo comprimé par une masse sismique",
+          "Signal amplifié et filtré en bande dans le calculateur",
+          "Câble blindé — l'intégrité du blindage est critique",
+          "Résistance infinie mesurée à froid et débranché"
+        ],
+        "probeNotes": [
+          "Couplage AC : le décalage DC masque la salve.",
+          "Éloignez le fil de sonde des fils d'allumage — il capte la bobine.",
+          "Un boulon de fixation desserré lit exactement comme un capteur faible."
+        ],
+        "anim1": "Niveau vibration",
+        "anim2": "Amplitude salve",
+        "animEvent": "Fenêtre de cliquetis"
+      },
+      "lambda": {
+        "sub": "Zircone deux points · post-catalyseur",
+        "instruction": "Ch A sur la borne de signal, masse sur la masse capteur. Chauffez le moteur, puis comptez les croisements par seconde et vérifiez que les deux extrêmes sont atteints.",
+        "function": "La céramique de zircone compare l'oxygène des gaz d'échappement à l'air de référence et génère sa propre tension. Le calculateur utilise la vitesse de commutation et les extrêmes pour ajuster le mélange et juger le catalyseur.",
+        "bullets": [
+          "Céramique de dioxyde de zirconium avec électrodes sur les deux faces",
+          "Chauffage intégré atteignant vite la température de service",
+          "Ne jamais mesurer la résistance d'une sonde zircone",
+          "Le temps de réponse augmente avec l'usure de la sonde"
+        ],
+        "probeNotes": [
+          "N'utilisez jamais d'ohmmètre sur une sonde zircone.",
+          "Le capteur génère sa propre tension — pas d'alimentation à vérifier sur le fil de signal.",
+          "Une vitesse de commutation lente compte plus que les valeurs de crête."
+        ],
+        "anim1": "Mélange",
+        "anim2": "Signal",
+        "animEvent": "Bascule riche/pauvre"
+      }
+    }
+  },
+  "schematic": {
+    "trace": {
+      "inj": {
+        "label": "Injecteur 1",
+        "step": {
+          "0": "Fusible INJ/EFI-B broche 2",
+          "1": "ECU E1 broche A 1 — alimentation batterie",
+          "2": "Relais d’injection broche 5",
+          "3": "ECU E1 broche B 20 — commande injecteur",
+          "4": "Injecteur 1 broche 2",
+          "5": "Point de masse BA via ECU B 16"
+        }
+      },
+      "ign": {
+        "label": "Bobine d’allumage 1",
+        "step": {
+          "0": "Fusible IGN broche 2",
+          "1": "ECU E1 broche A 37 — détection allumage",
+          "2": "Relais de bobine d’allumage broche 2",
+          "3": "ECU E1 broche B 102 — alimentation bobine",
+          "4": "Bobine d’allumage 1 broche A2",
+          "5": "ECU E1 broche B 57 — signal IGT",
+          "6": "Point de masse AB via ECU A 50"
+        }
+      },
+      "can": {
+        "label": "Réseau CAN 1",
+        "step": {
+          "0": "ECU E1 broche A 13 — CAN High",
+          "1": "Réseau CAN 1 — H",
+          "2": "ECU E1 broche A 26 — CAN Low",
+          "3": "Réseau CAN 1 — L",
+          "4": "Connecteur de diagnostic broche 13 via A 23"
+        }
+      }
+    },
+    "task": {
+      "0": {
+        "prompt": "Localisez le fusible EFI 1 sur le rail de distribution d’alimentation.",
+        "explain": "Le fusible EFI 1 broche 2 alimente les broches A 2 et A 3 de l’ECU E1 sur des fils noirs."
+      },
+      "1": {
+        "prompt": "Sélectionnez le relais de bobine d’allumage R16.",
+        "explain": "R16 broche 2 est reliée à la broche A 50 de l’ECU par un fil blanc/noir qui devient brun côté ECU."
+      },
+      "2": {
+        "prompt": "Identifiez le point de masse relié à la broche B 16 de l’ECU.",
+        "explain": "Le point de masse BA broche 1 reçoit les broches ECU B 16, B 51 et B 59."
+      },
+      "3": {
+        "prompt": "Localisez le débitmètre d’air massique avec capteur de température d’air.",
+        "explain": "L3 utilise cinq broches ECU : A 2 / A 3 masse, B 90, B 91, B 92 et B 122."
+      },
+      "4": {
+        "prompt": "Sélectionnez le composant commandé par la broche B 20 de l’ECU.",
+        "explain": "La broche ECU B 20 commande l’injecteur 1 broche 2 sur un fil noir."
+      },
+      "5": {
+        "prompt": "Localisez le réseau CAN 1 sur le rail réseau.",
+        "explain": "Le CAN 1 H est sur ECU A 13 (noir), le L est sur ECU A 26 (blanc)."
+      },
+      "6": {
+        "prompt": "Sélectionnez le capteur de position de la pédale d’accélérateur.",
+        "explain": "G1 utilise six broches ECU, A 51 à A 56 — deux alimentations, deux masses, deux signaux."
+      },
+      "7": {
+        "prompt": "Localisez le relais principal.",
+        "explain": "Le relais principal broche 1 est commandé depuis ECU A 46 (bleu) ; la broche 2 se met à la masse via A 50."
+      }
+    },
+    "exam": {
+      "0": {
+        "prompt": "Identifiez le composant à la position en surbrillance."
+      },
+      "1": {
+        "prompt": "Identifiez le point de masse en surbrillance."
+      },
+      "2": {
+        "prompt": "Identifiez le capteur en surbrillance."
+      },
+      "3": {
+        "prompt": "Identifiez le fusible en surbrillance."
+      },
+      "4": {
+        "prompt": "Identifiez l’actionneur en surbrillance."
+      },
+      "5": {
+        "prompt": "Identifiez le calculateur en surbrillance."
+      }
+    },
+    "practice": {
+      "prompt": "Quelle broche ECU se connecte à {name} broche {pin} ?"
+    },
+    "feedback": {
+      "correct": "Correct.",
+      "wrong": "Pas celui-ci — {code} {name}. Réessayez.",
+      "practiceCorrect": "Correct — ECU {pin} rejoint {name} broche {tpin}.",
+      "practiceWrong": "Incorrect — vérifiez les lignes du tableau de broches pour {code}.",
+      "traceWrong": "Pas à cette étape — suivez le chemin en surbrillance.",
+      "examRecorded": "Réponse enregistrée."
+    },
+    "hud": {
+      "trace": "Étape {n}/{total} — {desc}",
+      "examProgress": "Mode examen — étiquettes masquées. Question {n} sur {total}",
+      "examDone": "Mode examen — étiquettes masquées. Soumis.",
+      "hover": "{code} — {name}"
+    },
+    "verdict": {
+      "training": {
+        "pass": "Bon travail — vous avez localisé les composants avec précision sur la planche.",
+        "retry": "Continuez à vous exercer — retracez les fils et réessayez les composants manqués."
+      },
+      "practice": {
+        "pass": "Exercice réussi — vous lisez le tableau de broches ECU avec assurance.",
+        "retry": "Pas encore réussi — revoyez les lignes du tableau de broches et refaites l’exercice."
+      },
+      "exam": {
+        "pass": "Examen réussi — vous avez identifié correctement les composants masqués.",
+        "retry": "Pas encore réussi — étudiez la planche et repassez l’examen."
+      }
+    },
+    "na": {
+      "field": "Non disponible dans le projet importé",
+      "wire": "Section, numéro de fil et nom de circuit — non disponibles dans le projet importé.",
+      "connector": "Image du boîtier de connecteur, type de verrou et emplacement — non disponibles dans le projet importé.",
+      "vehicle": "Aucun autre véhicule disponible dans le projet importé.",
+      "systems": "Transmission, ABS, Airbag, Carrosserie, Éclairage, HVAC, Hybride, EV et Confort — non disponibles dans le projet importé.",
+      "pins": "Aucune ligne de tableau de broches pour ce composant dans le projet importé.",
+      "search": "Aucune correspondance dans le projet importé.",
+      "recent": "Rien d’ouvert pour l’instant."
+    },
+    "empty": {
+      "title": "Sélectionnez un élément sur le schéma",
+      "body": "Cliquez sur un composant pour charger ses lignes de tableau de broches. Cliquez sur une ligne pour tracer ce fil de bout en bout."
+    }
+  }
+}

@@ -30,7 +30,7 @@ final class DiagnosticScenarioFactory extends Factory
 
             'status' => DiagnosticScenarioStatus::DRAFT,
 
-            'position' => fake()->numberBetween(1, 10),
+            'position' => fake()->unique()->numberBetween(1, 1000000),
 
             'passing_score' => 70,
 

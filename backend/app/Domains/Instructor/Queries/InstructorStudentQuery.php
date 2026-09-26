@@ -230,12 +230,36 @@ final class InstructorStudentQuery
             ->take(20)
             ->values();
 
+        $simulator = \App\Domains\Simulator\Queries\SimulatorActivityQuery::forInstructor($this->instructorId)
+            ->studentActivity($student->id);
+
+        $simulatorActivity = collect($simulator['sessions'])->map(fn (array $session) => [
+            'type' => 'simulator_session',
+            'title' => $session['result'] !== null
+                ? 'Completed simulator session'
+                : 'Started simulator session',
+            'detail' => ucfirst($session['tool'])
+                . ($session['scenario_key'] ? ' · '.$session['scenario_key'] : '')
+                . ($session['score'] !== null ? ' · '.$session['score'].'%' : ''),
+            'occurred_at' => $session['ended_at'] ?? $session['started_at'],
+        ]);
+
+        $activity = $activity
+            ->concat($simulatorActivity)
+            ->sortByDesc('occurred_at')
+            ->take(20)
+            ->values();
+
         return [
             'student' => $this->studentData($student),
             'courses' => $courses,
             'quiz_attempts' => $quizAttempts,
             'assessment_attempts' => $assessmentAttempts,
             'certificates' => $certificates,
+            'simulator' => [
+                'summary' => $simulator['summary'],
+                'sessions' => $simulator['sessions'],
+            ],
             'activity' => $activity,
         ];
     }

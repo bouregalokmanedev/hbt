@@ -58,7 +58,8 @@ class LoginTest extends TestCase
             ->assertUnauthorized()
             ->assertJson([
                 'success' => false,
-                'message' => 'Invalid credentials.',
+                'message' => 'Email or password is incorrect.',
+                'code' => 'invalid_credentials',
             ]);
     }
 
@@ -80,7 +81,8 @@ class LoginTest extends TestCase
             ->assertUnauthorized()
             ->assertJson([
                 'success' => false,
-                'message' => 'Invalid credentials.',
+                'message' => 'Email or password is incorrect.',
+                'code' => 'invalid_credentials',
             ]);
     }
 
@@ -102,6 +104,7 @@ class LoginTest extends TestCase
             ->assertJson([
                 'success' => false,
                 'message' => 'Please verify your email address.',
+                'code' => 'email_not_verified',
             ]);
     }
 
@@ -124,6 +127,30 @@ class LoginTest extends TestCase
             ->assertJson([
                 'success' => false,
                 'message' => 'Your account is inactive.',
+                'code' => 'account_inactive',
             ]);
+    }
+
+    public function test_unknown_email_and_wrong_password_share_the_same_message(): void
+    {
+        User::factory()->create([
+            'email' => 'lokmane@example.com',
+            'password' => 'Password123!',
+            'status' => 'active',
+            'email_verified_at' => now(),
+        ]);
+
+        $unknown = $this->postJson('/api/v1/auth/login', [
+            'email' => 'nobody@example.com',
+            'password' => 'Password123!',
+        ])->json();
+
+        $wrongPassword = $this->postJson('/api/v1/auth/login', [
+            'email' => 'lokmane@example.com',
+            'password' => 'WrongPassword123!',
+        ])->json();
+
+        $this->assertSame($unknown['message'], $wrongPassword['message']);
+        $this->assertSame($unknown['code'], $wrongPassword['code']);
     }
 }

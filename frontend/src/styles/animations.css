@@ -75,3 +75,21 @@
         transform: translateY(100vh);
     }
 }
+
+/* Phone-home-screen style wiggle while personalizing the dashboard. */
+@keyframes hbt-card-wiggle {
+    0%,
+    100% {
+        transform: rotate(-0.45deg) translateX(-1px);
+    }
+
+    50% {
+        transform: rotate(0.45deg) translateX(1px);
+    }
+}
+
+.hbt-wiggle {
+    animation: hbt-card-wiggle 0.22s ease-in-out infinite;
+    transform-origin: center center;
+    will-change: transform;
+}

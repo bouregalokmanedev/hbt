@@ -87,4 +87,31 @@ class EmailVerificationController extends Controller
         'Verification email sent.'
     );
 }
+
+    public function resendForEmail(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::where('email', strtolower($data['email']))->first();
+
+        if ($user && ! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+
+            $this->authenticationLogService->log(
+                event: 'email.verification_resent',
+                successful: true,
+                user: $user,
+                email: $user->email,
+                request: $request,
+            );
+        }
+
+        // Uniform response so this endpoint cannot be used to probe accounts.
+        return $this->success(
+            null,
+            'If this email needs verification, a new link has been sent.'
+        );
+    }
 }

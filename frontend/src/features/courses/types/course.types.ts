@@ -33,6 +33,15 @@ export interface Course {
   created_at: string;
   updated_at: string;
 
+  instructor?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+    avatar: string | null;
+    bio: string | null;
+  } | null;
+
   enrollment?: Enrollment | null;
 }
 

@@ -18,6 +18,12 @@ final class IssueCertificateForPassedAssessment
             return;
         }
 
+        // Low-stakes assessments (diagnostic/formative/practice) never
+        // earn certificates — only summative/final do.
+        if (! $result->assessment->assessment_mode->isHighStakes()) {
+            return;
+        }
+
         $enrollment = $result->user
             ->enrollments()
             ->where('course_id', $result->assessment->course_id)

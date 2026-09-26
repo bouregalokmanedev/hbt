@@ -7,6 +7,11 @@ use App\Domains\Assessments\Actions\SubmitAssessmentAttemptAction;
 use App\Domains\Assessments\Enums\AssessmentAttemptStatus;
 use App\Domains\Assessments\Models\Assessment;
 use App\Domains\Assessments\Models\AssessmentAttempt;
+use App\Domains\StudentAssessments\Enums\IntegrityEventType;
+use App\Domains\StudentAssessments\Exceptions\AssessmentAccessDeniedException;
+use App\Domains\StudentAssessments\Services\IntegrityAnalysisService;
+use App\Domains\StudentAssessments\Services\IntegrityEnforcementService;
+use App\Domains\StudentAssessments\Specifications\AssessmentAccessibleSpecification;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Assessments\StartAssessmentAttemptRequest;
 use App\Http\Requests\Api\V1\Assessments\SubmitAssessmentAttemptRequest;
@@ -19,11 +24,14 @@ use Illuminate\Http\Request;
 final class AssessmentAttemptController extends Controller
 {
     public function __construct(
-    private readonly StartAssessmentAttemptAction $startAssessmentAttemptAction,
-    private readonly SubmitAssessmentAttemptAction $submitAssessmentAttemptAction,
-    private readonly AssessmentScoringService $assessmentScoringService,
-) {
-}
+        private readonly StartAssessmentAttemptAction $startAssessmentAttemptAction,
+        private readonly SubmitAssessmentAttemptAction $submitAssessmentAttemptAction,
+        private readonly AssessmentScoringService $assessmentScoringService,
+        private readonly AssessmentAccessibleSpecification $accessibleSpec,
+        private readonly IntegrityAnalysisService $integrityService,
+        private readonly IntegrityEnforcementService $enforcementService,
+    ) {
+    }
 
     /**
      * List the authenticated user's assessment attempts.
@@ -50,9 +58,18 @@ final class AssessmentAttemptController extends Controller
         StartAssessmentAttemptRequest $request,
         Assessment $assessment,
     ): AssessmentAttemptResource {
+        $user = $request->user();
+
+        if (! $this->accessibleSpec->isSatisfiedBy($assessment, $user)) {
+            throw new AssessmentAccessDeniedException(
+                $this->accessibleSpec->reason($assessment, $user)
+                    ?? 'Access to this assessment is denied.'
+            );
+        }
+
         $attempt = $this->startAssessmentAttemptAction->execute(
             assessment: $assessment,
-            user: $request->user(),
+            user: $user,
         );
 
         $attempt->load('result', 'assessment.questions.options');
@@ -136,11 +153,22 @@ final class AssessmentAttemptController extends Controller
     public function tabSwitch(Request $request, Assessment $assessment, AssessmentAttempt $attempt): JsonResponse
     {
         $this->ensureAttemptBelongsToUser($request, $assessment, $attempt);
+
         if ($attempt->status === AssessmentAttemptStatus::IN_PROGRESS) {
-            $count = $attempt->tab_switch_count + 1;
-            $attempt->update(['tab_switch_count' => $count, 'blocked_at' => $count >= 3 ? now() : null, 'status' => $count >= 3 ? AssessmentAttemptStatus::EXPIRED : AssessmentAttemptStatus::IN_PROGRESS, 'timed_out_at' => $count >= 3 ? now() : null]);
+            $this->integrityService->recordEvent($attempt, IntegrityEventType::TAB_BLUR, [
+                'source' => 'legacy_tab_switch',
+            ]);
+            $this->enforcementService->enforce($attempt, $request->user());
         }
-        return response()->json(['data' => ['tab_switch_count' => $attempt->fresh()->tab_switch_count, 'blocked' => $attempt->fresh()->blocked_at !== null]]);
+
+        $fresh = $attempt->fresh();
+
+        return response()->json([
+            'data' => [
+                'tab_switch_count' => $fresh->tab_switch_count ?? 0,
+                'blocked' => $fresh->blocked_at !== null,
+            ],
+        ]);
     }
 
     /**

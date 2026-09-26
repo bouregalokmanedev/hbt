@@ -48,10 +48,14 @@ it('increments the attempt number for the user', function () {
         'required_scenarios' => 0,
     ]);
 
+    // Prior attempt must be completed (not active) so a new one is created.
     AssessmentAttempt::factory()->create([
         'assessment_id' => $assessment->id,
         'user_id' => $user->id,
         'attempt_number' => 1,
+        'status' => AssessmentAttemptStatus::SUBMITTED,
+        'submitted_at' => now(),
+        'completed_at' => now(),
     ]);
 
     $attempt = startAssessmentAttemptAction()->execute(
@@ -117,6 +121,13 @@ it('allows attempts until max attempts is reached', function () {
         $user,
     );
 
+    // Complete the first attempt so a second can start.
+    $first->update([
+        'status' => AssessmentAttemptStatus::SUBMITTED,
+        'submitted_at' => now(),
+        'completed_at' => now(),
+    ]);
+
     $second = startAssessmentAttemptAction()->execute(
         $assessment,
         $user,
@@ -136,18 +147,25 @@ it('rejects an attempt when max attempts is reached', function () {
         'max_attempts' => 2,
     ]);
 
+    // Completed attempts (not active) so max-attempts check fires.
     AssessmentAttempt::factory()->create([
         'assessment_id' => $assessment->id,
         'user_id' => $user->id,
         'attempt_number' => 1,
-        'status' => AssessmentAttemptStatus::IN_PROGRESS,
+        'status' => AssessmentAttemptStatus::SUBMITTED,
+        'submitted_at' => now(),
+        'completed_at' => now(),
     ]);
 
     AssessmentAttempt::factory()->create([
         'assessment_id' => $assessment->id,
         'user_id' => $user->id,
         'attempt_number' => 2,
-        'status' => AssessmentAttemptStatus::IN_PROGRESS,
+        'status' => AssessmentAttemptStatus::PASSED,
+        'score' => 100,
+        'passed' => true,
+        'submitted_at' => now(),
+        'completed_at' => now(),
     ]);
 
     expect(
@@ -183,17 +201,20 @@ it('allows unlimited attempts when max attempts is null', function () {
     ]);
 
     foreach (range(1, 5) as $attemptNumber) {
-    AssessmentAttempt::factory()->create([
-        'assessment_id' => $assessment->id,
-        'user_id' => $user->id,
-        'attempt_number' => $attemptNumber,
-    ]);
-}
+        AssessmentAttempt::factory()->create([
+            'assessment_id' => $assessment->id,
+            'user_id' => $user->id,
+            'attempt_number' => $attemptNumber,
+            'status' => AssessmentAttemptStatus::SUBMITTED,
+            'submitted_at' => now(),
+            'completed_at' => now(),
+        ]);
+    }
 
-   $attempt = startAssessmentAttemptAction()->execute(
-    $assessment,
-    $user,
-);
+    $attempt = startAssessmentAttemptAction()->execute(
+        $assessment,
+        $user,
+    );
 
-expect($attempt->attempt_number)->toBe(6);
+    expect($attempt->attempt_number)->toBe(6);
 });

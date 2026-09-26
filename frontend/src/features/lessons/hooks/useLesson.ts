@@ -10,6 +10,7 @@ import {
 
 import type {
     Lesson,
+    LessonProgress,
 } from "../types/lesson.types";
 
 export function useLesson(
@@ -61,10 +62,35 @@ export function useLesson(
         void loadLesson();
     }, [loadLesson]);
 
+    /*
+     * Merge server-confirmed progress into the current lesson so the
+     * session header and sidebar reflect reality immediately instead of
+     * waiting for a full reload. Only applies to the loaded lesson —
+     * never touches other lessons' state.
+     */
+    const applyProgress = useCallback((progress: LessonProgress) => {
+        setLesson((current) => {
+            if (!current || current.id !== progress.lesson_id) {
+                return current;
+            }
+
+            return {
+                ...current,
+                progress: {
+                    ...progress,
+                    is_completed:
+                        progress.is_completed ||
+                        progress.completed_at != null,
+                },
+            };
+        });
+    }, []);
+
     return {
         lesson,
         isLoading,
         error,
         reload: loadLesson,
+        applyProgress,
     };
 }

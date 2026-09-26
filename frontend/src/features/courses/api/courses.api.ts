@@ -12,6 +12,7 @@ export interface CourseListParams {
   free?: boolean;
   language?: string;
   category?: string;
+  instructor?: string;
   page?: number;
   per_page?: number;
 }
@@ -98,6 +99,10 @@ function buildQuery(params: CourseListParams = {}): string {
 
   if (params.category) {
     searchParams.set("category", params.category);
+  }
+
+  if (params.instructor) {
+    searchParams.set("instructor", params.instructor);
   }
 
   if (params.page) {

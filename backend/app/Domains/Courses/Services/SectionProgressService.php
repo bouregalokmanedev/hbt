@@ -134,6 +134,14 @@ final class SectionProgressService
             new SectionProgressUpdated($result)
         );
 
+        // First time this section hits 100% today → bump daily challenge.
+        if (
+            $allLessonsCompleted
+            && ($existing === null || $existing->completed_at === null)
+        ) {
+            app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($user, 'section_complete', ['title' => $section->title ?? 'Section']);
+        }
+
         return $result;
     }
 }

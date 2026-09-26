@@ -33,6 +33,8 @@ final readonly class UpdateUserAction
                 'status',
             ]);
 
+            $phoneChanged = ($dto->phone ?? null) !== ($old['phone'] ?? null);
+
             $updatedUser = $this->users->update(
                 $user,
                 [
@@ -48,6 +50,16 @@ final readonly class UpdateUserAction
                     'timezone' => $dto->timezone,
                 ]
             );
+
+            if ($phoneChanged) {
+                // A changed number must be re-verified with a new OTP.
+                $updatedUser->forceFill(['phone_verified_at' => null])->save();
+
+                \App\Models\OneTimePassword::query()
+                    ->where('user_id', $user->id)
+                    ->where('purpose', 'phone_verification')
+                    ->delete();
+            }
 
             event(new ModelChanged(
                 event: 'user.updated',

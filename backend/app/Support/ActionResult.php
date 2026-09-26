@@ -9,6 +9,7 @@ final readonly class ActionResult
         public mixed $data = null,
         public ?string $message = null,
         public ?array $errors = null,
+        public ?string $code = null,
     ) {}
 
     public static function success(
@@ -25,12 +26,14 @@ final readonly class ActionResult
     public static function failure(
         string $message,
         ?array $errors = null,
+        ?string $code = null,
     ): self {
         return new self(
             success: false,
             data: null,
             message: $message,
             errors: $errors,
+            code: $code,
         );
     }
 }

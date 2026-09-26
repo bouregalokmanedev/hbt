@@ -15,5 +15,5 @@ export function AttemptTimer({ expiresAt, onExpire, onVisibilityWarning }: { exp
     }, [expiresAt]);
     useEffect(() => { if (seconds === 0 && expiresAt) onExpire(); }, [expiresAt, onExpire, seconds]);
     useEffect(() => { const handler = () => { if (document.hidden) onVisibilityWarning(); }; document.addEventListener("visibilitychange", handler); return () => document.removeEventListener("visibilitychange", handler); }, [onVisibilityWarning]);
-    return <div className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${seconds <= 60 ? "bg-red-50 text-red-600" : "bg-[#F47822]/10 text-[#F47822]"}`}><Clock3 className="h-4 w-4" />Time remaining: {format(seconds)}{seconds <= 60 && <AlertTriangle className="h-4 w-4" />}</div>;
+    return <div className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${seconds <= 60 ? "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400" : "bg-[#F47822]/10 text-[#F47822]"}`}><Clock3 className="h-4 w-4" />Time remaining: {format(seconds)}{seconds <= 60 && <AlertTriangle className="h-4 w-4" />}</div>;
 }

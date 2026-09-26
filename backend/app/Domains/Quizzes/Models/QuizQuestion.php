@@ -23,9 +23,15 @@ class QuizQuestion extends Model
         'quiz_id',
         'question',
         'type',
+        'irt_a',
+        'irt_b',
+        'irt_c',
+        'is_calibrated',
         'position',
         'points',
         'required',
+        'answer_key',
+        'scoring_config',
     ];
 
     protected function casts(): array
@@ -34,6 +40,12 @@ class QuizQuestion extends Model
             'type' => QuizQuestionType::class,
             'points' => 'integer',
             'required' => 'boolean',
+            'irt_a' => 'float',
+            'irt_b' => 'float',
+            'irt_c' => 'float',
+            'is_calibrated' => 'boolean',
+            'answer_key' => 'array',
+            'scoring_config' => 'array',
         ];
     }
 

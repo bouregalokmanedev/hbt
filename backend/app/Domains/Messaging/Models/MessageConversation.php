@@ -31,4 +31,33 @@ final class MessageConversation extends Model
     public function participants(): BelongsToMany { return $this->belongsToMany(User::class, 'message_participants', 'conversation_id', 'user_id')->withPivot('last_read_at')->withTimestamps(); }
     public function participantRows(): HasMany { return $this->hasMany(MessageParticipant::class, 'conversation_id'); }
     public function messages(): HasMany { return $this->hasMany(Message::class, 'conversation_id')->oldest(); }
+
+    /**
+     * Messages from other participants newer than the viewer's last_read_at
+     * (or all of the others' messages when never read), excluding
+     * messages soft-deleted for everyone.
+     */
+    public function unreadCountFor(User $user): int
+    {
+        $readAt = null;
+        if ($this->relationLoaded('participants')) {
+            $viewer = $this->participants->first(fn ($participant) => (int) $participant->id === (int) $user->id);
+            $readAt = $viewer?->pivot?->last_read_at;
+        } else {
+            $readAt = MessageParticipant::query()
+                ->where('message_participants.conversation_id', $this->id)
+                ->where('message_participants.user_id', $user->id)
+                ->value('message_participants.last_read_at');
+        }
+
+        $query = $this->messages()->reorder()->where('messages.sender_id', '!=', $user->id);
+        if ($readAt !== null && $readAt !== '') {
+            $query->where('messages.created_at', '>', $readAt);
+        }
+
+        return $query
+            ->get(['messages.id', 'messages.sender_id', 'messages.created_at', 'messages.metadata'])
+            ->reject(fn (Message $message) => $message->isDeletedForAll())
+            ->count();
+    }
 }

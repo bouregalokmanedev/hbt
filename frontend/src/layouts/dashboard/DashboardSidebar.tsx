@@ -8,12 +8,15 @@ import {
     CreditCard,
     Heart,
     LayoutDashboard,
+    LifeBuoy,
     LogOut,
     MessageSquare,
     BellRing,
     MonitorPlay,
+    Receipt,
     Settings,
     Sparkles,
+    Stethoscope,
     Trophy,
     UserRound,
     X,
@@ -21,26 +24,31 @@ import {
 
 import { NavLink, useNavigate } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useSidebarBadges } from "@/features/notifications/hooks/useSidebarBadges";
+import { UserAvatar } from "@/components/ui";
 import hbtLogo from "@/assets/brand/hbt-logo-full.png";
 import hbtCompactLogo from "@/assets/brand/hbt-logo.jpg";
 
 interface DashboardSidebarProps {
     open: boolean;
     collapsed: boolean;
+    locked?: boolean;
     onClose: () => void;
     onToggleCollapse: () => void;
 }
 
 interface NavigationItem {
-    label: string;
+    labelKey: string;
     to: string;
     icon: React.ElementType;
 }
 
 const overviewItems: NavigationItem[] = [
     {
-        label: "Dashboard",
+        labelKey: "dashboard.sidebar.dashboard",
         to: "/dashboard",
         icon: LayoutDashboard,
     },
@@ -48,30 +56,45 @@ const overviewItems: NavigationItem[] = [
 
 const learningItems: NavigationItem[] = [
     {
-        label: "My Courses",
+        labelKey: "dashboard.sidebar.myCourses",
         to: "/my-courses",
         icon: BookOpen,
     },
     {
-        label: "Course Catalog",
+        labelKey: "dashboard.sidebar.catalog",
         to: "/catalog",
         icon: BookOpen,
     },
     {
-        label: "Assessments",
+        labelKey: "dashboard.sidebar.assessments",
         to: "/assessments",
         icon: ClipboardCheck,
+    },
+    {
+        labelKey: "dashboard.sidebar.diagnostics",
+        to: "/diagnostics",
+        icon: Stethoscope,
+    },
+    {
+        labelKey: "dashboard.sidebar.simulator",
+        to: "/simulator",
+        icon: MonitorPlay,
+    },
+    {
+        labelKey: "dashboard.sidebar.mentor",
+        to: "/ai-mentor",
+        icon: BrainCircuit,
     },
 ];
 
 const progressItems: NavigationItem[] = [
     {
-        label: "Achievements",
+        labelKey: "dashboard.sidebar.achievements",
         to: "/achievements",
         icon: Trophy,
     },
     {
-        label: "Certificates",
+        labelKey: "dashboard.sidebar.certificates",
         to: "/certificates",
         icon: Award,
     },
@@ -79,37 +102,37 @@ const progressItems: NavigationItem[] = [
 
 const toolsItems: NavigationItem[] = [
     {
-        label: "Simulator",
-        to: "/simulator",
-        icon: MonitorPlay,
-    },
-    {
-        label: "AI Mentor",
-        to: "/ai-mentor",
-        icon: BrainCircuit,
-    },
-    {
-        label: "Messages",
+        labelKey: "dashboard.sidebar.messages",
         to: "/messages",
         icon: MessageSquare,
     },
     {
-        label: "Announcements",
+        labelKey: "dashboard.sidebar.announcements",
         to: "/announcements",
         icon: BellRing,
+    },
+    {
+        labelKey: "dashboard.sidebar.support",
+        to: "/support",
+        icon: LifeBuoy,
     },
 ];
 
 const personalItems: NavigationItem[] = [
     {
-        label: "Favourite",
+        labelKey: "dashboard.sidebar.favourite",
         to: "/favourite",
         icon: Heart,
     },
     {
-        label: "Subscription",
+        labelKey: "dashboard.sidebar.subscription",
         to: "/subscription",
         icon: CreditCard,
+    },
+    {
+        labelKey: "dashboard.sidebar.billing",
+        to: "/billing",
+        icon: Receipt,
     },
 ];
 
@@ -118,6 +141,11 @@ interface NavigationSectionProps {
     items: NavigationItem[];
     collapsed: boolean;
     onClose: () => void;
+    badges: Record<string, number>;
+}
+
+function formatBadgeCount(count: number): string {
+    return count > 99 ? "99+" : String(count);
 }
 
 function NavigationSection({
@@ -125,11 +153,14 @@ function NavigationSection({
     items,
     collapsed,
     onClose,
+    badges,
 }: NavigationSectionProps) {
+    const { t } = useTranslation();
+
     return (
             <div className="mt-7 first:mt-0">
             {!collapsed && (
-                <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]/30">
+                <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]/30 dark:text-white/30">
                     {title}
                 </p>
             )}
@@ -137,6 +168,7 @@ function NavigationSection({
             <div className="space-y-1">
                 {items.map((item) => {
                     const Icon = item.icon;
+                    const badgeCount = badges[item.to.replace(/^\//, "")] ?? 0;
 
                     return (
                         <NavLink
@@ -146,7 +178,7 @@ function NavigationSection({
                             onClick={onClose}
                             title={
                                 collapsed
-                                    ? item.label
+                                    ? t(item.labelKey)
                                     : undefined
                             }
                             className={({ isActive }) =>
@@ -166,7 +198,7 @@ function NavigationSection({
                                 ${
                                     isActive
                                         ? "bg-[#F47822] text-white shadow-[0_7px_16px_rgba(244,120,34,.18)]"
-                                        : "text-[#3A3A3A]/60 hover:bg-white hover:text-[#3A3A3A] hover:shadow-sm"
+                                        : "text-[#3A3A3A]/60 dark:text-white/60 hover:bg-white dark:hover:bg-[#1b1b20] hover:text-[#3A3A3A] dark:hover:text-[#ececef] hover:shadow-sm"
                                 }
                                 ${
                                     collapsed
@@ -179,7 +211,7 @@ function NavigationSection({
                             {({ isActive }) => (
                                 <>
                                     {isActive && (
-                                        <span className="absolute -left-1 h-5 w-[3px] rounded-r-full bg-[#F47822]" />
+                                        <span className="absolute -left-1 h-5 w-[3px] rounded-r-full bg-[#F47822] rtl:-right-1 rtl:left-auto rtl:rounded-l-full rtl:rounded-r-none" />
                                     )}
 
                                     <Icon
@@ -189,15 +221,41 @@ function NavigationSection({
                                             ${
                                                 isActive
                                                     ? "text-white"
-                                                    : "text-[#3A3A3A]/40 group-hover:text-[#F47822]"
+                                                    : "text-[#3A3A3A]/40 dark:text-white/40 group-hover:text-[#F47822]"
                                             }
                                         `}
                                     />
 
                                     {!collapsed && (
                                         <span className="truncate">
-                                            {item.label}
+                                            {t(item.labelKey)}
                                         </span>
+                                    )}
+
+                                    {badgeCount > 0 && !collapsed && (
+                                        <span
+                                            aria-label={t("dashboard.sidebar.unreadBadge", { count: badgeCount })}
+                                            className={`
+                                                ms-auto
+                                                shrink-0
+                                                rounded-full
+                                                px-1.5
+                                                py-0.5
+                                                text-[10px]
+                                                font-bold
+                                                tabular-nums
+                                                ${isActive ? "bg-white dark:bg-[#1b1b20] text-[#F47822]" : "bg-[#F47822] text-white"}
+                                            `}
+                                        >
+                                            {formatBadgeCount(badgeCount)}
+                                        </span>
+                                    )}
+
+                                    {badgeCount > 0 && collapsed && (
+                                        <span
+                                            aria-label={t("dashboard.sidebar.unreadBadge", { count: badgeCount })}
+                                            className="absolute end-2 top-2 h-2 w-2 rounded-full bg-[#F47822] ring-2 ring-[#FCFCFC]"
+                                        />
                                     )}
                                 </>
                             )}
@@ -212,13 +270,19 @@ function NavigationSection({
 export function DashboardSidebar({
     open,
     collapsed,
+    locked = false,
     onClose,
     onToggleCollapse,
 }: DashboardSidebarProps) {
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.language === "ar";
+
     const {
         user,
         logout,
     } = useAuth();
+
+    const { badges } = useSidebarBadges();
 
     const navigate = useNavigate();
 
@@ -236,23 +300,19 @@ export function DashboardSidebar({
     const lastName =
         user?.last_name ?? "";
 
-    const initials =
-        `${firstName.charAt(0)}${lastName.charAt(0)}`
-            .toUpperCase();
-
     return (
         <>
             {/* Mobile backdrop */}
             {open && (
                 <button
                     type="button"
-                    aria-label="Close navigation"
+                    aria-label={t("dashboard.sidebar.closeAria")}
                     onClick={onClose}
                     className="
                         fixed
                         inset-0
                         z-40
-                        bg-[#3A3A3A]/25
+                        bg-[#3A3A3A]/25 dark:bg-white/25
                         backdrop-blur-sm
                         lg:hidden
                     "
@@ -263,14 +323,15 @@ export function DashboardSidebar({
                 className={`
                     fixed
                     inset-y-0
-                    left-0
+                    start-0
                     z-50
                     flex
                     flex-col
-                    border-r
-                    border-[#3A3A3A]/8
-                    bg-[#FCFCFC]
+                    border-e
+                    border-[#3A3A3A]/8 dark:border-white/8
+                    bg-[#FCFCFC] dark:bg-[#232329]
                     shadow-[10px_0_36px_rgba(58,58,58,0.06)]
+                    rtl:shadow-[-10px_0_36px_rgba(58,58,58,0.06)]
                     transition-all
                     duration-300
 
@@ -285,7 +346,9 @@ export function DashboardSidebar({
                     ${
                         open
                             ? "translate-x-0"
-                            : "-translate-x-full lg:translate-x-0"
+                            : isRTL
+                              ? "translate-x-full lg:translate-x-0"
+                              : "-translate-x-full lg:translate-x-0"
                     }
                 `}
             >
@@ -301,7 +364,7 @@ export function DashboardSidebar({
                         h-[72px]
                         shrink-0
                         items-center
-                        border-b border-[#3A3A3A]/6 bg-white/75 backdrop-blur-sm
+                        border-b border-[#3A3A3A]/6 dark:border-white/6 bg-white/75 backdrop-blur-sm
                         px-5
 
                         ${
@@ -323,15 +386,16 @@ export function DashboardSidebar({
                     <button
                         type="button"
                         onClick={onToggleCollapse}
+                        disabled={locked}
                         aria-label={
                             collapsed
-                                ? "Expand sidebar"
-                                : "Collapse sidebar"
+                                ? t("dashboard.sidebar.expandAria")
+                                : t("dashboard.sidebar.collapseAria")
                         }
                         title={
                             collapsed
-                                ? "Expand sidebar"
-                                : "Collapse sidebar"
+                                ? t("dashboard.sidebar.expandAria")
+                                : t("dashboard.sidebar.collapseAria")
                         }
                         className={`
                             hidden
@@ -340,12 +404,15 @@ export function DashboardSidebar({
                             items-center
                             justify-center
                             rounded-lg
-                            text-[#3A3A3A]/40
+                            text-[#3A3A3A]/40 dark:text-white/40
                             transition
-                            hover:bg-[#3A3A3A]/5
-                            hover:text-[#3A3A3A]
+                            hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5
+                            hover:text-[#3A3A3A] dark:hover:text-[#ececef]
+                            disabled:cursor-not-allowed
+                            disabled:opacity-30
+                            disabled:hover:bg-transparent
                             lg:flex
-                            ${collapsed ? "absolute right-3 top-1/2 -translate-y-1/2" : ""}
+                            ${collapsed ? "absolute right-3 top-1/2 -translate-y-1/2 rtl:left-3 rtl:right-auto" : ""}
                         `}
                     >
                         {collapsed ? (
@@ -359,7 +426,7 @@ export function DashboardSidebar({
                     <button
                         type="button"
                         onClick={onClose}
-                        aria-label="Close navigation"
+                        aria-label={t("dashboard.sidebar.closeAria")}
                         className="
                             flex
                             h-8
@@ -367,9 +434,9 @@ export function DashboardSidebar({
                             items-center
                             justify-center
                             rounded-lg
-                            text-[#3A3A3A]/40
+                            text-[#3A3A3A]/40 dark:text-white/40
                             transition
-                            hover:bg-[#3A3A3A]/5
+                            hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5
                             lg:hidden
                         "
                     >
@@ -383,38 +450,43 @@ export function DashboardSidebar({
 
                 <nav className="flex-1 overflow-y-auto px-3 py-5 [scrollbar-width:thin]">
                     <NavigationSection
-                        title="Overview"
+                        title={t("dashboard.sidebar.overview")}
                         items={overviewItems}
                         collapsed={collapsed}
                         onClose={onClose}
+                        badges={badges}
                     />
 
                     <NavigationSection
-                        title="Learning"
+                        title={t("dashboard.sidebar.learning")}
                         items={learningItems}
                         collapsed={collapsed}
                         onClose={onClose}
+                        badges={badges}
                     />
 
                     <NavigationSection
-                        title="Progress"
+                        title={t("dashboard.sidebar.progress")}
                         items={progressItems}
                         collapsed={collapsed}
                         onClose={onClose}
+                        badges={badges}
                     />
 
                     <NavigationSection
-                        title="Tools"
+                        title={t("dashboard.sidebar.tools")}
                         items={toolsItems}
                         collapsed={collapsed}
                         onClose={onClose}
+                        badges={badges}
                     />
 
                     <NavigationSection
-                        title="Personal"
+                        title={t("dashboard.sidebar.personal")}
                         items={personalItems}
                         collapsed={collapsed}
                         onClose={onClose}
+                        badges={badges}
                     />
 
                     {/* ================================================== */}
@@ -434,7 +506,7 @@ export function DashboardSidebar({
                                 rounded-2xl
                                 bg-[#3A3A3A]
                                 p-4
-                                text-left
+                                text-start
                                 transition-all
                                 duration-300
                                 hover:-translate-y-0.5
@@ -447,7 +519,7 @@ export function DashboardSidebar({
                             {/* Background glow */}
                             <div className="
                                 absolute
-                                -right-8
+                                -end-8
                                 -top-8
                                 h-24
                                 w-24
@@ -462,7 +534,7 @@ export function DashboardSidebar({
                             <div className="
                                 absolute
                                 -bottom-10
-                                -left-10
+                                -start-10
                                 h-20
                                 w-20
                                 rounded-full
@@ -496,7 +568,7 @@ export function DashboardSidebar({
                                 </div>
 
                                 <p className="mt-3 text-xs font-semibold text-white">
-                                    Unlock HBT Pro
+                                    {t("dashboard.sidebar.proTitle")}
                                 </p>
 
                                 <p className="
@@ -505,8 +577,7 @@ export function DashboardSidebar({
                                     leading-4
                                     text-white/45
                                 ">
-                                    Unlimited learning tools, AI support
-                                    and advanced features.
+                                    {t("dashboard.sidebar.proDesc")}
                                 </p>
 
                                 <div className="
@@ -519,7 +590,7 @@ export function DashboardSidebar({
                                     text-[#F47822]
                                 ">
                                     <span>
-                                        Explore Pro
+                                        {t("dashboard.sidebar.proCta")}
                                     </span>
 
                                     <ChevronRight
@@ -529,6 +600,8 @@ export function DashboardSidebar({
                                             transition-transform
                                             duration-200
                                             group-hover:translate-x-1
+                                            rtl:rotate-180
+                                            rtl:group-hover:-translate-x-1
                                         "
                                     />
                                 </div>
@@ -541,14 +614,14 @@ export function DashboardSidebar({
                 {/* BOTTOM AREA */}
                 {/* ================================================== */}
 
-                <div className="shrink-0 border-t border-[#3A3A3A]/6 p-3">
+                <div className="shrink-0 border-t border-[#3A3A3A]/6 dark:border-white/6 p-3">
                     {/* Settings */}
                     <NavLink
                         to="/settings"
                         onClick={onClose}
                         title={
                             collapsed
-                                ? "Settings"
+                                ? t("dashboard.sidebar.settings")
                                 : undefined
                         }
                         className={({ isActive }) =>
@@ -567,7 +640,7 @@ export function DashboardSidebar({
                             ${
                                 isActive
                                     ? "bg-[#F47822]/10 text-[#F47822]"
-                                    : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"
+                                    : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5 hover:text-[#3A3A3A] dark:hover:text-[#ececef]"
                             }
                             ${
                                 collapsed
@@ -581,7 +654,7 @@ export function DashboardSidebar({
 
                         {!collapsed && (
                             <span>
-                                Settings
+                                {t("dashboard.sidebar.settings")}
                             </span>
                         )}
                     </NavLink>
@@ -592,7 +665,7 @@ export function DashboardSidebar({
                         onClick={onClose}
                         title={
                             collapsed
-                                ? "Profile"
+                                ? t("dashboard.sidebar.profile")
                                 : undefined
                         }
                         className={({ isActive }) =>
@@ -612,7 +685,7 @@ export function DashboardSidebar({
                             ${
                                 isActive
                                     ? "bg-[#F47822]/10 text-[#F47822]"
-                                    : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"
+                                    : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5 hover:text-[#3A3A3A] dark:hover:text-[#ececef]"
                             }
                             ${
                                 collapsed
@@ -626,7 +699,7 @@ export function DashboardSidebar({
 
                         {!collapsed && (
                             <span>
-                                Profile
+                                {t("dashboard.sidebar.profile")}
                             </span>
                         )}
                     </NavLink>
@@ -640,8 +713,8 @@ export function DashboardSidebar({
                             gap-3
                             rounded-xl
                             border
-                            border-[#3A3A3A]/6
-                            bg-[#F7F7F7]
+                            border-[#3A3A3A]/6 dark:border-white/6
+                            bg-[#F7F7F7] dark:bg-[#101013]
                             p-2
 
                             ${
@@ -652,21 +725,11 @@ export function DashboardSidebar({
                         `}
                     >
                         {/* Avatar */}
-                        <div className="
-                            flex
-                            h-9
-                            w-9
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            bg-[#F47822]/10
-                            text-xs
-                            font-bold
-                            text-[#F47822]
-                        ">
-                            {initials || "U"}
-                        </div>
+                        <UserAvatar
+                            user={user}
+                            className="h-9 w-9"
+                            fallbackClassName="bg-[#F47822]/10 text-xs font-bold text-[#F47822]"
+                        />
 
                         {!collapsed && (
                             <>
@@ -675,15 +738,16 @@ export function DashboardSidebar({
                                         truncate
                                         text-xs
                                         font-semibold
-                                        text-[#3A3A3A]
+                                        text-[#3A3A3A] dark:text-[#ececef]
                                     ">
                                         {firstName} {lastName}
                                     </p>
 
-                                    <p className="
+                                    <p dir="ltr" className="
                                         truncate
                                         text-[10px]
-                                        text-[#3A3A3A]/40
+                                        text-[#3A3A3A]/40 dark:text-white/40
+                                        rtl:text-right
                                     ">
                                         {user?.email}
                                     </p>
@@ -692,8 +756,8 @@ export function DashboardSidebar({
                                 <button
                                     type="button"
                                     onClick={handleLogout}
-                                    title="Log out"
-                                    aria-label="Log out"
+                                    title={t("dashboard.sidebar.logout")}
+                                    aria-label={t("dashboard.sidebar.logout")}
                                     className="
                                         flex
                                         h-8
@@ -702,9 +766,9 @@ export function DashboardSidebar({
                                         items-center
                                         justify-center
                                         rounded-lg
-                                        text-[#3A3A3A]/35
+                                        text-[#3A3A3A]/35 dark:text-white/35
                                         transition
-                                        hover:bg-red-50
+                                        hover:bg-red-50 dark:hover:bg-red-500/10
                                         hover:text-red-500
                                     "
                                 >

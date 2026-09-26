@@ -1,0 +1,14 @@
+{
+  "title": "Progression",
+  "kicker": "Dossier d'apprentissage",
+  "overall": "Progression globale",
+  "skillLevels": "Niveaux de compétence par module",
+  "stats": "Statistiques",
+  "certifications": "Certifications",
+  "weakSpots": "Points faibles",
+  "recommendedPath": "Parcours recommandé",
+  "coach": "Coach",
+  "focus": "Focus actuel",
+  "cert": { "earned": "Obtenue", "in-progress": "En cours" },
+  "open": "Ouvrir"
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Garage",
+  "kicker": "Gestionnaire de véhicules",
+  "activeVehicle": "Véhicule actif",
+  "facts": { "vin": "VIN", "engine": "Moteur", "transmission": "Boîte de vitesses", "odometer": "Compteur" },
+  "matrix": "Matrice de couverture",
+  "columns": { "vehicle": "Véhicule", "scanner": "SCN", "multimeter": "DMM", "oscilloscope": "OSC", "location": "LOC", "schematic": "WDG" },
+  "switch": "Définir actif",
+  "install": "Installer",
+  "request": "Demander",
+  "decode": "Décoder le VIN",
+  "recentSessions": "Sessions récentes",
+  "cell": { "ok": "Installé", "avail": "Disponible", "none": "Non couvert" }
+}

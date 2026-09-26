@@ -16,27 +16,27 @@ it('loads a complete course curriculum', function () {
         'instructor_id' => $user->id,
     ]);
 
-    $section1 = Section::factory()->create([
+    $section1 = Section::factory()->published()->create([
         'course_id' => $course->id,
         'position' => 1,
     ]);
 
-    $section2 = Section::factory()->create([
+    $section2 = Section::factory()->published()->create([
         'course_id' => $course->id,
         'position' => 2,
     ]);
 
-    $lesson1 = Lesson::factory()->create([
+    $lesson1 = Lesson::factory()->published()->create([
         'section_id' => $section1->id,
         'position' => 1,
     ]);
 
-    $lesson2 = Lesson::factory()->create([
+    $lesson2 = Lesson::factory()->published()->create([
         'section_id' => $section1->id,
         'position' => 2,
     ]);
 
-    $lesson3 = Lesson::factory()->create([
+    $lesson3 = Lesson::factory()->published()->create([
         'section_id' => $section2->id,
         'position' => 1,
     ]);
@@ -95,12 +95,12 @@ it('does not include sections from another course', function () {
         'instructor_id' => $user->id,
     ]);
 
-    Section::factory()->create([
+    Section::factory()->published()->create([
         'course_id' => $course->id,
         'position' => 1,
     ]);
 
-    Section::factory()->create([
+    Section::factory()->published()->create([
         'course_id' => $otherCourse->id,
         'position' => 1,
     ]);
@@ -122,27 +122,27 @@ it('returns sections and lessons in position order', function () {
         'instructor_id' => $user->id,
     ]);
 
-    $section2 = Section::factory()->create([
+    $section2 = Section::factory()->published()->create([
         'course_id' => $course->id,
         'position' => 2,
     ]);
 
-    $section1 = Section::factory()->create([
+    $section1 = Section::factory()->published()->create([
         'course_id' => $course->id,
         'position' => 1,
     ]);
 
-    Lesson::factory()->create([
+    Lesson::factory()->published()->create([
         'section_id' => $section1->id,
         'position' => 3,
     ]);
 
-    Lesson::factory()->create([
+    Lesson::factory()->published()->create([
         'section_id' => $section1->id,
         'position' => 1,
     ]);
 
-    Lesson::factory()->create([
+    Lesson::factory()->published()->create([
         'section_id' => $section1->id,
         'position' => 2,
     ]);

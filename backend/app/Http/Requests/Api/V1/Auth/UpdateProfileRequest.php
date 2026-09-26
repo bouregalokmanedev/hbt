@@ -23,12 +23,14 @@ class UpdateProfileRequest extends BaseApiRequest
                 'required',
                 'string',
                 'max:100',
+                'regex:/^[\p{L}][\p{L}\s\'’-]*$/u',
             ],
 
             'last_name' => [
                 'required',
                 'string',
                 'max:100',
+                'regex:/^[\p{L}][\p{L}\s\'’-]*$/u',
             ],
 
             'username' => [
@@ -68,7 +70,18 @@ class UpdateProfileRequest extends BaseApiRequest
 
             'avatar' => [
                 'nullable',
-                'url',
+                'string',
+                'max:2000000',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! is_string($value) || $value === '') {
+                        return;
+                    }
+                    $isUrl = filter_var($value, FILTER_VALIDATE_URL) !== false;
+                    $isDataImage = str_starts_with($value, 'data:image/');
+                    if (! $isUrl && ! $isDataImage) {
+                        $fail('The avatar must be a valid URL or image.');
+                    }
+                },
             ],
 
             'language' => [

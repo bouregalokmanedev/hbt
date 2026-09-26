@@ -1,0 +1,394 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Activity, AlertTriangle, Battery, CheckCircle2, Cpu, Gauge, Map, Search, Wrench, Zap, ChevronDown, History, FileText, Bot } from "lucide-react";
+
+const NODES = [
+    { id: "BCM", name: "Body Control Module", bus: "CAN-B", rate: "125k", status: "normal", dtc: 0, x: 60, y: 40 },
+    { id: "IPC", name: "Instrument Cluster", bus: "CAN-B", rate: "125k", status: "normal", dtc: 0, x: 180, y: 40 },
+    { id: "HVAC", name: "Climate Control", bus: "CAN-B", rate: "125k", status: "normal", dtc: 0, x: 300, y: 40 },
+    { id: "IMMO", name: "Immobilizer", bus: "CAN-B", rate: "125k", status: "normal", dtc: 0, x: 420, y: 40 },
+    { id: "TPMS", name: "Tyre Pressure Monitor", bus: "CAN-B", rate: "125k", status: "warn", dtc: 1, x: 540, y: 40 },
+    { id: "DDM", name: "Driver Door Module", bus: "CAN-B", rate: "125k", status: "normal", dtc: 0, x: 660, y: 40 },
+    { id: "PDM", name: "Passenger Door Module", bus: "CAN-B", rate: "125k", status: "offline", dtc: 0, x: 780, y: 40 },
+    { id: "ECM", name: "Engine Control Module", bus: "CAN-C", rate: "500k", status: "fault", dtc: 3, x: 60, y: 120 },
+    { id: "TCM", name: "Transmission Control", bus: "CAN-C", rate: "500k", status: "warn", dtc: 1, x: 180, y: 120 },
+    { id: "ABS", name: "ABS / ESC", bus: "CAN-C", rate: "500k", status: "fault", dtc: 1, x: 300, y: 120 },
+    { id: "SRS", name: "Airbag / SRS", bus: "CAN-C", rate: "500k", status: "normal", dtc: 0, x: 420, y: 120 },
+    { id: "EPS", name: "Electric Power Steering", bus: "CAN-C", rate: "500k", status: "normal", dtc: 0, x: 540, y: 120 },
+    { id: "EPB", name: "Electric Parking Brake", bus: "CAN-C", rate: "500k", status: "normal", dtc: 0, x: 660, y: 120 },
+    { id: "SAS", name: "Steering Angle Sensor", bus: "CAN-C", rate: "500k", status: "normal", dtc: 0, x: 780, y: 120 },
+    { id: "ADAS", name: "Driver Assistance ECU", bus: "CAN-FD", rate: "2M", status: "fault", dtc: 2, x: 60, y: 200 },
+    { id: "CAM-F", name: "Front Camera", bus: "CAN-FD", rate: "2M", status: "normal", dtc: 0, x: 180, y: 200 },
+    { id: "RAD-F", name: "Front Radar", bus: "CAN-FD", rate: "2M", status: "normal", dtc: 0, x: 300, y: 200 },
+    { id: "BSM-L", name: "Blind-spot Radar L", bus: "CAN-FD", rate: "2M", status: "normal", dtc: 0, x: 420, y: 200 },
+    { id: "BSM-R", name: "Blind-spot Radar R", bus: "CAN-FD", rate: "2M", status: "normal", dtc: 0, x: 540, y: 200 },
+    { id: "PDC", name: "Park Distance Control", bus: "CAN-FD", rate: "2M", status: "normal", dtc: 0, x: 660, y: 200 },
+    { id: "SVC", name: "Surround View Camera", bus: "CAN-FD", rate: "2M", status: "none", dtc: 0, x: 780, y: 200 },
+] as const;
+
+const DTCS = [
+    { code: "P2118", desc: "Throttle actuator control motor current range/performance", ecu: "ECM", status: "Current", severity: "high", count: 4, firstKm: 97800, firstDate: "12 Jul 2024", lastKm: 98420, lastDate: "27 Jul 2024", freeze: true, causes: [{ cause: "Throttle actuator motor open/high resistance", pct: 42 }, { cause: "Wiring harness damage / connector corrosion", pct: 28 }, { cause: "ECM driver fault", pct: 15 }, { cause: "Low battery / poor ground", pct: 10 }], tree: "P2118" },
+    { code: "P0087", desc: "Fuel rail/system pressure too low", ecu: "ECM", status: "Stored", severity: "high", count: 2, firstKm: 97500, firstDate: "10 Jul 2024", lastKm: 98010, lastDate: "18 Jul 2024", freeze: true, causes: [{ cause: "Restricted fuel filter", pct: 55 }, { cause: "HP pump wear", pct: 25 }], tree: null },
+    { code: "P0504", desc: "Brake switch A/B correlation", ecu: "ECM", status: "Pending", severity: "medium", count: 1, firstKm: 98200, firstDate: "20 Jul 2024", lastKm: 98200, lastDate: "20 Jul 2024", freeze: false, causes: [{ cause: "Brake switch misadjusted", pct: 60 }], tree: null },
+    { code: "C1201", desc: "Engine control system malfunction (ESC)", ecu: "ABS", status: "Current", severity: "high", count: 3, firstKm: 98000, firstDate: "15 Jul 2024", lastKm: 98420, lastDate: "27 Jul 2024", freeze: false, causes: [{ cause: "ECM fault triggers ESC limp", pct: 70 }], tree: null },
+    { code: "U0129", desc: "Lost communication with brake system control module", ecu: "ABS", status: "Intermittent", severity: "medium", count: 5, firstKm: 97000, firstDate: "05 Jul 2024", lastKm: 98300, lastDate: "25 Jul 2024", freeze: false, causes: [{ cause: "CAN wiring intermittent", pct: 45 }], tree: null },
+    { code: "B1483", desc: "Front camera calibration not complete", ecu: "ADAS", status: "Stored", severity: "low", count: 1, firstKm: 98100, firstDate: "22 Jul 2024", lastKm: 98100, lastDate: "22 Jul 2024", freeze: false, causes: [{ cause: "Requires ADAS calibration after windshield replace", pct: 90 }], tree: null },
+    { code: "P0741", desc: "Torque converter clutch circuit performance", ecu: "TCM", status: "Pending", severity: "medium", count: 2, firstKm: 96000, firstDate: "01 Jul 2024", lastKm: 98000, lastDate: "15 Jul 2024", freeze: false, causes: [{ cause: "TCC solenoid", pct: 50 }], tree: null },
+    { code: "C2126", desc: "TPMS sensor battery low", ecu: "TPMS", status: "Stored", severity: "low", count: 1, firstKm: 95000, firstDate: "20 Jun 2024", lastKm: 95000, lastDate: "20 Jun 2024", freeze: false, causes: [{ cause: "Sensor battery end-of-life", pct: 95 }], tree: null },
+] as const;
+
+const PIDS = [
+    { id: "RPM", name: "Engine Speed", unit: "rpm", base: 820, min: 600, max: 6500, spec: "750–850 idle", dec: 0 },
+    { id: "VS", name: "Vehicle Speed", unit: "km/h", base: 0, min: 0, max: 220, spec: "0 at idle", dec: 0 },
+    { id: "ECT", name: "Coolant Temp", unit: "°C", base: 89, min: -40, max: 130, spec: "80–95", dec: 0 },
+    { id: "EOT", name: "Oil Temp", unit: "°C", base: 95, min: -40, max: 150, spec: "90–110", dec: 0 },
+    { id: "VBAT", name: "Battery Voltage", unit: "V", base: 13.9, min: 9, max: 15, spec: "13.5–14.5", dec: 2 },
+    { id: "IAT", name: "Intake Air Temp", unit: "°C", base: 32, min: -20, max: 80, spec: "ambient +10", dec: 0 },
+    { id: "TPS", name: "Throttle Position", unit: "%", base: 3.5, min: 0, max: 100, spec: "0–5 idle", dec: 1 },
+    { id: "APP", name: "Accel Pedal", unit: "%", base: 0, min: 0, max: 100, spec: "0 idle", dec: 1 },
+    { id: "FRP", name: "Fuel Rail Pressure", unit: "bar", base: 3.2, min: 0, max: 7, spec: "3.0–4.0", dec: 1, warn: true },
+    { id: "MAP", name: "Manifold Pressure", unit: "kPa", base: 98, min: 20, max: 300, spec: "95–105", dec: 0 },
+    { id: "MAF", name: "Air Flow", unit: "g/s", base: 8.2, min: 0, max: 200, spec: "7–10 idle", dec: 1 },
+    { id: "LAMBDA", name: "Lambda", unit: "", base: 1.0, min: 0.7, max: 1.5, spec: "0.95–1.05", dec: 2 },
+    { id: "IGN", name: "Ignition Advance", unit: "°", base: 8, min: -10, max: 40, spec: "6–12 idle", dec: 1 },
+    { id: "INJ", name: "Injection Time", unit: "ms", base: 2.4, min: 0, max: 20, spec: "2–4 idle", dec: 1 },
+    { id: "LOAD", name: "Engine Load", unit: "%", base: 18, min: 0, max: 100, spec: "15–25 idle", dec: 0 },
+    { id: "IDL", name: "Idle Switch", unit: "", base: 1, min: 0, max: 1, spec: "ON idle", dec: 0 },
+] as const;
+
+const VEHICLES = [
+    { make: "Toyota", model: "Corolla 1.6 16V VVT-i", code: "1ZR-FE", year: "2013–2018", vin: "JTNBE3A67-012345", coverage: { scanner: "ok", multimeter: "ok", oscilloscope: "ok", location: "ok", schematic: "ok" } },
+    { make: "Toyota", model: "Camry 2.5", code: "A25A-FKS", year: "2018–", vin: "JTNA24A98-003211", coverage: { scanner: "avail", multimeter: "avail", oscilloscope: "avail", location: "avail", schematic: "avail" } },
+    { make: "VW", model: "Golf 1.4 TSI", code: "CZCA", year: "2015–", vin: "WVGZZZ1KZ-009812", coverage: { scanner: "avail", multimeter: "ok", oscilloscope: "none", location: "ok", schematic: "none" } },
+    { make: "Hyundai", model: "i30 1.6 CRDi", code: "D4FB", year: "2012–", vin: "TMAH381CA-004422", coverage: { scanner: "none", multimeter: "none", oscilloscope: "none", location: "none", schematic: "none" } },
+] as const;
+
+const TREE = [
+    { id: "supply", label: "Check supply voltage at throttle connector", spec: "12.0–14.5 V", measured: "13.8 V", ok: true },
+    { id: "connector", label: "Inspect connector for corrosion/damage", spec: "No corrosion", measured: "Clean", ok: true },
+    { id: "motor_supply", label: "Check motor supply at ECU pin B51", spec: "12V present", measured: "12.1 V", ok: true },
+    { id: "ground", label: "Measure ground resistance BA → G_BA", spec: "< 5 Ω", measured: "1.2 Ω", ok: true },
+    { id: "can", label: "Check CAN communication", spec: "No U-codes active", measured: "U0129 intermittent only", ok: true },
+    { id: "resistance", label: "Measure motor resistance B20↔B51", spec: "0.3–1.8 Ω", measured: "6.42 Ω FAIL", ok: false, terminal: true },
+    { id: "correlation", label: "Check TP correlation", spec: "Correlation OK", measured: "OK", ok: true },
+] as const;
+
+export function ScannerLabFull() {
+    const [vehicleIdx, setVehicleIdx] = useState(0);
+    const [vin, setVin] = useState(VEHICLES[0].vin);
+    const [scanning, setScanning] = useState(false);
+    const [scanIdx, setScanIdx] = useState(0);
+    const [logs, setLogs] = useState<typeof NODES[number][]>([]);
+    const [livePlay, setLivePlay] = useState(true);
+    const [live, setLive] = useState<Record<string, number>>(() => Object.fromEntries(PIDS.map((p) => [p.id, p.base])));
+    const [histories, setHistories] = useState<Record<string, number[]>>(() => Object.fromEntries(PIDS.map((p) => [p.id, Array(48).fill(p.base)])));
+    const [selectedDtc, setSelectedDtc] = useState<string>("P2118");
+    const [selectedPid, setSelectedPid] = useState<string>("TPS");
+    const [treeStep, setTreeStep] = useState(0);
+    const [measured, setMeasured] = useState(false);
+    const [treeDone, setTreeDone] = useState<boolean[]>(() => TREE.map(() => false));
+    const [systemSort, setSystemSort] = useState<"name" | "status">("name");
+    const [zoom, setZoom] = useState(1);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const voltsRef = useRef(13.9);
+
+    const vehicle = VEHICLES[vehicleIdx];
+
+    // VIN auto-decode
+    useEffect(() => {
+        if (vin.length >= 7) {
+            const hit = VEHICLES.find((v) => vin.toUpperCase().includes(v.code.slice(0, 3)));
+            if (hit) setVehicleIdx(VEHICLES.indexOf(hit));
+        }
+    }, [vin]);
+
+    useEffect(() => {
+        if (!livePlay) return;
+        const id = window.setInterval(() => {
+            setLive((prev) => {
+                const next: Record<string, number> = {};
+                for (const p of PIDS) {
+                    const drift = (p.base - prev[p.id]) * 0.12 + (Math.random() - 0.5) * (p.id === "VBAT" ? 0.1 : p.id === "RPM" ? 16 : 1);
+                    next[p.id] = Math.max(p.min, Math.min(p.max, prev[p.id] + drift));
+                }
+                voltsRef.current = Math.max(11, Math.min(14.8, voltsRef.current + (Math.random() - 0.5) * 0.12));
+                return next;
+            });
+            setHistories((prev) => {
+                const next: Record<string, number[]> = {};
+                for (const p of PIDS) {
+                    const arr = [...prev[p.id].slice(1), live[p.id] ?? p.base];
+                    next[p.id] = arr;
+                }
+                return next;
+            });
+        }, 420);
+        return () => window.clearInterval(id);
+    }, [livePlay, live]);
+
+    useEffect(() => {
+        if (!scanning) return;
+        if (scanIdx >= NODES.length) { setScanning(false); return; }
+        const id = window.setTimeout(() => {
+            setLogs((l) => [...l, NODES[scanIdx]]);
+            setScanIdx((i) => i + 1);
+        }, 120);
+        return () => window.clearTimeout(id);
+    }, [scanning, scanIdx]);
+
+    const sortedSystems = useMemo(() => {
+        const copy = [...NODES];
+        if (systemSort === "status") copy.sort((a, b) => (a.status === "fault" ? -1 : b.status === "fault" ? 1 : a.status === "warn" ? -1 : 1));
+        else copy.sort((a, b) => a.id.localeCompare(b.id));
+        return copy;
+    }, [systemSort]);
+
+    const volts = voltsRef.current.toFixed(2);
+    const batterColor = parseFloat(volts) < 12.2 ? "text-red-500 bg-red-50 border-red-200" : parseFloat(volts) < 13.5 ? "text-amber-600 bg-amber-50 border-amber-200" : "text-emerald-600 bg-emerald-50 border-emerald-200";
+    const selectedDtcObj = DTCS.find((d) => d.code === selectedDtc) ?? DTCS[0];
+
+    return (
+        <div className="space-y-4">
+            {/* Device shell — rugged scanner */}
+            <div className="overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.08)]">
+                {/* Top bar — HBTronics scanner header */}
+                <div className="flex flex-wrap items-center gap-2 bg-[#0f1115] px-4 py-3 text-white">
+                    <span className="rounded-full bg-[#F47822] px-2.5 py-1 text-[11px] font-black tracking-wide">HBTronics Scanner</span>
+                    <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-xs font-bold border border-white/10"><Battery className="h-3 w-3" /> {volts}V</span>
+                    <span className={`hidden sm:inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold ${batterColor}`}>{volts}V</span>
+                    <span className="hidden md:inline text-xs text-white/40">1ZR-FE · 21 ECUs · UDS/KWP2000/DoIP · LIN</span>
+                    <span className="ml-auto flex items-center gap-2">
+                        <span className={`h-2 w-2 rounded-full ${livePlay ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "bg-white/20"}`} />
+                        <button onClick={() => setLivePlay((v) => !v)} className={`rounded-full px-3 py-1 text-xs font-bold ${livePlay ? "bg-emerald-600 text-white" : "bg-white text-[#0f1115]"}`}>{livePlay ? "● Live 420ms" : "Paused"}</button>
+                        <button onClick={() => { setLogs([]); setScanIdx(0); setScanning(true); }} disabled={scanning} className="rounded-full bg-[#F47822] px-3 py-1.5 text-xs font-black text-white disabled:opacity-40 hover:bg-[#df6817]">{scanning ? `Scan ${scanIdx}/21` : "Full scan"}</button>
+                    </span>
+                </div>
+
+                {/* Vehicle bay — searchable DB + VIN */}
+                <div className="grid gap-3 bg-[#F8F7F6] p-4 sm:grid-cols-[1.1fr_0.9fr]">
+                    <div className="rounded-2xl bg-white p-3 border border-[#3A3A3A]/8">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40 flex items-center gap-1.5"><Search className="h-3 w-3" /> Vehicle database · 28 brands</p>
+                        <select value={vehicleIdx} onChange={(e) => setVehicleIdx(Number(e.target.value))} className="mt-2 h-9 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-sm font-bold text-[#3A3A3A]">
+                            {VEHICLES.map((v, i) => <option key={v.vin} value={i}>{v.make} {v.model} — {v.code} ({v.year}) · {v.coverage.scanner}</option>)}
+                        </select>
+                        <div className="mt-2 flex gap-1.5">
+                            {Object.entries(vehicle.coverage).map(([tool, cov]) => (
+                                <span key={tool} className={`flex-1 rounded-full px-2 py-1 text-center text-[10px] font-bold border ${cov === "ok" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : cov === "avail" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-white text-[#3A3A3A]/30 border-[#3A3A3A]/10"}`}>{tool}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="rounded-2xl bg-white p-3 border border-[#3A3A3A]/8">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">VIN · auto-decode</p>
+                        <input value={vin} onChange={(e) => setVin(e.target.value.toUpperCase())} placeholder="JTNBE3A67-012345" className="mt-2 h-9 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 font-mono text-sm font-bold tracking-wide" />
+                        <p className="mt-1.5 text-xs text-[#3A3A3A]/50">Covers: <span className="font-mono font-bold text-[#3A3A3A]">{vehicle.code}</span> · {vehicle.year} · <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border ${vehicle.coverage.scanner === "ok" ? "bg-emerald-500 text-white border-emerald-600" : vehicle.coverage.scanner === "avail" ? "bg-amber-500 text-white" : "bg-[#3A3A3A] text-white/40"}`}>{vehicle.coverage.scanner}</span></p>
+                    </div>
+                </div>
+
+                {/* Network map + systems — pan/zoom ECU network */}
+                <div className="grid gap-3 p-4 lg:grid-cols-[1.7fr_0.9fr]">
+                    <div className="overflow-hidden rounded-2xl border border-[#3A3A3A]/10 bg-[#0f1115]">
+                        <div className="flex items-center justify-between bg-[#14171e] px-3 py-2">
+                            <p className="text-[11px] font-black uppercase tracking-wide text-white/40 flex items-center gap-1.5"><Map className="h-3 w-3" /> ECU network map · pan/zoom</p>
+                            <span className="flex items-center gap-1">
+                                <button onClick={() => setZoom((z) => Math.max(0.7, +(z - 0.15).toFixed(2)))} className="h-7 w-7 rounded-lg bg-white/10 text-white hover:bg-white/20">−</button>
+                                <span className="w-10 text-center font-mono text-xs text-white/60">{Math.round(zoom * 100)}%</span>
+                                <button onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.15).toFixed(2)))} className="h-7 w-7 rounded-lg bg-white/10 text-white hover:bg-white/20">+</button>
+                                <button onClick={() => setPan({ x: 0, y: 0 })} className="ml-1 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-[#0f1115]">FIT</button>
+                            </span>
+                        </div>
+                        <div className="relative h-[280px] overflow-auto bg-[#080a0e] cursor-grab active:cursor-grabbing" onMouseDown={(e) => {
+                            const start = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+                            const move = (ev: MouseEvent) => setPan({ x: ev.clientX - start.x, y: ev.clientY - start.y });
+                            const up = () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
+                            window.addEventListener("mousemove", move); window.addEventListener("mouseup", up);
+                        }}>
+                            <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, transformOrigin: "0 0", width: 900, height: 260 }} className="relative">
+                                {/* Buses */}
+                                <div className="absolute left-4 right-4 h-[2px] bg-[#F47822]/40" style={{ top: 50 }} />
+                                <span className="absolute left-2 text-[9px] font-black tracking-wide text-[#F47822]" style={{ top: 36 }}>CAN-B 125k</span>
+                                <div className="absolute left-4 right-4 h-[2px] bg-[#3A3A3A]" style={{ top: 130 }} />
+                                <span className="absolute left-2 text-[9px] font-black tracking-wide text-white/40" style={{ top: 116 }}>CAN-C 500k</span>
+                                <div className="absolute left-4 right-4 h-[2px] bg-[#06B6D4]/40" style={{ top: 210 }} />
+                                <span className="absolute left-2 text-[9px] font-black tracking-wide text-[#06B6D4]" style={{ top: 196 }}>CAN-FD 2M</span>
+                                {NODES.map((n) => {
+                                    const bg = n.status === "fault" ? "bg-red-500 text-white border-red-600 shadow-[0_0_10px_rgba(239,68,68,0.5)]" : n.status === "warn" ? "bg-amber-500 text-white border-amber-600" : n.status === "offline" ? "bg-white/10 text-white/30 border-white/10" : n.status === "none" ? "bg-white/5 text-white/20 border-white/5" : "bg-emerald-500 text-white border-emerald-600";
+                                    return (
+                                        <div key={n.id} className={`absolute grid h-[56px] w-[90px] place-items-center rounded-xl border-2 text-center ${bg}`} style={{ left: n.x, top: n.y - 20 }}>
+                                            <span className="font-mono text-[11px] font-black leading-none">{n.id}</span>
+                                            <span className="text-[8px] leading-none opacity-80">{n.dtc} DTC · {n.status}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        <div className="flex gap-1.5 overflow-x-auto bg-[#0f1115] p-2">
+                            {logs.slice(-8).map((n, i) => <span key={i} className={`shrink-0 rounded-full px-2 py-1 font-mono text-[10px] font-bold ${n.status === "fault" ? "bg-red-500 text-white" : n.status === "warn" ? "bg-amber-500 text-white" : "bg-white/10 text-white/60"}`}>{n.id}</span>)}
+                            {logs.length === 0 && <span className="text-xs text-white/30">No scan yet — press Full scan (200 ms × 21 ECUs).</span>}
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white">
+                        <div className="flex items-center justify-between p-3 border-b border-[#3A3A3A]/5">
+                            <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">Systems · sortable</p>
+                            <button onClick={() => setSystemSort((s) => s === "name" ? "status" : "name")} className="rounded-full bg-[#3A3A3A] px-2.5 py-1 text-xs font-bold text-white">Sort: {systemSort}</button>
+                        </div>
+                        <div className="max-h-[280px] overflow-auto divide-y divide-[#3A3A3A]/5">
+                            {sortedSystems.map((n) => (
+                                <div key={n.id} className="flex items-center gap-2 px-3 py-2 hover:bg-[#FCFCFC]">
+                                    <span className={`h-2 w-2 rounded-full ${n.status === "fault" ? "bg-red-500" : n.status === "warn" ? "bg-amber-500" : n.status === "offline" ? "bg-[#3A3A3A]/20" : "bg-emerald-500"}`} />
+                                    <span className="flex-1 truncate text-sm font-bold text-[#3A3A3A]">{n.id}</span>
+                                    <span className="hidden sm:inline truncate text-xs text-[#3A3A3A]/50">{n.name}</span>
+                                    <span className="rounded-full bg-[#3A3A3A]/10 px-1.5 py-0.5 font-mono text-[10px] font-bold">{n.dtc}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* DTCs — 8 with detail */}
+                <div className="grid gap-3 p-4 lg:grid-cols-[1.15fr_0.85fr]">
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white overflow-hidden">
+                        <p className="bg-[#0f1115] px-3 py-2 text-[11px] font-black uppercase tracking-wide text-white/60">DTCs · UDS / KWP2000 / DoIP · severity · freeze-frame</p>
+                        <div className="divide-y divide-[#3A3A3A]/10">
+                            {DTCS.map((d) => (
+                                <button key={d.code} onClick={() => setSelectedDtc(d.code)} className={`flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-[#FCFCFC] ${selectedDtc === d.code ? "bg-[#FFF7ED] border-l-4 border-[#F47822]" : ""}`}>
+                                    <span className={`h-2 w-2 rounded-full ${d.status === "Current" ? "bg-red-500" : d.status === "Stored" ? "bg-amber-500" : "bg-white border border-[#3A3A3A]/20"}`} />
+                                    <span className="font-mono text-xs font-black text-[#3A3A3A]">{d.code}</span>
+                                    <span className="flex-1 truncate text-xs text-[#3A3A3A]/60">{d.desc}</span>
+                                    <span className="rounded-full bg-[#3A3A3A] px-2 py-0.5 text-[10px] font-bold text-white">{d.ecu}</span>
+                                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${d.severity === "high" ? "bg-red-50 text-red-700 border-red-200" : d.severity === "medium" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-[#FCFCFC] text-[#3A3A3A]/40 border-[#3A3A3A]/10"}`}>{d.status}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-[#FFFBF7] p-4">
+                        <p className="text-xs font-black uppercase tracking-wide text-[#F47822]">{selectedDtcObj.code} · {selectedDtcObj.ecu}</p>
+                        <p className="mt-1 text-sm font-bold leading-5 text-[#3A3A3A]">{selectedDtcObj.desc}</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                            <div className="rounded-xl bg-white p-2 border border-[#3A3A3A]/10"><span className="text-[#3A3A3A]/40">Occurrences</span><b className="ml-1 text-[#3A3A3A]">{selectedDtcObj.count}×</b><br /><span className="text-[#3A3A3A]/40">{selectedDtcObj.firstDate} {selectedDtcObj.firstKm} km → {selectedDtcObj.lastDate} {selectedDtcObj.lastKm} km</span></div>
+                            <div className="rounded-xl bg-white p-2 border border-[#3A3A3A]/10"><span className="text-[#3A3A3A]/40">Freeze-frame</span><b className={`ml-1 ${selectedDtcObj.freeze ? "text-emerald-600" : "text-[#3A3A3A]/30"}`}>{selectedDtcObj.freeze ? "● Available" : "— None"}</b><br /><span className="text-[#3A3A3A]/40">ECT 89°C · RPM 820</span></div>
+                        </div>
+                        <p className="mt-3 text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">Possible causes · % confirmed fixes</p>
+                        <div className="mt-1.5 space-y-1.5">
+                            {selectedDtcObj.causes.map((c) => (
+                                <div key={c.cause} className="flex items-center gap-2 rounded-xl bg-white p-2 border border-[#3A3A3A]/5">
+                                    <span className="flex-1 text-xs font-bold text-[#3A3A3A]">{c.cause}</span>
+                                    <span className="rounded-full bg-[#3A3A3A] px-2 py-0.5 text-xs font-black text-white">{c.pct}%</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-3 rounded-xl bg-white p-2 border border-[#3A3A3A]/10">
+                            <p className="text-[11px] font-bold text-[#3A3A3A]/60">Test conditions · Required tools · Expected vs measured</p>
+                            <p className="mt-1 font-mono text-xs text-[#3A3A3A]">Engine idle · Scanner + Multimeter · 6.42 Ω vs 0.3–1.8 Ω spec</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Live — 16 PIDs + graph + freeze */}
+                <div className="grid gap-3 p-4 lg:grid-cols-[1.6fr_0.9fr]">
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-3">
+                        <div className="flex items-center gap-2">
+                            <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">Live PIDs · 48-sample history · 420 ms</p>
+                            <span className={`ml-auto h-2 w-2 rounded-full ${livePlay ? "bg-emerald-500 animate-pulse" : "bg-[#3A3A3A]/20"}`} />
+                            <button onClick={() => setLivePlay((v) => !v)} className="rounded-full bg-[#3A3A3A] px-2.5 py-1 text-xs font-bold text-white">{livePlay ? "Pause" : "Resume"}</button>
+                        </div>
+                        <div className="mt-3 grid gap-1.5 sm:grid-cols-4">
+                            {PIDS.slice(0, 8).map((p) => {
+                                const v = live[p.id];
+                                return (
+                                    <button key={p.id} onClick={() => setSelectedPid(p.id)} className={`rounded-xl border p-2.5 text-left ${selectedPid === p.id ? "border-[#F47822] bg-[#FFF7ED]" : "border-[#3A3A3A]/10 bg-[#FCFCFC] hover:bg-white"}`}>
+                                        <p className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40">{p.id}</p>
+                                        <p className="font-mono text-sm font-black text-[#3A3A3A]">{v.toFixed(p.dec as number)} <span className="text-xs text-[#3A3A3A]/30">{p.unit}</span></p>
+                                        <p className="text-[11px] text-[#3A3A3A]/30 truncate">{p.spec}</p>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-3 overflow-hidden rounded-xl border border-[#3A3A3A]/10 bg-[#0f1115] p-2">
+                            <p className="text-[11px] font-bold text-white/40">Graph · {selectedPid} · 48 samples</p>
+                            <svg viewBox="0 0 240 60" className="mt-1 h-[60px] w-full">
+                                <polyline fill="none" stroke="#F47822" strokeWidth={1.6} points={histories[selectedPid]?.map((v, i) => `${(i / 47) * 240},${60 - ((v - PIDS.find((x) => x.id === selectedPid)!.min) / (PIDS.find((x) => x.id === selectedPid)!.max - PIDS.find((x) => x.id === selectedPid)!.min)) * 50 - 5}`).join(" ")} />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-3">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">Battery · drives indicator</p>
+                        <div className={`mt-2 rounded-xl border p-3 text-center ${parseFloat(volts) < 12.2 ? "bg-red-50 border-red-200" : parseFloat(volts) < 13.5 ? "bg-amber-50 border-amber-200" : "bg-emerald-50 border-emerald-200"}`}>
+                            <p className={`font-mono text-2xl font-black ${parseFloat(volts) < 12.2 ? "text-red-600" : parseFloat(volts) < 13.5 ? "text-amber-600" : "text-emerald-600"}`}>{volts} V</p>
+                            <p className="text-xs text-[#3A3A3A]/40">Spec 13.5–14.5 V · 48-sample history</p>
+                        </div>
+                        <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                            <div className="rounded-xl bg-[#FCFCFC] p-2 border border-[#3A3A3A]/5"><span className="text-[#3A3A3A]/40">Protos</span><br /><span className="font-mono font-bold">UDS/KWP2000/DoIP/LIN</span></div>
+                            <div className="rounded-xl bg-[#FCFCFC] p-2 border border-[#3A3A3A]/5"><span className="text-[#3A3A3A]/40">Scan</span><br /><span className="font-mono font-bold">{logs.length}/21 nodes</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Fault tree + Training + ADAS */}
+                <div className="grid gap-3 p-4 pt-0 lg:grid-cols-2">
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-3">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">Fault tree P2118 · 7 steps</p>
+                        <div className="mt-2 space-y-1.5">
+                            {TREE.map((s, i) => (
+                                <div key={s.id} className={`rounded-xl border px-2.5 py-2 flex items-center gap-2 ${i === 2 ? "bg-[#FFF7ED] border-[#F47822]/30" : "bg-[#FCFCFC] border-[#3A3A3A]/5"}`}>
+                                    <span className="grid h-5 w-5 place-items-center rounded-full bg-[#3A3A3A] text-[10px] font-black text-white">{i + 1}</span>
+                                    <span className="flex-1 truncate text-xs font-bold text-[#3A3A3A]">{s.label}</span>
+                                    <span className="font-mono text-[10px] text-[#3A3A3A]/40 hidden sm:inline">{s.spec}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <p className="mt-2 text-xs text-[#3A3A3A]/40">Supply → connector → motor supply → ground → CAN → <b className="text-red-600">6.42Ω FAIL vs 0.3–1.8Ω</b> → TP correlation · Interactive: reveal → judge PASS/FAIL</p>
+                    </div>
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-3">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40">ADAS · 6 calibrations · pre-conditions</p>
+                        <div className="mt-2 space-y-1.5">
+                            {["Front camera", "Front radar", "BSM-L", "BSM-R", "PDC", "Surround View"].map((n, i) => (
+                                <div key={n} className="flex items-center gap-2 rounded-xl bg-[#FCFCFC] border border-[#3A3A3A]/5 px-2.5 py-2">
+                                    <span className={`h-2 w-2 rounded-full ${i < 2 ? "bg-emerald-500" : "bg-[#3A3A3A]/20"}`} />
+                                    <span className="text-xs font-bold text-[#3A3A3A]">{n}</span>
+                                    <span className="ml-auto text-[10px] font-bold text-[#3A3A3A]/40">{i < 2 ? "Calibrated" : "Queued"}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* History / Report / Assistant */}
+                <div className="grid gap-3 p-4 pt-0 lg:grid-cols-3">
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-3">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40 flex items-center gap-1.5"><History className="h-3 w-3" /> History · 5 sessions</p>
+                        <div className="mt-2 space-y-1">
+                            {[84, 76, 91, 62, 79].map((sc, i) => (
+                                <div key={i} className="flex items-center gap-2 rounded-xl bg-[#FCFCFC] px-2.5 py-1.5 border border-[#3A3A3A]/5">
+                                    <span className="font-mono text-xs font-bold text-[#3A3A3A]">{sc}</span>
+                                    <span className="text-xs text-[#3A3A3A]/50">P2118 · {i === 0 ? "Today" : `${i + 1}d ago`}</span>
+                                    <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${sc >= 70 ? "bg-emerald-500 text-white" : "bg-amber-500 text-white"}`}>{sc >= 70 ? "PASS" : "RETRY"}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="mt-2 w-full rounded-xl bg-white border border-[#3A3A3A]/10 py-1.5 text-xs font-bold text-[#3A3A3A] hover:bg-[#FCFCFC]">Compare with previous →</button>
+                    </div>
+                    <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-3">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40 flex items-center gap-1.5"><FileText className="h-3 w-3" /> Report</p>
+                        <p className="mt-2 text-xs leading-5 text-[#3A3A3A]/60">System scan 21 nodes · 8 DTCs · Tree 6.42Ω FAIL → verdict <b className="text-[#3A3A3A]">Replace throttle body</b> · Score 84 · Accurate vs previous +6.</p>
+                        <div className="mt-2 flex gap-1.5">
+                            <span className="rounded-full bg-[#3A3A3A] px-2.5 py-1 text-xs font-bold text-white">Pro</span>
+                            <span className="rounded-full bg-white border border-[#3A3A3A]/10 px-2.5 py-1 text-xs font-bold text-[#3A3A3A]/60">Training</span>
+                        </div>
+                    </div>
+                    <div className="rounded-2xl border border-[#F47822]/15 bg-[#FFFBF7] p-3">
+                        <p className="text-[11px] font-black uppercase tracking-wide text-[#F47822] flex items-center gap-1.5"><Bot className="h-3 w-3" /> Scripted Assistant</p>
+                        <p className="mt-2 text-xs leading-5 text-[#3A3A3A]/70">“Check supply voltage at the throttle connector — what do you expect vs what do you measure?”</p>
+                        <div className="mt-2 flex gap-1.5">
+                            <button className="rounded-full bg-white border border-[#3A3A3A]/10 px-2.5 py-1 text-xs font-bold">12V present</button>
+                            <button className="rounded-full bg-[#F47822] px-2.5 py-1 text-xs font-bold text-white">6.42Ω FAIL</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function Bot({ className }: { className?: string }) {
+    return <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8}><circle cx={12} cy={8} r={4} /><path d="M8 14h8M10 16h4" /></svg>;
+}

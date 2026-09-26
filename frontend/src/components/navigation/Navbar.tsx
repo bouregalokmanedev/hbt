@@ -17,6 +17,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { NotificationMenu } from "@/features/notifications/components/NotificationMenu";
+import { UserAvatar } from "@/components/ui";
 
 const navigation = [
   {
@@ -40,23 +41,6 @@ const navigation = [
     href: "/contact",
   },
 ];
-
-function getInitials(
-  firstName?: string | null,
-  lastName?: string | null,
-): string {
-  const first = firstName?.trim().charAt(0) ?? "";
-
-  const last = lastName?.trim().charAt(0) ?? "";
-
-  const initials = `${first}${last}`.trim();
-
-  if (!initials) {
-    return "U";
-  }
-
-  return initials.toUpperCase();
-}
 
 function getRole(roles?: unknown): string {
   if (!Array.isArray(roles)) {
@@ -104,6 +88,17 @@ export function Navbar() {
 
   const isAuthenticated = Boolean(user);
 
+  /*
+   * Guests hit the public demo funnel (/demo) and mentor intro;
+   * authenticated users go to the real app routes.
+   */
+  const navItems = navigation.map((item) =>
+    item.key === "simulator"
+      ? { ...item, href: isAuthenticated ? "/simulator" : "/demo" }
+      : item,
+  );
+  const mentorHref = isAuthenticated ? "/ai-mentor" : "/ai-mentor/intro";
+
   const firstName = user?.first_name ?? "";
 
   const lastName = user?.last_name ?? "";
@@ -112,9 +107,11 @@ export function Navbar() {
 
   const email = user?.email ?? "";
 
-  const role = formatRole(getRole(user?.roles));
+  const rawRole = getRole(user?.roles);
 
-  const initials = getInitials(firstName, lastName);
+  const role = t(`common.roles.${rawRole.trim().toLowerCase().replace(/[\s-]+/g, "_")}`, {
+    defaultValue: formatRole(rawRole),
+  });
 
   /*
    * -------------------------------------------------------
@@ -280,7 +277,7 @@ export function Navbar() {
               ].join(" ")}
             >
               <img
-                src="/src/assets/brand/hbt-logo-full.png"
+                src="/hbt-logo-full.png"
                 alt="HBTronics"
                 className="h-full w-full object-contain object-left"
               />
@@ -292,9 +289,9 @@ export function Navbar() {
                     ====================================================== */}
 
           <div className="hidden items-center gap-1 lg:flex">
-            {navigation.map((item) =>
+            {navItems.map((item) =>
               item.key === "courses" || item.key === "simulator" ? (
-                <div key={item.href} className="group relative">
+                <div key={item.key} className="group relative">
                   <NavLink to={item.href} className={navLinkClass}>
                     {({ isActive }) => (
                       <>
@@ -327,8 +324,8 @@ export function Navbar() {
                       <Link
                         to={
                           item.key === "courses"
-                            ? "/certificates"
-                            : "/ai-mentor"
+                            ? "/verify-certificate"
+                            : mentorHref
                         }
                         className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] hover:text-hbt-orange"
                       >
@@ -341,7 +338,7 @@ export function Navbar() {
                 </div>
               ) : (
                 <NavLink
-                  key={item.href}
+                  key={item.key}
                   to={item.href}
                   className={navLinkClass}
                 >
@@ -444,23 +441,23 @@ export function Navbar() {
                 >
                   {/* Avatar */}
 
-                  <div
+                  <UserAvatar
+                    user={user}
                     className={[
-                      "flex shrink-0 items-center justify-center",
-                      "rounded-full",
+                      "shadow-sm",
+                      isScrolled ? "h-8 w-8" : "h-9 w-9",
+                    ].join(" ")}
+                    fallbackClassName={[
                       "bg-hbt-orange",
                       "font-semibold",
                       "text-white",
-                      "shadow-sm",
-                      isScrolled ? "h-8 w-8 text-[11px]" : "h-9 w-9 text-xs",
+                      isScrolled ? "text-[11px]" : "text-xs",
                     ].join(" ")}
-                  >
-                    {initials}
-                  </div>
+                  />
 
                   {/* Name + Role */}
 
-                  <div className="hidden text-left xl:block">
+                  <div className="hidden text-start xl:block">
                     <p className="max-w-[150px] truncate text-xs font-semibold leading-4 text-hbt-dark">
                       {fullName}
                     </p>
@@ -489,8 +486,9 @@ export function Navbar() {
                     role="menu"
                     className={[
                       "absolute right-0 top-[calc(100%+10px)]",
-                      "w-[290px]",
+                      "w-[290px] max-w-[calc(100vw-2rem)]",
                       "overflow-hidden",
+                      "rtl:left-0 rtl:right-auto",
                       "rounded-2xl",
                       "border border-slate-200/80",
                       "bg-white",
@@ -503,25 +501,18 @@ export function Navbar() {
 
                     <div className="border-b border-slate-100 px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <div
-                          className={[
-                            "flex h-10 w-10 shrink-0",
-                            "items-center justify-center",
-                            "rounded-full",
-                            "bg-hbt-orange",
-                            "text-xs font-bold",
-                            "text-white",
-                          ].join(" ")}
-                        >
-                          {initials}
-                        </div>
+                        <UserAvatar
+                          user={user}
+                          className="h-10 w-10"
+                          fallbackClassName="bg-hbt-orange text-xs font-bold text-white"
+                        />
 
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold text-hbt-dark">
                             {fullName}
                           </p>
 
-                          <p className="mt-0.5 truncate text-xs text-slate-500">
+                          <p dir="ltr" className="mt-0.5 truncate text-xs text-slate-500 rtl:text-right">
                             {email}
                           </p>
 
@@ -562,7 +553,7 @@ export function Navbar() {
                           </p>
                         </div>
 
-                        <ChevronRight className="h-4 w-4 text-slate-400" />
+                        <ChevronRight className="h-4 w-4 text-slate-400 rtl:-scale-x-100" />
                       </Link>
 
                       <Link
@@ -592,7 +583,7 @@ export function Navbar() {
                           </p>
                         </div>
 
-                        <ChevronRight className="h-4 w-4 text-slate-400" />
+                        <ChevronRight className="h-4 w-4 text-slate-400 rtl:-scale-x-100" />
                       </Link>
                     </div>
 
@@ -669,9 +660,9 @@ export function Navbar() {
             ].join(" ")}
           >
             <div className="space-y-1">
-              {navigation.map((item) => (
+              {navItems.map((item) => (
                 <NavLink
-                  key={item.href}
+                  key={item.key}
                   to={item.href}
                   className={({ isActive }) =>
                     [
@@ -690,6 +681,25 @@ export function Navbar() {
                   <ChevronRight className="h-4 w-4 opacity-50" />
                 </NavLink>
               ))}
+              {!isAuthenticated && (
+                <NavLink
+                  to="/ai-mentor/intro"
+                  className={({ isActive }) =>
+                    [
+                      "flex items-center justify-between",
+                      "rounded-xl px-4 py-3",
+                      "text-sm font-medium",
+                      "transition-colors",
+                      isActive
+                        ? "bg-orange-50 text-hbt-orange"
+                        : "text-hbt-dark hover:bg-hbt-gray",
+                    ].join(" ")
+                  }
+                >
+                  {t("navigation.aiMentor")}
+                  <ChevronRight className="h-4 w-4 opacity-50" />
+                </NavLink>
+              )}
             </div>
 
             <div className="mt-4 border-t border-slate-100 pt-4">
@@ -731,16 +741,18 @@ export function Navbar() {
                   {/* Mobile user summary */}
 
                   <div className="flex items-center gap-3 rounded-xl bg-hbt-gray p-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-hbt-orange text-xs font-bold text-white">
-                      {initials}
-                    </div>
+                    <UserAvatar
+                      user={user}
+                      className="h-10 w-10"
+                      fallbackClassName="bg-hbt-orange text-xs font-bold text-white"
+                    />
 
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-hbt-dark">
                         {fullName}
                       </p>
 
-                      <p className="truncate text-xs text-slate-500">{email}</p>
+                      <p dir="ltr" className="truncate text-xs text-slate-500 rtl:text-right">{email}</p>
 
                       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-hbt-orange">
                         {role}

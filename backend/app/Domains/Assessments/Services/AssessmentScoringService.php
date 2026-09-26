@@ -5,13 +5,17 @@ namespace App\Domains\Assessments\Services;
 use App\Domains\Assessments\Models\AssessmentAttempt;
 use App\Domains\Assessments\Models\AssessmentAttemptAnswer;
 use App\Domains\Assessments\Models\AssessmentAttemptAnswerOption;
-use App\Domains\Quizzes\Models\QuizQuestion;
+use App\Domains\StudentAssessments\Enums\ConfidenceLevel;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use LogicException;
 
 final class AssessmentScoringService
 {
+    public function __construct(
+        private readonly QuestionGradingService $grading,
+    ) {}
+
     /**
      * Calculate and persist the final assessment score.
      *
@@ -42,9 +46,6 @@ final class AssessmentScoringService
 
             $assessment = $attempt->assessment;
 
-            /*
-             * Load only questions that belong to this assessment.
-             */
             $assessmentQuestions = $assessment
                 ->questions()
                 ->with('options')
@@ -56,11 +57,8 @@ final class AssessmentScoringService
 
             $results = [];
             $evidence = [];
+            $confidenceLevels = [];
 
-            /*
-             * Total possible points come from the assessment
-             * question pivot.
-             */
             foreach ($assessmentQuestions as $question) {
                 $totalPoints += (int) $question->pivot->points;
             }
@@ -74,85 +72,48 @@ final class AssessmentScoringService
                     );
                 }
 
-                /** @var QuizQuestion $question */
                 $question = $assessmentQuestions->get($questionId);
+                $questionPoints = (int) $question->pivot->points;
 
-                $selectedOptionIds = collect(
-                    $submittedAnswer['option_ids'] ?? []
-                )
+                $payload = $submittedAnswer;
+                unset($payload['question_id']);
+
+                $grade = $this->grading->grade($question, $payload, $questionPoints);
+
+                $selectedOptionIds = collect($grade['selected_option_ids'] ?? [])
                     ->map(fn ($id) => (string) $id)
                     ->unique()
                     ->values();
 
-                /*
-                 * Make sure every selected option actually belongs
-                 * to the submitted question.
-                 */
-                $questionOptionIds = $question->options
-                    ->pluck('id')
-                    ->map(fn ($id) => (string) $id)
-                    ->values();
-
-                if (
-                    $selectedOptionIds
-                        ->diff($questionOptionIds)
-                        ->isNotEmpty()
-                ) {
-                    throw new LogicException(
-                        'Submitted option does not belong to the question.'
-                    );
-                }
-
-                /*
-                 * Correct options for this question.
-                 */
-                $correctOptionIds = $question->options
-                    ->where('is_correct', true)
-                    ->pluck('id')
-                    ->map(fn ($id) => (string) $id)
-                    ->sort()
-                    ->values();
-
-                $selectedSorted = $selectedOptionIds
-                    ->sort()
-                    ->values();
-
-                /*
-                 * Exact set comparison.
-                 *
-                 * This supports single-choice and multiple-choice
-                 * questions.
-                 */
-                $isCorrect = $selectedSorted->all() ===
-                    $correctOptionIds->all();
-
-                $questionPoints = (int) $question->pivot->points;
-
-                $pointsEarned = $isCorrect
-                    ? $questionPoints
-                    : 0;
-
+                $pointsEarned = (int) $grade['points_earned'];
                 $score += $pointsEarned;
 
-                /*
-                 * Persist the answer.
-                 */
+                $confidenceRaw = $submittedAnswer['confidence_level']
+                    ?? $this->autosavedConfidence($attempt, $question->id);
+
+                if ($confidenceRaw !== null) {
+                    $confidenceLevels[] = $confidenceRaw;
+                }
+
+                $confidenceTag = $this->grading->classifyConfidence(
+                    $grade['is_correct'],
+                    $confidenceRaw,
+                );
+
                 $answer = AssessmentAttemptAnswer::updateOrCreate(
                     [
                         'assessment_attempt_id' => $attempt->id,
                         'question_id' => $question->id,
                     ],
                     [
-                        'is_correct' => $isCorrect,
+                        'is_correct' => $grade['is_correct'],
                         'points_earned' => $pointsEarned,
+                        'answer' => $payload,
+                        'evaluation_status' => $grade['evaluation_status'] ?? 'evaluated',
+                        'feedback' => $grade['feedback'] ?? null,
                     ],
                 );
 
-                /*
-                 * Persist selected options.
-                 *
-                 * Delete first so recalculation remains safe.
-                 */
                 $answer->selectedOptions()->delete();
 
                 foreach ($selectedOptionIds as $optionId) {
@@ -164,15 +125,24 @@ final class AssessmentScoringService
 
                 $results[] = [
                     'question_id' => $question->id,
+                    'type' => $question->type?->value ?? (string) $question->type,
                     'points' => $questionPoints,
                     'points_earned' => $pointsEarned,
-                    'is_correct' => $isCorrect,
+                    'is_correct' => $grade['is_correct'],
+                    'fraction' => $grade['fraction'],
+                    'normalized_answer' => $grade['normalized_answer'] ?? [],
+                    'selected_option_ids' => $selectedOptionIds->all(),
+                    'evidence' => $grade['evidence'] ?? [],
+                    'feedback' => $grade['feedback'] ?? null,
+                    'evaluation_status' => $grade['evaluation_status'] ?? 'evaluated',
+                    'confidence_level' => $confidenceRaw,
+                    'confidence_tag' => $confidenceTag,
                 ];
 
                 $evidence[] = [
                     'question_id' => $question->id,
                     'selected_option_ids' => $selectedOptionIds->all(),
-                    'correct_option_ids' => $correctOptionIds->all(),
+                    'correct_option_ids' => $grade['evidence']['correct_option_ids'] ?? [],
                 ];
             }
 
@@ -183,6 +153,13 @@ final class AssessmentScoringService
             $passed = $percentage >=
                 (float) $assessment->minimum_score;
 
+            $confidenceScore = null;
+            if ($confidenceLevels !== []) {
+                $confidenceScore = collect($confidenceLevels)
+                    ->map(fn ($level) => $this->grading->confidenceToScore($level))
+                    ->avg();
+            }
+
             return [
                 'score' => $percentage,
                 'passed' => $passed,
@@ -190,7 +167,26 @@ final class AssessmentScoringService
                 'results' => $results,
                 'total_points' => $totalPoints,
                 'points_earned' => $score,
+                'confidence_score' => $confidenceScore,
             ];
         });
+    }
+
+    private function autosavedConfidence(
+        AssessmentAttempt $attempt,
+        string $questionId,
+    ): mixed {
+        $response = \App\Domains\StudentAssessments\Models\StudentAssessmentResponse::query()
+            ->where('attempt_id', $attempt->id)
+            ->where('question_id', $questionId)
+            ->first();
+
+        $level = $response?->confidence_level;
+
+        if ($level instanceof ConfidenceLevel) {
+            return $level->value;
+        }
+
+        return $level;
     }
 }

@@ -16,11 +16,13 @@ class RegisterRequest extends BaseApiRequest
 
     public function rules(): array
     {
+        $name = ['required', 'string', 'max:100', 'regex:/^[\p{L}][\p{L}\s\'’-]*$/u'];
+
         return [
 
-            'first_name' => ['required','string','max:100'],
+            'first_name' => $name,
 
-            'last_name' => ['required','string','max:100'],
+            'last_name' => $name,
 
             'email' => [
                 'required',
@@ -41,6 +43,18 @@ class RegisterRequest extends BaseApiRequest
             'language' => ['nullable','string'],
 
             'timezone' => ['nullable','timezone'],
+
+            // Invite code carried by ?ref= on the signup link.
+            'ref' => ['nullable', 'string', 'max:16'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'first_name.regex' => 'The first name may only contain letters.',
+            'last_name.regex' => 'The last name may only contain letters.',
+            'email.unique' => 'This email address is already registered.',
         ];
     }
 
@@ -48,6 +62,8 @@ class RegisterRequest extends BaseApiRequest
     {
         $this->merge([
             'email' => strtolower(trim($this->email)),
+            'first_name' => trim((string) $this->first_name),
+            'last_name' => trim((string) $this->last_name),
         ]);
     }
 

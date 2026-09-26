@@ -12,11 +12,17 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { env } from "@/config/env";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
+import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import { ContinueLearningCard } from "../components/ContinueLearningCard";
+import { CourseCertificate } from "../components/CourseCertificate";
 import { CourseCurriculum } from "../components/CourseCurriculum";
+import { CourseDiagnostics } from "../components/CourseDiagnostics";
+import { CourseInstructor } from "../components/CourseInstructor";
 import { CourseQuizzes } from "../components/CourseQuizzes";
 import { CourseThumbnail } from "../components/CourseThumbnail";
 import { useCourse } from "../hooks/useCourse";
@@ -27,19 +33,19 @@ import {
   type CourseReviewsResponse,
 } from "../api/courses.api";
 
-function formatDuration(minutes: number): string {
+function formatDuration(minutes: number, t: TFunction): string {
   if (minutes < 60) {
-    return `${minutes} min`;
+    return `${minutes} ${t("courseDetails.common.durMin")}`;
   }
 
   const hours = Math.floor(minutes / 60);
   const remaining = minutes % 60;
 
   if (remaining === 0) {
-    return `${hours}h`;
+    return `${hours}${t("courseDetails.common.durHour")}`;
   }
 
-  return `${hours}h ${remaining}m`;
+  return `${hours}${t("courseDetails.common.durHour")} ${remaining}${t("courseDetails.common.durHourMin")}`;
 }
 
 function formatPrice(
@@ -47,9 +53,10 @@ function formatPrice(
   discountPrice: number | null | undefined,
   isFree: boolean,
   currency: string,
+  t: TFunction,
 ): string {
   if (isFree) {
-    return "Free";
+    return t("courseDetails.common.free");
   }
 
   if (discountPrice !== null && discountPrice !== undefined) {
@@ -60,14 +67,20 @@ function formatPrice(
     return `${price} ${currency}`;
   }
 
-  return "View course";
+  return t("courseDetails.page.viewCourse");
 }
 
-function getDifficultyLabel(difficulty: string): string {
+function getDifficultyLabel(difficulty: string, t: TFunction): string {
+  const key = difficulty.toLowerCase();
+  if (key === "beginner" || key === "intermediate" || key === "advanced") {
+    return t(`courseDetails.common.difficulty.${key}`);
+  }
   return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 }
 
 export function CourseDetailsPage() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === "ar" ? "ar" : undefined;
   const { id } = useParams<{
     id: string;
   }>();
@@ -128,6 +141,11 @@ export function CourseDetailsPage() {
 
     // Enrolling twice returns an "already enrolled" API error. Existing
     // students should always continue from the first incomplete lesson.
+    // Paid courses go through Stripe checkout first; free courses enroll directly.
+    if (!isEnrolled && !isCompleted && !course.is_free) {
+      navigate(`/checkout?course=${course.id}`);
+      return;
+    }
     if (!isEnrolled && !isCompleted) {
       setDuplicateEnrollment(false);
       const createdEnrollment = await enroll();
@@ -211,11 +229,11 @@ export function CourseDetailsPage() {
             </div>
 
             <h1 className="mt-5 text-2xl font-bold tracking-tight text-foreground">
-              Course unavailable
+              {t("courseDetails.page.errorTitle")}
             </h1>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-              {error ?? "We couldn't find this course."}
+              {error ?? t("courseDetails.page.errorFallback")}
             </p>
 
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
@@ -224,14 +242,14 @@ export function CourseDetailsPage() {
                 onClick={() => void reload()}
                 className="inline-flex items-center justify-center rounded-xl bg-[#F47822] px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#e96b17] hover:shadow-md"
               >
-                Try again
+                {t("courseDetails.page.retry")}
               </button>
 
               <Link
                 to="/catalog"
                 className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
               >
-                Back to courses
+                {t("courseDetails.page.back")}
               </Link>
             </div>
           </div>
@@ -258,12 +276,12 @@ export function CourseDetailsPage() {
         <div className="mb-8">
           <Link
             to="/catalog"
-            className="group inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822]"
+            className="group inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm transition-all duration-200 hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted transition-colors group-hover:bg-[#F47822]/10">
-              <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
             </span>
-            Back to courses
+            {t("courseDetails.page.back")}
           </Link>
         </div>
 
@@ -280,7 +298,7 @@ export function CourseDetailsPage() {
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#F47822]/20 bg-[#F47822]/10 px-3 py-1.5 text-xs font-semibold text-[#F47822]">
                   <GraduationCap className="h-3.5 w-3.5" />
 
-                  {getDifficultyLabel(course.difficulty)}
+                  {getDifficultyLabel(course.difficulty, t)}
                 </span>
 
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -292,15 +310,26 @@ export function CourseDetailsPage() {
                 {course.is_free && (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F47822] px-3 py-1.5 text-xs font-bold text-white shadow-sm">
                     <Sparkles className="h-3.5 w-3.5" />
-                    Free
+                    {t("courseDetails.common.free")}
                   </span>
                 )}
               </div>
 
               <div>
-                <h1 className="max-w-4xl text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl lg:text-5xl lg:leading-[1.08]">
-                  {course.title}
-                </h1>
+                <div className="flex max-w-4xl items-start gap-4">
+                  <h1 className="flex-1 text-3xl font-bold tracking-[-0.03em] text-foreground sm:text-4xl lg:text-5xl lg:leading-[1.08]">
+                    {course.title}
+                  </h1>
+
+                  <FavoriteButton
+                    type="course"
+                    id={course.id}
+                    title={course.title}
+                    size="md"
+                    variant="solid"
+                    className="mt-1 shrink-0 sm:mt-2"
+                  />
+                </div>
 
                 {course.short_description && (
                   <p className="mt-5 max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
@@ -337,11 +366,11 @@ export function CourseDetailsPage() {
 
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">
-                      Duration
+                      {t("courseDetails.page.duration")}
                     </p>
 
                     <p className="mt-0.5 text-sm font-bold text-foreground">
-                      {formatDuration(course.duration_minutes)}
+                      {formatDuration(course.duration_minutes, t)}
                     </p>
                   </div>
                 </div>
@@ -349,13 +378,13 @@ export function CourseDetailsPage() {
 
               <div className="group rounded-2xl border border-border bg-card p-5 shadow-[0_4px_16px_rgba(15,23,42,0.03)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3A3A3A]/10 text-[#3A3A3A]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3A3A3A]/10 dark:bg-white/10 text-[#3A3A3A] dark:text-[#ececef]">
                     <GraduationCap className="h-5 w-5" />
                   </div>
 
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">
-                      Difficulty
+                      {t("courseDetails.page.difficulty")}
                     </p>
 
                     <p className="mt-0.5 text-sm font-bold capitalize text-foreground">
@@ -373,7 +402,7 @@ export function CourseDetailsPage() {
 
                   <div>
                     <p className="text-xs font-medium text-muted-foreground">
-                      Language
+                      {t("courseDetails.page.language")}
                     </p>
 
                     <p className="mt-0.5 text-sm font-bold uppercase text-foreground">
@@ -397,11 +426,11 @@ export function CourseDetailsPage() {
 
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F47822]">
-                    Course overview
+                    {t("courseDetails.page.overviewEyebrow")}
                   </p>
 
                   <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                    About this course
+                    {t("courseDetails.page.aboutTitle")}
                   </h2>
                 </div>
               </div>
@@ -418,22 +447,17 @@ export function CourseDetailsPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F47822]">
-                    Before you begin
+                    {t("courseDetails.page.reqEyebrow")}
                   </p>
                   <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                    Requirements
+                    {t("courseDetails.page.reqTitle")}
                   </h2>
                 </div>
               </div>
               <ul className="mt-6 grid gap-3 sm:grid-cols-2">
                 {(course.metadata?.requirements?.length
                   ? course.metadata.requirements
-                  : [
-                      "No prior experience is required.",
-                      "A computer or mobile device with internet access.",
-                      "Set aside time to complete each lesson in order.",
-                      "Bring curiosity and a willingness to practise.",
-                    ]
+                  : (t("courseDetails.page.reqDefaults", { returnObjects: true }) as string[])
                 ).map((requirement) => (
                   <li
                     key={requirement}
@@ -454,21 +478,21 @@ export function CourseDetailsPage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F47822]">
-                      Learner feedback
+                      {t("courseDetails.page.reviewsEyebrow")}
                     </p>
                     <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                      Course reviews
+                      {t("courseDetails.page.reviewsTitle")}
                     </h2>
                   </div>
                 </div>
                 {reviews && (
-                  <div className="rounded-2xl bg-[#FFF8F4] px-4 py-2.5">
+                  <div className="rounded-2xl bg-[#FFF8F4] dark:bg-[#F47822]/[0.08] px-4 py-2.5">
                     <div className="flex items-center gap-1 text-sm font-bold text-[#F47822]">
                       <Star className="h-4 w-4 fill-current" />
                       {reviews.summary.average_rating || "—"}
                     </div>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
-                      {reviews.summary.count} reviews
+                      {t("courseDetails.page.reviewsCount", { count: reviews.summary.count })}
                     </p>
                   </div>
                 )}
@@ -502,7 +526,7 @@ export function CourseDetailsPage() {
                         )}
                         {review.created_at && (
                           <p className="mt-3 text-[11px] text-muted-foreground">
-                            {new Intl.DateTimeFormat(undefined, {
+                            {new Intl.DateTimeFormat(dateLocale, {
                               month: "short",
                               day: "numeric",
                               year: "numeric",
@@ -515,11 +539,11 @@ export function CourseDetailsPage() {
                     <button
                       type="button"
                       onClick={() => setShowAllReviews((value) => !value)}
-                      className="mt-2 inline-flex w-fit items-center rounded-xl border border-[#F47822]/20 bg-[#FFF8F4] px-4 py-2.5 text-sm font-bold text-[#D96319] transition hover:border-[#F47822]/40 hover:bg-[#FDEEE5]"
+                      className="mt-2 inline-flex w-fit items-center rounded-xl border border-[#F47822]/20 bg-[#FFF8F4] dark:bg-[#F47822]/[0.08] px-4 py-2.5 text-sm font-bold text-[#D96319] transition hover:border-[#F47822]/40 hover:bg-[#FDEEE5]"
                     >
                       {showAllReviews
-                        ? "Show fewer reviews"
-                        : `See all reviews (${reviews.reviews.length})`}
+                        ? t("courseDetails.page.showFewer")
+                        : t("courseDetails.page.seeAll", { n: reviews.reviews.length })}
                     </button>
                   )}
                 </div>
@@ -527,11 +551,10 @@ export function CourseDetailsPage() {
                 <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/20 px-5 py-8 text-center">
                   <Star className="mx-auto h-5 w-5 text-[#F47822]" />
                   <p className="mt-3 text-sm font-semibold text-foreground">
-                    No reviews yet
+                    {t("courseDetails.page.noReviews")}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Learner feedback will appear here once the course receives
-                    reviews.
+                    {t("courseDetails.page.noReviewsDesc")}
                   </p>
                 </div>
               )}
@@ -541,6 +564,20 @@ export function CourseDetailsPage() {
               courseId={course.id}
               enrolled={isEnrolled || isCompleted}
             />
+
+            <CourseDiagnostics
+              courseId={course.id}
+              authenticated={Boolean(user)}
+              enrolled={hasFullAccess}
+            />
+
+            <CourseCertificate
+              courseId={course.id}
+              courseTitle={course.title}
+              authenticated={Boolean(user)}
+            />
+
+            <CourseInstructor instructor={course.instructor} />
 
             {/* Curriculum */}
 
@@ -581,7 +618,7 @@ export function CourseDetailsPage() {
                   </div>
 
                   <h3 className="mt-4 text-lg font-bold text-foreground">
-                    Curriculum unavailable
+                    {t("courseDetails.page.curriculumErrorTitle")}
                   </h3>
 
                   <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
@@ -593,7 +630,7 @@ export function CourseDetailsPage() {
                     onClick={() => void reloadCurriculum()}
                     className="mt-5 rounded-xl bg-[#F47822] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#e96b17] hover:shadow-md"
                   >
-                    Try again
+                    {t("courseDetails.page.retry")}
                   </button>
                 </div>
               ) : curriculum ? (
@@ -626,12 +663,12 @@ export function CourseDetailsPage() {
               <div className="p-6 sm:p-7">
                 <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
                   <Sparkles className="h-4 w-4 text-[#F47822]" />
-                  Start learning today
+                  {t("courseDetails.page.sidebarEyebrow")}
                 </div>
 
                 <div className="mt-5">
                   <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Course price
+                    {t("courseDetails.page.priceLabel")}
                   </p>
 
                   <div className="mt-2 flex flex-wrap items-end gap-3">
@@ -641,6 +678,7 @@ export function CourseDetailsPage() {
                         course.discount_price,
                         course.is_free,
                         course.currency,
+                        t,
                       )}
                     </p>
 
@@ -653,7 +691,7 @@ export function CourseDetailsPage() {
 
                   {hasDiscount && (
                     <span className="mt-2 inline-flex rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-bold text-green-600">
-                      Special price
+                      {t("courseDetails.page.specialPrice")}
                     </span>
                   )}
                 </div>
@@ -668,27 +706,27 @@ export function CourseDetailsPage() {
                   <PlayCircle className="h-5 w-5 transition-transform duration-200 group-hover:scale-105" />
 
                   {isEnrolling
-                    ? "Enrolling..."
+                    ? t("courseDetails.page.cta.enrolling")
                     : duplicateEnrollment
-                      ? "Already enrolled"
+                      ? t("courseDetails.page.cta.alreadyEnrolled")
                       : isCompleted
-                        ? "Review course"
+                        ? t("courseDetails.page.cta.review")
                         : isEnrolled
-                          ? "Continue learning"
+                          ? t("courseDetails.page.cta.continue")
                           : course.is_free
-                            ? "Start learning"
-                            : "Enroll now"}
+                            ? t("courseDetails.page.cta.start")
+                            : t("courseDetails.page.cta.enroll")}
                 </button>
 
                 {enrollmentError && (
-                  <p className="mt-3 text-center text-sm text-red-600">
+                  <p className="mt-3 text-center text-sm text-red-600 dark:text-red-400">
                     {enrollmentError}
                   </p>
                 )}
 
                 <div className="mt-7 border-t border-border pt-6">
                   <p className="text-sm font-bold text-foreground">
-                    This course includes
+                    {t("courseDetails.page.includes")}
                   </p>
 
                   <div className="mt-4 space-y-3.5">
@@ -696,7 +734,7 @@ export function CourseDetailsPage() {
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#F47822]" />
 
                       <span className="text-sm leading-5 text-muted-foreground">
-                        Structured course curriculum
+                        {t("courseDetails.page.includesCurriculum")}
                       </span>
                     </div>
 
@@ -704,8 +742,7 @@ export function CourseDetailsPage() {
                       <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-[#F47822]" />
 
                       <span className="text-sm leading-5 text-muted-foreground">
-                        {formatDuration(course.duration_minutes)} of learning
-                        content
+                        {t("courseDetails.page.includesDuration", { dur: formatDuration(course.duration_minutes, t) })}
                       </span>
                     </div>
 
@@ -713,7 +750,7 @@ export function CourseDetailsPage() {
                       <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-[#F47822]" />
 
                       <span className="text-sm leading-5 text-muted-foreground">
-                        {getDifficultyLabel(course.difficulty)} level training
+                        {getDifficultyLabel(course.difficulty, t)} level training
                       </span>
                     </div>
 
@@ -721,7 +758,7 @@ export function CourseDetailsPage() {
                       <Globe2 className="mt-0.5 h-4 w-4 shrink-0 text-[#F47822]" />
 
                       <span className="text-sm leading-5 text-muted-foreground">
-                        Available in {course.language.toUpperCase()}
+                        {t("courseDetails.page.includesLang", { lang: course.language.toUpperCase() })}
                       </span>
                     </div>
 
@@ -729,7 +766,7 @@ export function CourseDetailsPage() {
                       <Users className="mt-0.5 h-4 w-4 shrink-0 text-[#F47822]" />
 
                       <span className="text-sm leading-5 text-muted-foreground">
-                        Learn at your own pace
+                        {t("courseDetails.page.includesPace")}
                       </span>
                     </div>
                   </div>
@@ -738,17 +775,17 @@ export function CourseDetailsPage() {
                 <div className="mt-7 grid grid-cols-2 gap-3 border-t border-border pt-6">
                   <div className="rounded-xl bg-muted/60 p-3.5">
                     <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                      Duration
+                      {t("courseDetails.page.duration")}
                     </p>
 
                     <p className="mt-1 text-sm font-bold text-foreground">
-                      {formatDuration(course.duration_minutes)}
+                      {formatDuration(course.duration_minutes, t)}
                     </p>
                   </div>
 
                   <div className="rounded-xl bg-muted/60 p-3.5">
                     <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                      Level
+                      {t("courseDetails.page.level")}
                     </p>
 
                     <p className="mt-1 text-sm font-bold capitalize text-foreground">
@@ -758,7 +795,7 @@ export function CourseDetailsPage() {
 
                   <div className="rounded-xl bg-muted/60 p-3.5">
                     <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                      Language
+                      {t("courseDetails.page.language")}
                     </p>
 
                     <p className="mt-1 text-sm font-bold uppercase text-foreground">
@@ -768,11 +805,11 @@ export function CourseDetailsPage() {
 
                   <div className="rounded-xl bg-muted/60 p-3.5">
                     <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                      Access
+                      {t("courseDetails.page.access")}
                     </p>
 
                     <p className="mt-1 text-sm font-bold text-foreground">
-                      Lifetime
+                      {t("courseDetails.page.lifetime")}
                     </p>
                   </div>
                 </div>

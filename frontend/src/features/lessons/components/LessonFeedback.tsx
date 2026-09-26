@@ -1,5 +1,6 @@
 import { CheckCircle2, MessageSquare, Send, Star } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { submitCourseFeedback } from "../api/feedback.api";
 
 export function LessonFeedback({
@@ -9,6 +10,7 @@ export function LessonFeedback({
   courseId: string;
   lessonId: string;
 }) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
@@ -37,13 +39,13 @@ export function LessonFeedback({
         </span>
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#F47822]">
-            Help us improve
+            {t("lessonPlayer.feedback.eyebrow")}
           </p>
-          <h2 className="text-xl font-bold text-[#3A3A3A]">Lesson feedback</h2>
+          <h2 className="text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("lessonPlayer.feedback.title")}</h2>
         </div>
       </div>
       <p className="mt-4 text-sm text-gray-500">
-        Tell us what helped and what could be clearer.
+        {t("lessonPlayer.feedback.desc")}
       </p>
       <div className="mt-6 flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((value) => (
@@ -51,7 +53,7 @@ export function LessonFeedback({
             key={value}
             type="button"
             onClick={() => setRating(value)}
-            aria-label={`${value} stars`}
+            aria-label={t("lessonPlayer.feedback.stars", { n: value })}
           >
             <Star
               className={`h-6 w-6 transition ${value <= rating ? "fill-[#F47822] text-[#F47822]" : "text-gray-300 hover:text-[#F47822]"}`}
@@ -62,12 +64,12 @@ export function LessonFeedback({
       <textarea
         value={comment}
         onChange={(event) => setComment(event.target.value)}
-        placeholder="Share a quick note (optional)"
-        className="mt-5 min-h-32 w-full rounded-2xl border border-gray-100 bg-[#FCFCFC] p-4 text-sm outline-none transition focus:border-[#F47822]/50 focus:ring-4 focus:ring-[#F47822]/10"
+        placeholder={t("lessonPlayer.feedback.commentPh")}
+        className="mt-5 min-h-32 w-full rounded-2xl border border-gray-100 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#232329] p-4 text-sm outline-none transition focus:border-[#F47822]/50 focus:ring-4 focus:ring-[#F47822]/10"
       />
       <div className="mt-4 flex items-center justify-between gap-3">
         <span className="text-xs text-gray-400">
-          Your response stays private to the learning team.
+          {t("lessonPlayer.feedback.privacy")}
         </span>
         <button
           type="button"
@@ -75,14 +77,14 @@ export function LessonFeedback({
           onClick={() => void submit()}
           className="inline-flex items-center gap-2 rounded-xl bg-[#F47822] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#F47822]/20 transition hover:bg-[#DF6819] disabled:opacity-50"
         >
-          {saving ? "Sending..." : "Send feedback"}
-          <Send className="h-4 w-4" />
+          {saving ? t("lessonPlayer.feedback.sending") : t("lessonPlayer.feedback.send")}
+          <Send className="h-4 w-4 rtl:-scale-x-100" />
         </button>
       </div>
       {sent && (
-        <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-emerald-600">
+        <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
           <CheckCircle2 className="h-4 w-4" />
-          Thanks for helping us improve.
+          {t("lessonPlayer.feedback.thanks")}
         </p>
       )}
     </div>

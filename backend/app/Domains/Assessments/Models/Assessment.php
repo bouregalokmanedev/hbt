@@ -2,6 +2,7 @@
 
 namespace App\Domains\Assessments\Models;
 
+use App\Domains\Assessments\Enums\AssessmentMode;
 use App\Domains\Assessments\Enums\AssessmentStatus;
 use App\Models\Course;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -21,6 +22,8 @@ final class Assessment extends Model
 
     protected $fillable = [
         'course_id',
+        'section_id',
+        'lesson_id',
         'title',
         'slug',
         'description',
@@ -30,6 +33,10 @@ final class Assessment extends Model
         'max_attempts',
         'is_required',
         'status',
+        'assessment_mode',
+        'interaction_types',
+        'proficiency_thresholds',
+        'adaptive_config',
         'published_at',
     ];
 
@@ -38,6 +45,10 @@ final class Assessment extends Model
         return [
             'status' => AssessmentStatus::class,
             'is_required' => 'boolean',
+            'assessment_mode' => AssessmentMode::class,
+            'interaction_types' => 'array',
+            'proficiency_thresholds' => 'array',
+            'adaptive_config' => 'array',
             'published_at' => 'datetime',
         ];
     }
@@ -45,6 +56,63 @@ final class Assessment extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Section::class);
+    }
+
+    public function lesson(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Lesson::class);
+    }
+
+    public function competencies(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Competency::class,
+            'assessment_competencies',
+            'assessment_id',
+            'competency_id'
+        )
+            ->withPivot(['position', 'weight'])
+            ->withTimestamps()
+            ->orderByPivot('position');
+    }
+
+    public function scope(): string
+    {
+        if ($this->lesson_id !== null) {
+            return 'lesson';
+        }
+
+        if ($this->section_id !== null) {
+            return 'section';
+        }
+
+        return 'course';
+    }
+
+    public function isAdaptive(): bool
+    {
+        $types = $this->interaction_types ?? [];
+
+        return in_array('adaptive', $types, true)
+            && ! empty($this->adaptive_config);
+    }
+
+    public function adaptiveConfig(): array
+    {
+        return array_merge(
+            ['min_questions' => 5, 'max_questions' => 20, 'target_se' => 0.3],
+            $this->adaptive_config ?? [],
+        );
+    }
+
+    public function getProficiencyThresholds(): ?array
+    {
+        return $this->proficiency_thresholds;
     }
 
     public function attempts(): HasMany
@@ -97,6 +165,7 @@ public function questions(): BelongsToMany
         ->withPivot([
             'position',
             'points',
+            'competency_id',
         ])
         ->withTimestamps()
         ->orderByPivot('position');

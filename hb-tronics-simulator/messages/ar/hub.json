@@ -1,0 +1,48 @@
+{
+  "title": "مركز المحاكاة",
+  "kicker": "محاكي HB TRONICS",
+  "overall": "التقدّم الإجمالي",
+  "streak": "سلسلة 7 أيام",
+  "activeVehicle": "المركبة النشطة",
+  "packs": "الحزم المثبّتة",
+  "scan": "افحص هذه المركبة",
+  "sheets": "افتح مخططات الأسلاك",
+  "layout": {
+    "cards": "بطاقات",
+    "rows": "صفوف مضغوطة"
+  },
+  "cta": {
+    "start": "ابدأ",
+    "continue": "متابعة",
+    "review": "مراجعة",
+    "locked": "مقفل"
+  },
+  "level": {
+    "high": "متقدّم",
+    "mid": "متوسّط",
+    "low": "مبتدئ"
+  },
+  "lastActivity": "الأخير: {activity}",
+  "moduleTitle": "الوحدات",
+  "heading": "اختر محاكيك",
+  "subtitle": "منصّة تدريب تقنية احترافية للسيارات. تعمل كل أداة على المركبة نفسها والمكوّن نفسه قيد الاختبار — ابدأ من أي مكان واحمل نتائجك عبر الأدوات.",
+  "platformProgress": "تقدّم المنصّة",
+  "practiceStreak": "سلسلة التدريب",
+  "days": "أيام",
+  "continueCta": "متابعة",
+  "sessionContext": "سياق الجلسة",
+  "sharedByAll": "مشترك بين الأدوات الخمس",
+  "componentUnderTest": "المكوّن قيد الاختبار",
+  "openGarage": "افتح الكراج",
+  "changeComponent": "تغيير المكوّن",
+  "coachLabel": "المدرّب",
+  "continuePath": "واصل مسارك",
+  "allSkills": "كل المهارات",
+  "status": {
+    "resume": "استئناف",
+    "new": "جديد",
+    "retry": "إعادة",
+    "guided": "موجّه"
+  },
+  "cardProgress": "التقدّم"
+}

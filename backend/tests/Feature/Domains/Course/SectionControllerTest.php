@@ -26,7 +26,9 @@ it('creates a section', function () {
 
     $user = User::factory()->create();
 
-    $course = Course::factory()->create();
+    $course = Course::factory()->create([
+        'instructor_id' => $user->id,
+    ]);
 
     $response = $this
         ->actingAs($user)
@@ -48,6 +50,31 @@ it('creates a section', function () {
         'course_id' => $course->id,
         'slug' => 'introduction',
         'position' => 1,
+    ]);
+});
+
+it('rejects a non-owner from creating a section on another course', function () {
+
+    $owner = User::factory()->create();
+    $intruder = User::factory()->create();
+
+    $course = Course::factory()->create([
+        'instructor_id' => $owner->id,
+    ]);
+
+    $this
+        ->actingAs($intruder)
+        ->postJson('/api/v1/sections', [
+            'course_id' => $course->id,
+            'title' => 'Injected',
+            'slug' => 'injected',
+            'position' => 1,
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseMissing('sections', [
+        'course_id' => $course->id,
+        'slug' => 'injected',
     ]);
 });
 it('updates a section', function () {

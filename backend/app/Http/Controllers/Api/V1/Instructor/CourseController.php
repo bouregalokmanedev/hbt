@@ -53,11 +53,17 @@ final class CourseController extends Controller
         }
 
         if ($request->filled('difficulty')) {
-            $query->difficulty(
-                Difficulty::from(
-                    $request->string('difficulty')->toString()
-                )
+            $difficulty = Difficulty::tryFrom(
+                $request->string('difficulty')->toString()
             );
+
+            abort_unless(
+                $difficulty !== null,
+                422,
+                'Invalid difficulty filter.'
+            );
+
+            $query->difficulty($difficulty);
         }
 
         if ($request->boolean('free')) {
@@ -103,6 +109,8 @@ final class CourseController extends Controller
         Course $course,
         UpdateCourseAction $action,
     ): CourseResource {
+        $this->authorize('update', $course);
+
         return new CourseResource(
             $action->execute($request->toDto())
         );

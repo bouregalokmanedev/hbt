@@ -1,8 +1,12 @@
-import "@fontsource/cairo/400.css";
-import "@fontsource/cairo/500.css";
-import "@fontsource/cairo/600.css";
-import "@fontsource/cairo/700.css";
-import "@fontsource/cairo/800.css";
+import "@fontsource/tajawal/400.css";
+import "@fontsource/tajawal/500.css";
+import "@fontsource/tajawal/700.css";
+import "@fontsource/tajawal/800.css";
+import "@fontsource/noto-sans-arabic/400.css";
+import "@fontsource/noto-sans-arabic/500.css";
+import "@fontsource/noto-sans-arabic/600.css";
+import "@fontsource/noto-sans-arabic/700.css";
+import "@fontsource/noto-sans-arabic/800.css";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -20,6 +24,9 @@ import { QueryProvider } from "@/providers/QueryProvider";
 import "@/styles/globals.css";
 import "@/i18n";
 import i18n from "@/i18n";
+import { initTheme } from "@/lib/theme";
+
+initTheme();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

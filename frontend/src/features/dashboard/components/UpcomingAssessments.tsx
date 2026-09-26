@@ -6,6 +6,7 @@ import {
     ClipboardCheck,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import type {
     UpcomingAssessment,
@@ -15,7 +16,14 @@ interface UpcomingAssessmentsProps {
     assessments: UpcomingAssessment[];
 }
 
-function formatAssessmentDate(date: string) {
+type ScheduleStatus =
+    | { kind: "unknown" }
+    | { kind: "past" }
+    | { kind: "today" }
+    | { kind: "tomorrow" }
+    | { kind: "future"; days: number };
+
+function formatAssessmentDate(date: string, locale: string) {
     const parsedDate = new Date(date);
 
     if (Number.isNaN(parsedDate.getTime())) {
@@ -26,54 +34,72 @@ function formatAssessmentDate(date: string) {
     }
 
     return {
-        day: parsedDate.toLocaleDateString("en", {
+        day: parsedDate.toLocaleDateString(locale, {
             day: "2-digit",
         }),
-        month: parsedDate.toLocaleDateString("en", {
+        month: parsedDate.toLocaleDateString(locale, {
             month: "short",
         }),
     };
 }
 
-function getScheduleLabel(date: string) {
+function getScheduleStatus(date: string): ScheduleStatus {
     const scheduledAt = new Date(date);
     const today = new Date();
 
-    if (Number.isNaN(scheduledAt.getTime())) return "Scheduled";
+    if (Number.isNaN(scheduledAt.getTime())) return { kind: "unknown" };
 
     const scheduledDay = new Date(scheduledAt.getFullYear(), scheduledAt.getMonth(), scheduledAt.getDate());
     const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const days = Math.round((scheduledDay.getTime() - todayDay.getTime()) / 86400000);
 
-    if (days < 0) return "Available now";
-    if (days === 0) return "Due today";
-    if (days === 1) return "Tomorrow";
-    return `In ${days} days`;
+    if (days < 0) return { kind: "past" };
+    if (days === 0) return { kind: "today" };
+    if (days === 1) return { kind: "tomorrow" };
+    return { kind: "future", days };
 }
 
 export function UpcomingAssessments({
     assessments,
 }: UpcomingAssessmentsProps) {
+    const { t, i18n } = useTranslation();
+
+    const scheduleLabel = (status: ScheduleStatus): string => {
+        switch (status.kind) {
+            case "past":
+                return t("dashboard.assessments.availableNow");
+            case "today":
+                return t("dashboard.assessments.dueToday");
+            case "tomorrow":
+                return t("dashboard.assessments.tomorrow");
+            case "future":
+                return t("dashboard.assessments.inDays", { count: status.days });
+            default:
+                return t("dashboard.assessments.scheduled");
+        }
+    };
+
     return (
         <section
+            data-testid="upcoming-assessments-card"
             className="
                 overflow-hidden
                 rounded-2xl
                 border
-                border-[#3A3A3A]/8
-                bg-white
+                border-[#3A3A3A]/8 dark:border-white/8
+                bg-white dark:bg-[#1b1b20]
                 shadow-[0_8px_30px_rgba(58,58,58,0.05)]
             "
         >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#3A3A3A]/6 px-5 py-5 sm:px-6">
+            <div className="flex items-center justify-between border-b border-[#3A3A3A]/6 dark:border-white/6 px-5 py-5 sm:px-6">
                 <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#F47822]">
-                        Stay prepared
+                        {t("dashboard.assessments.eyebrow")}
                     </p>
 
-                    <h2 className="mt-1 text-base font-semibold text-[#3A3A3A] sm:text-lg">
-                        Upcoming assessments
+                    <h2 className="mt-1 text-base font-semibold text-[#3A3A3A] dark:text-[#ececef] sm:text-lg">
+                        {t("dashboard.assessments.title")}
                     </h2>
                 </div>
 
@@ -86,13 +112,13 @@ export function UpcomingAssessments({
                             gap-1
                             text-[11px]
                             font-semibold
-                            text-[#3A3A3A]/45
+                            text-[#3A3A3A]/45 dark:text-white/45
                             transition
                             hover:text-[#F47822]
                         "
                     >
-                        View all
-                        <ArrowRight className="h-3.5 w-3.5" />
+                        {t("dashboard.assessments.viewAll")}
+                        <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
                     </Link>
                 )}
             </div>
@@ -132,32 +158,36 @@ export function UpcomingAssessments({
                             <ClipboardCheck className="h-5 w-5" />
                         </div>
 
-                        <h3 className="mt-4 text-sm font-semibold text-[#3A3A3A]">
-                            You're all caught up
+                        <h3 className="mt-4 text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
+                            {t("dashboard.assessments.emptyTitle")}
                         </h3>
 
-                        <p className="mx-auto mt-1.5 max-w-xs text-xs leading-5 text-[#3A3A3A]/45">
-                            No assessments are scheduled
-                            right now. Keep learning and we'll
-                            let you know when something is ready.
+                        <p className="mx-auto mt-1.5 max-w-xs text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">
+                            {t("dashboard.assessments.emptyDesc")}
                         </p>
 
-                        <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/8 bg-[#F7F7F7] px-3 py-1.5">
+                        <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/8 dark:border-white/8 bg-[#F7F7F7] dark:bg-[#101013] px-3 py-1.5">
                             <CalendarDays className="h-3 w-3 text-[#F47822]" />
 
-                            <span className="text-[10px] font-medium text-[#3A3A3A]/50">
-                                No upcoming deadlines
+                            <span className="text-[10px] font-medium text-[#3A3A3A]/50 dark:text-white/50">
+                                {t("dashboard.assessments.emptyHint")}
                             </span>
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className="divide-y divide-[#3A3A3A]/6">
+                <div className="divide-y divide-[#3A3A3A]/6 dark:divide-white/6">
                     {assessments.map((assessment) => {
                         const formattedDate =
                             formatAssessmentDate(
                                 assessment.date,
+                                i18n.language,
                             );
+                        const scheduleStatus =
+                            getScheduleStatus(assessment.date);
+                        const isHot =
+                            scheduleStatus.kind === "past" ||
+                            scheduleStatus.kind === "today";
 
                         return (
                                 <Link
@@ -206,19 +236,19 @@ export function UpcomingAssessments({
 
                                 {/* Content */}
                                     <div className="min-w-0 flex-1">
-                                        <h3 className="truncate text-sm font-semibold text-[#3A3A3A]">
+                                        <h3 className="truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                             {assessment.title}
                                         </h3>
 
                                     <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                                        <span className="inline-flex items-center gap-1.5 text-[10px] text-[#3A3A3A]/45">
-                                            <Clock3 className="h-3 w-3 text-[#3A3A3A]/30" />
-                                            Scheduled assessment
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] text-[#3A3A3A]/45 dark:text-white/45">
+                                            <Clock3 className="h-3 w-3 text-[#3A3A3A]/30 dark:text-white/30" />
+                                            {t("dashboard.assessments.scheduled")}
                                         </span>
 
-                                        <span className={`inline-flex items-center gap-1 text-[10px] font-semibold ${getScheduleLabel(assessment.date) === "Available now" || getScheduleLabel(assessment.date) === "Due today" ? "text-[#F47822]" : "text-[#3A3A3A]/50"}`}>
+                                        <span className={`inline-flex items-center gap-1 text-[10px] font-semibold ${isHot ? "text-[#F47822]" : "text-[#3A3A3A]/50 dark:text-white/50"}`}>
                                             <CheckCircle2 className="h-3 w-3" />
-                                            {getScheduleLabel(assessment.date)}
+                                            {scheduleLabel(scheduleStatus)}
                                         </span>
                                     </div>
                                 </div>
@@ -234,8 +264,8 @@ export function UpcomingAssessments({
                                         justify-center
                                         rounded-lg
                                         border
-                                        border-[#3A3A3A]/8
-                                        text-[#3A3A3A]/35
+                                        border-[#3A3A3A]/8 dark:border-white/8
+                                        text-[#3A3A3A]/35 dark:text-white/35
                                         transition
                                         hover:border-[#F47822]/20
                                         hover:bg-[#F47822]/10

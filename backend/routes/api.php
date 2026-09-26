@@ -12,6 +12,7 @@ use App\Http\Controllers\MediaController;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Api\V1\EnrollmentController;
 use App\Http\Controllers\Api\V1\CourseFeedbackController;
+use App\Http\Controllers\Api\V1\PlatformFeedbackController;
 use App\Http\Controllers\Api\V1\CertificateController;
 use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
 use App\Http\Controllers\MediaStreamController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Api\CourseProgressController;
 use App\Domains\AI\Http\Controllers\SendMentorMessageController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
+use App\Http\Controllers\Api\V1\Auth\PhoneVerificationController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\QuizAttemptController;
 use App\Http\Controllers\Api\V1\AssessmentAttemptController;
@@ -42,49 +44,103 @@ use App\Domains\Admin\Controllers\AdminAnalyticsController;
 use App\Domains\Admin\Controllers\AdminActivityController;
 use App\Domains\Admin\Controllers\AdminSystemController;
 use App\Domains\Admin\Controllers\AdminNotificationController;
+use App\Domains\Admin\Controllers\AdminAssessmentController;
+use App\Domains\Admin\Controllers\AdminCanonicalPaymentsController;
+use App\Domains\Admin\Controllers\AdminCommerceController;
+use App\Domains\Admin\Controllers\AdminDiagnosticController;
+use App\Domains\Admin\Controllers\AdminInstructorController;
+use App\Domains\Admin\Controllers\AdminPlanController;
+use App\Domains\Admin\Controllers\AdminQuizController;
+use App\Domains\Admin\Controllers\AdminRoleController;
+use App\Domains\Admin\Controllers\AdminSecurityController;
+use App\Domains\Admin\Controllers\AdminStudentController;
+use App\Domains\Admin\Controllers\AdminSupportController;
+use App\Domains\DiagnosticScenarios\Controllers\InstructorDiagnosticController;
+use App\Domains\RiskManagement\Controllers\RiskController;
+use App\Domains\RiskManagement\Controllers\RiskReportController;
+use App\Domains\RiskManagement\Controllers\SecurityIncidentController;
+use App\Http\Controllers\Api\V1\StudentScenarioController;
 use App\Domains\Instructor\Controllers\InstructorAnnouncementController;
 use App\Domains\Messaging\Controllers\ConversationController as MessagingConversationController;
 use App\Domains\Messaging\Controllers\MessageController as MessagingMessageController;
 use App\Http\Controllers\Api\V1\LocaleController;
+use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\ConfigController;
+use App\Domains\Payments\Controllers\SubscriptionController;
+use App\Domains\Payments\Http\Controllers\BillingController;
+use App\Domains\Payments\Http\Controllers\CheckoutController;
+use App\Domains\Payments\Http\Controllers\PaymentMethodController;
+use App\Domains\Payments\Http\Controllers\WebhookController;
+use App\Domains\Simulator\Controllers\SimulatorSessionController;
+use App\Domains\Simulator\Controllers\InstructorSimulatorActivityController;
+use App\Domains\Simulator\Controllers\AdminSimulatorActivityController;
 
 
 
 
 Route::prefix('v1')->group(function () {
 
+    // Public contact form + public config/plans so landing pages work without login.
+    Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:10,1');
+    // Conversion funnel events (pricing view, plan CTA, simulator limit hit).
+    Route::post('/analytics/events', \App\Domains\Analytics\Http\Controllers\StoreAnalyticsEventController::class)
+        ->middleware('throttle:60,1');
+    Route::get('/config/stripe-key', [ConfigController::class, 'stripeKey']);
+    Route::get('/plans', [SubscriptionController::class, 'plans']);
+    // Provider webhooks are verified by signature inside the controller.
+    Route::post('/webhooks/stripe', [WebhookController::class, 'stripe']);
+    Route::post('/webhooks/paypal', [WebhookController::class, 'paypal']);
+
     // Certificate verification is intentionally public so QR scans work without a login.
     Route::get('/certificates/verify/{certificateNumber}', [CertificateController::class, 'verify']);
+
+    // Message attachments travel on temporary signed URLs (plain <a>/<img>
+    // requests carry no Bearer token); participation is enforced in the controller.
+    Route::get(
+        '/messages/attachments/{message}',
+        [MessagingMessageController::class, 'download']
+    )
+    ->middleware('signed')
+    ->name('messages.attachments.download');
 
     Route::prefix('auth')->group(function () {
 
         Route::get('/google/redirect', [GoogleAuthController::class, 'redirect']);
         Route::get('/google/callback', [GoogleAuthController::class, 'callback']);
-        Route::post('/google/exchange', [GoogleAuthController::class, 'exchange']);
+        Route::post('/google/exchange', [GoogleAuthController::class, 'exchange'])->middleware('throttle:auth');
 
      Route::post(
             '/register',
             [AuthController::class, 'register']
-        );
+        )->middleware('throttle:auth');
 
 Route::post(
     '/login',
     [AuthController::class, 'login']
-);
-Route::post('/two-factor/login/verify', [AuthController::class, 'verifyTwoFactorLogin']);
+)->middleware('throttle:auth');
+Route::post('/two-factor/login/verify', [AuthController::class, 'verifyTwoFactorLogin'])->middleware('throttle:two-factor-verify');
+Route::post('/two-factor/login/resend', [AuthController::class, 'resendTwoFactorLogin'])->middleware('throttle:5,1');
 Route::post(
     '/forgot-password',
     [AuthController::class, 'forgotPassword']
-);
+)->middleware('throttle:password-reset');
 Route::post(
     '/reset-password',
     [AuthController::class, 'resetPassword']
-);
+)->middleware('throttle:password-reset');
+Route::post(
+    '/email/resend-unverified',
+    [\App\Http\Controllers\Api\V1\Auth\EmailVerificationController::class, 'resendForEmail']
+)->middleware('throttle:6,1');
 
         Route::middleware('auth:sanctum')->group(function () {
 
             Route::post('/logout', [AuthController::class, 'logout']);
 
             Route::get('/me', [AuthController::class, 'me']);
+
+            Route::post('/email/resend', [\App\Http\Controllers\Api\V1\Auth\EmailVerificationController::class, 'resend'])
+                ->middleware('throttle:6,1');
 
         });
 
@@ -102,6 +158,10 @@ Route::put('/profile', [
     'updateProfile',
 ]);
 Route::patch('/locale', [LocaleController::class, 'update']);
+Route::post('/phone/otp/send', [PhoneVerificationController::class, 'send'])
+    ->middleware('throttle:6,1');
+Route::post('/phone/otp/verify', [PhoneVerificationController::class, 'verify'])
+    ->middleware('throttle:10,1');
 });
 
     });
@@ -157,7 +217,120 @@ Route::patch('/locale', [LocaleController::class, 'update']);
             Route::get('notifications/broadcasts', [AdminNotificationController::class, 'index']);
             Route::post('notifications/broadcast', [AdminNotificationController::class, 'broadcast']);
             Route::get('notifications/broadcasts/{broadcast}', [AdminNotificationController::class, 'show']);
+
+            Route::get('simulator/analytics', [AdminSimulatorActivityController::class, 'analytics']);
+            Route::get('simulator/sessions', [AdminSimulatorActivityController::class, 'sessions']);
+            Route::get('students/{student}/simulator', [AdminSimulatorActivityController::class, 'studentSessions']);
+            Route::get('students/{student}/simulator/results', [AdminSimulatorActivityController::class, 'studentResults']);
+
+            Route::get('diagnostics/analytics', [AdminDiagnosticController::class, 'analytics']);
+            Route::get('diagnostics', [AdminDiagnosticController::class, 'index']);
+            Route::post('diagnostics', [AdminDiagnosticController::class, 'store']);
+            Route::get('diagnostics/{scenario}', [AdminDiagnosticController::class, 'show']);
+            Route::patch('diagnostics/{scenario}', [AdminDiagnosticController::class, 'update']);
+            Route::post('diagnostics/{scenario}/publish', [AdminDiagnosticController::class, 'publish']);
+            Route::post('diagnostics/{scenario}/unpublish', [AdminDiagnosticController::class, 'unpublish']);
+            Route::post('diagnostics/{scenario}/archive', [AdminDiagnosticController::class, 'archive']);
+            Route::post('diagnostics/{scenario}/fork', [AdminDiagnosticController::class, 'forkVersion']);
+            Route::post('diagnostics/{scenario}/versions', [AdminDiagnosticController::class, 'forkVersion']);
+            Route::post('diagnostics/{scenario}/steps', [AdminDiagnosticController::class, 'storeStep']);
+            Route::patch('diagnostic-steps/{step}', [AdminDiagnosticController::class, 'updateStep']);
+            Route::delete('diagnostic-steps/{step}', [AdminDiagnosticController::class, 'destroyStep']);
+            Route::post('diagnostics/{scenario}/criteria', [AdminDiagnosticController::class, 'storeCriterion']);
+            Route::patch('diagnostic-criteria/{criterion}', [AdminDiagnosticController::class, 'updateCriterion']);
+            Route::delete('diagnostic-criteria/{criterion}', [AdminDiagnosticController::class, 'destroyCriterion']);
+            Route::post('diagnostics/{scenario}/hints', [AdminDiagnosticController::class, 'storeHint']);
+            Route::patch('diagnostic-hints/{hint}', [AdminDiagnosticController::class, 'updateHint']);
+            Route::delete('diagnostic-hints/{hint}', [AdminDiagnosticController::class, 'destroyHint']);
+            Route::post('diagnostics/{scenario}/assignments', [AdminDiagnosticController::class, 'storeAssignment']);
+            Route::delete('diagnostic-assignments/{assignment}', [AdminDiagnosticController::class, 'destroyAssignment']);
+
+            Route::get('quizzes', [AdminQuizController::class, 'index']);
+            Route::get('quizzes/{quiz}', [AdminQuizController::class, 'show']);
+            Route::patch('quizzes/{quiz}', [AdminQuizController::class, 'update']);
+            Route::post('quizzes/{quiz}/disable', [AdminQuizController::class, 'disable']);
+            Route::delete('quizzes/{quiz}', [AdminQuizController::class, 'destroy']);
+            Route::get('quizzes/{quiz}/attempts', [AdminQuizController::class, 'attempts']);
+
+            Route::get('assessments', [AdminAssessmentController::class, 'index']);
+            Route::get('assessments/{assessment}', [AdminAssessmentController::class, 'show']);
+            Route::patch('assessments/{assessment}', [AdminAssessmentController::class, 'update']);
+            Route::post('assessments/{assessment}/disable', [AdminAssessmentController::class, 'disable']);
+            Route::delete('assessments/{assessment}', [AdminAssessmentController::class, 'destroy']);
+            Route::get('assessments/{assessment}/attempts', [AdminAssessmentController::class, 'attempts']);
+
+            Route::get('commerce/overview', [AdminCommerceController::class, 'overview']);
+            Route::get('commerce/transactions', [AdminCommerceController::class, 'transactions']);
+            Route::get('commerce/transactions/{transaction}', [AdminCommerceController::class, 'showTransaction']);
+            Route::post('commerce/transactions/{transaction}/confirm', [AdminCommerceController::class, 'confirmTransaction']);
+            Route::post('commerce/transactions/{transaction}/fail', [AdminCommerceController::class, 'failTransaction']);
+            Route::post('commerce/transactions/{transaction}/refund', [AdminCommerceController::class, 'refund']);
+            Route::get('commerce/refunds', [AdminCommerceController::class, 'refunds']);
+            Route::get('commerce/subscriptions', [AdminCommerceController::class, 'subscriptions']);
+            Route::post('commerce/subscriptions/grant', [AdminCommerceController::class, 'grantSubscription']);
+            Route::post('commerce/subscriptions/{subscription}/cancel', [AdminCommerceController::class, 'cancelSubscription']);
+            Route::get('commerce/payouts', [AdminCommerceController::class, 'payouts']);
+            Route::post('commerce/payouts', [AdminCommerceController::class, 'recordPayout']);
+            Route::post('commerce/payouts/auto-generate', [AdminCommerceController::class, 'autoGeneratePayouts']);
+            Route::post('commerce/payouts/{payout}/pay', [AdminCommerceController::class, 'markPayoutPaid']);
+
+            Route::get('plans', [AdminPlanController::class, 'index']);
+            Route::post('plans', [AdminPlanController::class, 'store']);
+            Route::patch('plans/{plan}', [AdminPlanController::class, 'update']);
+            Route::delete('plans/{plan}', [AdminPlanController::class, 'destroy']);
+
+            Route::get('payments/orders', [AdminCanonicalPaymentsController::class, 'orders']);
+            Route::get('payments/orders/{order}', [AdminCanonicalPaymentsController::class, 'showOrder']);
+            Route::get('payments/invoices', [AdminCanonicalPaymentsController::class, 'invoices']);
+            Route::get('payments/webhooks', [AdminCanonicalPaymentsController::class, 'webhookEvents']);
+            Route::post('payments/webhooks/{webhookEvent}/replay', [AdminCanonicalPaymentsController::class, 'replayWebhook']);
+            Route::get('payments/failed', [AdminCanonicalPaymentsController::class, 'failedPayments']);
+            Route::post('payments/{payment}/refund', [AdminCanonicalPaymentsController::class, 'refundPayment']);
+
+            Route::get('support/tickets', [AdminSupportController::class, 'index']);
+            Route::get('support/tickets/{ticket}', [AdminSupportController::class, 'show']);
+            Route::post('support/tickets/{ticket}/replies', [AdminSupportController::class, 'reply']);
+            Route::patch('support/tickets/{ticket}/assign', [AdminSupportController::class, 'assign']);
+            Route::post('support/tickets/{ticket}/escalate', [AdminSupportController::class, 'escalate']);
+            Route::post('support/tickets/{ticket}/resolve', [AdminSupportController::class, 'resolve']);
+            Route::post('support/tickets/{ticket}/close', [AdminSupportController::class, 'close']);
+
+            Route::get('students', [AdminStudentController::class, 'index']);
+            Route::get('students/{student}', [AdminStudentController::class, 'show']);
+
+            Route::get('instructors', [AdminInstructorController::class, 'index']);
+            Route::get('instructors/{instructor}', [AdminInstructorController::class, 'show']);
+
+            Route::get('risks-dashboard', [RiskController::class, 'dashboard']);
+            Route::get('security/overview', [AdminSecurityController::class, 'overview']);
+            Route::get('security/auth-logs', [AdminSecurityController::class, 'authLogs']);
+            Route::get('security/sessions', [AdminSecurityController::class, 'sessions']);
+            Route::post('security/sessions/{session}/revoke', [AdminSecurityController::class, 'revokeSession']);
+            Route::get('security/alerts', [AdminSecurityController::class, 'alerts']);
+
+            Route::get('risks-dashboard', [RiskController::class, 'dashboard']);
+            Route::get('risks', [RiskController::class, 'index']);
+            Route::post('risks', [RiskController::class, 'store']);
+            Route::get('risks/{risk}', [RiskController::class, 'show']);
+            Route::get('risk-reports/overdue', [RiskReportController::class, 'overdue']);
+            Route::get('risk-reports/failed-controls', [RiskReportController::class, 'failedControls']);
+            Route::get('security-incidents', [SecurityIncidentController::class, 'index']);
         });
+
+
+// Access control is Super Admin-only: role definitions and permission grants
+// shape the whole platform. Admins manage people and content, not the
+// permission model itself.
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+    'role:Super Admin',
+])
+    ->prefix('admin')
+    ->group(function () {
+        Route::get('roles', [AdminRoleController::class, 'index']);
+        Route::put('roles/{roleName}/permissions', [AdminRoleController::class, 'updatePermissions']);
+    });
 
 
 });
@@ -168,9 +341,23 @@ Route::middleware([
 ])->prefix('v1')->group(function () {
 
 Route::get('/certificates', [CertificateController::class, 'index']);
+    Route::get('/simulator/catalog', [\App\Domains\Simulator\Controllers\StudentSimulatorCatalogController::class, 'vehicles']);
+    Route::get('/simulator/training-sessions', [\App\Domains\Simulator\Controllers\StudentSimulatorCatalogController::class, 'trainingSessions']);
     Route::get('/notifications', [StudentNotificationController::class, 'index']);
+    Route::get('/notifications/sidebar-badges', [StudentNotificationController::class, 'sidebarBadges']);
     Route::patch('/notifications/read-all', [StudentNotificationController::class, 'readAll']);
+    Route::patch('/notifications/category/{category}/read', [StudentNotificationController::class, 'markCategoryRead']);
     Route::patch('/notifications/{notification}/read', [StudentNotificationController::class, 'read']);
+
+    Route::get('/favorites', [\App\Http\Controllers\Api\V1\FavoriteController::class, 'index']);
+    Route::post('/favorites/toggle', [\App\Http\Controllers\Api\V1\FavoriteController::class, 'toggle']);
+    Route::post('/favorites/status', [\App\Http\Controllers\Api\V1\FavoriteController::class, 'status']);
+
+    Route::get('/support/tickets', [\App\Domains\Support\Controllers\TicketController::class, 'index']);
+    Route::post('/support/tickets', [\App\Domains\Support\Controllers\TicketController::class, 'store']);
+    Route::get('/support/tickets/{ticket}', [\App\Domains\Support\Controllers\TicketController::class, 'show']);
+    Route::post('/support/tickets/{ticket}/reply', [\App\Domains\Support\Controllers\TicketController::class, 'reply']);
+    Route::post('/support/tickets/{ticket}/close', [\App\Domains\Support\Controllers\TicketController::class, 'close']);
 
     Route::prefix('messages')->group(function () {
         Route::get('/conversations', [MessagingConversationController::class, 'index']);
@@ -178,8 +365,47 @@ Route::get('/certificates', [CertificateController::class, 'index']);
         Route::post('/conversations', [MessagingConversationController::class, 'store']);
         Route::get('/conversations/{conversation}', [MessagingConversationController::class, 'show']);
         Route::patch('/conversations/{conversation}/archive', [MessagingConversationController::class, 'archive']);
-        Route::post('/conversations/{conversation}/messages', [MessagingMessageController::class, 'store']);
+        Route::post('/conversations/{conversation}/messages', [MessagingMessageController::class, 'store'])->middleware('throttle:30,1');
+        Route::get('/conversations/{conversation}/messages', [MessagingMessageController::class, 'index']);
+        Route::delete('/{message}', [MessagingMessageController::class, 'destroy']);
+        Route::post('/{message}/reactions', [MessagingMessageController::class, 'react']);
         Route::patch('/conversations/{conversation}/read', [MessagingMessageController::class, 'read']);
+    });
+
+    Route::prefix('student')->group(function () {
+        Route::get('/scenarios', [StudentScenarioController::class, 'index']);
+        Route::get('/scenarios/{scenario}', [StudentScenarioController::class, 'show']);
+        Route::post('/scenarios/{scenario}/attempts', [StudentScenarioController::class, 'start']);
+        Route::get('/scenario-attempts/history', [StudentScenarioController::class, 'history']);
+        Route::get('/scenario-attempts/{attempt}', [StudentScenarioController::class, 'resume']);
+        Route::put('/scenario-attempts/{attempt}/steps/{step}', [StudentScenarioController::class, 'answerStep']);
+        Route::get('/scenario-attempts/{attempt}/hints', [StudentScenarioController::class, 'hints']);
+        Route::post('/scenario-attempts/{attempt}/hints', [StudentScenarioController::class, 'useHint']);
+        Route::post('/scenario-attempts/{attempt}/submit', [StudentScenarioController::class, 'submit']);
+        Route::get('/scenario-attempts/{attempt}/result', [StudentScenarioController::class, 'result']);
+
+        Route::get('/dashboard', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'dashboard']);
+        Route::get('/assessments', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'index']);
+        Route::get('/assessments/history', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'history']);
+        Route::get('/assessments/recommendations', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'globalRecommendations']);
+        Route::get('/assessments/{assessment}', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'show']);
+        Route::post('/assessments/{assessment}/attempts', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'start']);
+
+        Route::get('/assessment-attempts/{attempt}', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'resume']);
+        Route::get('/assessment-attempts/{attempt}/navigation', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'navigation']);
+        Route::put('/assessment-attempts/{attempt}/responses/{question}', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'saveResponse']);
+        Route::post('/assessment-attempts/{attempt}/responses/{question}/flag', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'flag']);
+        Route::get('/assessment-attempts/{attempt}/adaptive/next', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'adaptiveNext']);
+        Route::post('/assessment-attempts/{attempt}/submit', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'submit']);
+        Route::post('/assessment-attempts/{attempt}/abandon', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'abandon']);
+        Route::get('/assessment-attempts/{attempt}/result', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'result']);
+        Route::get('/assessment-attempts/{attempt}/competencies', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'competencies']);
+        Route::get('/assessment-attempts/{attempt}/recommendations', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'recommendations']);
+        Route::post('/assessment-attempts/{attempt}/integrity', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'recordIntegrityEvent']);
+        Route::get('/assessment-attempts/{attempt}/integrity', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'integritySummary']);
+        Route::get('/assessment-attempts/{attempt}/scenarios', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'scenarios']);
+        Route::get('/assessment-attempts/{attempt}/scenarios/{scenarioId}', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'scenarioDetail']);
+        Route::post('/assessment-attempts/{attempt}/scenarios/{scenarioId}/steps/{stepId}', [\App\Http\Controllers\Api\V1\StudentAssessmentController::class, 'answerScenarioStep']);
     });
 
     Route::get(
@@ -207,9 +433,53 @@ Route::get('/certificates', [CertificateController::class, 'index']);
         [EnrollmentController::class, 'cancel']
     )->name('enrollments.cancel');
 
-    Route::get('/certificates', [CertificateController::class, 'index']);
-Route::get('/certificates/{certificate}', [CertificateController::class, 'show']);
+    Route::get('/certificates/{certificate}', [CertificateController::class, 'show']);
 Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download']);
+
+    // Student commerce: plans list is public, but managing subscriptions/checkout requires auth.
+    Route::get('/subscriptions', [SubscriptionController::class, 'index']);
+    Route::post('/subscriptions', [SubscriptionController::class, 'store']);
+    Route::post('/subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel']);
+    Route::post('/subscriptions/{subscription}/change-plan', [SubscriptionController::class, 'changePlan']);
+
+    Route::post('/checkout', [CheckoutController::class, 'store']);
+    Route::get('/checkout/{orderId}', [CheckoutController::class, 'show']);
+
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+    Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
+    Route::patch('/payment-methods/{paymentMethod}/default', [PaymentMethodController::class, 'setDefault']);
+    Route::delete('/payment-methods/{paymentMethod}', [PaymentMethodController::class, 'destroy']);
+
+    // Learner billing history: orders, invoices and invoice PDF downloads.
+    Route::get('/billing/orders', [BillingController::class, 'orders']);
+    Route::get('/billing/invoices', [BillingController::class, 'invoices']);
+    Route::get('/billing/invoices/{invoice}/download', [BillingController::class, 'invoiceDownload']);
+
+    Route::get('/leaderboard', [\App\Http\Controllers\Api\V1\LeaderboardController::class, 'index']);
+    Route::post('/leaderboard/bonus', [\App\Http\Controllers\Api\V1\LeaderboardController::class, 'bonus']);
+
+    // Referral loop: mint/return invite code + funnel stats.
+    Route::post('/referrals', [\App\Http\Controllers\Api\V1\ReferralController::class, 'store']);
+
+    // Simulator sessions: start -> complete -> history. Frontend labs call these
+    // so bench results persist instead of staying local-only.
+    Route::get('/simulator/usage', [SimulatorSessionController::class, 'usage']);
+    Route::post('/simulator/sessions', [SimulatorSessionController::class, 'store']);
+    Route::post('/simulator/sessions/{session}/complete', [SimulatorSessionController::class, 'complete']);
+    Route::get('/simulator/results', [SimulatorSessionController::class, 'results']);
+    Route::get('/simulator/manifest/{scenario}', [SimulatorSessionController::class, 'manifest']);
+
+    // Daily challenges: board, review, race leaderboard, peer activity, rivals
+    Route::get('/challenges/today', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'today']);
+    Route::get('/challenges/review', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'review']);
+    Route::get('/challenges/leaderboard', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'leaderboard']);
+    Route::get('/challenges/activity', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'activity']);
+    Route::get('/challenges/peers', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'peers']);
+    Route::get('/challenges/rivals', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'rivals']);
+    Route::post('/challenges/rivals', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'challenge']);
+    Route::post('/challenges/rivals/{id}/accept', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'accept']);
+    Route::get('/challenges/rivals/{id}/share', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'share']);
+    Route::post('/challenges/{id}/claim', [\App\Domains\Challenges\Controllers\StudentChallengeController::class, 'claim']);
 
 Route::prefix('student')->group(function () {
     Route::get(
@@ -474,6 +744,26 @@ Route::middleware([
             'assessments',
         ])->name('instructor.students.assessments');
 
+        Route::get('/simulator/analytics', [
+            InstructorSimulatorActivityController::class,
+            'analytics',
+        ])->name('instructor.simulator.analytics');
+
+        Route::get('/simulator/sessions', [
+            InstructorSimulatorActivityController::class,
+            'sessions',
+        ])->name('instructor.simulator.sessions');
+
+        Route::get('/students/{student}/simulator', [
+            InstructorSimulatorActivityController::class,
+            'studentSessions',
+        ])->name('instructor.students.simulator');
+
+        Route::get('/students/{student}/simulator/results', [
+            InstructorSimulatorActivityController::class,
+            'studentResults',
+        ])->name('instructor.students.simulator.results');
+
         Route::post('/announcements', [InstructorAnnouncementController::class, 'store'])->name('instructor.announcements.store');
 
         Route::get(
@@ -501,6 +791,110 @@ Route::get('/courses/{course}/certificates', [
     \App\Http\Controllers\Api\V1\Instructor\CourseController::class,
     'certificates',
 ])->name('instructor.courses.certificates');
+
+Route::get('/courses/{course}/assessments', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'index',
+])->name('instructor.courses.assessments.index');
+Route::post('/courses/{course}/assessments', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'store',
+])->name('instructor.courses.assessments.store');
+Route::get('/courses/{course}/assessments/reviews/pending', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'pendingReviews',
+])->name('instructor.courses.assessments.reviews.pending');
+Route::get('/courses/{course}/assessments/attempts/flagged', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'flaggedAttempts',
+])->name('instructor.courses.assessments.attempts.flagged');
+Route::get('/courses/{course}/assessments/flagged-attempts', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'flaggedAttempts',
+])->name('instructor.courses.assessments.flagged-attempts');
+Route::get('/courses/{course}/assessments/questions/available', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'availableQuestions',
+])->name('instructor.courses.assessments.questions.available');
+Route::get('/courses/{course}/assessments/competencies/available', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'availableCompetencies',
+])->name('instructor.courses.assessments.competencies.available');
+Route::get('/courses/{course}/assessments/{assessment}', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'show',
+])->name('instructor.courses.assessments.show');
+Route::match(['put', 'patch'], '/courses/{course}/assessments/{assessment}', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'update',
+])->name('instructor.courses.assessments.update');
+Route::delete('/courses/{course}/assessments/{assessment}', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'destroy',
+])->name('instructor.courses.assessments.destroy');
+Route::post('/courses/{course}/assessments/{assessment}/publish', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'publish',
+])->name('instructor.courses.assessments.publish');
+Route::post('/courses/{course}/assessments/{assessment}/unpublish', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'unpublish',
+])->name('instructor.courses.assessments.unpublish');
+Route::match(['put', 'patch', 'post'], '/courses/{course}/assessments/{assessment}/questions', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'syncQuestions',
+])->name('instructor.courses.assessments.questions.sync');
+Route::match(['put', 'patch', 'post'], '/courses/{course}/assessments/{assessment}/competencies', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'syncCompetencies',
+])->name('instructor.courses.assessments.competencies.sync');
+Route::post('/courses/{course}/assessments/attempts/{attempt}/regrade', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
+    'regrade',
+])->name('instructor.courses.assessments.attempts.regrade');
+
+Route::get('/revenue', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorRevenueController::class,
+    'index',
+])->name('instructor.revenue');
+
+Route::get('/diagnostics/analytics', [InstructorDiagnosticController::class, 'analytics'])->name('instructor.diagnostics.analytics');
+Route::get('/diagnostics/attempts', [InstructorDiagnosticController::class, 'attempts'])->name('instructor.diagnostics.attempts');
+Route::get('/diagnostics/attempts/{attempt}', [InstructorDiagnosticController::class, 'showAttempt'])->name('instructor.diagnostics.attempts.show');
+Route::get('/diagnostics/attempts/{attempt}/result', [InstructorDiagnosticController::class, 'result'])->name('instructor.diagnostics.attempts.result');
+Route::get('/diagnostics', [InstructorDiagnosticController::class, 'index'])->name('instructor.diagnostics.index');
+Route::post('/diagnostics', [InstructorDiagnosticController::class, 'store'])->name('instructor.diagnostics.store');
+Route::get('/diagnostics/{scenario}', [InstructorDiagnosticController::class, 'show'])->name('instructor.diagnostics.show');
+Route::put('/diagnostics/{scenario}', [InstructorDiagnosticController::class, 'update'])->name('instructor.diagnostics.update');
+Route::post('/diagnostics/{scenario}/publish', [InstructorDiagnosticController::class, 'publish'])->name('instructor.diagnostics.publish');
+Route::post('/diagnostics/{scenario}/unpublish', [InstructorDiagnosticController::class, 'unpublish'])->name('instructor.diagnostics.unpublish');
+Route::post('/diagnostics/{scenario}/archive', [InstructorDiagnosticController::class, 'archive'])->name('instructor.diagnostics.archive');
+    Route::post('/diagnostics/{scenario}/fork', [InstructorDiagnosticController::class, 'fork'])->name('instructor.diagnostics.fork');
+    Route::post('/diagnostics/{scenario}/criteria', [InstructorDiagnosticController::class, 'storeCriterion'])->name('instructor.diagnostics.criteria.store');
+    Route::patch('/diagnostics/criteria/{criterion}', [InstructorDiagnosticController::class, 'updateCriterion'])->name('instructor.diagnostics.criteria.update');
+    Route::delete('/diagnostics/criteria/{criterion}', [InstructorDiagnosticController::class, 'destroyCriterion'])->name('instructor.diagnostics.criteria.destroy');
+    Route::post('/diagnostics/{scenario}/hints', [InstructorDiagnosticController::class, 'storeHint'])->name('instructor.diagnostics.hints.store');
+    Route::patch('/diagnostics/hints/{hint}', [InstructorDiagnosticController::class, 'updateHint'])->name('instructor.diagnostics.hints.update');
+    Route::delete('/diagnostics/hints/{hint}', [InstructorDiagnosticController::class, 'destroyHint'])->name('instructor.diagnostics.hints.destroy');
+    Route::post('/diagnostics/{scenario}/steps', [InstructorDiagnosticController::class, 'storeStep'])->name('instructor.diagnostics.steps.store');
+Route::post('/diagnostics/{scenario}/steps/reorder', [InstructorDiagnosticController::class, 'reorderSteps'])->name('instructor.diagnostics.steps.reorder');
+Route::patch('/diagnostics/steps/{step}', [InstructorDiagnosticController::class, 'updateStep'])->name('instructor.diagnostics.steps.update');
+Route::delete('/diagnostics/steps/{step}', [InstructorDiagnosticController::class, 'destroyStep'])->name('instructor.diagnostics.steps.destroy');
+
+Route::get('/simulator/vehicles', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'vehicles'])->name('instructor.simulator.vehicles');
+Route::post('/simulator/vehicles/variants', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'storeVariant'])->name('instructor.simulator.variants.store');
+Route::patch('/simulator/vehicles/variants/{variant}', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'updateVariant'])->name('instructor.simulator.variants.update');
+Route::get('/simulator/variants/{variant}/packs', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'packs'])->name('instructor.simulator.packs.index');
+Route::post('/simulator/variants/{variant}/packs', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'storePack'])->name('instructor.simulator.packs.store');
+Route::patch('/simulator/packs/{pack}', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'updatePack'])->name('instructor.simulator.packs.update');
+Route::post('/simulator/packs/{pack}/submit', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'submitPack'])->name('instructor.simulator.packs.submit');
+Route::get('/simulator/review', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'reviewQueue'])->name('instructor.simulator.review');
+Route::post('/simulator/packs/{pack}/approve', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'approvePack'])->name('instructor.simulator.packs.approve');
+Route::post('/simulator/packs/{pack}/reject', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'rejectPack'])->name('instructor.simulator.packs.reject');
+Route::post('/simulator/packs/{pack}/archive', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'archivePack'])->name('instructor.simulator.packs.archive');
+Route::post('/simulator/packs/{pack}/restore', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'restorePack'])->name('instructor.simulator.packs.restore');
+Route::delete('/simulator/packs/{pack}', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'destroyPack'])->name('instructor.simulator.packs.destroy');
+Route::delete('/simulator/vehicles/variants/{variant}', [\App\Domains\Simulator\Controllers\InstructorSimulatorController::class, 'destroyVariant'])->name('instructor.simulator.variants.destroy');
     });
 
 
@@ -642,6 +1036,17 @@ Route::post(
     'courses/{course}/feedback',
     [CourseFeedbackController::class, 'store']
 )->name('courses.feedback.store');
+
+// Platform-wide experience review (navigation/UX) — not tied to a course.
+Route::get(
+    'platform/feedback',
+    [PlatformFeedbackController::class, 'index']
+)->name('platform.feedback.index');
+
+Route::post(
+    'platform/feedback',
+    [PlatformFeedbackController::class, 'store']
+)->name('platform.feedback.store');
 });
 
 
@@ -700,8 +1105,10 @@ Route::prefix('v1')->group(function () {
 )->name('media.stream');
 
 
-Route::post('/quizzes', [QuizController::class, 'store']);
-Route::get('/quizzes/{quiz}', [QuizController::class, 'show']);
+Route::middleware(['auth:sanctum', 'verified', 'role:Instructor|Admin|Super Admin'])
+    ->post('/quizzes', [QuizController::class, 'store']);
+Route::middleware('auth:sanctum')
+    ->get('/quizzes/{quiz}', [QuizController::class, 'show']);
 
 
 
@@ -751,10 +1158,12 @@ Route::get(
 );
     Route::post('/tools/voltage-drop', [MentorDiagnosticToolController::class, 'voltageDrop']);
     Route::post('/tools/diagnostic-checklist', [MentorDiagnosticToolController::class, 'checklist']);
+    Route::post('/practice-quiz', [\App\Domains\AI\Http\Controllers\MentorPracticeQuizController::class, 'generate']);
     });
 });
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::post('/mentor/practice-quiz', [\App\Domains\AI\Http\Controllers\MentorPracticeQuizController::class, 'generate']);
     // Existing authenticated routes...
     Route::get('/assessments', [AssessmentController::class, 'index']);
     Route::get('/courses/{course}/quizzes', [QuizController::class, 'courseQuizzes']);
@@ -933,3 +1342,23 @@ Route::middleware([
         ]);
 
 });
+
+
+// Support desk: ticket queue for Support agents (admins keep full access
+// via /v1/admin/support/*). Policies gate every action to staff.
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+    'role:Support|Admin|Super Admin',
+])
+    ->prefix('v1/support-desk')
+    ->group(function () {
+        Route::get('/overview', [\App\Domains\Support\Controllers\SupportDashboardController::class, 'overview']);
+        Route::get('/tickets', [AdminSupportController::class, 'index']);
+        Route::get('/tickets/{ticket}', [AdminSupportController::class, 'show']);
+        Route::post('/tickets/{ticket}/replies', [AdminSupportController::class, 'reply']);
+        Route::patch('/tickets/{ticket}/assign', [AdminSupportController::class, 'assign']);
+        Route::post('/tickets/{ticket}/escalate', [AdminSupportController::class, 'escalate']);
+        Route::post('/tickets/{ticket}/resolve', [AdminSupportController::class, 'resolve']);
+        Route::post('/tickets/{ticket}/close', [AdminSupportController::class, 'close']);
+    });

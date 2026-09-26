@@ -1,0 +1,820 @@
+[
+  {
+    "key": "abs",
+    "label": "ABS",
+    "fuses": [
+      "F1",
+      "F2",
+      "F12",
+      "F15",
+      "F25"
+    ],
+    "relays": [],
+    "ecus": [
+      "E2"
+    ],
+    "total": 6
+  },
+  {
+    "key": "adaptive headlights",
+    "label": "Adaptive headlights",
+    "fuses": [
+      "F1",
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "audio system",
+    "label": "Audio system",
+    "fuses": [
+      "F1",
+      "F6",
+      "F40"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "automatic air conditioning",
+    "label": "Automatic air conditioning",
+    "fuses": [
+      "F1",
+      "F26",
+      "F47",
+      "F48",
+      "F52",
+      "F56"
+    ],
+    "relays": [],
+    "ecus": [
+      "E4",
+      "E5"
+    ],
+    "total": 8
+  },
+  {
+    "key": "automatic light",
+    "label": "Automatic light unit",
+    "fuses": [
+      "F2",
+      "F27",
+      "F56"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "charging",
+    "label": "Charging",
+    "fuses": [
+      "F1",
+      "F27"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "charging system",
+    "label": "Charging system",
+    "fuses": [
+      "F13"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "clock",
+    "label": "Clock",
+    "fuses": [
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "combination meter",
+    "label": "Combination meter",
+    "fuses": [
+      "F1",
+      "F2",
+      "F15"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "cvt indicator light",
+    "label": "Continuously variable transmission (CVT) light",
+    "fuses": [
+      "F5",
+      "F11",
+      "F14",
+      "F16",
+      "F17",
+      "F20",
+      "F24",
+      "F28",
+      "F29",
+      "F30",
+      "F31",
+      "F42"
+    ],
+    "relays": [],
+    "ecus": [
+      "E24"
+    ],
+    "total": 13
+  },
+  {
+    "key": "cooling fan",
+    "label": "Cooling fan",
+    "fuses": [
+      "F22",
+      "F29"
+    ],
+    "relays": [
+      "R3",
+      "R15"
+    ],
+    "ecus": [
+      "E27"
+    ],
+    "total": 5
+  },
+  {
+    "key": "cruise control",
+    "label": "Cruise control",
+    "fuses": [
+      "F1",
+      "F5",
+      "F11",
+      "F14",
+      "F16",
+      "F17",
+      "F20",
+      "F24",
+      "F28",
+      "F29",
+      "F30",
+      "F31",
+      "F42"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 13
+  },
+  {
+    "key": "door lock control",
+    "label": "Door lock control",
+    "fuses": [
+      "F1",
+      "F2",
+      "F5",
+      "F15",
+      "F16",
+      "F19",
+      "F27",
+      "F43"
+    ],
+    "relays": [],
+    "ecus": [
+      "E34"
+    ],
+    "total": 9
+  },
+  {
+    "key": "double locking",
+    "label": "Double locking",
+    "fuses": [
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "ebd",
+    "label": "EBD",
+    "fuses": [
+      "F1",
+      "F2",
+      "F12",
+      "F15",
+      "F25"
+    ],
+    "relays": [],
+    "ecus": [
+      "E2"
+    ],
+    "total": 6
+  },
+  {
+    "key": "electric sunroof",
+    "label": "Electric sunroof",
+    "fuses": [
+      "F1"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "engine control",
+    "label": "Engine control",
+    "fuses": [
+      "F1",
+      "F5",
+      "F11",
+      "F14",
+      "F16",
+      "F17",
+      "F20",
+      "F24",
+      "F28",
+      "F29",
+      "F30",
+      "F31",
+      "F42"
+    ],
+    "relays": [
+      "R2",
+      "R5",
+      "R7",
+      "R10",
+      "R12"
+    ],
+    "ecus": [
+      "E1",
+      "E9"
+    ],
+    "total": 20
+  },
+  {
+    "key": "entry and start authorisation",
+    "label": "Entry and start authorisation control unit",
+    "fuses": [
+      "F2",
+      "F5",
+      "F15",
+      "F16",
+      "F19",
+      "F27",
+      "F43"
+    ],
+    "relays": [],
+    "ecus": [
+      "E19"
+    ],
+    "total": 8
+  },
+  {
+    "key": "eps",
+    "label": "EPS",
+    "fuses": [
+      "F1",
+      "F3",
+      "F21"
+    ],
+    "relays": [],
+    "ecus": [
+      "E13"
+    ],
+    "total": 4
+  },
+  {
+    "key": "esp",
+    "label": "ESP",
+    "fuses": [
+      "F1",
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [
+      "E11"
+    ],
+    "total": 3
+  },
+  {
+    "key": "front fog lights",
+    "label": "Front fog lights",
+    "fuses": [
+      "F1",
+      "F2",
+      "F27"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "hazard warning lights",
+    "label": "Hazard warning lights",
+    "fuses": [
+      "F1",
+      "F15"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "headlight washer",
+    "label": "Headlight washer",
+    "fuses": [
+      "F2",
+      "F49",
+      "F56"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "headlight",
+    "label": "Headlights",
+    "fuses": [
+      "F1",
+      "F2",
+      "F8",
+      "F32",
+      "F33",
+      "F34",
+      "F35",
+      "F56"
+    ],
+    "relays": [
+      "R9"
+    ],
+    "ecus": [
+      "E36"
+    ],
+    "total": 10
+  },
+  {
+    "key": "heated mirror",
+    "label": "Heated mirrors",
+    "fuses": [
+      "F1",
+      "F24",
+      "F31"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "heater",
+    "label": "Heater",
+    "fuses": [
+      "F1",
+      "F26",
+      "F47",
+      "F48",
+      "F52",
+      "F55",
+      "F56"
+    ],
+    "relays": [],
+    "ecus": [
+      "E4",
+      "E5"
+    ],
+    "total": 9
+  },
+  {
+    "key": "hill-holder control",
+    "label": "Hill-holder control",
+    "fuses": [
+      "F1",
+      "F2",
+      "F12",
+      "F15",
+      "F25"
+    ],
+    "relays": [],
+    "ecus": [
+      "E2"
+    ],
+    "total": 6
+  },
+  {
+    "key": "horn",
+    "label": "Horn",
+    "fuses": [
+      "F9"
+    ],
+    "relays": [
+      "R8"
+    ],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "ignition",
+    "label": "Ignition",
+    "fuses": [
+      "F7",
+      "F16"
+    ],
+    "relays": [
+      "R7"
+    ],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "illumination",
+    "label": "Illumination",
+    "fuses": [
+      "F1",
+      "F2",
+      "F27"
+    ],
+    "relays": [],
+    "ecus": [
+      "E34"
+    ],
+    "total": 4
+  },
+  {
+    "key": "immobiliser",
+    "label": "Immobiliser",
+    "fuses": [
+      "F1",
+      "F2",
+      "F15",
+      "F16",
+      "F19",
+      "F27",
+      "F43"
+    ],
+    "relays": [],
+    "ecus": [
+      "E19"
+    ],
+    "total": 8
+  },
+  {
+    "key": "immobiliser control",
+    "label": "Immobiliser control unit",
+    "fuses": [
+      "F5"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "interior light",
+    "label": "Interior light",
+    "fuses": [
+      "F2",
+      "F4"
+    ],
+    "relays": [],
+    "ecus": [
+      "E34"
+    ],
+    "total": 3
+  },
+  {
+    "key": "key warning buzzer",
+    "label": "Key warning buzzer",
+    "fuses": [
+      "F1",
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "lane detection",
+    "label": "Lane detection warning",
+    "fuses": [
+      "F1",
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "manual air conditioning",
+    "label": "Manual air conditioning",
+    "fuses": [
+      "F26",
+      "F47",
+      "F48",
+      "F52",
+      "F56"
+    ],
+    "relays": [],
+    "ecus": [
+      "E4",
+      "E5"
+    ],
+    "total": 7
+  },
+  {
+    "key": "multi-mode manual transmission",
+    "label": "Multi-mode manual transmission control unit",
+    "fuses": [
+      "F1",
+      "F5",
+      "F45"
+    ],
+    "relays": [
+      "R15"
+    ],
+    "ecus": [
+      "E24"
+    ],
+    "total": 5
+  },
+  {
+    "key": "navigation system",
+    "label": "Navigation system",
+    "fuses": [
+      "F1",
+      "F6",
+      "F40"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "parking assistance system",
+    "label": "Parking assistance system",
+    "fuses": [
+      "F1",
+      "F2",
+      "F6",
+      "F15",
+      "F40"
+    ],
+    "relays": [],
+    "ecus": [
+      "E35"
+    ],
+    "total": 6
+  },
+  {
+    "key": "power window",
+    "label": "Power windows",
+    "fuses": [
+      "F1",
+      "F27"
+    ],
+    "relays": [],
+    "ecus": [
+      "E34"
+    ],
+    "total": 3
+  },
+  {
+    "key": "pre-crash safety system",
+    "label": "Pre-crash safety system",
+    "fuses": [
+      "F1",
+      "F2",
+      "F12",
+      "F15",
+      "F25"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 5
+  },
+  {
+    "key": "ptc heater",
+    "label": "PTC heater",
+    "fuses": [
+      "F1",
+      "F26",
+      "F47",
+      "F48",
+      "F52",
+      "F56"
+    ],
+    "relays": [],
+    "ecus": [
+      "E4",
+      "E5"
+    ],
+    "total": 8
+  },
+  {
+    "key": "rear fog light",
+    "label": "Rear fog light",
+    "fuses": [
+      "F1",
+      "F2",
+      "F27"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "rear window defroster",
+    "label": "Rear windscreen defroster",
+    "fuses": [
+      "F24",
+      "F31"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "safety system",
+    "label": "Safety system",
+    "fuses": [
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "seat belt warning",
+    "label": "Seat belt warning",
+    "fuses": [
+      "F1",
+      "F2",
+      "F15"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "shift lock",
+    "label": "Shift lock",
+    "fuses": [
+      "F1"
+    ],
+    "relays": [],
+    "ecus": [
+      "E66"
+    ],
+    "total": 2
+  },
+  {
+    "key": "smart entrance control",
+    "label": "Smart entrance control unit",
+    "fuses": [
+      "F1"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "srs control",
+    "label": "SRS control unit",
+    "fuses": [
+      "F1"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "start/stop system",
+    "label": "Start/stop system control unit",
+    "fuses": [
+      "F1",
+      "F29",
+      "F45"
+    ],
+    "relays": [],
+    "ecus": [
+      "E68"
+    ],
+    "total": 4
+  },
+  {
+    "key": "starting",
+    "label": "Starting",
+    "fuses": [
+      "F1",
+      "F2",
+      "F5",
+      "F15",
+      "F16",
+      "F19",
+      "F27",
+      "F43"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 8
+  },
+  {
+    "key": "steering lock",
+    "label": "Steering lock",
+    "fuses": [
+      "F1",
+      "F2",
+      "F5",
+      "F15",
+      "F16",
+      "F19",
+      "F27",
+      "F43"
+    ],
+    "relays": [],
+    "ecus": [
+      "E19"
+    ],
+    "total": 9
+  },
+  {
+    "key": "tail light",
+    "label": "Tail lights",
+    "fuses": [
+      "F1",
+      "F2",
+      "F27"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 3
+  },
+  {
+    "key": "tailgate/boot release",
+    "label": "Tailgate/boot release",
+    "fuses": [
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 1
+  },
+  {
+    "key": "theft warning",
+    "label": "Theft warning relay (with security system)",
+    "fuses": [
+      "F9",
+      "F54"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "traction control",
+    "label": "Traction control",
+    "fuses": [
+      "F1",
+      "F2",
+      "F12",
+      "F15",
+      "F25"
+    ],
+    "relays": [],
+    "ecus": [
+      "E11"
+    ],
+    "total": 6
+  },
+  {
+    "key": "tyre pressure indicator",
+    "label": "Tyre pressure control",
+    "fuses": [
+      "F1",
+      "F2"
+    ],
+    "relays": [],
+    "ecus": [],
+    "total": 2
+  },
+  {
+    "key": "vehicle stability control (vsc)",
+    "label": "Vehicle stability control (VSC)",
+    "fuses": [
+      "F1",
+      "F2",
+      "F12",
+      "F15",
+      "F25"
+    ],
+    "relays": [],
+    "ecus": [
+      "E11"
+    ],
+    "total": 6
+  }
+]

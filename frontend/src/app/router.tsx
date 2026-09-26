@@ -7,12 +7,14 @@ import { authRoutes } from "@/routes/auth.routes";
 import { dashboardRoutes } from "@/routes/dashboard.routes";
 import { instructorRoutes } from "@/routes/instructor.routes";
 import { publicRoutes } from "@/routes/public.routes";
+import { supportRoutes } from "@/routes/support.routes";
 
 export const router = createBrowserRouter([
     ...publicRoutes,
     ...authRoutes,
     ...dashboardRoutes,
     ...instructorRoutes,
+    ...supportRoutes,
     ...adminRoutes,
 
     {

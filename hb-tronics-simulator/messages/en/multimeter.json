@@ -1,0 +1,88 @@
+{
+  "title": "Multimeter",
+  "subtitle": "Sensor & actuator diagnosis · digital multimeter",
+  "views": {
+    "diagnosis": "Diagnosis",
+    "progress": "Progress"
+  },
+  "header": {
+    "time": "TIME",
+    "score": "SCORE",
+    "restart": "Restart session",
+    "print": "Print",
+    "complaint": "Complaint"
+  },
+  "sidebar": {
+    "title": "Electronic components",
+    "cleared": "{done} of {total} cleared",
+    "steps": "{n} measurement steps"
+  },
+  "tabs": {
+    "wiring": "Wiring diagram",
+    "ecu": "ECU pin and connector",
+    "location": "Location",
+    "parts": "Related parts",
+    "manuals": "Repair Manuals",
+    "info": "Component information"
+  },
+  "tabDisabled": "Not included in this coverage",
+  "wiring": {
+    "reset": "Reset the wiring diagram",
+    "viewPins": "View wiring and pins",
+    "extended": "Extended wiring diagram",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "component": "Component",
+    "controlUnit": "Control unit",
+    "wire": "Wire",
+    "earth": "Engine earth"
+  },
+  "ecu": {
+    "title": "ECU pin and connector",
+    "connector": "Component connector",
+    "control": "{code} · {name}",
+    "pin": "Pin",
+    "fn": "Function"
+  },
+  "proc": {
+    "diagnosis": "Diagnosis {n}/{total}",
+    "yourMeasurement": "Your measurement",
+    "redProbe": "Red probe",
+    "blackProbe": "Black probe",
+    "rotary": "Rotary switch",
+    "notPlaced": "not placed",
+    "notSet": "not set",
+    "yes": "Yes",
+    "no": "No",
+    "hint": "Need a hint?",
+    "hintPenalty": "−5 pts",
+    "componentPin": "component pin {n}",
+    "ecuPin": "{code} pin {n}",
+    "earth": "engine earth"
+  },
+  "dmm": {
+    "brand": "HB TRONICS",
+    "model": "DMM-772 · TRUE RMS",
+    "off": "OFF",
+    "placeBoth": "Place both probes",
+    "wrongFunction": "Wrong function selected",
+    "atPoints": "Reading at your probe points",
+    "spec": "Spec {spec}"
+  },
+  "probes": {
+    "title": "Probes — drag onto a pin",
+    "red": "Red probe",
+    "black": "Black probe",
+    "instruction": "Drag a probe onto a pin, connector cavity or the engine earth symbol. The display only reads when both probes are seated and the rotary switch is on the right function."
+  },
+  "progress": {
+    "title": "Progress",
+    "cleared": "Cleared",
+    "remaining": "Remaining",
+    "steps": "steps",
+    "found": "FOUND",
+    "clear": "CLEAR",
+    "open": "Open",
+    "overall": "Overall progress"
+  }
+}

@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import type {
     CourseCurriculum,
@@ -52,9 +54,10 @@ function getFirstIncompleteLesson(
 
 function formatDuration(
     minutes: number,
+    t: TFunction,
 ): string {
     if (minutes < 60) {
-        return `${minutes} min`;
+        return `${minutes} ${t("courseDetails.common.durMin")}`;
     }
 
     const hours = Math.floor(
@@ -65,16 +68,17 @@ function formatDuration(
         minutes % 60;
 
     if (remaining === 0) {
-        return `${hours}h`;
+        return `${hours}${t("courseDetails.common.durHour")}`;
     }
 
-    return `${hours}h ${remaining}m`;
+    return `${hours}${t("courseDetails.common.durHour")} ${remaining}${t("courseDetails.common.durHourMin")}`;
 }
 
 export function ContinueLearningCard({
     curriculum,
     isCourseCompleted = false,
 }: ContinueLearningCardProps) {
+    const { t } = useTranslation();
     const nextLesson = isCourseCompleted
     ? null
     : getFirstIncompleteLesson(
@@ -105,22 +109,20 @@ export function ContinueLearningCard({
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
                                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F47822]">
-                                    Course completed
+                                    {t("courseDetails.continue.completedEyebrow")}
                                 </p>
 
-                                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600">
-                                    100% complete
+                                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                    {t("courseDetails.continue.complete100")}
                                 </span>
                             </div>
 
                             <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                                You've completed this course
+                                {t("courseDetails.continue.completedTitle")}
                             </h2>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                                Great work. You can review any
-                                lesson from the curriculum below
-                                whenever you want.
+                                {t("courseDetails.continue.completedDesc")}
                             </p>
                         </div>
                     </div>
@@ -155,7 +157,7 @@ export function ContinueLearningCard({
                             {/* Text */}
                             <div className="min-w-0">
                                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F47822]">
-                                    Continue learning
+                                    {t("courseDetails.continue.eyebrow")}
                                 </p>
 
                                 <h2 className="mt-1.5 line-clamp-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
@@ -166,6 +168,7 @@ export function ContinueLearningCard({
                                     <span>
                                         {formatDuration(
                                             nextLesson.duration_minutes,
+                                            t,
                                         )}
                                     </span>
 
@@ -177,7 +180,7 @@ export function ContinueLearningCard({
                                                 {
                                                     nextLesson.progress
                                                 }
-                                                % complete
+                                                {t("courseDetails.continue.pctComplete")}
                                             </span>
                                         </>
                                     )}
@@ -212,10 +215,10 @@ export function ContinueLearningCard({
                             "
                         >
                             {nextLesson.progress > 0
-                                ? "Continue"
-                                : "Start lesson"}
+                                ? t("courseDetails.continue.continue")
+                                : t("courseDetails.continue.startLesson")}
 
-                            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-0.5" />
+                            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-0.5 rtl:rotate-180 rtl:group-hover/button:-translate-x-0.5" />
                         </Link>
                     </div>
 
@@ -225,11 +228,11 @@ export function ContinueLearningCard({
                             <div className="flex items-center justify-between gap-4">
                                 <div>
                                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                        Your progress
+                                        {t("courseDetails.continue.progressTitle")}
                                     </p>
 
                                     <p className="mt-1 text-sm font-semibold text-foreground">
-                                        Keep going
+                                        {t("courseDetails.continue.keepGoing")}
                                     </p>
                                 </div>
 
@@ -257,7 +260,7 @@ export function ContinueLearningCard({
                             </div>
 
                             <p className="text-sm text-muted-foreground">
-                                Ready to start this lesson?
+                                {t("courseDetails.continue.readyToStart")}
                             </p>
                         </div>
                     )}

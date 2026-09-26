@@ -1,0 +1,103 @@
+{
+  "title": "Oscilloscope",
+  "subtitle": "Mesure statique guidée",
+  "screen": {
+    "library": "Bibliothèque",
+    "connect": "Connexion",
+    "scope": "Oscillo",
+    "compare": "Comparer",
+    "tablet": "Tablette"
+  },
+  "rtab": {
+    "component": "Info",
+    "pinout": "Brochage",
+    "probes": "Sondes",
+    "ref": "Réf",
+    "ai": "IA",
+    "score": "Score"
+  },
+  "control": {
+    "run": "MARCHE",
+    "stop": "ARRÊT",
+    "single": "UNIQUE",
+    "autoSet": "AUTO SET",
+    "timeDiv": "TIME/DIV",
+    "trig": "TRIG",
+    "persist": "PERSIST",
+    "peak": "PEAK DET",
+    "ref": "RÉF",
+    "cursors": "CURSEURS",
+    "save": "SAUVER",
+    "invert": "INV",
+    "edge": "Front",
+    "level": "Niveau",
+    "rising": "Montant",
+    "falling": "Descendant"
+  },
+  "meas": {
+    "vmax": "V MAX",
+    "vmin": "V MIN",
+    "vpp": "V P-P",
+    "freq": "FRÉQ",
+    "duty": "RAPPORT",
+    "pw": "LARGEUR",
+    "rise": "MONTÉE",
+    "dt": "ΔT A→B",
+    "dv": "ΔV A→B"
+  },
+  "header": {
+    "score": "SCORE",
+    "exercise": "Exercice",
+    "triggered": "TRIG",
+    "auto": "AUTO"
+  },
+  "proc": {
+    "title": "Procédure",
+    "measurement": "Mesure",
+    "refValues": "Valeurs de référence",
+    "faultInjection": "Injection de défaut",
+    "healthy": "SAIN",
+    "faultActive": "DÉFAUT ACTIF"
+  },
+  "info": {
+    "function": "Fonction",
+    "liveState": "État en direct",
+    "construction": "Construction"
+  },
+  "probes": {
+    "title": "Connexion des sondes",
+    "channel": "Voie",
+    "terminal": "Borne",
+    "correct": "Connecté correctement",
+    "incomplete": "Connectez le signal + la masse",
+    "supply": "sur une borne d'alimentation",
+    "ground": "sur une borne de masse",
+    "none": "non connecté"
+  },
+  "score": {
+    "title": "Diagnostic",
+    "pick": "Quel est ce défaut ?",
+    "submit": "Soumettre le diagnostic",
+    "breakdown": "Détail du score",
+    "correct": "Correct",
+    "incorrect": "Incorrect"
+  },
+  "cursor": {
+    "a": "Curseur A",
+    "b": "Curseur B"
+  },
+  "channel": {
+    "a": "Voie A",
+    "b": "Voie B",
+    "vdiv": "V/div",
+    "off": "Décalage"
+  },
+  "compare": {
+    "title": "Direct vs référence",
+    "live": "Capture en direct",
+    "reference": "Superposition de référence"
+  },
+  "tablet": {
+    "title": "Capture tablette"
+  }
+}

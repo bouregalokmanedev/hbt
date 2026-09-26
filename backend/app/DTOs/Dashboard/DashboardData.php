@@ -16,5 +16,8 @@ final readonly class DashboardData
         public array $achievements,
         public array $progression,
         public array $aiMentor,
+        public array $skillGaps = [],
+        public ?array $cohortOverview = null,
+        public array $reviewDue = [],
     ) {}
 }

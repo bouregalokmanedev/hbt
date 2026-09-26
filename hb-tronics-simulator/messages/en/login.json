@@ -1,0 +1,23 @@
+{
+  "brand": {
+    "name": "HB TRONICS SAAS SIMULATOR",
+    "tagline": "Five specialised tools. One diagnostic bench.",
+    "desc": "A coverage-2026.7 training simulator for automotive technicians — real waveforms, OEM procedures and guided fault trees on one shared bench.",
+    "chips": { "oem": "OEM procedures", "waveforms": "Real waveforms", "trees": "Guided fault trees" },
+    "version": "HB-OS 4.2.1 · Coverage 2026.7"
+  },
+  "form": {
+    "kicker": "Technician sign in",
+    "heading": "Welcome back",
+    "subtitle": "Pick up your Toyota Corolla session — your progress and active component are waiting.",
+    "footer": "New to HB TRONICS? Ask your training centre for a seat — each seat includes all five simulators and the shared progress record.",
+    "email": "Work e-mail",
+    "emailPlaceholder": "you@workshop.com",
+    "password": "Password",
+    "keep": "Keep me signed in",
+    "forgot": "Forgot password?",
+    "submit": "Enter the simulator",
+    "sso": "Continue with workshop SSO",
+    "seat": "Seat 04 of 12 · HB-LINK 3 VCI paired"
+  }
+}

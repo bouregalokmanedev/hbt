@@ -1,0 +1,36 @@
+{
+  "title": "Settings",
+  "kicker": "Preferences",
+  "groups": {
+    "training": "Training",
+    "instruments": "Instruments",
+    "session": "Session",
+    "account": "Account & shell"
+  },
+  "training": {
+    "difficulty": "Difficulty",
+    "hints": "Coaching hints",
+    "outlines": "Component outlines"
+  },
+  "instruments": {
+    "layout": "Multimeter layout",
+    "probeMode": "Probe handling",
+    "noise": "Signal noise"
+  },
+  "session": {
+    "randomFault": "Random fault injection",
+    "hubLayout": "Hub layout"
+  },
+  "account": {
+    "railLabels": "Navigation labels",
+    "language": "Interface language"
+  },
+  "options": {
+    "difficulty": { "Easy": "Easy", "Medium": "Medium", "Hard": "Hard" },
+    "noise": { "Off": "Off", "Normal": "Normal", "High": "High" },
+    "instrument": { "Bench replica": "Bench replica", "Handheld": "Handheld" },
+    "probeMode": { "Drag probes": "Drag probes", "Click to place": "Click to place" },
+    "hubLayout": { "cards": "Cards", "rows": "Compact rows" }
+  },
+  "languageHint": "Platform chrome only — technical data stays in English. Arabic and French ship with coverage 2026.9."
+}

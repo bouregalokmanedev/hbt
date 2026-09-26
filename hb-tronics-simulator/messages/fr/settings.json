@@ -1,0 +1,36 @@
+{
+  "title": "Paramètres",
+  "kicker": "Préférences",
+  "groups": {
+    "training": "Formation",
+    "instruments": "Instruments",
+    "session": "Session",
+    "account": "Compte & interface"
+  },
+  "training": {
+    "difficulty": "Difficulté",
+    "hints": "Conseils du coach",
+    "outlines": "Contours des composants"
+  },
+  "instruments": {
+    "layout": "Disposition du multimètre",
+    "probeMode": "Manipulation des sondes",
+    "noise": "Bruit du signal"
+  },
+  "session": {
+    "randomFault": "Injection de panne aléatoire",
+    "hubLayout": "Disposition du centre"
+  },
+  "account": {
+    "railLabels": "Libellés de navigation",
+    "language": "Langue de l'interface"
+  },
+  "options": {
+    "difficulty": { "Easy": "Facile", "Medium": "Moyenne", "Hard": "Difficile" },
+    "noise": { "Off": "Désactivé", "Normal": "Normal", "High": "Élevé" },
+    "instrument": { "Bench replica": "Réplique d'établi", "Handheld": "Portable" },
+    "probeMode": { "Drag probes": "Glisser les sondes", "Click to place": "Cliquer pour placer" },
+    "hubLayout": { "cards": "Cartes", "rows": "Lignes compactes" }
+  },
+  "languageHint": "Interface uniquement — les données techniques restent en anglais. L'arabe et le français arrivent avec la couverture 2026.9."
+}

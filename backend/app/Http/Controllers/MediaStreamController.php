@@ -13,9 +13,25 @@ final class MediaStreamController extends Controller
         Request $request,
         Media $media
     ): Response {
-        // Make sure this is actually a video.
+        /*
+         * Two ways to access:
+         * 1. Signed URL issued with the lesson/course payload (native
+         *    <video>/<a> requests carry no Bearer token) — enrollment
+         *    was already enforced when the parent payload was loaded.
+         * 2. Authenticated request from an admin, the course instructor,
+         *    an enrolled student, or a preview lesson.
+         */
+        if (! $request->hasValidSignature()) {
+            $user = $request->user();
+            abort_unless($user, 401);
+            abort_unless($this->canStream($user, $media), 403);
+        }
+
         abort_unless(
-            str_starts_with($media->mime_type, 'video/'),
+            str_starts_with($media->mime_type, 'video/')
+            || str_starts_with($media->mime_type, 'image/')
+            || str_starts_with($media->mime_type, 'application/pdf')
+            || str_starts_with($media->mime_type, 'text/'),
             404
         );
 
@@ -182,19 +198,49 @@ final class MediaStreamController extends Controller
                         'public, max-age=3600',
 
                     'Content-Disposition' =>
-                        'inline; filename="' .
-                        addslashes(
-                            $media->filename
-                        ) .
-                        '"',
+                            'inline; filename="' .
+                            addslashes(
+                                $media->filename
+                            ) .
+                            '"',
                 ]
             );
         }
 
         /*
-         * No Range header.
-         *
-         * Return the complete video.
+         * Non-video files (images, PDFs, documents): stream the full body.
+         */
+        if (! str_starts_with($media->mime_type, 'video/')) {
+            return response()->stream(function () use ($disk, $media): void {
+                $stream = $disk->readStream($media->path);
+                if ($stream === false) {
+                    return;
+                }
+                try {
+                    while (! feof($stream)) {
+                        $buffer = fread($stream, 1024 * 1024);
+                        if ($buffer === false || $buffer === '') {
+                            break;
+                        }
+                        echo $buffer;
+                        if (function_exists('ob_flush')) {
+                            @ob_flush();
+                        }
+                        flush();
+                    }
+                } finally {
+                    fclose($stream);
+                }
+            }, 200, [
+                'Content-Type' => $media->mime_type,
+                'Content-Length' => (string) $size,
+                'Cache-Control' => 'private, max-age=3600',
+                'Content-Disposition' => 'inline; filename="' . addslashes($media->filename) . '"',
+            ]);
+        }
+
+        /*
+         * No Range header — full video.
          */
         return response()->stream(
             function () use (
@@ -254,12 +300,46 @@ final class MediaStreamController extends Controller
                     'public, max-age=3600',
 
                 'Content-Disposition' =>
-                    'inline; filename="' .
-                    addslashes(
-                        $media->filename
-                    ) .
-                    '"',
+                        'inline; filename="' .
+                        addslashes(
+                            $media->filename
+                        ) .
+                        '"',
             ]
         );
+    }
+
+    private function canStream(\App\Models\User $user, Media $media): bool
+    {
+        if ($user->hasAnyRole(['Admin', 'Super Admin'])) {
+            return true;
+        }
+
+        $mediable = $media->mediable;
+
+        $course = match (true) {
+            $mediable instanceof \App\Models\Course => $mediable,
+            $mediable instanceof \App\Models\Lesson => $mediable->section?->course,
+            default => null,
+        };
+
+        if (! $course) {
+            return false;
+        }
+
+        if ($course->instructor_id === $user->id) {
+            return true;
+        }
+
+        // Preview lessons stay accessible; full content needs an enrollment.
+        if ($mediable instanceof \App\Models\Lesson && $mediable->is_preview) {
+            return true;
+        }
+
+        return \App\Models\Enrollment::query()
+            ->where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->whereIn('status', ['active', 'completed'])
+            ->exists();
     }
 }

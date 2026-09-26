@@ -15,7 +15,6 @@ use App\Actions\Auth\ForgotPasswordAction;
 use App\Http\Requests\Api\V1\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\resetPasswordRequest;
 use App\Models\User;
-use App\Enums\UserStatus;
 use App\Actions\Users\UpdateUserAction;
 use App\Http\Requests\Api\V1\Auth\UpdateProfileRequest;
 use Illuminate\Http\Request;
@@ -64,17 +63,36 @@ public function login(LoginRequest $request): JsonResponse
 
     if (! $result->success) {
 
-    $status = str_contains(
-        $result->message,
-        'Too many login attempts'
-    )
+    $code = $result->code;
+
+    // Machine-readable 2FA challenge: the login page keys the six-digit
+    // form off `requires_two_factor` instead of sniffing message text.
+    if ($code === 'requires_two_factor' || str_contains($result->message, 'Two-factor verification is required')) {
+        return response()->json([
+            'success' => false,
+            'message' => $result->message,
+            'requires_two_factor' => true,
+            'code' => $code ?? 'requires_two_factor',
+            'errors' => [],
+        ], 423);
+    }
+
+    if ($code === null) {
+        $code = str_contains($result->message, 'Too many login attempts')
+            ? 'rate_limited'
+            : 'invalid_credentials';
+    }
+
+    $status = $code === 'rate_limited'
         ? 429
         : 401;
 
-    return $this->error(
-        $result->message,
-        $status
-    );
+    return response()->json([
+        'success' => false,
+        'message' => $result->message,
+        'code' => $code,
+        'errors' => [],
+    ], $status);
 }
 
     return $this->success(
@@ -95,26 +113,16 @@ public function verifyTwoFactorLogin(Request $request, OtpService $otp, SessionS
     return $this->success(new AuthResource(new AuthenticationResult($user, $token->plainTextToken)), 'Two-factor verification successful.');
 }
 
-public function verify(
-    EmailVerificationRequest $request
-): JsonResponse {
-
-    $user = User::findOrFail(
-        $request->route('id')
-    );
-
-    if (! $user->hasVerifiedEmail()) {
-        $user->markEmailAsVerified();
-    }
-
-    $user->update([
-        'status' => UserStatus::ACTIVE->value,
-    ]);
-
-    return $this->success(
-        null,
-        'Email verified successfully.'
-    );
+public function resendTwoFactorLogin(Request $request, OtpService $otp, AuthenticationLogService $logs): JsonResponse
+{
+    $data = $request->validate(['email' => ['required', 'email']]);
+    $user = User::where('email', strtolower($data['email']))->first();
+    $security = $user?->studentSecuritySetting;
+    abort_unless($user && $security?->two_factor_enabled && $security->two_factor_verified_at, 422, 'Two-factor authentication is not enabled for this account.');
+    $otp = $otp->generate($user, 'two_factor_login');
+    app(\App\Services\Security\TwoFactorDeliveryService::class)->send($user, $otp['code'], $security->two_factor_method ?? 'email');
+    $logs->log('login.mfa_challenge', true, $user, $user->email, $request);
+    return $this->success(['resent' => true], 'A new six-digit code was sent.');
 }
 
 public function updateProfile(

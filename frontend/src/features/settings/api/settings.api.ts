@@ -23,7 +23,7 @@ export const settingsApi = {
     loginActivity: (all = false) => api<Array<{ id: string; event: string; successful: boolean; ip_address: string; browser: string; platform: string; device_type: string; created_at: string }>>(`/v1/student/settings/security/login-activity${all ? "?all=1" : ""}`),
     enableTwoFactor: (method: "email" | "phone") => api<{ verification_required: boolean; method: "email" | "phone" }>("/v1/student/settings/security/two-factor/enable", { method: "POST", body: { method } }),
     verifyTwoFactor: (code: string, method: "email" | "phone") => api<SettingsGroup>("/v1/student/settings/security/two-factor/verify", { method: "POST", body: { code, method } }),
-    disableTwoFactor: () => api<SettingsGroup>("/v1/student/settings/security/two-factor", { method: "DELETE" }),
+    disableTwoFactor: (currentPassword: string) => api<SettingsGroup>("/v1/student/settings/security/two-factor", { method: "DELETE", body: { current_password: currentPassword } }),
     achievements: () => api<{ summary: Record<string, number>; certificates: Array<{ id: string; course_title: string; certificate_number: string; issued_at: string }> }>("/v1/student/settings/achievements"),
     export: () => api<unknown>("/v1/student/settings/export"),
     deleteAccount: (body: { reason: string; other_reason?: string; current_password: string; confirm_deletion: boolean }) => api<null>("/v1/student/settings/account", { method: "DELETE", body }),

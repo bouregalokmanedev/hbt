@@ -1,0 +1,14 @@
+{
+  "title": "Garage",
+  "kicker": "Vehicle manager",
+  "activeVehicle": "Active vehicle",
+  "facts": { "vin": "VIN", "engine": "Engine", "transmission": "Transmission", "odometer": "Odometer" },
+  "matrix": "Coverage matrix",
+  "columns": { "vehicle": "Vehicle", "scanner": "SCN", "multimeter": "DMM", "oscilloscope": "OSC", "location": "LOC", "schematic": "WDG" },
+  "switch": "Set active",
+  "install": "Install",
+  "request": "Request",
+  "decode": "Decode VIN",
+  "recentSessions": "Recent sessions",
+  "cell": { "ok": "Installed", "avail": "Available", "none": "Not covered" }
+}

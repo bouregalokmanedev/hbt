@@ -72,9 +72,24 @@ final class QuizController
 }
 public function show(Quiz $quiz): QuizResource
 {
-    $quiz->load([
-        'questions.options',
-    ]);
+    $user = auth()->user();
+
+    $quiz->loadMissing(['questions.options', 'section.course']);
+
+    $course = $quiz->section?->course;
+
+    $isPublished = $quiz->status === QuizStatus::PUBLISHED;
+
+    // Published quizzes: any authenticated learner may preview the structure
+    // (options never expose is_correct). Drafts stay restricted to the course
+    // instructor and admins.
+    if (! $isPublished) {
+        abort_unless($user, 401);
+        $canManage = $course
+            && ($course->instructor_id === $user->id
+                || $user->hasAnyRole(['Admin', 'Super Admin', 'Instructor']));
+        abort_unless($canManage, 404);
+    }
 
     return new QuizResource($quiz);
 }

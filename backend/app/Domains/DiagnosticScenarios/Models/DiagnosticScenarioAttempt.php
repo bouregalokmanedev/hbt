@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 final class DiagnosticScenarioAttempt extends Model
 {
@@ -24,6 +26,7 @@ final class DiagnosticScenarioAttempt extends Model
         'diagnostic_scenario_id',
         'user_id',
         'attempt_number',
+        'scenario_version',
         'score',
         'passed',
         'status',
@@ -61,5 +64,42 @@ final class DiagnosticScenarioAttempt extends Model
             User::class,
             'user_id'
         );
+    }
+
+    public function responses(): HasMany
+    {
+        return $this->hasMany(
+            DiagnosticScenarioResponse::class,
+            'diagnostic_scenario_attempt_id'
+        );
+    }
+
+    public function stepResults(): HasMany
+    {
+        return $this->hasMany(
+            DiagnosticScenarioStepResult::class,
+            'diagnostic_scenario_attempt_id'
+        );
+    }
+
+    public function result(): HasOne
+    {
+        return $this->hasOne(
+            DiagnosticScenarioResult::class,
+            'diagnostic_scenario_attempt_id'
+        );
+    }
+
+    public function hintUsages(): HasMany
+    {
+        return $this->hasMany(
+            DiagnosticHintUsage::class,
+            'diagnostic_scenario_attempt_id'
+        );
+    }
+
+    public function hintPenaltyTotal(): int
+    {
+        return (int) $this->hintUsages()->sum('penalty_applied');
     }
 }

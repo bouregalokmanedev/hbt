@@ -10,13 +10,17 @@ import {
     Captions,
     ChevronLeft,
     ChevronRight,
+    Expand,
     Maximize,
     Pause,
     Play,
     Settings2,
+    Shrink,
     Volume2,
     VolumeX,
 } from "lucide-react";
+
+import { useTranslation } from "react-i18next";
 
 import type {
     Lesson,
@@ -33,6 +37,18 @@ interface LessonVideoPlayerProps {
     onComplete?: () => void;
     onPreviousLesson?: () => void;
     onNextLesson?: () => void;
+    /**
+     * Theater mode widens the video across the page (curriculum moves
+     * below). Controlled by the parent so layout and player stay in sync.
+     */
+    theaterMode?: boolean;
+    onToggleTheater?: () => void;
+    /**
+     * Receives a sampled frame color as an "r, g, b" triplet whenever the
+     * ambient glow should update. The parent renders the glow layer so the
+     * player itself never re-renders for it.
+     */
+    onAmbientColor?: (color: string) => void;
 }
 
 function formatTime(seconds: number): string {
@@ -55,7 +71,11 @@ export function LessonVideoPlayer({
     onComplete,
     onPreviousLesson,
     onNextLesson,
+    theaterMode = false,
+    onToggleTheater,
+    onAmbientColor,
 }: LessonVideoPlayerProps) {
+    const { t } = useTranslation();
     const videoRef =
         useRef<HTMLVideoElement | null>(null);
 
@@ -156,6 +176,116 @@ export function LessonVideoPlayer({
     ] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [playbackRate, setPlaybackRate] = useState(1);
+
+    /**
+     * Offscreen canvas used to sample the current frame for the ambient
+     * glow. Tiny (32x18) so sampling stays cheap at a few fps.
+     *
+     * NOTE: declared after all player state so effects below never read
+     * a state variable before its initialization.
+     */
+    const sampleCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+    /**
+     * Read the current frame's average color and push it to the parent
+     * glow layer. Silently keeps the previous glow when the frame can't
+     * be read (e.g. cross-origin tainted canvas).
+     */
+    const sampleFrameColor = useCallback(() => {
+        const videoElement = videoRef.current;
+
+        if (
+            !videoElement ||
+            videoElement.readyState < 2 ||
+            videoElement.videoWidth === 0
+        ) {
+            return;
+        }
+
+        try {
+            let canvas = sampleCanvasRef.current;
+
+            if (!canvas) {
+                canvas = document.createElement("canvas");
+                sampleCanvasRef.current = canvas;
+            }
+
+            const width = 32;
+            const height = 18;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const context = canvas.getContext("2d", {
+                willReadFrequently: true,
+            });
+
+            if (!context) {
+                return;
+            }
+
+            context.drawImage(videoElement, 0, 0, width, height);
+
+            const pixels = context.getImageData(0, 0, width, height).data;
+
+            let red = 0;
+            let green = 0;
+            let blue = 0;
+            let count = 0;
+
+            for (let i = 0; i < pixels.length; i += 16) {
+                red += pixels[i];
+                green += pixels[i + 1];
+                blue += pixels[i + 2];
+                count += 1;
+            }
+
+            red = Math.round(red / count);
+            green = Math.round(green / count);
+            blue = Math.round(blue / count);
+
+            // Lift very dark scenes toward a warm tone so the glow stays
+            // visible without inventing color that isn't there.
+            const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+            if (luminance < 48) {
+                const lift = ((48 - luminance) / 48) * 0.55;
+
+                red = Math.round(red + (244 - red) * lift);
+                green = Math.round(green + (120 - green) * lift);
+                blue = Math.round(blue + (34 - blue) * lift);
+            }
+
+            onAmbientColor?.(`${red}, ${green}, ${blue}`);
+        } catch {
+            // Tainted canvas or detached video — keep the last glow.
+        }
+    }, [onAmbientColor]);
+
+    /**
+     * Sample the frame a few times per second while playing.
+     */
+    useEffect(() => {
+        if (!isPlaying) {
+            return;
+        }
+
+        if (
+            typeof window !== "undefined" &&
+            typeof window.matchMedia === "function" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+            return;
+        }
+
+        sampleFrameColor();
+
+        const id = window.setInterval(sampleFrameColor, 700);
+
+        return () => {
+            window.clearInterval(id);
+        };
+    }, [isPlaying, sampleFrameColor]);
 
     /**
      * Find the lesson video.
@@ -393,6 +523,9 @@ export function LessonVideoPlayer({
                     );
                 }
 
+                // Seed the ambient glow with the first frame.
+                sampleFrameColor();
+
                 /**
                  * Restore saved progress here if
                  * metadata was not available earlier.
@@ -440,7 +573,7 @@ export function LessonVideoPlayer({
                         true;
                 }
             },
-            [positionStorageKey, progress?.time_spent],
+            [positionStorageKey, progress?.time_spent, sampleFrameColor],
         );
 
     /**
@@ -1032,8 +1165,7 @@ export function LessonVideoPlayer({
                     </div>
 
                     <p className="mt-3 text-sm text-white/70">
-                        No video available for
-                        this lesson.
+                        {t("lessonPlayer.video.noVideo")}
                     </p>
                 </div>
             </div>
@@ -1069,6 +1201,7 @@ export function LessonVideoPlayer({
                     className="h-full w-full object-contain"
                     preload="metadata"
                     playsInline
+                    crossOrigin="anonymous"
                     controls={false}
                     controlsList="nodownload noplaybackrate"
                     disablePictureInPicture
@@ -1111,8 +1244,7 @@ export function LessonVideoPlayer({
                         />
                     )}
 
-                    Your browser does not
-                    support HTML video.
+                    {t("lessonPlayer.video.noSupport")}
                 </video>
 
                 <div className="pointer-events-none absolute inset-x-3 top-1/2 flex -translate-y-1/2 justify-between sm:inset-x-4">
@@ -1124,7 +1256,7 @@ export function LessonVideoPlayer({
                             onPreviousLesson?.();
                         }}
                         className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white opacity-100 shadow-lg backdrop-blur transition hover:scale-105 hover:bg-[#F47822] sm:h-11 sm:w-11 sm:opacity-0 sm:group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0"
-                        aria-label="Previous lesson"
+                        aria-label={t("lessonPlayer.video.prevLesson")}
                     >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
@@ -1136,7 +1268,7 @@ export function LessonVideoPlayer({
                             onNextLesson?.();
                         }}
                         className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white opacity-100 shadow-lg backdrop-blur transition hover:scale-105 hover:bg-[#F47822] sm:h-11 sm:w-11 sm:opacity-0 sm:group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-0"
-                        aria-label="Next lesson"
+                        aria-label={t("lessonPlayer.video.nextLesson")}
                     >
                         <ChevronRight className="h-5 w-5" />
                     </button>
@@ -1159,7 +1291,7 @@ export function LessonVideoPlayer({
                             togglePlay();
                         }}
                         className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#F47822] text-white shadow-xl transition hover:scale-105 hover:bg-[#e86c18]"
-                        aria-label="Play video"
+                        aria-label={t("lessonPlayer.video.playVideo")}
                     >
                         <Play className="ml-1 h-7 w-7 fill-current" />
                     </button>
@@ -1202,7 +1334,7 @@ export function LessonVideoPlayer({
                         duration <= 0
                     }
                     className="mb-3.5 h-1.5 w-full cursor-pointer accent-[#F47822]"
-                    aria-label="Seek video"
+                    aria-label={t("lessonPlayer.video.seek")}
                 />
 
                 <div className="flex items-center gap-2 text-white sm:gap-3">
@@ -1212,11 +1344,11 @@ export function LessonVideoPlayer({
                         onClick={
                             togglePlay
                         }
-                        className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] hover:text-[#3A3A3A] focus-visible:bg-[#F3F3F3] focus-visible:text-[#3A3A3A] ${isPlaying ? "bg-[#F47822] text-white hover:bg-[#F3F3F3]" : "bg-white/10"}`}
+                        className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] dark:hover:bg-[#101013] hover:text-[#3A3A3A] dark:hover:text-[#ececef] focus-visible:bg-[#F3F3F3] dark:focus-visible:bg-[#101013] focus-visible:text-[#3A3A3A] dark:focus-visible:text-[#ececef] ${isPlaying ? "bg-[#F47822] text-white hover:bg-[#F3F3F3] dark:hover:bg-[#101013]" : "bg-white/10"}`}
                         aria-label={
                             isPlaying
-                                ? "Pause"
-                                : "Play"
+                                ? t("lessonPlayer.video.pause")
+                                : t("lessonPlayer.video.play")
                         }
                     >
                         {isPlaying ? (
@@ -1233,12 +1365,12 @@ export function LessonVideoPlayer({
                             onClick={
                                 toggleMute
                             }
-                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] hover:text-[#3A3A3A] focus-visible:bg-[#F3F3F3] focus-visible:text-[#3A3A3A] ${isMuted ? "bg-[#F47822] text-white" : "bg-white/10"}`}
+                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] dark:hover:bg-[#101013] hover:text-[#3A3A3A] dark:hover:text-[#ececef] focus-visible:bg-[#F3F3F3] dark:focus-visible:bg-[#101013] focus-visible:text-[#3A3A3A] dark:focus-visible:text-[#ececef] ${isMuted ? "bg-[#F47822] text-white" : "bg-white/10"}`}
                             aria-label={
                                 isMuted ||
                                 volume === 0
-                                    ? "Unmute"
-                                    : "Mute"
+                                    ? t("lessonPlayer.video.unmute")
+                                    : t("lessonPlayer.video.mute")
                             }
                         >
                             {isMuted ||
@@ -1263,7 +1395,7 @@ export function LessonVideoPlayer({
                                 handleVolumeChange
                             }
                             className="hidden w-20 cursor-pointer accent-[#F47822] sm:block"
-                            aria-label="Volume"
+                            aria-label={t("lessonPlayer.video.volume")}
                         />
                     </div>
 
@@ -1281,20 +1413,40 @@ export function LessonVideoPlayer({
                     {/* Progress + Fullscreen */}
                     <div className="ml-auto flex items-center gap-2">
                         <div className="relative">
-                            <button type="button" onClick={() => setSettingsOpen((open) => !open)} className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] hover:text-[#3A3A3A] focus-visible:bg-[#F3F3F3] focus-visible:text-[#3A3A3A] ${settingsOpen ? "bg-[#F47822] text-white" : "bg-white/10"}`} aria-label="Player settings" aria-expanded={settingsOpen}><Settings2 className="h-4.5 w-4.5" /></button>
-                            {settingsOpen && <div className="absolute bottom-11 right-0 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#171717]/95 p-2 text-xs shadow-2xl backdrop-blur-md"><p className="px-2 pb-1 pt-1 text-[10px] font-bold uppercase tracking-wide text-white/45">Playback speed</p><div className="grid grid-cols-4 gap-1 px-1">{[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => <button key={rate} type="button" onClick={() => changePlaybackRate(rate)} className={`rounded-md px-1.5 py-1.5 text-[10px] font-semibold ${playbackRate === rate ? "bg-[#F47822] text-white" : "bg-white/5 text-white/70 hover:bg-white/10"}`}>{rate}×</button>)}</div><div className="mt-2 border-t border-white/10 pt-2"><button type="button" disabled={!captionsUrl} onClick={toggleCaptions} className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-white/75 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"><span className="flex items-center gap-2"><Captions className="h-4 w-4"/>Captions</span><span className="text-[10px]">{captionsEnabled && captionsUrl ? "On" : "Off"}</span></button><div className="flex items-center justify-between px-2 py-2 text-white/75"><span>Quality</span><span className="text-[10px]">Auto</span></div></div></div>}
+                            <button type="button" onClick={() => setSettingsOpen((open) => !open)} className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] dark:hover:bg-[#101013] hover:text-[#3A3A3A] dark:hover:text-[#ececef] focus-visible:bg-[#F3F3F3] dark:focus-visible:bg-[#101013] focus-visible:text-[#3A3A3A] dark:focus-visible:text-[#ececef] ${settingsOpen ? "bg-[#F47822] text-white" : "bg-white/10"}`} aria-label={t("lessonPlayer.video.settings")} aria-expanded={settingsOpen}><Settings2 className="h-4.5 w-4.5" /></button>
+                            {settingsOpen && <div className="absolute bottom-11 end-0 w-52 overflow-hidden rounded-xl border border-white/15 bg-[#171717]/95 p-2 text-xs shadow-2xl backdrop-blur-md"><p className="px-2 pb-1 pt-1 text-[10px] font-bold uppercase tracking-wide text-white/45">{t("lessonPlayer.video.speed")}</p><div className="grid grid-cols-4 gap-1 px-1">{[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => <button key={rate} type="button" onClick={() => changePlaybackRate(rate)} className={`rounded-md px-1.5 py-1.5 text-[10px] font-semibold ${playbackRate === rate ? "bg-[#F47822] text-white" : "bg-white/5 text-white/70 hover:bg-white/10"}`}>{rate}×</button>)}</div><div className="mt-2 border-t border-white/10 pt-2"><button type="button" disabled={!captionsUrl} onClick={toggleCaptions} className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-left text-white/75 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"><span className="flex items-center gap-2"><Captions className="h-4 w-4"/>{t("lessonPlayer.video.captions")}</span><span className="text-[10px]">{captionsEnabled && captionsUrl ? t("lessonPlayer.video.on") : t("lessonPlayer.video.off")}</span></button><div className="flex items-center justify-between px-2 py-2 text-white/75"><span>{t("lessonPlayer.video.quality")}</span><span className="text-[10px]">{t("lessonPlayer.video.auto")}</span></div></div></div>}
                         </div>
+
+                        <button
+                            type="button"
+                            onClick={
+                                onToggleTheater
+                            }
+                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] dark:hover:bg-[#101013] hover:text-[#3A3A3A] dark:hover:text-[#ececef] focus-visible:bg-[#F3F3F3] dark:focus-visible:bg-[#101013] focus-visible:text-[#3A3A3A] dark:focus-visible:text-[#ececef] ${theaterMode ? "bg-[#F47822] text-white" : "bg-white/10"}`}
+                            aria-label={
+                                theaterMode
+                                    ? t("lessonPlayer.video.exitTheater")
+                                    : t("lessonPlayer.video.theater")
+                            }
+                            aria-pressed={theaterMode}
+                        >
+                            {theaterMode ? (
+                                <Shrink className="h-5 w-5" />
+                            ) : (
+                                <Expand className="h-5 w-5" />
+                            )}
+                        </button>
 
                         <button
                             type="button"
                             onClick={
                                 toggleFullscreen
                             }
-                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] hover:text-[#3A3A3A] focus-visible:bg-[#F3F3F3] focus-visible:text-[#3A3A3A] ${isFullscreen ? "bg-[#F47822] text-white" : "bg-white/10"}`}
+                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-[#F3F3F3] transition duration-150 hover:bg-[#F3F3F3] dark:hover:bg-[#101013] hover:text-[#3A3A3A] dark:hover:text-[#ececef] focus-visible:bg-[#F3F3F3] dark:focus-visible:bg-[#101013] focus-visible:text-[#3A3A3A] dark:focus-visible:text-[#ececef] ${isFullscreen ? "bg-[#F47822] text-white" : "bg-white/10"}`}
                             aria-label={
                                 isFullscreen
-                                    ? "Exit fullscreen"
-                                    : "Fullscreen"
+                                    ? t("lessonPlayer.video.exitFullscreen")
+                                    : t("lessonPlayer.video.fullscreen")
                             }
                         >
                             <Maximize className="h-5 w-5" />

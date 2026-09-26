@@ -6,6 +6,8 @@ import {
     ArrowUpRight,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import type {
     DashboardStats as DashboardStatsType,
 } from "../types/dashboard.types";
@@ -17,6 +19,8 @@ interface DashboardStatsProps {
 export function DashboardStats({
     stats,
 }: DashboardStatsProps) {
+    const { t } = useTranslation();
+
     const progress = Math.min(
         Math.max(stats.current_progress, 0),
         100,
@@ -24,45 +28,45 @@ export function DashboardStats({
 
     const statCards = [
         {
-            label: "Active courses",
+            label: t("dashboard.stats.active"),
             value: stats.active_courses,
             icon: BookOpen,
             description:
                 stats.active_courses === 0
-                    ? "No active courses"
-                    : "Courses in progress",
+                    ? t("dashboard.stats.activeEmpty")
+                    : t("dashboard.stats.activeDesc"),
         },
         {
-            label: "Completed",
+            label: t("dashboard.stats.completed"),
             value: stats.completed_courses,
             icon: CheckCircle2,
             description:
                 stats.completed_courses === 0
-                    ? "Start your first course"
-                    : "Courses completed",
+                    ? t("dashboard.stats.completedEmpty")
+                    : t("dashboard.stats.completedDesc"),
         },
         {
-            label: "Learning time",
-            value: `${stats.learning_hours}h`,
+            label: t("dashboard.stats.time"),
+            value: t("dashboard.stats.timeValue", { hours: stats.learning_hours }),
             icon: Clock3,
             description:
                 stats.learning_hours === 0
-                    ? "No learning time yet"
-                    : "Total learning time",
+                    ? t("dashboard.stats.timeEmpty")
+                    : t("dashboard.stats.timeDesc"),
         },
         {
-            label: "Certificates",
+            label: t("dashboard.stats.certs"),
             value: stats.certificates,
             icon: Award,
             description:
                 stats.certificates === 0
-                    ? "Keep learning to earn"
-                    : "Certificates earned",
+                    ? t("dashboard.stats.certsEmpty")
+                    : t("dashboard.stats.certsDesc"),
         },
     ];
 
     return (
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <section data-testid="dashboard-stats" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {statCards.map((card) => {
                 const Icon = card.icon;
 
@@ -75,8 +79,8 @@ export function DashboardStats({
                             overflow-hidden
                             rounded-2xl
                             border
-                            border-[#3A3A3A]/8
-                            bg-white
+                            border-[#3A3A3A]/8 dark:border-white/8
+                            bg-white dark:bg-[#1b1b20]
                             p-5
                             shadow-[0_6px_25px_rgba(58,58,58,0.045)]
                             transition-all
@@ -130,7 +134,7 @@ export function DashboardStats({
                                     className="
                                         h-3.5
                                         w-3.5
-                                        text-[#3A3A3A]/15
+                                        text-[#3A3A3A]/15 dark:text-white/15
                                         transition
                                         duration-300
                                         group-hover:text-[#F47822]/60
@@ -139,15 +143,15 @@ export function DashboardStats({
                             </div>
 
                             <div className="mt-5">
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3A3A3A]/40">
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">
                                     {card.label}
                                 </p>
 
-                                <p className="mt-1 text-2xl font-bold tracking-tight text-[#3A3A3A]">
+                                <p className="mt-1 text-2xl font-bold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                                     {card.value}
                                 </p>
 
-                                <p className="mt-1 text-[11px] leading-4 text-[#3A3A3A]/40">
+                                <p className="mt-1 text-[11px] leading-4 text-[#3A3A3A]/40 dark:text-white/40">
                                     {card.description}
                                 </p>
                             </div>
@@ -209,13 +213,13 @@ export function DashboardStats({
                         </div>
 
                         <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/40">
-                            Overall
+                            {t("dashboard.stats.overall")}
                         </span>
                     </div>
 
                     <div className="mt-5">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                            Current progress
+                            {t("dashboard.stats.progress")}
                         </p>
 
                         <div className="mt-1 flex items-end justify-between gap-3">
@@ -224,7 +228,7 @@ export function DashboardStats({
                             </p>
 
                             <p className="pb-0.5 text-[10px] text-white/40">
-                                learning journey
+                                {t("dashboard.header.brand")}
                             </p>
                         </div>
                     </div>

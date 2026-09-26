@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Enums\UserStatus;
 use App\Events\ModelChanged;
 use App\Domains\Students\Services\StudentSettingsService;
+use App\Support\ReferralCode;
 use Illuminate\Support\Str;
 
 final readonly class RegisterAction
@@ -24,6 +25,8 @@ final readonly class RegisterAction
     public function execute(RegisterData $dto): ActionResult
     {
         return DB::transaction(function () use ($dto) {
+
+            $inviter = $this->inviterFor($dto->ref);
 
             $user = $this->users->create([
 
@@ -39,12 +42,27 @@ final readonly class RegisterAction
                 'country' => $dto->country,
                 'language' => $dto->language,
                 'timezone' => $dto->timezone,
+                'referral_code' => ReferralCode::generate(),
+                'referred_by' => $inviter?->id,
 
             ]);
 
             $user->assignRole(UserRole::STUDENT->value);
 
             $this->studentSettingsService->initializeFor($user);
+
+            // Referral reward lands on signup: a flat 25 XP for the inviter,
+            // deduped per invited learner so re-registrations can't stack it.
+            if ($inviter) {
+                app(\App\Domains\Progression\Services\StudentProgressionService::class)->award(
+                    $inviter,
+                    'referral_signup',
+                    25,
+                    25,
+                    "referral:{$inviter->id}:{$user->id}",
+                    ['label' => 'Referral signup', 'referred_user_id' => $user->id],
+                );
+            }
 
             event(new ModelChanged(event: 'user.created',model: $user,));
 
@@ -53,6 +71,17 @@ final readonly class RegisterAction
                 'Registration successful.'
             );
         });
+    }
+
+    private function inviterFor(?string $ref): ?User
+    {
+        $code = strtoupper(trim((string) $ref));
+
+        if ($code === '') {
+            return null;
+        }
+
+        return User::query()->where('referral_code', $code)->first();
     }
 
     private function uniqueUsername(string $firstName, string $lastName): string

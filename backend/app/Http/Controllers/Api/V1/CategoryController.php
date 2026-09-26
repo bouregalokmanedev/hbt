@@ -62,6 +62,8 @@ public function store(
     CreateCategoryRequest $request,
     CreateCategoryAction $action
 ): JsonResponse {
+    $this->authorize('create', Category::class);
+
     $category = $action->execute(
         $request->toDto()
     );
@@ -80,6 +82,8 @@ public function store(
 
 )
 {
+    $this->authorize('update', $category);
+
     return new CategoryResource(
 
         $action->execute(
@@ -178,6 +182,8 @@ public function attach(
 
 ): JsonResponse {
 
+    $this->authorize('create', Category::class);
+
     $action->execute(
 
         $request->toDto()
@@ -197,6 +203,8 @@ public function detach(
     DetachCategoryRequest $request,
     DetachCategoryFromCourseAction $action
 ): JsonResponse {
+    $this->authorize('create', Category::class);
+
     $action->execute(
         $request->toDto()
     );

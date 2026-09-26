@@ -16,4 +16,7 @@ export const notificationsApi = {
     list: () => api<{ items: StudentNotification[]; unread_count: number }>("/v1/notifications"),
     read: (id: string) => api<StudentNotification>(`/v1/notifications/${id}/read`, { method: "PATCH" }),
     readAll: () => api<{ success: boolean }>("/v1/notifications/read-all", { method: "PATCH" }),
+    sidebarBadges: () => api<Record<string, number>>("/v1/notifications/sidebar-badges"),
+    markCategoryRead: (category: string) =>
+        api<{ success: boolean; marked: number }>(`/v1/notifications/category/${category}/read`, { method: "PATCH" }),
 };

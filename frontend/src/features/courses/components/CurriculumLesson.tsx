@@ -1,3 +1,4 @@
+import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import type {
     CurriculumLesson as CurriculumLessonType,
 } from "../types/course.types";
@@ -53,7 +54,7 @@ export function CurriculumLesson({
                 </div>
             </div>
 
-            <div>
+            <div className="flex items-center gap-2">
                 {lesson.is_preview ? (
                     <span className="text-xs font-medium">
                         Preview
@@ -63,6 +64,7 @@ export function CurriculumLesson({
                         Locked
                     </span>
                 ) : null}
+                <FavoriteButton type="lesson" id={lesson.id} title={lesson.title} size="sm" variant="ghost" />
             </div>
         </div>
     );

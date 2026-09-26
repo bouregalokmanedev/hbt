@@ -1,850 +1,997 @@
 import { useEffect, useRef, useState } from "react";
 import {
+    ArrowRight,
     ArrowUpRight,
+    CheckCircle2,
+    ChevronLeft,
     ChevronRight,
     Clock3,
     Play,
+    Radio,
+    ScanLine,
+    Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const courses = [
-    {
-        id: "01",
-        level: "LEVEL 02",
-        category: "ENGINE MANAGEMENT",
-        title: "Engine Management Diagnostics",
-        description:
-            "Learn how modern engine management systems work and develop a structured diagnostic process.",
-        duration: "8h 30m",
-        lessons: "12 lessons",
-        accent: "ECU / EMS",
-    },
-    {
-        id: "02",
-        level: "LEVEL 01",
-        category: "VEHICLE NETWORKS",
-        title: "CAN Bus Fundamentals",
-        description:
-            "Understand communication between control units and diagnose network-level faults.",
-        duration: "6h 15m",
-        lessons: "10 lessons",
-        accent: "CAN / LIN",
-    },
-    {
-        id: "03",
-        level: "LEVEL 02",
-        category: "SIGNAL ANALYSIS",
-        title: "Oscilloscope Mastery",
-        description:
-            "Read automotive waveforms and turn electrical signals into diagnostic evidence.",
-        duration: "9h 20m",
-        lessons: "14 lessons",
-        accent: "SCOPE",
-    },
-    {
-        id: "04",
-        level: "LEVEL 01",
-        category: "DIAGNOSTICS",
-        title: "EMS Diagnostics",
-        description:
-            "Build the foundations required to approach engine management faults systematically.",
-        duration: "5h 40m",
-        lessons: "9 lessons",
-        accent: "DIAG",
-    },
-];
+import { useTranslation } from "react-i18next";
+
+import heroImage from "@/assets/landing/heropic.jpg";
+
+import {
+    Eyebrow,
+    LandingContainer,
+    LandingSection,
+    SectionTitle,
+} from "./landing-ui";
+
+/* ================================================================
+   COURSE DATA
+   Translatable card fields come from `landingPage.courses.items`;
+   the artwork stays local and is merged in by index.
+================================================================ */
+
+type CourseItem = {
+    id: string;
+    level: string;
+    difficulty: string;
+    category: string;
+    title: string;
+    duration: string;
+    lessons: string;
+    accent: string;
+};
+
+/* ================================================================
+   COURSE SECTION
+================================================================ */
 
 export function CoursesSection() {
+    const { t } = useTranslation();
+
+    const courseItems = t("landingPage.courses.items", {
+        returnObjects: true,
+    }) as CourseItem[];
+
+    const courses = courseItems.map((item) => ({
+        ...item,
+        image: heroImage,
+    }));
+
     const sectionRef = useRef<HTMLElement | null>(null);
 
     const [activeCourse, setActiveCourse] = useState(0);
-    const [progress, setProgress] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+
+    /* ============================================================
+       INTERSECTION
+    ============================================================ */
 
     useEffect(() => {
-        const handleScroll = () => {
-            const section = sectionRef.current;
+        const section = sectionRef.current;
 
-            if (!section) {
-                return;
-            }
+        if (!section) {
+            return;
+        }
 
-            const rect = section.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-
-            const start = viewportHeight * 0.8;
-            const end = -rect.height * 0.2;
-
-            const raw =
-                (start - rect.top) /
-                (start - end);
-
-            const nextProgress = Math.min(
-                1,
-                Math.max(0, raw),
-            );
-
-            setProgress(nextProgress);
-
-            const courseIndex = Math.min(
-                courses.length - 1,
-                Math.floor(
-                    nextProgress * courses.length,
-                ),
-            );
-
-            setActiveCourse(courseIndex);
-        };
-
-        handleScroll();
-
-        window.addEventListener(
-            "scroll",
-            handleScroll,
-            { passive: true },
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            {
+                threshold: 0.12,
+            },
         );
 
+        observer.observe(section);
+
+        return () => observer.disconnect();
+    }, []);
+
+    /* ============================================================
+       KEYBOARD NAVIGATION
+    ============================================================ */
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "ArrowRight") {
+                setActiveCourse((current) =>
+                    Math.min(current + 1, courses.length - 1),
+                );
+            }
+
+            if (event.key === "ArrowLeft") {
+                setActiveCourse((current) =>
+                    Math.max(current - 1, 0),
+                );
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
         return () => {
-            window.removeEventListener(
-                "scroll",
-                handleScroll,
-            );
+            window.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
 
-    return (
-        <section
-            ref={sectionRef}
-            className={[
-                "relative overflow-hidden",
-                "bg-[#F5F5F3]",
-                "text-hbt-dark",
-            ].join(" ")}
-        >
+    const active = courses[activeCourse];
 
-            {/* =========================================================
-                DECORATIVE BACKGROUND
-            ========================================================== */}
+    const nextCourse = () => {
+        setActiveCourse((current) =>
+            current === courses.length - 1 ? 0 : current + 1,
+        );
+    };
+
+    const previousCourse = () => {
+        setActiveCourse((current) =>
+            current === 0 ? courses.length - 1 : current - 1,
+        );
+    };
+
+    return (
+        <LandingSection
+            sectionRef={sectionRef}
+            className="bg-[#F4F3F0] text-[#181818]"
+        >
+            {/* =====================================================
+                BACKGROUND SYSTEM
+            ====================================================== */}
 
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
+                className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                "
             >
+                {/* Technical grid */}
 
                 <div
-                    className={[
-                        "absolute inset-0 opacity-[0.025]",
-                        "[background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)]",
-                        "[background-size:80px_80px]",
-                    ].join(" ")}
+                    className="
+                        absolute
+                        inset-0
+                        opacity-[0.035]
+                    "
+                    style={{
+                        backgroundImage: `
+                            linear-gradient(
+                                to right,
+                                #181818 1px,
+                                transparent 1px
+                            ),
+                            linear-gradient(
+                                to bottom,
+                                #181818 1px,
+                                transparent 1px
+                            )
+                        `,
+                        backgroundSize: "64px 64px",
+                    }}
+                />
+
+                {/* Orange atmosphere */}
+
+                <div
+                    className="
+                        absolute
+                        -right-[180px]
+                        top-[18%]
+                        h-[600px]
+                        w-[600px]
+                        rounded-full
+                        bg-[#F47822]/[0.035]
+                        blur-[120px]
+                        rtl:-left-[180px]
+                        rtl:right-auto
+                    "
                 />
 
                 <div
-                    className={[
-                        "absolute -right-40 top-20",
-                        "h-[600px] w-[600px]",
-                        "rounded-full",
-                        "border border-black/[0.04]",
-                    ].join(" ")}
+                    className="
+                        absolute
+                        -left-[200px]
+                        bottom-[10%]
+                        h-[500px]
+                        w-[500px]
+                        rounded-full
+                        bg-black/[0.025]
+                        blur-[120px]
+                        rtl:-right-[200px]
+                        rtl:left-auto
+                    "
+                />
+
+                {/* Technical circles */}
+
+                <div
+                    className="
+                        absolute
+                        right-[8%]
+                        top-[12%]
+                        h-32
+                        w-32
+                        rounded-full
+                        border
+                        border-[#181818]/[0.07]
+                        rtl:left-[8%]
+                        rtl:right-auto
+                    "
                 />
 
                 <div
-                    className={[
-                        "absolute -right-20 top-40",
-                        "h-[400px] w-[400px]",
-                        "rounded-full",
-                        "border border-black/[0.04]",
-                    ].join(" ")}
+                    className="
+                        absolute
+                        right-[10%]
+                        top-[14%]
+                        h-20
+                        w-20
+                        rounded-full
+                        border
+                        border-[#F47822]/15
+                        rtl:left-[10%]
+                        rtl:right-auto
+                    "
                 />
-
             </div>
 
+            {/* =====================================================
+                CONTAINER
+            ====================================================== */}
 
-            <div
-                className={[
-                    "relative mx-auto max-w-[1600px]",
-                    "px-5 py-24",
-                    "sm:px-8 sm:py-28",
-                    "lg:px-12 lg:py-36",
-                    "xl:px-16",
-                ].join(" ")}
-            >
-
-                {/* =====================================================
-                    TOP META
-                ====================================================== */}
-
-                <div
-                    className={[
-                        "flex items-center justify-between",
-                        "border-b border-black/10",
-                        "pb-4",
-                    ].join(" ")}
-                >
-
-                    <div className="flex items-center gap-3">
-
-                        <span
-                            className={[
-                                "relative flex h-2 w-2",
-                                "items-center justify-center",
-                            ].join(" ")}
-                        >
-                            <span className="absolute h-2 w-2 rounded-full bg-hbt-orange" />
-
-                            <span
-                                className={[
-                                    "absolute h-4 w-4 rounded-full",
-                                    "border border-hbt-orange/40",
-                                    "animate-ping",
-                                ].join(" ")}
-                            />
-                        </span>
-
-                        <span
-                            className={[
-                                "text-[9px] font-bold uppercase",
-                                "tracking-[0.3em]",
-                            ].join(" ")}
-                        >
-                            Learning system
-                        </span>
-
-                    </div>
-
-
-                    <span
-                        className={[
-                            "font-mono text-[9px]",
-                            "tracking-[0.2em]",
-                            "text-slate-400",
-                        ].join(" ")}
-                    >
-                        03 / 04
-                    </span>
-
-                </div>
-
-
-                {/* =====================================================
+            <LandingContainer className="relative z-10">
+                {/* =================================================
                     HEADER
-                ====================================================== */}
+                ================================================== */}
 
                 <div
-                    className={[
-                        "relative mt-12",
-                        "grid gap-10",
-                        "lg:grid-cols-12",
-                        "lg:items-end",
-                    ].join(" ")}
+                    className={`
+                        transition-all
+                        duration-1000
+                        ${
+                            isVisible
+                                ? "translate-y-0 opacity-100"
+                                : "translate-y-8 opacity-0"
+                        }
+                    `}
                 >
+                   
 
-                    <div className="lg:col-span-8">
+                    {/* Heading */}
 
-                        <p
-                            className={[
-                                "mb-6",
-                                "text-[9px] font-bold uppercase",
-                                "tracking-[0.35em]",
-                                "text-hbt-orange",
-                            ].join(" ")}
-                        >
-                            Technical education
-                        </p>
+                    <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:items-end">
+                        <div className="lg:col-span-8">
+                            <div className="flex items-center gap-3">
+                                <span className="h-px w-10 bg-[#F47822]" />
 
+                                <Eyebrow>
+                                    {t("landingPage.courses.eyebrow")}
+                                </Eyebrow>
+                            </div>
 
-                        <h2
-                            className={[
-                                "font-black uppercase",
-                                "leading-[0.78]",
-                                "tracking-[-0.08em]",
-                                "text-[5rem]",
-                                "sm:text-[7rem]",
-                                "md:text-[8rem]",
-                                "lg:text-[9rem]",
-                                "xl:text-[11rem]",
-                            ].join(" ")}
-                        >
-                            Learn
-                            <span className="ml-[12%] block">
-                                The
-                            </span>
+                            <SectionTitle size="display" className="lowercase">
+                                {t("landingPage.courses.titleA")}
+                                <span className="text-[#F47822]">
+                                    {" "}{t("landingPage.courses.titleHighlight")}
+                                </span>
 
-                            <span className="block text-hbt-orange">
-                                System.
-                            </span>
-                        </h2>
+                                <br />
 
-                    </div>
-
-
-                    <div
-                        className={[
-                            "lg:col-span-3 lg:col-start-10",
-                            "border-l border-black/10",
-                            "pl-6",
-                        ].join(" ")}
-                    >
-
-                        <p
-                            className={[
-                                "text-sm leading-7",
-                                "text-slate-600",
-                            ].join(" ")}
-                        >
-                            Structured courses designed
-                            around the systems, signals and
-                            diagnostic decisions technicians
-                            deal with every day.
-                        </p>
-
-
-                        <div
-                            className={[
-                                "mt-7 flex items-center gap-3",
-                            ].join(" ")}
-                        >
-
-                            <div
-                                className={[
-                                    "h-px w-10",
-                                    "bg-hbt-orange",
-                                ].join(" ")}
-                            />
-
-                            <span
-                                className={[
-                                    "text-[8px] font-bold uppercase",
-                                    "tracking-[0.2em]",
-                                    "text-slate-400",
-                                ].join(" ")}
-                            >
-                                Follow the signal
-                            </span>
-
+                                {t("landingPage.courses.titleB")}
+                            </SectionTitle>
                         </div>
 
-                    </div>
+                        <div className="lg:col-span-3 lg:col-start-10">
+                            <div
+                                className="
+                                    border-l-2
+                                    border-[#F47822]
+                                    pl-5
+                                    rtl:border-l-0
+                                    rtl:border-r-2
+                                    rtl:pl-0
+                                    rtl:pr-5
+                                "
+                            >
+                                <p className="text-sm leading-7 text-[#181818]/55 sm:text-base">
+                                    {t("landingPage.courses.description")}
+                                </p>
 
+                                <div className="mt-5 flex items-center gap-2">
+                                    <CheckCircle2 className="h-3.5 w-3.5 text-[#F47822]" />
+
+                                    <span className="font-mono text-[8px] font-bold uppercase tracking-[0.15em] text-[#181818]/35">
+                                        {t("landingPage.courses.practicalBadge")}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-
-                {/* =====================================================
-                    COURSE SYSTEM
-                ====================================================== */}
+                {/* =================================================
+                    COURSE EXPERIENCE
+                ================================================== */}
 
                 <div
-                    className={[
-                        "relative mt-20",
-                        "lg:mt-28",
-                    ].join(" ")}
+                    className={`
+                        mt-16
+                        grid
+                        gap-6
+                        transition-all
+                        delay-150
+                        duration-1000
+                        lg:mt-24
+                        lg:grid-cols-[220px_minmax(0,1fr)]
+                        ${
+                            isVisible
+                                ? "translate-y-0 opacity-100"
+                                : "translate-y-10 opacity-0"
+                        }
+                    `}
                 >
-
                     {/* =================================================
-                        MAIN SIGNAL LINE
+                        COURSE NAVIGATION
                     ================================================== */}
 
-                    <div
-                        aria-hidden="true"
-                        className={[
-                            "absolute left-[19px] top-0 bottom-0",
-                            "w-px",
-                            "bg-black/10",
-                            "sm:left-[27px]",
-                        ].join(" ")}
-                    >
+                    <div className="relative">
+                        <div className="lg:sticky lg:top-24">
+                            <div className="mb-5 flex items-center justify-between lg:block">
+                                <div>
+                                    <span className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#181818]/30">
+                                        {t("landingPage.courses.navLabel")}
+                                    </span>
 
-                        <div
-                            className={[
-                                "absolute left-0 top-0",
-                                "w-px",
-                                "bg-hbt-orange",
-                                "transition-[height]",
-                                "duration-100",
-                            ].join(" ")}
-                            style={{
-                                height: `${progress * 100}%`,
-                            }}
-                        />
+                                    <p className="mt-2 text-xl font-bold tracking-[-0.03em]">
+                                        {t("landingPage.courses.navTitle")}
+                                    </p>
+                                </div>
 
-                    </div>
+                                <div className="font-mono text-[8px] text-[#181818]/25 lg:mt-5">
+                                    {String(activeCourse + 1).padStart(
+                                        2,
+                                        "0",
+                                    )}
+                                    {" / "}
+                                    {String(courses.length).padStart(
+                                        2,
+                                        "0",
+                                    )}
+                                </div>
+                            </div>
 
+                            <div className="flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-2 lg:overflow-visible">
+                                {courses.map((course, index) => {
+                                    const isActive =
+                                        activeCourse === index;
 
-                    {/* Animated signal travelling along line */}
-
-                    <div
-                        aria-hidden="true"
-                        className={[
-                            "absolute left-[16px] z-20",
-                            "h-2 w-2",
-                            "rounded-full",
-                            "bg-hbt-orange",
-                            "shadow-[0_0_0_5px_rgba(244,120,34,0.12),0_0_20px_rgba(244,120,34,0.6)]",
-                            "transition-[top]",
-                            "duration-100",
-                            "sm:left-[24px]",
-                        ].join(" ")}
-                        style={{
-                            top: `${progress * 100}%`,
-                        }}
-                    />
-
-
-                    {/* =================================================
-                        COURSES
-                    ================================================== */}
-
-                    <div className="space-y-6">
-
-                        {courses.map(
-                            (course, index) => {
-                                const isActive =
-                                    activeCourse === index;
-
-                                const isPast =
-                                    index < activeCourse;
-
-                                return (
-                                    <article
-                                        key={course.id}
-                                        onMouseEnter={() =>
-                                            setActiveCourse(
-                                                index,
-                                            )
-                                        }
-                                        className={[
-                                            "group relative",
-                                            "pl-12",
-                                            "sm:pl-16",
-                                            "transition-all duration-500",
-                                            isActive
-                                                ? "opacity-100"
-                                                : isPast
-                                                    ? "opacity-75"
-                                                    : "opacity-45",
-                                        ].join(" ")}
-                                    >
-
-                                        {/* =================================================
-                                            NODE
-                                        ================================================== */}
-
-                                        <div
-                                            className={[
-                                                "absolute left-0 top-8",
-                                                "flex h-10 w-10",
-                                                "items-center justify-center",
-                                                "sm:h-14 sm:w-14",
-                                                "transition-all duration-500",
-                                                isActive
-                                                    ? [
-                                                        "border-2",
-                                                        "border-hbt-orange",
-                                                        "bg-hbt-orange",
-                                                        "text-white",
-                                                        "shadow-[0_0_0_8px_rgba(244,120,34,0.08)]",
-                                                    ].join(" ")
-                                                    : [
-                                                        "border",
-                                                        "border-black/15",
-                                                        "bg-[#F5F5F3]",
-                                                        "text-slate-400",
-                                                    ].join(" "),
-                                            ].join(" ")}
-                                        >
-
-                                            <span
-                                                className={[
-                                                    "font-mono text-[8px]",
-                                                    "font-bold",
-                                                    "sm:text-[9px]",
-                                                ].join(" ")}
-                                            >
-                                                {course.id}
-                                            </span>
-
-                                        </div>
-
-
-                                        {/* =================================================
-                                            COURSE CARD
-                                        ================================================== */}
-
-                                        <div
-                                            className={[
-                                                "relative overflow-hidden",
-                                                "border border-black/10",
-                                                "bg-white",
-                                                "transition-all duration-500",
-                                                isActive
-                                                    ? [
-                                                        "translate-x-2",
-                                                        "border-black/20",
-                                                        "shadow-[0_20px_60px_rgba(15,23,42,0.08)]",
-                                                    ].join(" ")
-                                                    : "shadow-none",
-                                            ].join(" ")}
-                                        >
-
-                                            {/* Top orange line */}
-
-                                            <div
-                                                className={[
-                                                    "absolute left-0 right-0 top-0",
-                                                    "h-[2px]",
-                                                    "origin-left",
-                                                    "bg-hbt-orange",
-                                                    "transition-transform duration-500",
+                                    return (
+                                        <button
+                                            key={course.id}
+                                            type="button"
+                                            onClick={() =>
+                                                setActiveCourse(index)
+                                            }
+                                            className={`
+                                                group
+                                                relative
+                                                min-w-[180px]
+                                                overflow-hidden
+                                                rounded-xl
+                                                border
+                                                p-4
+                                                text-left
+                                                transition-all
+                                                duration-300
+                                                lg:w-full
+                                                rtl:text-right
+                                                ${
                                                     isActive
-                                                        ? "scale-x-100"
-                                                        : "scale-x-0",
-                                                ].join(" ")}
-                                            />
-
-
-                                            <div
-                                                className={[
-                                                    "grid",
-                                                    "lg:grid-cols-12",
-                                                ].join(" ")}
-                                            >
-
-                                                {/* =================================================
-                                                    COURSE NUMBER / CATEGORY
-                                                ================================================== */}
-
-                                                <div
-                                                    className={[
-                                                        "border-b border-black/10",
-                                                        "p-6",
-                                                        "lg:col-span-3",
-                                                        "lg:border-b-0",
-                                                        "lg:border-r",
-                                                        "lg:p-8",
-                                                    ].join(" ")}
-                                                >
-
-                                                    <div
-                                                        className={[
-                                                            "flex items-center",
-                                                            "justify-between",
-                                                        ].join(" ")}
-                                                    >
-
-                                                        <span
-                                                            className={[
-                                                                "font-mono text-[10px]",
-                                                                "text-slate-400",
-                                                            ].join(" ")}
-                                                        >
-                                                            COURSE / {course.id}
-                                                        </span>
-
-
-                                                        <span
-                                                            className={[
-                                                                "text-[8px] font-bold",
-                                                                "tracking-[0.15em]",
-                                                                "text-hbt-orange",
-                                                            ].join(" ")}
-                                                        >
-                                                            {course.accent}
-                                                        </span>
-
-                                                    </div>
-
-
-                                                    <div
-                                                        className={[
-                                                            "mt-12",
-                                                            "flex items-center gap-2",
-                                                        ].join(" ")}
-                                                    >
-
-                                                        <span className="h-1.5 w-1.5 rounded-full bg-hbt-orange" />
-
-                                                        <span
-                                                            className={[
-                                                                "text-[8px] font-bold",
-                                                                "uppercase tracking-[0.2em]",
-                                                            ].join(" ")}
-                                                        >
-                                                            {course.category}
-                                                        </span>
-
-                                                    </div>
-
-
-                                                    <div
-                                                        className={[
-                                                            "mt-4 h-px",
-                                                            "w-16",
-                                                            "bg-black/10",
-                                                            "transition-all duration-500",
+                                                        ? `
+                                                            border-[#F47822]/30
+                                                            bg-[#181818]
+                                                            text-white
+                                                            shadow-[0_15px_35px_rgba(24,24,24,0.12)]
+                                                          `
+                                                        : `
+                                                            border-[#181818]/[0.08]
+                                                            bg-white/45
+                                                            text-[#181818]
+                                                            hover:border-[#F47822]/25
+                                                            hover:bg-white
+                                                          `
+                                                }
+                                            `}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span
+                                                    className={`
+                                                        font-mono
+                                                        text-[8px]
+                                                        font-bold
+                                                        tracking-[0.15em]
+                                                        ${
                                                             isActive
-                                                                ? "w-28 bg-hbt-orange"
-                                                                : "",
-                                                        ].join(" ")}
-                                                    />
-
-                                                </div>
-
-
-                                                {/* =================================================
-                                                    TITLE
-                                                ================================================== */}
-
-                                                <div
-                                                    className={[
-                                                        "p-6",
-                                                        "lg:col-span-6",
-                                                        "lg:p-8",
-                                                    ].join(" ")}
+                                                                ? "text-[#F47822]"
+                                                                : "text-[#181818]/25"
+                                                        }
+                                                    `}
                                                 >
+                                                    {course.id}
+                                                </span>
 
-                                                    <h3
-                                                        className={[
-                                                            "max-w-xl",
-                                                            "font-black uppercase",
-                                                            "leading-[0.9]",
-                                                            "tracking-[-0.055em]",
-                                                            "text-3xl",
-                                                            "sm:text-4xl",
-                                                            "lg:text-5xl",
-                                                            "transition-transform duration-500",
+                                                <ArrowUpRight
+                                                    className={`
+                                                        h-3.5
+                                                        w-3.5
+                                                        transition-all
+                                                        duration-300
+                                                        rtl:-scale-x-100
+                                                        ${
                                                             isActive
-                                                                ? "translate-x-2"
-                                                                : "",
-                                                        ].join(" ")}
-                                                    >
-                                                        {course.title}
-                                                    </h3>
-
-
-                                                    <p
-                                                        className={[
-                                                            "mt-5 max-w-lg",
-                                                            "text-xs leading-6",
-                                                            "text-slate-500",
-                                                            "sm:text-sm",
-                                                        ].join(" ")}
-                                                    >
-                                                        {course.description}
-                                                    </p>
-
-
-                                                    <div
-                                                        className={[
-                                                            "mt-7 flex flex-wrap",
-                                                            "items-center gap-5",
-                                                        ].join(" ")}
-                                                    >
-
-                                                        <span
-                                                            className={[
-                                                                "flex items-center gap-2",
-                                                                "text-[8px] font-bold uppercase",
-                                                                "tracking-wider",
-                                                                "text-slate-400",
-                                                            ].join(" ")}
-                                                        >
-                                                            <Play className="h-3 w-3 text-hbt-orange" />
-
-                                                            {course.lessons}
-                                                        </span>
-
-
-                                                        <span className="h-3 w-px bg-black/10" />
-
-
-                                                        <span
-                                                            className={[
-                                                                "flex items-center gap-2",
-                                                                "text-[8px] font-bold uppercase",
-                                                                "tracking-wider",
-                                                                "text-slate-400",
-                                                            ].join(" ")}
-                                                        >
-                                                            <Clock3 className="h-3 w-3 text-hbt-orange" />
-
-                                                            {course.duration}
-                                                        </span>
-
-
-                                                        <span className="h-3 w-px bg-black/10" />
-
-
-                                                        <span
-                                                            className={[
-                                                                "text-[8px] font-bold uppercase",
-                                                                "tracking-wider",
-                                                                "text-slate-400",
-                                                            ].join(" ")}
-                                                        >
-                                                            {course.level}
-                                                        </span>
-
-                                                    </div>
-
-                                                </div>
-
-
-                                                {/* =================================================
-                                                    ACTION
-                                                ================================================== */}
-
-                                                <div
-                                                    className={[
-                                                        "flex items-end",
-                                                        "border-t border-black/10",
-                                                        "p-6",
-                                                        "lg:col-span-3",
-                                                        "lg:border-l",
-                                                        "lg:border-t-0",
-                                                        "lg:p-8",
-                                                    ].join(" ")}
-                                                >
-
-                                                    <Link
-                                                        to="/catalog"
-                                                        className={[
-                                                            "group/link flex w-full",
-                                                            "items-center justify-between",
-                                                            "border border-black/10",
-                                                            "px-4 py-3",
-                                                            "transition-all duration-300",
-                                                            "hover:border-hbt-orange",
-                                                            "hover:bg-hbt-orange",
-                                                            "hover:text-white",
-                                                        ].join(" ")}
-                                                    >
-
-                                                        <span
-                                                            className={[
-                                                                "text-[8px] font-bold uppercase",
-                                                                "tracking-[0.2em]",
-                                                            ].join(" ")}
-                                                        >
-                                                            Explore course
-                                                        </span>
-
-
-                                                        <ArrowUpRight
-                                                            className={[
-                                                                "h-4 w-4",
-                                                                "transition-transform",
-                                                                "group-hover/link:-translate-y-0.5",
-                                                                "group-hover/link:translate-x-0.5",
-                                                            ].join(" ")}
-                                                        />
-
-                                                    </Link>
-
-                                                </div>
-
+                                                                ? "text-[#F47822]"
+                                                                : "text-[#181818]/15 group-hover:text-[#F47822]"
+                                                        }
+                                                    `}
+                                                />
                                             </div>
 
+                                            <p
+                                                className={`
+                                                    mt-4
+                                                    text-[9px]
+                                                    font-bold
+                                                    uppercase
+                                                    leading-4
+                                                    tracking-[0.08em]
+                                                    ${
+                                                        isActive
+                                                            ? "text-white"
+                                                            : "text-[#181818]/65"
+                                                    }
+                                                `}
+                                            >
+                                                {course.title}
+                                            </p>
+
+                                            <p
+                                                className={`
+                                                    mt-2
+                                                    font-mono
+                                                    text-[7px]
+                                                    uppercase
+                                                    tracking-[0.12em]
+                                                    ${
+                                                        isActive
+                                                            ? "text-white/35"
+                                                            : "text-[#181818]/25"
+                                                    }
+                                                `}
+                                            >
+                                                {course.category}
+                                            </p>
+
+                                            <div
+                                                className={`
+                                                    absolute
+                                                    bottom-0
+                                                    left-0
+                                                    h-[2px]
+                                                    bg-[#F47822]
+                                                    transition-all
+                                                    duration-300
+                                                    rtl:left-auto
+                                                    rtl:right-0
+                                                    ${
+                                                        isActive
+                                                            ? "w-full"
+                                                            : "w-0"
+                                                    }
+                                                `}
+                                            />
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* navigation */}
+
+                            <div className="mt-5 hidden gap-2 lg:flex">
+                                <button
+                                    type="button"
+                                    onClick={previousCourse}
+                                    className="
+                                        flex
+                                        h-10
+                                        w-10
+                                        items-center
+                                        justify-center
+                                        rounded-xl
+                                        border
+                                        border-[#181818]/10
+                                        bg-white/50
+                                        transition-all
+                                        hover:border-[#F47822]/30
+                                        hover:bg-white
+                                    "
+                                    aria-label={t("landingPage.courses.prevCourse")}
+                                >
+                                    <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={nextCourse}
+                                    className="
+                                        flex
+                                        h-10
+                                        w-10
+                                        items-center
+                                        justify-center
+                                        rounded-xl
+                                        bg-[#181818]
+                                        text-white
+                                        transition-all
+                                        hover:bg-[#F47822]
+                                    "
+                                    aria-label={t("landingPage.courses.nextCourse")}
+                                >
+                                    <ChevronRight className="h-4 w-4 rtl:-scale-x-100" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* =================================================
+                        ACTIVE COURSE
+                    ================================================== */}
+
+                    <div className="min-w-0">
+                        <div
+                            className="
+                                relative
+                                overflow-hidden
+                                rounded-[30px]
+                                border
+                                border-[#181818]/[0.08]
+                                bg-white/65
+                                shadow-[0_30px_80px_rgba(24,24,24,0.08)]
+                                backdrop-blur-xl
+                            "
+                        >
+                            {/* top technical strip */}
+
+                            <div className="flex items-center justify-between border-b border-[#181818]/[0.07] px-5 py-3 sm:px-7">
+                                <div className="flex items-center gap-2">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
+
+                                    <span className="font-mono text-[7px] font-bold uppercase tracking-[0.2em] text-[#181818]/35">
+                                        {t("landingPage.courses.activeModule")}
+                                    </span>
+                                </div>
+
+                                <span className="font-mono text-[7px] uppercase tracking-[0.15em] text-[#181818]/25">
+                                    HBT / LMS / {active.id}
+                                </span>
+                            </div>
+
+                            {/* =================================================
+                                IMAGE
+                            ================================================== */}
+
+                            <div className="p-3 sm:p-4">
+                                <div className="relative aspect-[16/7] overflow-hidden rounded-[23px] bg-[#181818]">
+                                    <img
+                                        key={active.id}
+                                        src={active.image}
+                                        alt={t("landingPage.courses.courseImageAlt", {
+                                            title: active.title,
+                                        })}
+                                        className="
+                                            absolute
+                                            inset-0
+                                            h-full
+                                            w-full
+                                            object-cover
+                                            object-center
+                                            animate-[courseImageIn_700ms_ease-out]
+                                        "
+                                    />
+
+                                    {/* image overlays */}
+
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/20 to-black/50" />
+
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                                    {/* scan grid */}
+
+                                    <div
+                                        aria-hidden="true"
+                                        className="
+                                            absolute
+                                            inset-0
+                                            opacity-[0.12]
+                                        "
+                                        style={{
+                                            backgroundImage: `
+                                                linear-gradient(
+                                                    rgba(255,255,255,0.25) 1px,
+                                                    transparent 1px
+                                                ),
+                                                linear-gradient(
+                                                    90deg,
+                                                    rgba(255,255,255,0.25) 1px,
+                                                    transparent 1px
+                                                )
+                                            `,
+                                            backgroundSize: "50px 50px",
+                                        }}
+                                    />
+
+                                    {/* image information */}
+
+                                    <div className="absolute inset-x-5 bottom-5 sm:inset-x-7 sm:bottom-7">
+                                        <div className="flex flex-wrap items-end justify-between gap-5">
+                                            <div>
+                                                <div className="mb-3 flex items-center gap-2">
+                                                    <span className="rounded-full border border-[#F47822]/40 bg-[#F47822]/15 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-[#F47822] backdrop-blur-md">
+                                                        {active.accent}
+                                                    </span>
+
+                                                    <span className="rounded-full border border-white/15 bg-black/20 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-white/60 backdrop-blur-md">
+                                                        {active.level}
+                                                    </span>
+                                                </div>
+
+                                                <p className="font-mono text-[7px] uppercase tracking-[0.2em] text-white/40">
+                                                    {active.category}
+                                                </p>
+
+                                                <h3 className="mt-2 max-w-3xl text-3xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+                                                    {active.title}
+                                                </h3>
+                                            </div>
+
+                                            <div className="hidden shrink-0 sm:block">
+                                                <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white backdrop-blur-md">
+                                                    <Play
+                                                        className="ml-0.5 h-5 w-5 rtl:ml-0 rtl:mr-0.5 rtl:-scale-x-100"
+                                                        fill="currentColor"
+                                                    />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* =================================================
+                                INFORMATION
+                            ================================================== */}
+
+                            <div className="grid border-t border-[#181818]/[0.07] md:grid-cols-[1fr_auto]">
+                                {/* details */}
+
+                                <div className="grid grid-cols-2 divide-x divide-[#181818]/[0.07] sm:grid-cols-3 rtl:divide-x-reverse">
+                                    <div className="p-5 sm:p-6">
+                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30">
+                                            {t("landingPage.courses.lessonsLabel")}
+                                        </span>
+
+                                        <div className="mt-3 flex items-center gap-2">
+                                            <Play
+                                                className="h-3.5 w-3.5 text-[#F47822]"
+                                                fill="currentColor"
+                                            />
+
+                                            <span className="text-sm font-bold">
+                                                {active.lessons}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-5 sm:p-6">
+                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30">
+                                            {t("landingPage.courses.durationLabel")}
+                                        </span>
+
+                                        <div className="mt-3 flex items-center gap-2">
+                                            <Clock3 className="h-3.5 w-3.5 text-[#F47822]" />
+
+                                            <span className="text-sm font-bold">
+                                                {active.duration}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-span-2 p-5 sm:col-span-1 sm:p-6">
+                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30">
+                                            {t("landingPage.courses.difficultyLabel")}
+                                        </span>
+
+                                        <div className="mt-3 flex items-center gap-2">
+                                            <Sparkles className="h-3.5 w-3.5 text-[#F47822]" />
+
+                                            <span className="text-sm font-bold">
+                                                {active.difficulty}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CTA */}
+
+                                <div className="flex items-center border-t border-[#181818]/[0.07] p-4 md:w-[210px] md:border-l md:border-t-0 md:rtl:border-l-0 md:rtl:border-r">
+                                    <Link
+                                        to="/catalog"
+                                        className="
+                                            group
+                                            flex
+                                            w-full
+                                            items-center
+                                            justify-between
+                                            rounded-2xl
+                                            bg-[#181818]
+                                            px-4
+                                            py-3.5
+                                            text-white
+                                            transition-all
+                                            duration-300
+                                            hover:-translate-y-0.5
+                                            hover:bg-[#F47822]
+                                            hover:shadow-[0_15px_30px_rgba(244,120,34,0.22)]
+                                        "
+                                    >
+                                        <div>
+                                            <span className="block text-[9px] font-bold uppercase tracking-[0.13em]">
+                                                {t("landingPage.courses.exploreCourse")}
+                                            </span>
+
+                                            <span className="mt-1 block font-mono text-[6px] uppercase tracking-[0.14em] text-white/35">
+                                                {t("landingPage.courses.viewCurriculum")}
+                                            </span>
                                         </div>
 
-                                    </article>
-                                );
-                            },
-                        )}
+                                        <span className="
+                                            flex
+                                            h-8
+                                            w-8
+                                            items-center
+                                            justify-center
+                                            rounded-full
+                                            bg-white/10
+                                            transition-transform
+                                            duration-300
+                                            group-hover:translate-x-0.5
+                                            rtl:group-hover:-translate-x-0.5
+                                            rtl:group-hover:translate-x-0
+                                        ">
+                                            <ArrowUpRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                                        </span>
+                                    </Link>
+                                </div>
+                            </div>
 
+                            {/* active edge */}
+
+                            <div className="absolute bottom-0 left-0 h-[3px] w-1/3 bg-[#F47822] rtl:left-auto rtl:right-0" />
+                        </div>
+
+                        {/* =================================================
+                            MOBILE NAVIGATION
+                        ================================================== */}
+
+                        <div className="mt-4 flex items-center justify-between lg:hidden">
+                            <button
+                                type="button"
+                                onClick={previousCourse}
+                                className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                    rounded-full
+                                    border
+                                    border-[#181818]/10
+                                    bg-white/60
+                                    px-4
+                                    py-2.5
+                                    text-[8px]
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.14em]
+                                "
+                            >
+                                <ChevronLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
+
+                                {t("landingPage.courses.previous")}
+                            </button>
+
+                            <div className="flex gap-1.5">
+                                {courses.map((course, index) => (
+                                    <button
+                                        key={course.id}
+                                        type="button"
+                                        onClick={() =>
+                                            setActiveCourse(index)
+                                        }
+                                        aria-label={t("landingPage.courses.selectCourse", {
+                                            index: index + 1,
+                                        })}
+                                        className={`
+                                            h-1.5
+                                            rounded-full
+                                            transition-all
+                                            duration-300
+                                            ${
+                                                activeCourse === index
+                                                    ? "w-7 bg-[#F47822]"
+                                                    : "w-1.5 bg-[#181818]/15"
+                                            }
+                                        `}
+                                    />
+                                ))}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={nextCourse}
+                                className="
+                                    flex
+                                    items-center
+                                    gap-2
+                                    rounded-full
+                                    bg-[#181818]
+                                    px-4
+                                    py-2.5
+                                    text-[8px]
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.14em]
+                                    text-white
+                                    transition-colors
+                                    hover:bg-[#F47822]
+                                "
+                            >
+                                {t("landingPage.courses.next")}
+
+                                <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                            </button>
+                        </div>
                     </div>
-
                 </div>
 
-
-                {/* =====================================================
-                    BOTTOM CTA
-                ====================================================== */}
+                {/* =================================================
+                    BOTTOM SYSTEM CTA
+                ================================================== */}
 
                 <div
-                    className={[
-                        "mt-16",
-                        "flex flex-col gap-6",
-                        "border-t border-black/10",
-                        "pt-8",
-                        "sm:flex-row sm:items-center",
-                        "sm:justify-between",
-                    ].join(" ")}
+                    className="
+                        mt-16
+                        grid
+                        gap-6
+                        border-t
+                        border-[#181818]/10
+                        pt-8
+                        sm:grid-cols-[1fr_auto]
+                        sm:items-center
+                        lg:mt-20
+                    "
                 >
-
                     <div>
+                        <div className="flex items-center gap-2">
+                            <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
 
-                        <p
-                            className={[
-                                "text-[8px] font-bold uppercase",
-                                "tracking-[0.25em]",
-                                "text-slate-400",
-                            ].join(" ")}
-                        >
-                            Your path
+                            <span className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#181818]/30">
+                                {t("landingPage.courses.pathLabel")}
+                            </span>
+                        </div>
+
+                        <p className="mt-3 text-xl font-black uppercase tracking-[-0.035em] sm:text-2xl">
+                            {t("landingPage.courses.pathTitle")}
                         </p>
-
-                        <p
-                            className={[
-                                "mt-2 font-black uppercase",
-                                "tracking-[-0.03em]",
-                                "text-xl",
-                            ].join(" ")}
-                        >
-                            Learn → Practice → Diagnose
-                        </p>
-
                     </div>
-
 
                     <Link
                         to="/catalog"
-                        className={[
-                            "group flex items-center gap-4",
-                            "text-[9px] font-bold uppercase",
-                            "tracking-[0.2em]",
-                        ].join(" ")}
+                        className="
+                            group
+                            inline-flex
+                            items-center
+                            justify-center
+                            gap-4
+                            rounded-full
+                            bg-[#F47822]
+                            px-6
+                            py-3.5
+                            text-[9px]
+                            font-bold
+                            uppercase
+                            tracking-[0.18em]
+                            text-white
+                            shadow-[0_10px_30px_rgba(244,120,34,0.18)]
+                            transition-all
+                            duration-300
+                            hover:-translate-y-0.5
+                            hover:bg-[#181818]
+                            hover:shadow-[0_15px_35px_rgba(24,24,24,0.15)]
+                        "
                     >
+                        {t("landingPage.courses.viewAll")}
 
-                        View all courses
-
-                        <span
-                            className={[
-                                "flex h-10 w-10",
-                                "items-center justify-center",
-                                "rounded-full",
-                                "bg-hbt-dark text-white",
-                                "transition-all duration-300",
-                                "group-hover:bg-hbt-orange",
-                            ].join(" ")}
-                        >
-                            <ChevronRight
-                                className={[
-                                    "h-4 w-4",
-                                    "transition-transform",
-                                    "group-hover:translate-x-0.5",
-                                ].join(" ")}
+                        <span className="
+                            flex
+                            h-7
+                            w-7
+                            items-center
+                            justify-center
+                            rounded-full
+                            bg-white/15
+                        ">
+                            <ArrowRight
+                                className="
+                                    h-3.5
+                                    w-3.5
+                                    transition-transform
+                                    duration-300
+                                    group-hover:translate-x-1
+                                    rtl:-scale-x-100
+                                    rtl:group-hover:-translate-x-1
+                                "
                             />
                         </span>
-
                     </Link>
-
                 </div>
+            </LandingContainer>
 
-            </div>
-
-
-            {/* =========================================================
-                ORANGE EDGE
-            ========================================================== */}
+            {/* =====================================================
+                BOTTOM ORANGE SIGNAL
+            ====================================================== */}
 
             <div
                 aria-hidden="true"
-                className={[
-                    "absolute bottom-0 left-0",
-                    "h-1 w-[35%]",
-                    "bg-hbt-orange",
-                ].join(" ")}
+                className="
+                    absolute
+                    bottom-0
+                    left-0
+                    h-[2px]
+                    w-[38%]
+                    bg-[#F47822]
+                    rtl:left-auto
+                    rtl:right-0
+                "
             />
 
-        </section>
+            {/* =====================================================
+                ANIMATION
+            ====================================================== */}
+
+            <style>{`
+                @keyframes courseImageIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(1.08);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    * {
+                        animation-duration: 0.01ms !important;
+                        animation-iteration-count: 1 !important;
+                        scroll-behavior: auto !important;
+                        transition-duration: 0.01ms !important;
+                    }
+                }
+            `}</style>
+        </LandingSection>
     );
 }
+
+export default CoursesSection;

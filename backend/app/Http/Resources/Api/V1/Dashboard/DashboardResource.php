@@ -38,6 +38,15 @@ class DashboardResource extends JsonResource
 
             'ai_mentor' =>
                 $this->aiMentor,
+
+            'skill_gaps' =>
+                $this->skillGaps ?? [],
+
+            'review_due' =>
+                $this->reviewDue ?? [],
+
+            'cohort_overview' =>
+                $this->cohortOverview,
         ];
     }
 }

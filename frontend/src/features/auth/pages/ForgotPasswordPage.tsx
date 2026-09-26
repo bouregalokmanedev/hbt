@@ -99,7 +99,7 @@ export function ForgotPasswordPage() {
                                 }
                                 type="email"
                                 autoComplete="email"
-                                placeholder="name@example.com"
+                                placeholder={t.common.emailPlaceholder}
                                 {...register(
                                     "email",
                                     {

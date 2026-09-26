@@ -17,10 +17,13 @@ export function GuestGuard() {
         isInitialized,
     } = useAuth();
 
-    if (
-        !isInitialized ||
-        isLoading
-    ) {
+    /*
+     * Only gate the initial session check. Toggling the spinner on
+     * `isLoading` unmounts LoginPage mid-submit, so the 423 MFA catch
+     * ran against a dead instance — sessionStorage was written (refresh
+     * recovered) but the live page never re-read it.
+     */
+    if (!isInitialized) {
         return (
             <div className="flex min-h-screen items-center justify-center">
                 <div className="text-center">

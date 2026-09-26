@@ -14,18 +14,14 @@ interface AuthShellProps {
 }
 
 export function AuthShell({ children }: AuthShellProps) {
-  const { language } = useAuthLanguage();
+  const { language, t } = useAuthLanguage();
 
   const isArabic = language === "ar";
 
   return (
     <main
       dir={isArabic ? "rtl" : "ltr"}
-      className={
-        isArabic
-          ? "h-[100dvh] w-full overflow-hidden bg-[#F3F3F3] font-cairo"
-          : "h-[100dvh] w-full overflow-hidden bg-[#F3F3F3]"
-      }
+      className="h-[100dvh] w-full overflow-hidden bg-[#F3F3F3]"
     >
       <div className="flex h-full w-full items-center justify-center p-0 sm:p-4 lg:p-6">
         <div className="relative flex h-full w-full overflow-hidden bg-[#F7F7F7] shadow-none sm:h-[min(900px,calc(100dvh-2rem))] sm:max-w-[1440px] sm:rounded-[28px] sm:shadow-[0_24px_80px_rgba(58,58,58,0.12)] lg:h-[min(860px,calc(100dvh-3rem))]">
@@ -51,25 +47,24 @@ export function AuthShell({ children }: AuthShellProps) {
                 className="group inline-flex w-fit items-center gap-2 rounded-xl border border-white/30 bg-white/15 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-black/10 backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-white/50 hover:bg-white/25"
               >
                 <Home className="h-4 w-4" />
-                Back home
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                {t.shell.backHome}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:-scale-x-100" />
               </Link>
 
               {/* Brand message */}
               <div className="max-w-sm text-white">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
-                  Automotive Diagnostics
+                  {t.shell.eyebrow}
                 </p>
 
                 <h2 className="text-3xl font-semibold leading-tight xl:text-4xl">
-                  Build stronger
+                  {t.shell.titleA}
                   <br />
-                  diagnostic skills.
+                  {t.shell.titleB}
                 </h2>
 
                 <p className="mt-4 text-sm leading-6 text-white/75">
-                  Learn automotive diagnostics through structured courses,
-                  practical scenarios and real technical knowledge.
+                  {t.shell.description}
                 </p>
               </div>
 
@@ -77,7 +72,7 @@ export function AuthShell({ children }: AuthShellProps) {
               <div className="flex items-center justify-between text-xs text-white/65">
                 <span>© {new Date().getFullYear()} HB Tronics</span>
 
-                <span>E-learning Platform</span>
+                <span>{t.shell.platformTag}</span>
               </div>
             </div>
           </section>
@@ -88,7 +83,7 @@ export function AuthShell({ children }: AuthShellProps) {
 
           <section className="relative flex h-full min-w-0 flex-1 flex-col bg-[#F7F7F7]">
             {/* Language switch */}
-            <div className="absolute right-5 top-5 z-30 sm:right-7 sm:top-7">
+            <div className="absolute right-5 top-5 z-30 sm:right-7 sm:top-7 rtl:left-5 rtl:right-auto sm:rtl:left-7">
               <AuthLanguageSwitch />
             </div>
 

@@ -1,6 +1,7 @@
 import {
     Link,
     useNavigate,
+    useSearchParams,
 } from "react-router-dom";
 
 import {
@@ -41,6 +42,12 @@ import {
 import {
     useAuthStore,
 } from "../store/auth.store";
+import {
+    applyServerFieldErrors,
+    hasNameNumber,
+    isValidName,
+    localAuthErrorMessage,
+} from "../utils/auth-errors";
 
 
 interface RegisterForm {
@@ -51,9 +58,17 @@ interface RegisterForm {
     passwordConfirmation: string;
 }
 
+function safeNextPath(value: string | null): string | null {
+    return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
+}
+
 
 export function RegisterPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const next = safeNextPath(searchParams.get("next"));
+    // Carried by the shared invite link so the inviter gets credited on signup.
+    const ref = searchParams.get("ref")?.trim() ?? "";
 
     const {
         t,
@@ -63,6 +78,7 @@ export function RegisterPage() {
         register: registerField,
         handleSubmit,
         watch,
+        setError,
         formState: {
             errors,
             isSubmitting,
@@ -75,34 +91,64 @@ export function RegisterPage() {
             password: "",
             passwordConfirmation: "",
         },
+        mode: "onChange",
     });
 
     const {
         register: registerUser,
         error,
+        errorCode,
     } = useAuth();
 
     const password = watch("password");
 
+    const bannerMessage = error
+        ? localAuthErrorMessage(errorCode, t, error)
+        : "";
+
+    const applyNameRules = (value: string): true | string => {
+        const trimmed = value.trim();
+        if (!trimmed) {
+            return t.common.required;
+        }
+        if (hasNameNumber(trimmed)) {
+            return t.common.nameLettersOnly;
+        }
+        if (!isValidName(trimmed)) {
+            return t.common.nameInvalid;
+        }
+        return true;
+    };
 
     const onSubmit = async (
         values: RegisterForm,
     ) => {
         try {
             await registerUser({
-                first_name: values.firstName,
-                last_name: values.lastName,
-                email: values.email,
+                first_name: values.firstName.trim(),
+                last_name: values.lastName.trim(),
+                email: values.email.trim(),
                 password: values.password,
                 password_confirmation:
                     values.passwordConfirmation,
+                ...(ref ? { ref } : {}),
             });
 
             sessionStorage.removeItem("hbt:auth-return-to");
-            navigate(dashboardRouteFor(useAuthStore.getState().user), { replace: true });
+            if (next) {
+                navigate(next, { replace: true });
+            } else {
+                navigate(dashboardRouteFor(useAuthStore.getState().user), { replace: true });
+            }
         } catch {
-            // The authentication store handles
-            // and exposes the error.
+            // The store updates synchronously before rethrowing, so the
+            // latest field-level 422 errors are available here.
+            applyServerFieldErrors(
+                useAuthStore.getState().fieldErrors,
+                t,
+                setError,
+                ["firstName", "lastName", "email", "password", "passwordConfirmation"],
+            );
         }
     };
 
@@ -158,9 +204,7 @@ export function RegisterPage() {
                             {...registerField(
                                 "firstName",
                                 {
-                                    required:
-                                        t.common
-                                            .required,
+                                    validate: applyNameRules,
                                 },
                             )}
                             error={
@@ -183,9 +227,7 @@ export function RegisterPage() {
                             {...registerField(
                                 "lastName",
                                 {
-                                    required:
-                                        t.common
-                                            .required,
+                                    validate: applyNameRules,
                                 },
                             )}
                             error={
@@ -214,6 +256,12 @@ export function RegisterPage() {
                                 required:
                                     t.common
                                         .required,
+                                pattern: {
+                                    value: /^\S+@\S+\.\S+$/,
+                                    message:
+                                        t.common
+                                            .invalidEmail,
+                                },
                             },
                         )}
                         error={
@@ -254,7 +302,7 @@ export function RegisterPage() {
                                 },
                                 validate: (value) =>
                                     isStrongPassword(value) ||
-                                    "Use 8+ characters with an uppercase letter, number, and symbol.",
+                                    t.common.passwordStrength,
                             },
                         )}
                         error={
@@ -308,12 +356,12 @@ export function RegisterPage() {
 
 
                     {/* Backend error */}
-                    {error && (
+                    {bannerMessage && (
                         <div
                             role="alert"
                             className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
                         >
-                            {error}
+                            {bannerMessage}
                         </div>
                     )}
 

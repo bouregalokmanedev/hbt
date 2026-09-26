@@ -1,0 +1,23 @@
+{
+  "brand": {
+    "name": "SIMULATEUR SAAS HB TRONICS",
+    "tagline": "Cinq outils spécialisés. Un seul banc de diagnostic.",
+    "desc": "Un simulateur de formation couverture 2026.7 pour techniciens automobiles — signaux réels, procédures constructeur et arbres de panne guidés sur un banc partagé.",
+    "chips": { "oem": "Procédures constructeur", "waveforms": "Signaux réels", "trees": "Arbres de panne guidés" },
+    "version": "HB-OS 4.2.1 · Couverture 2026.7"
+  },
+  "form": {
+    "kicker": "Connexion technicien",
+    "heading": "Bon retour",
+    "subtitle": "Reprenez votre session Toyota Corolla — votre progression et le composant actif vous attendent.",
+    "footer": "Nouveau chez HB TRONICS ? Demandez un poste à votre centre de formation — chaque poste inclut les cinq simulateurs et le registre de progression partagé.",
+    "email": "E-mail professionnel",
+    "emailPlaceholder": "vous@atelier.com",
+    "password": "Mot de passe",
+    "keep": "Rester connecté",
+    "forgot": "Mot de passe oublié ?",
+    "submit": "Entrer dans le simulateur",
+    "sso": "Continuer avec le SSO de l'atelier",
+    "seat": "Poste 04 sur 12 · HB-LINK 3 VCI appairé"
+  }
+}

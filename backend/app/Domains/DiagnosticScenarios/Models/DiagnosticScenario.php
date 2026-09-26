@@ -25,12 +25,19 @@ final class DiagnosticScenario extends Model
 
     protected $fillable = [
         'course_id',
+        'data_pack_id',
         'title',
         'slug',
         'description',
+        'customer_complaint',
+        'fault_codes',
+        'system_tag',
         'position',
+        'version',
+        'supersedes_id',
         'passing_score',
         'time_limit',
+        'max_hints',
         'status',
         'is_required',
         'published_at',
@@ -43,9 +50,25 @@ final class DiagnosticScenario extends Model
             'position' => 'integer',
             'passing_score' => 'integer',
             'time_limit' => 'integer',
+            'max_hints' => 'integer',
+            'fault_codes' => 'array',
             'is_required' => 'boolean',
             'published_at' => 'datetime',
         ];
+    }
+
+    public function dataPack(): BelongsTo
+    {
+        return $this->belongsTo(
+            \App\Models\SimulatorDataPack::class,
+            'data_pack_id'
+        );
+    }
+
+    /** Effective hint budget for an attempt. */
+    public function hintBudget(): int
+    {
+        return max(0, $this->max_hints ?? 3);
     }
 
     public function course(): BelongsTo
@@ -94,5 +117,21 @@ final class DiagnosticScenario extends Model
             DiagnosticScenarioScoringCriterion::class,
             'diagnostic_scenario_id'
         )->orderBy('position');
+    }
+
+    public function hints(): HasMany
+    {
+        return $this->hasMany(
+            DiagnosticScenarioHint::class,
+            'diagnostic_scenario_id'
+        )->orderBy('position');
+    }
+
+    public function courseAssignments(): HasMany
+    {
+        return $this->hasMany(
+            CourseDiagnosticScenario::class,
+            'diagnostic_scenario_id'
+        );
     }
 }

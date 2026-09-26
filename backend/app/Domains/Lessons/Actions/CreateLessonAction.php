@@ -5,6 +5,7 @@ namespace App\Domains\Lessons\Actions;
 use App\Domains\Lessons\Events\LessonCreated;
 use App\Domains\Lessons\Repositories\LessonRepositoryInterface;
 use App\Domains\Lessons\Services\LessonService;
+use App\Domains\Lessons\Services\LessonContentSanitizer;
 use App\Enums\LessonStatus;
 use App\Models\Lesson;
 
@@ -23,6 +24,10 @@ final class CreateLessonAction
         );
 
         $data['status'] = LessonStatus::DRAFT;
+
+        if (array_key_exists('content', $data) && is_string($data['content'])) {
+            $data['content'] = app(LessonContentSanitizer::class)->sanitize($data['content']);
+        }
 
         $lesson = $this->repository->create($data);
 

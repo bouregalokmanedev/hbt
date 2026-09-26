@@ -76,7 +76,8 @@ return ActionResult::success(
         return ActionResult::failure(
             'Too many login attempts. Try again in '
             .$this->throttle->secondsRemaining($dto->email, $ip)
-            .' seconds.'
+            .' seconds.',
+            code: 'rate_limited'
         );
 
     }

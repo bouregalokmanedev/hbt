@@ -1,0 +1,103 @@
+{
+  "title": "Oscilloscope",
+  "subtitle": "Guided static measurement",
+  "screen": {
+    "library": "Library",
+    "connect": "Connect",
+    "scope": "Scope",
+    "compare": "Compare",
+    "tablet": "Tablet"
+  },
+  "rtab": {
+    "component": "Info",
+    "pinout": "Pinout",
+    "probes": "Probes",
+    "ref": "Ref",
+    "ai": "AI",
+    "score": "Score"
+  },
+  "control": {
+    "run": "RUN",
+    "stop": "STOP",
+    "single": "SINGLE",
+    "autoSet": "AUTO SET",
+    "timeDiv": "TIME/DIV",
+    "trig": "TRIG",
+    "persist": "PERSIST",
+    "peak": "PEAK DET",
+    "ref": "REF",
+    "cursors": "CURSORS",
+    "save": "SAVE",
+    "invert": "INV",
+    "edge": "Edge",
+    "level": "Level",
+    "rising": "Rising",
+    "falling": "Falling"
+  },
+  "meas": {
+    "vmax": "V MAX",
+    "vmin": "V MIN",
+    "vpp": "V P-P",
+    "freq": "FREQ",
+    "duty": "DUTY",
+    "pw": "PULSE W",
+    "rise": "RISE",
+    "dt": "ΔT A→B",
+    "dv": "ΔV A→B"
+  },
+  "header": {
+    "score": "SCORE",
+    "exercise": "Exercise",
+    "triggered": "TRIG",
+    "auto": "AUTO"
+  },
+  "proc": {
+    "title": "Procedure",
+    "measurement": "Measurement",
+    "refValues": "Reference values",
+    "faultInjection": "Fault injection",
+    "healthy": "HEALTHY",
+    "faultActive": "FAULT ACTIVE"
+  },
+  "info": {
+    "function": "Function",
+    "liveState": "Live state",
+    "construction": "Construction"
+  },
+  "probes": {
+    "title": "Probe connection",
+    "channel": "Channel",
+    "terminal": "Terminal",
+    "correct": "Connected correctly",
+    "incomplete": "Connect the signal + ground",
+    "supply": "on a supply terminal",
+    "ground": "on a ground terminal",
+    "none": "not connected"
+  },
+  "score": {
+    "title": "Diagnosis",
+    "pick": "Which fault is this?",
+    "submit": "Submit diagnosis",
+    "breakdown": "Score breakdown",
+    "correct": "Correct",
+    "incorrect": "Incorrect"
+  },
+  "cursor": {
+    "a": "Cursor A",
+    "b": "Cursor B"
+  },
+  "channel": {
+    "a": "Ch A",
+    "b": "Ch B",
+    "vdiv": "V/div",
+    "off": "Offset"
+  },
+  "compare": {
+    "title": "Live vs reference",
+    "live": "Live capture",
+    "reference": "Reference overlay"
+  },
+  "tablet": {
+    "title": "Tablet capture"
+  }
+}

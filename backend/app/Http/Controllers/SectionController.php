@@ -37,6 +37,12 @@ final class SectionController extends Controller
     public function store(
         CreateSectionRequest $request
     ): JsonResponse {
+        $course = \App\Models\Course::query()->findOrFail(
+            $request->validated('course_id')
+        );
+
+        Gate::authorize('update', $course);
+
         $section = $this->createSection->execute(
             $request->validated()
         );

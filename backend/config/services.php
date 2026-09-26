@@ -40,6 +40,20 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+        'key' => env('STRIPE_PUBLISHABLE_KEY', env('STRIPE_KEY')),
+        'publishable_key' => env('STRIPE_PUBLISHABLE_KEY', env('STRIPE_KEY')),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'secret' => env('PAYPAL_CLIENT_SECRET'),
+        'webhook_id' => env('PAYPAL_WEBHOOK_ID'),
+        'mode' => env('PAYPAL_MODE', 'sandbox'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

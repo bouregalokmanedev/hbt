@@ -1,11 +1,12 @@
 
 import  HeroSection from "@/features/landingpage/components/Hero";
+import VisionSection from "@/features/landingpage/components/VisionSection";
 import { SimulatorSection } from "./components/SimulatorSection";
 import { CoursesSection } from "./components/CourseSection";
-import { CertificationSection } from "./components/CertificationSection";
+import CertificationSection  from "./components/CertificationSection";
 import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/FooterSection";
-import { AIMentor } from "./components/AiMentorSection";
+import AIMentorSection from "./components/AiMentorSection";
 import StudentProof from "./components/StudentProof";
 
 export function LandingPage() {
@@ -13,9 +14,10 @@ export function LandingPage() {
         <>
             <main>
                 <HeroSection />
+                <VisionSection />
                 <SimulatorSection />
                 <CoursesSection />
-                <AIMentor />
+                <AIMentorSection />
                 <StudentProof />
                 <CertificationSection />
                 <FinalCTA />

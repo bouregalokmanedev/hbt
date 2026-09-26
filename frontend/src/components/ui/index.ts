@@ -23,3 +23,5 @@ export { Separator } from "./separator";
 export { Skeleton } from "./skeleton";
 
 export { Spinner } from "./spinner";
+
+export { AVATAR_SQUARE_SHAPE, UserAvatar } from "./UserAvatar";

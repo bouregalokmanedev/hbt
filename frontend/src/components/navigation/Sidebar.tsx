@@ -36,17 +36,17 @@ const navigation = [
     },
     {
         label: "My Learning",
-        href: "/learning",
+        href: "/my-courses",
         icon: BookOpen,
     },
     {
         label: "Courses",
-        href: "/courses",
+        href: "/catalog",
         icon: BookOpen,
     },
     {
         label: "Certifications",
-        href: "/certifications",
+        href: "/certificates",
         icon: Award,
     },
     {
@@ -61,7 +61,7 @@ const navigation = [
     },
     {
         label: "AI Assistant",
-        href: "/ai",
+        href: "/ai-mentor",
         icon: Bot,
     },
 ];
@@ -74,7 +74,7 @@ const secondaryNavigation: NavigationItem[] = [
     },
     {
         label: "Help & Support",
-        href: "/help",
+        href: "/support",
         icon: HelpCircle,
     },
 ];

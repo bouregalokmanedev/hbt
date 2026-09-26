@@ -14,6 +14,10 @@ import {
     InstructorSidebar,
 } from "./InstructorSidebar";
 
+import {
+    ScrollToTop,
+} from "@/components/navigation";
+
 export function InstructorLayout() {
     const [
         sidebarOpen,
@@ -27,6 +31,7 @@ export function InstructorLayout() {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
+            <ScrollToTop />
             <InstructorSidebar
                 open={sidebarOpen}
                 collapsed={sidebarCollapsed}
@@ -48,8 +53,8 @@ export function InstructorLayout() {
 
                     ${
                         sidebarCollapsed
-                            ? "lg:pl-[76px]"
-                            : "lg:pl-[260px]"
+                            ? "lg:ps-[76px]"
+                            : "lg:ps-[260px]"
                     }
                 `}
             >

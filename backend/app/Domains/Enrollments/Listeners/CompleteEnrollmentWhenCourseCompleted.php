@@ -28,15 +28,12 @@ final class CompleteEnrollmentWhenCourseCompleted
         }
 
         /*
-         * Do not touch cancelled enrollments.
+         * Do not touch cancelled or already-completed enrollments.
          */
-        if ($enrollment->status->value === 'cancelled') {
+        if ($enrollment->status->value !== 'active') {
             return;
         }
 
-        /*
-         * Already completed.
-         */
         if ($enrollment->completed_at !== null) {
             return;
         }

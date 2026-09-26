@@ -15,7 +15,11 @@ final class AutomotiveAssessmentSeeder extends Seeder
     {
         $course = Course::query()->with('sections')->first();
         $section = $course?->sections->first();
-        if ($course === null || $section === null) return;
+        if ($course === null || $section === null) {
+            $this->command?->warn('AutomotiveAssessmentSeeder skipped: no course with sections found. Seed a course first (e.g. ExampleCourseSeeder).');
+
+            return;
+        }
 
         $quiz = Quiz::query()->firstOrCreate(
             ['section_id' => $section->id, 'slug' => 'ecu-foundations-checkpoint'],

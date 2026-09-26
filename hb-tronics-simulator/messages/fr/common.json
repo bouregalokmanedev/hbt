@@ -1,0 +1,33 @@
+{
+  "action": {
+    "start": "Démarrer",
+    "stop": "Arrêter",
+    "reset": "Réinitialiser",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "continue": "Continuer",
+    "review": "Revoir",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "export": "Exporter",
+    "close": "Fermer",
+    "install": "Installer le pack",
+    "request": "Demander la couverture",
+    "run": "Lancer",
+    "record": "Enregistrer",
+    "locked": "Verrouillé"
+  },
+  "status": {
+    "pass": "Réussi",
+    "fault": "Panne",
+    "warning": "Avertissement",
+    "inSpec": "Dans les specs",
+    "outOfSpec": "Hors specs",
+    "belowTarget": "Sous la cible",
+    "ok": "OK",
+    "current": "Actuel",
+    "stored": "Mémorisé",
+    "pending": "En attente",
+    "intermittent": "Intermittent"
+  }
+}

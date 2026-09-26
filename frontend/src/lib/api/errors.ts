@@ -6,6 +6,7 @@ export class ApiError extends Error {
             string,
             string[]
         >,
+        public readonly data?: unknown,
     ) {
         super(message);
 
@@ -22,5 +23,15 @@ export class ApiError extends Error {
 
     get isValidationError() {
         return this.status === 422;
+    }
+
+    get code(): string | undefined {
+        if (this.data && typeof this.data === "object" && "code" in this.data) {
+            const value = (this.data as { code?: unknown }).code;
+            if (typeof value === "string" && value.length > 0) {
+                return value;
+            }
+        }
+        return undefined;
     }
 }

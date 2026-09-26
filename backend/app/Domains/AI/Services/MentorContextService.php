@@ -15,6 +15,7 @@ final class MentorContextService
     private readonly MentorAdaptationService $adaptationService,
     private readonly MentorLessonContextService $lessonContextService,
     private readonly MentorQuizContextService $quizContextService,
+    private readonly MentorDiagnosticContextService $diagnosticContextService,
     private readonly MentorContentRetriever $contentRetriever,
 ) {
 }
@@ -112,7 +113,10 @@ $quizContext = $this->quizContextService->build(
 
     quizzes: $quizContext,
 
-    diagnosticScenarios: [],
+    diagnosticScenarios: $this->diagnosticContextService->build(
+        $user,
+        $courseId,
+    ),
     
     memories: [],
 

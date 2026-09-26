@@ -16,6 +16,10 @@ import {
 } from "react-router-dom";
 
 import {
+    useTranslation,
+} from "react-i18next";
+
+import {
     getCourseCurriculum,
 } from "@/features/courses/api/courses.api";
 
@@ -26,6 +30,11 @@ import type {
 import {
     completeLesson,
 } from "../api/lessons.api";
+
+import {
+    nextStepPath,
+    resolveNextStep,
+} from "../utils/lesson-navigation";
 
 import type {
     Lesson,
@@ -41,6 +50,7 @@ export function LessonNavigation({
     lesson,
     courseId,
 }: LessonNavigationProps) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const [
@@ -100,7 +110,7 @@ export function LessonNavigation({
                     setError(
                         err instanceof Error
                             ? err.message
-                            : "Unable to load lesson navigation.",
+                            : t("lessonPlayer.nav.loadFail"),
                     );
                 }
             } finally {
@@ -225,9 +235,23 @@ export function LessonNavigation({
             setIsCompleted(true);
 
             /*
-             * Move to the next lesson after
-             * successful completion.
+             * Section-aware routing: a finished section goes to its
+             * quiz checkpoint instead of jumping to the next section.
+             * The curriculum reload keeps per-lesson statuses truthful
+             * on the page we land on.
              */
+            try {
+                const fresh = await getCourseCurriculum(courseId);
+                setCurriculum(fresh);
+                const step = resolveNextStep(fresh, lesson.id);
+                if (step) {
+                    navigate(nextStepPath(courseId, step));
+                    return;
+                }
+            } catch {
+                // Fall back to plain next-lesson navigation below.
+            }
+
             if (nextLesson) {
                 goToLesson(
                     nextLesson.id,
@@ -237,7 +261,7 @@ export function LessonNavigation({
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Unable to complete this lesson.",
+                    : t("lessonPlayer.nav.completeFail"),
             );
         } finally {
             setIsCompleting(false);
@@ -254,7 +278,7 @@ export function LessonNavigation({
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin text-[#F47822]" />
 
-                    Loading navigation...
+                    {t("lessonPlayer.nav.loading")}
                 </div>
             </div>
         );
@@ -276,11 +300,11 @@ export function LessonNavigation({
 
 
     return (
-        <div className="mt-8 rounded-3xl border border-gray-200 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.045)] sm:p-5">
+        <div className="mt-8 rounded-3xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 shadow-[0_8px_28px_rgba(15,23,42,0.045)] sm:p-5">
             {/* Navigation */}
-            <div className="mb-4 flex items-center justify-between border-b border-gray-100 px-1 pb-3 text-[11px] font-medium text-muted-foreground">
-                <span>Lesson {currentIndex + 1} of {lessons.length}</span>
-                <span className={isCompleted ? "font-semibold text-emerald-600" : "font-semibold text-[#F47822]"}>{isCompleted ? "Completed" : "Keep going"}</span>
+            <div className="mb-4 flex items-center justify-between border-b border-gray-100 dark:border-white/10 px-1 pb-3 text-[11px] font-medium text-muted-foreground">
+                <span>{t("lessonPlayer.nav.lessonOf", { cur: currentIndex + 1, total: lessons.length })}</span>
+                <span className={isCompleted ? "font-semibold text-emerald-600 dark:text-emerald-400" : "font-semibold text-[#F47822]"}>{isCompleted ? t("lessonPlayer.nav.completed") : t("lessonPlayer.nav.keepGoing")}</span>
             </div>
             <div className="flex items-center justify-between gap-3">
                 {/* Previous */}
@@ -300,7 +324,7 @@ export function LessonNavigation({
                         inline-flex
                         items-center
                         gap-2
-                        rounded-xl border border-gray-200 bg-white px-3.5 py-2.5
+                        rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 py-2.5
                         text-xs
                         font-medium
                         text-foreground
@@ -309,9 +333,9 @@ export function LessonNavigation({
                         disabled:opacity-40
                     "
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
 
-                    Previous Lesson
+                    {t("lessonPlayer.nav.prev")}
                 </button>
 
 
@@ -320,11 +344,14 @@ export function LessonNavigation({
                     nextLesson ? (
                         <button
                             type="button"
-                            onClick={() =>
-                                goToLesson(
-                                    nextLesson.id,
-                                )
-                            }
+                            onClick={() => {
+                                const step = resolveNextStep(curriculum, lesson.id);
+                                if (step) {
+                                    navigate(nextStepPath(courseId, step));
+                                } else {
+                                    goToLesson(nextLesson.id);
+                                }
+                            }}
                             className="
                                 inline-flex
                                 items-center
@@ -340,15 +367,15 @@ export function LessonNavigation({
                                 hover:bg-[#df6819] hover:shadow-md
                             "
                         >
-                            Next Lesson
+                            {t("lessonPlayer.nav.next")}
 
-                            <ArrowRight className="h-4 w-4" />
+                            <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                         </button>
                     ) : (
-                        <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600">
+                        <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                             <CheckCircle2 className="h-4 w-4" />
 
-                            Course Complete
+                            {t("lessonPlayer.nav.courseComplete")}
                         </div>
                     )
                 ) : (
@@ -379,13 +406,13 @@ export function LessonNavigation({
                             <>
                                 <Loader2 className="h-4 w-4 animate-spin" />
 
-                                Completing...
+                                {t("lessonPlayer.nav.completing")}
                             </>
                         ) : (
                             <>
                                 <CheckCircle2 className="h-4 w-4" />
 
-                                Complete Lesson
+                                {t("lessonPlayer.nav.complete")}
                             </>
                         )}
                     </button>
@@ -402,11 +429,11 @@ export function LessonNavigation({
 
 
             {/* Lesson information */}
-            <div className="mt-4 flex items-center justify-between gap-4 border-t border-gray-100 pt-3 text-[11px] text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between gap-4 border-t border-gray-100 dark:border-white/10 pt-3 text-[11px] text-muted-foreground">
                 <span className="min-w-0 truncate">
                     {previousLesson
-                        ? `Previous: ${previousLesson.title}`
-                        : "First lesson"}
+                        ? t("lessonPlayer.nav.prevLabel", { title: previousLesson.title })
+                        : t("lessonPlayer.nav.first")}
                 </span>
 
                 <span className="shrink-0">
@@ -419,8 +446,8 @@ export function LessonNavigation({
 
                 <span className="min-w-0 truncate text-right">
                     {nextLesson
-                        ? `Next: ${nextLesson.title}`
-                        : "Last lesson"}
+                        ? t("lessonPlayer.nav.nextLabel", { title: nextLesson.title })
+                        : t("lessonPlayer.nav.last")}
                 </span>
             </div>
         </div>

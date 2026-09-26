@@ -1,0 +1,87 @@
+{
+  "title": "Emplacement",
+  "subtitle": "Emplacement des composants · compartiment moteur, boîte à fusibles, calculateurs et masses",
+  "mode": {
+    "browse": "Parcourir",
+    "train": "Entraînement",
+    "quiz": "Quiz"
+  },
+  "view": {
+    "sensors": "Capteurs",
+    "ecu": "Calculateurs",
+    "ground": "Masses",
+    "fuse": "Boîte à fusibles",
+    "system": "Systèmes",
+    "vehicle": "Véhicule"
+  },
+  "sidebar": {
+    "search": "Rechercher composants, réf., circuits",
+    "inDataSet": "{n} composants dans le jeu de données",
+    "categories": "Catégories",
+    "systems": "Systèmes du véhicule",
+    "nSystems": "{n} systèmes",
+    "favourites": "Favoris",
+    "all": "Tous les composants"
+  },
+  "cat": {
+    "all": "Tous les composants",
+    "Sensors": "Capteurs",
+    "Actuators": "Actionneurs",
+    "ECUs": "Calculateurs / Modules",
+    "Relays": "Relais",
+    "Fuses": "Fusibles",
+    "Ground points": "Points de masse",
+    "systems": "Systèmes du véhicule"
+  },
+  "toolbar": {
+    "outlines": "Contours des points",
+    "dim": "Atténuer les autres",
+    "fit": "AJUST",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
+  },
+  "detail": {
+    "component": "Composant",
+    "oem": "Réf. OEM",
+    "reference": "Référence",
+    "category": "Catégorie",
+    "system": "Système véhicule",
+    "zone": "Zone",
+    "location": "Emplacement",
+    "vehicle": "Véhicule",
+    "notes": "Notes",
+    "amp": "Calibre",
+    "vehicleViews": "Vues véhicule",
+    "practise": "S'entraîner"
+  },
+  "train": {
+    "progress": "Progression de l'entraînement",
+    "score": "SCORE",
+    "wrong": "MAUVAIS CHOIX",
+    "tasksDone": "Tâches terminées : {n}",
+    "difficulty": "Difficulté",
+    "hint": "Indice {n} / 5",
+    "skip": "Passer la tâche",
+    "log": "Journal des tentatives",
+    "logEmpty": "Les tentatives apparaissent ici au fil des tâches.",
+    "task": "Tâche d'entraînement"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "time": "TEMPS",
+    "score": "SCORE",
+    "question": "Question {n}",
+    "results": "Résultats",
+    "restart": "Recommencer le quiz"
+  },
+  "system": {
+    "kicker": "Tracé du système",
+    "total": "{n} composants",
+    "practise": "S’entraîner sur ce système",
+    "fuses": "Fusibles",
+    "relays": "Relais",
+    "ecus": "Calculateurs",
+    "note": "Chaque fusible dont la liste de circuits mentionne « {label} », plus les relais et calculateurs qui le desservent. Sélectionnez une ligne pour accéder à sa position sur la platine."
+  },
+  "empty": "Aucun composant ne correspond à vos filtres."
+}

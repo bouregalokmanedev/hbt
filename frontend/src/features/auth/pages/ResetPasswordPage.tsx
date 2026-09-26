@@ -169,7 +169,7 @@ export function ResetPasswordPage() {
                         autoComplete="email"
                         value={resetEmail}
                         disabled
-                        placeholder="name@example.com"
+                        placeholder={t.common.emailPlaceholder}
                         error={
                             errors.email
                                 ?.message

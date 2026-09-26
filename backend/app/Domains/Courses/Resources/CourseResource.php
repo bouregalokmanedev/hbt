@@ -53,6 +53,21 @@ class CourseResource extends JsonResource
 
             /*
             |--------------------------------------------------------------------------
+            | Instructor mini profile (public-safe fields only)
+            |--------------------------------------------------------------------------
+            */
+
+            'instructor' => $this->whenLoaded('instructor', fn () => [
+                'id' => $this->instructor->uuid,
+                'first_name' => $this->instructor->first_name,
+                'last_name' => $this->instructor->last_name,
+                'username' => $this->instructor->username,
+                'avatar' => $this->instructor->avatar,
+                'bio' => $this->instructor->bio,
+            ]),
+
+            /*
+            |--------------------------------------------------------------------------
             | Current student's enrollment
             |--------------------------------------------------------------------------
             */

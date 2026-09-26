@@ -1,11 +1,33 @@
-import { Home, Menu } from "lucide-react";
+import { Globe, Home, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+import { changeLanguage } from "@/i18n";
+import { api } from "@/lib/api/api";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 interface InstructorNavbarProps {
   onMenuClick: () => void;
 }
 
 export function InstructorNavbar({ onMenuClick }: InstructorNavbarProps) {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+  const { user, updateUser } = useAuth();
+
+  const handleLanguageSwitch = () => {
+    const next = isArabic ? "en" : "ar";
+    changeLanguage(next);
+    if (user) {
+      void api<{ locale: string }>("/v1/auth/locale", {
+        method: "PATCH",
+        body: { locale: next },
+      })
+        .then(() => updateUser({ ...user, language: next }))
+        .catch(() => undefined);
+    }
+  };
+
   return (
     <header
       className="
@@ -27,7 +49,7 @@ export function InstructorNavbar({ onMenuClick }: InstructorNavbarProps) {
       <button
         type="button"
         onClick={onMenuClick}
-        aria-label="Open navigation"
+        aria-label={t("instructor.nav.openAria")}
         className="
                     flex
                     h-10
@@ -44,10 +66,22 @@ export function InstructorNavbar({ onMenuClick }: InstructorNavbarProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2 rtl:ml-0 rtl:mr-auto">
+        <button
+          type="button"
+          onClick={handleLanguageSwitch}
+          aria-label={isArabic ? t("instructor.nav.switchToEnglish") : t("instructor.nav.switchToArabic")}
+          title={isArabic ? t("instructor.nav.switchToEnglish") : t("instructor.nav.switchToArabic")}
+          className="flex h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-2.5 text-[#3A3A3A]/60 shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822]"
+        >
+          <Globe className="h-4 w-4" />
+          <span className="text-[11px] font-bold">
+            {isArabic ? "EN" : "AR"}
+          </span>
+        </button>
         <Link
           to="/"
-          aria-label="Go to home page"
+          aria-label={t("instructor.nav.homeAria")}
           className="grid h-9 w-9 place-items-center rounded-xl border border-[#F47822]/18 bg-[#FFF8F4] text-[#F47822] transition hover:-translate-y-0.5 hover:bg-[#F47822] hover:text-white"
         >
           <Home className="h-4 w-4" />
@@ -65,7 +99,7 @@ export function InstructorNavbar({ onMenuClick }: InstructorNavbarProps) {
                     text-[#F47822]
                 "
         >
-          Instructor
+          {t("instructor.badge")}
         </span>
       </div>
     </header>

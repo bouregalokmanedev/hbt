@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import type {
     CourseCurriculum as CourseCurriculumType,
@@ -22,9 +24,10 @@ interface CourseCurriculumProps {
 
 function formatDuration(
     minutes: number,
+    t: TFunction,
 ): string {
     if (minutes < 60) {
-        return `${minutes} min`;
+        return `${minutes} ${t("courseDetails.common.durMin")}`;
     }
 
     const hours = Math.floor(
@@ -35,10 +38,10 @@ function formatDuration(
         minutes % 60;
 
     if (remaining === 0) {
-        return `${hours}h`;
+        return `${hours}${t("courseDetails.common.durHour")}`;
     }
 
-    return `${hours}h ${remaining}m`;
+    return `${hours}${t("courseDetails.common.durHour")} ${remaining}${t("courseDetails.common.durHourMin")}`;
 }
 
 type LessonState =
@@ -81,19 +84,20 @@ function getLessonState(
 
 function getStateLabel(
     state: LessonState,
+    t: TFunction,
 ): string | null {
     switch (state) {
         case "completed":
-            return "Completed";
+            return t("courseDetails.curriculum.completed");
 
         case "in-progress":
-            return "In progress";
+            return t("courseDetails.curriculum.inProgress");
 
         case "not-started":
             return null;
 
         case "locked":
-            return "Locked";
+            return t("courseDetails.curriculum.locked");
     }
 }
 
@@ -121,6 +125,7 @@ export function CourseCurriculum({
     isCourseCompleted = false,
     hasFullAccess = false,
 }: CourseCurriculumProps) {
+    const { t } = useTranslation();
     const totalLessons =
         curriculum.sections.reduce(
             (total, section) =>
@@ -163,17 +168,16 @@ export function CourseCurriculum({
                         </div>
 
                         <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F47822]">
-                            Course curriculum
+                            {t("courseDetails.curriculum.eyebrow")}
                         </p>
                     </div>
 
                     <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                        What you'll learn
+                        {t("courseDetails.curriculum.title")}
                     </h2>
 
                     <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                        Follow the lessons in order and
-                        track your progress as you learn.
+                        {t("courseDetails.curriculum.desc")}
                     </p>
                 </div>
 
@@ -181,7 +185,7 @@ export function CourseCurriculum({
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                     <div className="rounded-xl border border-border bg-card px-3.5 py-2.5">
                         <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                            Sections
+                            {t("courseDetails.curriculum.sections")}
                         </p>
 
                         <p className="mt-0.5 text-sm font-bold text-foreground">
@@ -191,7 +195,7 @@ export function CourseCurriculum({
 
                     <div className="rounded-xl border border-border bg-card px-3.5 py-2.5">
                         <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                            Lessons
+                            {t("courseDetails.curriculum.lessons")}
                         </p>
 
                         <p className="mt-0.5 text-sm font-bold text-foreground">
@@ -201,12 +205,13 @@ export function CourseCurriculum({
 
                     <div className="rounded-xl border border-border bg-card px-3.5 py-2.5">
                         <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                            Duration
+                            {t("courseDetails.curriculum.duration")}
                         </p>
 
                         <p className="mt-0.5 text-sm font-bold text-foreground">
                             {formatDuration(
                                 totalDuration,
+                                t,
                             )}
                         </p>
                     </div>
@@ -224,12 +229,11 @@ export function CourseCurriculum({
                     </div>
 
                     <h3 className="mt-5 text-lg font-bold text-foreground">
-                        Curriculum coming soon
+                        {t("courseDetails.curriculum.emptyTitle")}
                     </h3>
 
                     <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                        Lessons for this course haven't
-                        been added yet.
+                        {t("courseDetails.curriculum.emptyDesc")}
                     </p>
                 </div>
             ) : (
@@ -257,7 +261,7 @@ export function CourseCurriculum({
                                             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                                 <div className="min-w-0">
                                                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                                                        Section{" "}
+                                                        {t("courseDetails.curriculum.section")}{" "}
                                                         {
                                                             section.position
                                                         }
@@ -288,8 +292,8 @@ export function CourseCurriculum({
                                                         .lessons
                                                         .length ===
                                                     1
-                                                        ? "lesson"
-                                                        : "lessons"}
+                                                        ? t("courseDetails.curriculum.lesson")
+                                                        : t("courseDetails.curriculum.lessonsPl")}
                                                 </span>
                                             </div>
                                         </div>
@@ -319,16 +323,21 @@ export function CourseCurriculum({
                                             const stateLabel =
                                                 getStateLabel(
                                                     state,
+                                                    t,
                                                 );
 
+                                            const canUnlock = hasFullAccess && (state === "completed" || state === "in-progress" || canStartNextLesson);
                                             const isAvailable =
                                                 state !== "locked" &&
-                                                (lesson.is_preview || (
-                                                    hasFullAccess &&
-                                                    (state === "completed" ||
-                                                        state === "in-progress" ||
-                                                        canStartNextLesson)
-                                                ));
+                                                (lesson.is_preview || canUnlock);
+
+                                            const lockReason = !hasFullAccess
+                                                ? t("courseDetails.curriculum.lockedEnroll")
+                                                : state === "locked"
+                                                  ? t("courseDetails.curriculum.locked")
+                                                  : !canUnlock
+                                                    ? t("courseDetails.curriculum.lockedPrev")
+                                                    : null;
 
                                             if (
                                                 hasFullAccess &&
@@ -361,7 +370,7 @@ export function CourseCurriculum({
                                                         >
                                                             {state ===
                                                             "completed" ? (
-                                                                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                                                                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                                             ) : state ===
                                                               "in-progress" ? (
                                                                 <PlayCircle className="h-5 w-5 text-[#F47822]" />
@@ -384,7 +393,7 @@ export function CourseCurriculum({
 
                                                                 {lesson.is_preview && (
                                                                     <span className="inline-flex rounded-full bg-[#F47822]/10 px-2 py-0.5 text-[11px] font-bold text-[#F47822]">
-                                                                        Preview
+                                                                        {t("courseDetails.curriculum.preview")}
                                                                     </span>
                                                                 )}
 
@@ -395,7 +404,7 @@ export function CourseCurriculum({
                                                                             ${
                                                                                 state ===
                                                                                 "completed"
-                                                                                    ? "bg-emerald-500/10 text-emerald-600"
+                                                                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                                                                                     : state ===
                                                                                         "in-progress"
                                                                                       ? "bg-[#F47822]/10 text-[#F47822]"
@@ -437,7 +446,7 @@ export function CourseCurriculum({
 
                                                                     <span className={`shrink-0 text-xs font-bold ${
                                                                         state === "completed"
-                                                                            ? "text-emerald-600"
+                                                                            ? "text-emerald-600 dark:text-emerald-400"
                                                                             : "text-[#F47822]"
                                                                     }`}>
                                                                         {
@@ -456,6 +465,7 @@ export function CourseCurriculum({
                                                             <span>
                                                                 {formatDuration(
                                                                     lesson.duration_minutes,
+                                                                    t,
                                                                 )}
                                                             </span>
                                                         </div>
@@ -490,22 +500,22 @@ export function CourseCurriculum({
                                                         }
 
                                                         {/* Desktop action */}
-                                                        <div className="hidden shrink-0 items-center gap-1 text-sm font-semibold text-[#F47822] opacity-0 transition-all duration-200 group-hover/lesson:translate-x-0.5 group-hover/lesson:opacity-100 sm:flex">
+                                                        <div className="hidden shrink-0 items-center gap-1 text-sm font-semibold text-[#F47822] opacity-0 transition-all duration-200 group-hover/lesson:translate-x-0.5 group-hover/lesson:opacity-100 sm:flex rtl:group-hover/lesson:-translate-x-0.5">
                                                             <span>
                                                                 {state ===
                                                                 "in-progress"
-                                                                    ? "Continue"
+                                                                    ? t("courseDetails.curriculum.continue")
                                                                     : state ===
                                                                         "completed"
-                                                                      ? "Review"
-                                                                      : "Start"}
+                                                                      ? t("courseDetails.curriculum.review")
+                                                                      : t("courseDetails.curriculum.start")}
                                                             </span>
 
                                                            
                                                         </div>
 
                                                         {/* Mobile action */}
-                                                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground sm:hidden" />
+                                                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground sm:hidden rtl:rotate-180" />
                                                     </Link>
                                                 );
                                             }
@@ -515,13 +525,17 @@ export function CourseCurriculum({
                                                     key={
                                                         lesson.id
                                                     }
+                                                    title={lockReason ?? undefined}
                                                     className="flex items-center gap-3 px-5 py-4 opacity-65 sm:gap-4 sm:px-6"
                                                 >
                                                     {
                                                         lessonContent
                                                     }
 
-                                                    <Lock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                                    <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                                                        {lockReason && <span className="hidden sm:inline">{lockReason}</span>}
+                                                        <Lock className="h-4 w-4 shrink-0" />
+                                                    </span>
                                                 </div>
                                             );
                                         },

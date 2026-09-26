@@ -87,7 +87,12 @@ it('lists the authenticated user assessment attempts', function () {
 
 it('starts an assessment attempt', function () {
     $user = User::factory()->create();
-    $course = Course::factory()->create();
+    $course = Course::factory()->create(['status' => 'published']);
+    Enrollment::factory()->create([
+        'user_id' => $user->id,
+        'course_id' => $course->id,
+        'status' => 'active',
+    ]);
 
     $assessment = Assessment::factory()->create([
         'course_id' => $course->id,

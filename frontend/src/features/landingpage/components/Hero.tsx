@@ -9,15 +9,12 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-const SLIDE_WORDS = [
-    "DIAGNOSE.",
-    "LEARN.",
-    "MASTER.",
-    "BUILD.",
-];
-
 const HeroSection = () => {
     const { t } = useTranslation();
+
+    const slideWords = t("landingPage.hero.slideWords", {
+        returnObjects: true,
+    }) as string[];
 
     const [activeWord, setActiveWord] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
@@ -27,7 +24,7 @@ const HeroSection = () => {
         setIsVisible(true);
 
         const wordInterval = window.setInterval(() => {
-            setActiveWord((current) => (current + 1) % SLIDE_WORDS.length);
+            setActiveWord((current) => (current + 1) % slideWords.length);
         }, 2600);
 
         const handleScroll = () => {
@@ -85,14 +82,18 @@ const HeroSection = () => {
                 VIDEO BACKGROUND
             ====================================================== */}
 
-            <div className="absolute inset-0 -z-20">
+            <div className="absolute inset-0 -z-20 overflow-hidden">
                 <video
                     className="
                         h-full
                         w-full
                         object-cover
                         object-center
+                        will-change-transform
                     "
+                    style={{
+                        transform: `translate3d(0, ${-scrollY * 0.08}px, 0) scale(1.1)`,
+                    }}
                     autoPlay
                     muted
                     loop
@@ -105,12 +106,12 @@ const HeroSection = () => {
                         type="video/mp4"
                     />
 
-                    Your browser does not support the video tag.
+                    {t("landingPage.hero.videoFallback")}
                 </video>
             </div>
 
             {/* =====================================================
-                VIDEO OVERLAY
+                OVERLAYS
             ====================================================== */}
 
             <div
@@ -118,7 +119,7 @@ const HeroSection = () => {
                     absolute
                     inset-0
                     -z-10
-                    bg-black/55
+                    bg-black/50
                 "
             />
 
@@ -128,8 +129,8 @@ const HeroSection = () => {
                     inset-0
                     -z-10
                     bg-gradient-to-r
-                    from-black/90
-                    via-black/65
+                    from-black/95
+                    via-black/60
                     to-black/20
                 "
             />
@@ -142,12 +143,58 @@ const HeroSection = () => {
                     bg-gradient-to-t
                     from-black
                     via-transparent
-                    to-black/30
+                    to-black/25
                 "
             />
 
-            {/* =====================================================
-                SUBTLE ORANGE LIGHT
+            {/* =================================================
+                TECH GRID PATTERN
+            ================================================== */}
+
+            <div
+                aria-hidden="true"
+                className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    -z-10
+                    opacity-[0.12]
+                "
+                style={{
+                    backgroundImage:
+                        "linear-gradient(to right, rgba(255,255,255,0.7) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.7) 1px, transparent 1px)",
+                    backgroundSize: "72px 72px",
+                    maskImage:
+                        "radial-gradient(ellipse at 50% 45%, black 0%, transparent 78%)",
+                    WebkitMaskImage:
+                        "radial-gradient(ellipse at 50% 45%, black 0%, transparent 78%)",
+                }}
+            />
+
+            {/* =================================================
+                WARM BOTTOM BLOOM
+            ================================================== */}
+
+            <div
+                aria-hidden="true"
+                className="
+                    pointer-events-none
+                    absolute
+                    bottom-[-18%]
+                    left-[-12%]
+                    -z-10
+                    h-[520px]
+                    w-[520px]
+                    rounded-full
+                    bg-[#F47822]/18
+                    blur-[150px]
+                    rtl:left-auto
+                    rtl:right-[-12%]
+                "
+            />
+
+            {/* =================================================
+                ORANGE LIGHT
             ====================================================== */}
 
             <div
@@ -155,13 +202,15 @@ const HeroSection = () => {
                     pointer-events-none
                     absolute
                     right-[-15%]
-                    top-[15%]
+                    top-[20%]
                     -z-10
-                    h-[500px]
-                    w-[500px]
+                    h-[420px]
+                    w-[420px]
                     rounded-full
-                    bg-[#F47822]/15
-                    blur-[140px]
+                    bg-[#F47822]/12
+                    blur-[130px]
+                    rtl:left-[-15%]
+                    rtl:right-auto
                 "
             />
 
@@ -175,26 +224,25 @@ const HeroSection = () => {
                     flex
                     min-h-[100svh]
                     w-full
-                    max-w-[1600px]
+                    max-w-[1440px]
                     flex-col
                     justify-center
-                    px-6
+                    px-5
                     pb-24
-                    pt-12
-                    sm:px-10
-                    lg:px-16
-                    xl:px-20
+                    pt-16
+                    sm:px-8
+                    lg:px-12
                 "
             >
                 <div
                     className={[
-                        "max-w-5xl",
+                        "max-w-4xl",
                         "transition-all",
                         "duration-1000",
                         "ease-out",
                         isVisible
                             ? "translate-y-0 opacity-100"
-                            : "translate-y-8 opacity-0",
+                            : "translate-y-6 opacity-0",
                     ].join(" ")}
                 >
                     {/* =================================================
@@ -203,16 +251,16 @@ const HeroSection = () => {
 
                     <div
                         className="
-                            mb-7
+                            mb-6
                             inline-flex
                             items-center
-                            gap-3
+                            gap-2.5
                             rounded-full
                             border
                             border-white/15
                             bg-white/10
-                            px-4
-                            py-2
+                            px-3.5
+                            py-1.5
                             backdrop-blur-xl
                         "
                     >
@@ -220,8 +268,8 @@ const HeroSection = () => {
                             className="
                                 relative
                                 flex
-                                h-2
-                                w-2
+                                h-1.5
+                                w-1.5
                             "
                         >
                             <span
@@ -241,8 +289,8 @@ const HeroSection = () => {
                                 className="
                                     relative
                                     inline-flex
-                                    h-2
-                                    w-2
+                                    h-1.5
+                                    w-1.5
                                     rounded-full
                                     bg-[#F47822]
                                 "
@@ -251,49 +299,50 @@ const HeroSection = () => {
 
                         <span
                             className="
-                                text-[10px]
-                                font-bold
+                                text-[9px]
+                                font-semibold
                                 uppercase
-                                tracking-[0.25em]
-                                text-white/80
-                                sm:text-xs
+                                tracking-[0.22em]
+                                text-white/75
+                                sm:text-[10px]
                             "
                         >
-                            HBTronics Learning Platform
+                            {t("landingPage.hero.badge")}
                         </span>
                     </div>
 
                     {/* =================================================
-                        MAIN HEADLINE
+                        HEADLINE
                     ================================================== */}
 
                     <h1
                         className="
-                            max-w-6xl
-                            text-5xl
+                            max-w-5xl
+                            text-[3.5rem]
                             font-black
-                            leading-[0.9]
-                            tracking-[-0.055em]
-                            sm:text-7xl
-                            md:text-8xl
-                            lg:text-[7.8rem]
-                            xl:text-[9rem]
+                            leading-[0.92]
+                            tracking-[-0.045em]
+                            [text-shadow:0_2px_34px_rgba(0,0,0,0.55)]
+                            sm:text-6xl
+                            md:text-7xl
+                            lg:text-[5.8rem]
+                            xl:text-[6.5rem]
                         "
                     >
                         <span className="block">
-                            AUTOMOTIVE
+                            {t("landingPage.hero.titleA")}
                         </span>
 
                         <span
                             className="
                                 relative
-                                mt-2
+                                mt-1
                                 block
                                 min-h-[0.95em]
                                 overflow-hidden
                             "
                         >
-                            {SLIDE_WORDS.map((word, index) => (
+                            {slideWords.map((word, index) => (
                                 <span
                                     key={word}
                                     className={[
@@ -304,10 +353,11 @@ const HeroSection = () => {
                                         "transition-all",
                                         "duration-700",
                                         "ease-[cubic-bezier(0.22,1,0.36,1)]",
+                                        "rtl:left-auto",
+                                        "rtl:right-0",
                                         index === activeWord
                                             ? "translate-y-0 opacity-100"
-                                            : index <
-                                                activeWord
+                                            : index < activeWord
                                               ? "-translate-y-full opacity-0"
                                               : "translate-y-full opacity-0",
                                         index === activeWord
@@ -319,9 +369,8 @@ const HeroSection = () => {
                                 </span>
                             ))}
 
-                            {/* Keeps the headline height stable */}
                             <span className="invisible">
-                                MASTER.
+                                {t("landingPage.hero.slideFallback")}
                             </span>
                         </span>
                     </h1>
@@ -332,28 +381,26 @@ const HeroSection = () => {
 
                     <p
                         className="
-                            mt-8
-                            max-w-2xl
-                            text-base
-                            font-medium
-                            leading-7
-                            text-white/70
-                            sm:text-lg
-                            sm:leading-8
+                            mt-6
+                            max-w-xl
+                            text-sm
+                            font-normal
+                            leading-6
+                            text-white/65
+                            sm:text-base
+                            sm:leading-7
                         "
                     >
-                        Master modern automotive diagnostics through
-                        hands-on simulation, professional courses,
-                        and real diagnostic workflows.
+                        {t("landingPage.hero.description")}
                     </p>
 
                     {/* =================================================
-                        ACTION BUTTONS
+                        ACTIONS
                     ================================================== */}
 
                     <div
                         className="
-                            mt-9
+                            mt-7
                             flex
                             flex-col
                             gap-3
@@ -361,52 +408,58 @@ const HeroSection = () => {
                             sm:items-center
                         "
                     >
+                        {/* Courses */}
+
                         <button
                             type="button"
                             onClick={scrollToCourses}
                             className="
                                 group
                                 inline-flex
-                                h-14
+                                h-12
                                 items-center
                                 justify-center
-                                gap-3
-                                rounded-2xl
+                                gap-2.5
+                                rounded-xl
                                 bg-[#F47822]
-                                px-7
-                                text-sm
+                                px-5
+                                text-xs
                                 font-bold
                                 text-white
-                                shadow-[0_15px_50px_rgba(244,120,34,0.25)]
+                                shadow-[0_12px_35px_rgba(244,120,34,0.22)]
                                 transition-all
                                 duration-300
-                                hover:-translate-y-1
+                                hover:-translate-y-0.5
                                 hover:bg-[#ff812b]
-                                hover:shadow-[0_20px_60px_rgba(244,120,34,0.35)]
+                                hover:shadow-[0_16px_45px_rgba(244,120,34,0.30)]
                             "
                         >
                             <BookOpen
-                                size={18}
+                                size={16}
                                 strokeWidth={2.2}
                             />
 
                             <span>
                                 {t(
-                                    "hero.exploreCourses",
-                                    "Explore Courses",
+                                    "landingPage.hero.exploreCourses",
                                 )}
                             </span>
 
                             <ArrowUpRight
-                                size={18}
+                                size={16}
                                 className="
                                     transition-transform
                                     duration-300
-                                    group-hover:translate-x-1
-                                    group-hover:-translate-y-1
+                                    group-hover:translate-x-0.5
+                                    group-hover:-translate-y-0.5
+                                    rtl:-scale-x-100
+                                    rtl:group-hover:-translate-x-0.5
+                                    rtl:group-hover:translate-x-0
                                 "
                             />
                         </button>
+
+                        {/* Simulator */}
 
                         <button
                             type="button"
@@ -414,31 +467,31 @@ const HeroSection = () => {
                             className="
                                 group
                                 inline-flex
-                                h-14
+                                h-12
                                 items-center
                                 justify-center
-                                gap-3
-                                rounded-2xl
+                                gap-2.5
+                                rounded-xl
                                 border
                                 border-white/20
                                 bg-white/10
-                                px-7
-                                text-sm
+                                px-5
+                                text-xs
                                 font-bold
                                 text-white
                                 backdrop-blur-xl
                                 transition-all
                                 duration-300
-                                hover:-translate-y-1
-                                hover:border-white/35
+                                hover:-translate-y-0.5
+                                hover:border-white/30
                                 hover:bg-white/15
                             "
                         >
                             <span
                                 className="
                                     flex
-                                    h-7
-                                    w-7
+                                    h-6
+                                    w-6
                                     items-center
                                     justify-center
                                     rounded-full
@@ -446,19 +499,18 @@ const HeroSection = () => {
                                     text-black
                                     transition-transform
                                     duration-300
-                                    group-hover:scale-110
+                                    group-hover:scale-105
                                 "
                             >
                                 <Play
-                                    size={12}
+                                    size={10}
                                     fill="currentColor"
                                 />
                             </span>
 
                             <span>
                                 {t(
-                                    "hero.launchSimulator",
-                                    "Launch Simulator",
+                                    "landingPage.hero.launchSimulator",
                                 )}
                             </span>
                         </button>
@@ -471,14 +523,21 @@ const HeroSection = () => {
 
                 <div
                     className="
-                        mt-16
+                        mt-14
                         flex
+                        w-fit
+                        max-w-full
                         flex-col
-                        gap-4
-                        border-t
+                        gap-5
+                        rounded-3xl
+                        border
                         border-white/15
-                        pt-6
-                        sm:mt-20
+                        bg-white/[0.07]
+                        px-6
+                        py-5
+                        backdrop-blur-xl
+                        shadow-[0_24px_60px_rgba(0,0,0,0.35)]
+                        sm:mt-16
                         sm:flex-row
                         sm:items-center
                         sm:gap-0
@@ -490,19 +549,19 @@ const HeroSection = () => {
                         className="
                             flex
                             items-center
-                            gap-4
-                            sm:pr-10
+                            gap-3
+                            sm:pr-8
                         "
                     >
                         <div
                             className="
                                 flex
-                                h-11
-                                w-11
+                                h-9
+                                w-9
                                 shrink-0
                                 items-center
                                 justify-center
-                                rounded-xl
+                                rounded-lg
                                 border
                                 border-white/10
                                 bg-white/10
@@ -510,7 +569,7 @@ const HeroSection = () => {
                             "
                         >
                             <Users
-                                size={19}
+                                size={16}
                                 className="text-[#F47822]"
                             />
                         </div>
@@ -518,8 +577,8 @@ const HeroSection = () => {
                         <div>
                             <p
                                 className="
-                                    text-xl
-                                    font-black
+                                    text-lg
+                                    font-bold
                                     tracking-tight
                                 "
                             >
@@ -528,14 +587,14 @@ const HeroSection = () => {
 
                             <p
                                 className="
-                                    text-[10px]
-                                    font-semibold
+                                    text-[9px]
+                                    font-medium
                                     uppercase
-                                    tracking-[0.18em]
-                                    text-white/50
+                                    tracking-[0.16em]
+                                    text-white/45
                                 "
                             >
-                                Students
+                                {t("landingPage.hero.stats.students")}
                             </p>
                         </div>
                     </div>
@@ -545,7 +604,7 @@ const HeroSection = () => {
                     <div
                         className="
                             hidden
-                            h-10
+                            h-8
                             w-px
                             bg-white/15
                             sm:block
@@ -558,19 +617,19 @@ const HeroSection = () => {
                         className="
                             flex
                             items-center
-                            gap-4
-                            sm:px-10
+                            gap-3
+                            sm:px-8
                         "
                     >
                         <div
                             className="
                                 flex
-                                h-11
-                                w-11
+                                h-9
+                                w-9
                                 shrink-0
                                 items-center
                                 justify-center
-                                rounded-xl
+                                rounded-lg
                                 border
                                 border-white/10
                                 bg-white/10
@@ -578,7 +637,7 @@ const HeroSection = () => {
                             "
                         >
                             <BookOpen
-                                size={19}
+                                size={16}
                                 className="text-[#F47822]"
                             />
                         </div>
@@ -586,8 +645,8 @@ const HeroSection = () => {
                         <div>
                             <p
                                 className="
-                                    text-xl
-                                    font-black
+                                    text-lg
+                                    font-bold
                                     tracking-tight
                                 "
                             >
@@ -596,14 +655,14 @@ const HeroSection = () => {
 
                             <p
                                 className="
-                                    text-[10px]
-                                    font-semibold
+                                    text-[9px]
+                                    font-medium
                                     uppercase
-                                    tracking-[0.18em]
-                                    text-white/50
+                                    tracking-[0.16em]
+                                    text-white/45
                                 "
                             >
-                                Courses
+                                {t("landingPage.hero.stats.courses")}
                             </p>
                         </div>
                     </div>
@@ -613,7 +672,7 @@ const HeroSection = () => {
                     <div
                         className="
                             hidden
-                            h-10
+                            h-8
                             w-px
                             bg-white/15
                             sm:block
@@ -626,19 +685,19 @@ const HeroSection = () => {
                         className="
                             flex
                             items-center
-                            gap-4
-                            sm:pl-10
+                            gap-3
+                            sm:pl-8
                         "
                     >
                         <div
                             className="
                                 flex
-                                h-11
-                                w-11
+                                h-9
+                                w-9
                                 shrink-0
                                 items-center
                                 justify-center
-                                rounded-xl
+                                rounded-lg
                                 border
                                 border-white/10
                                 bg-white/10
@@ -646,104 +705,42 @@ const HeroSection = () => {
                             "
                         >
                             <Star
-                                size={19}
+                                size={16}
                                 fill="currentColor"
                                 className="text-[#F47822]"
                             />
                         </div>
 
                         <div>
-                            <div
+                            <p
                                 className="
-                                    flex
-                                    items-center
-                                    gap-2
+                                    text-lg
+                                    font-bold
+                                    tracking-tight
                                 "
                             >
-                                <p
-                                    className="
-                                        text-xl
-                                        font-black
-                                        tracking-tight
-                                    "
-                                >
-                                    4.9/5
-                                </p>
-                            </div>
+                                4.9/5
+                            </p>
 
                             <p
                                 className="
-                                    text-[10px]
-                                    font-semibold
+                                    text-[9px]
+                                    font-medium
                                     uppercase
-                                    tracking-[0.18em]
-                                    text-white/50
+                                    tracking-[0.16em]
+                                    text-white/45
                                 "
                             >
-                                Student Reviews
+                                {t("landingPage.hero.stats.reviews")}
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* =====================================================
-                SCROLL INDICATOR
-            ====================================================== */}
-
-            <button
-                type="button"
-                onClick={scrollToCourses}
-                aria-label="Scroll to courses"
-                className="
-                    absolute
-                    bottom-7
-                    right-6
-                    hidden
-                    flex-col
-                    items-center
-                    gap-3
-                    text-white/50
-                    transition-colors
-                    hover:text-white
-                    sm:flex
-                    lg:right-10
-                "
-            >
-                <span
-                    className="
-                        text-[9px]
-                        font-bold
-                        uppercase
-                        tracking-[0.3em]
-                    "
-                >
-                    Scroll
-                </span>
-
-                <span
-                    className="
-                        flex
-                        h-10
-                        w-10
-                        items-center
-                        justify-center
-                        rounded-full
-                        border
-                        border-white/20
-                        bg-black/20
-                        backdrop-blur-md
-                    "
-                >
-                    <ArrowDown
-                        size={15}
-                        className="animate-bounce"
-                    />
-                </span>
-            </button>
 
             {/* =====================================================
-                ORANGE SCROLL LINE
+                ORANGE SCROLL PROGRESS
             ====================================================== */}
 
             <div
@@ -764,17 +761,13 @@ const HeroSection = () => {
                         bg-[#F47822]
                         transition-transform
                         duration-150
+                        rtl:origin-right
                     "
                     style={{
-                        transform: `scaleX(
-                            ${Math.min(
-                                1,
-                                Math.max(
-                                    0,
-                                    scrollY / 900,
-                                ),
-                            )}
-                        )`,
+                        transform: `scaleX(${Math.min(
+                            1,
+                            Math.max(0, scrollY / 900),
+                        )})`,
                     }}
                 />
             </div>

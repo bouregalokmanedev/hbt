@@ -19,6 +19,8 @@ import {
 
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 import { Footer } from "../landingpage/components/FooterSection";
 import { Navbar } from "./../../components/navigation/Navbar";
 
@@ -27,65 +29,11 @@ import { Navbar } from "./../../components/navigation/Navbar";
    DATA
 ============================================================= */
 
-const principles = [
-    {
-        number: "01",
-        title: "Learn the system",
-        description:
-            "We focus on how automotive systems actually work, so technicians can understand the cause behind a fault.",
-        icon: Cpu,
-    },
-    {
-        number: "02",
-        title: "Practice the diagnosis",
-        description:
-            "Knowledge becomes useful when you can apply it. Our training connects theory with realistic diagnostic situations.",
-        icon: Wrench,
-    },
-    {
-        number: "03",
-        title: "Prove your skills",
-        description:
-            "Structured assessments and certifications help technicians measure their progress and demonstrate what they know.",
-        icon: Award,
-    },
-];
 
-const platformFeatures = [
-    {
-        title: "Structured courses",
-        description:
-            "Follow a clear learning path instead of jumping between disconnected tutorials.",
-        icon: BookOpen,
-    },
-    {
-        title: "Diagnostic simulation",
-        description:
-            "Work through realistic automotive scenarios and make diagnostic decisions step by step.",
-        icon: Gauge,
-    },
-    {
-        title: "Technical assessments",
-        description:
-            "Test your understanding through quizzes, scenarios and practical diagnostic challenges.",
-        icon: ShieldCheck,
-    },
-    {
-        title: "Professional certification",
-        description:
-            "Build a verifiable record of your learning and technical progression.",
-        icon: GraduationCap,
-    },
-];
 
-const audiences = [
-    "Automotive technicians",
-    "Diagnostic technicians",
-    "Workshop professionals",
-    "Automotive students",
-    "Technical trainers",
-    "Automotive businesses",
-];
+
+
+
 
 
 /* =============================================================
@@ -93,8 +41,39 @@ const audiences = [
 ============================================================= */
 
 export function CompanyPage() {
+    const { t } = useTranslation();
+
+    const principles = (
+        t("companyPage.principles.items", { returnObjects: true }) as Array<{
+            title: string;
+            description: string;
+        }>
+    ).map((item, index) => ({
+        ...item,
+        number: `0${index + 1}`,
+        icon: [Cpu, Wrench, Award][index] ?? Cpu,
+    }));
+
+    const platformFeatures = (
+        t("companyPage.platform.items", { returnObjects: true }) as Array<{
+            title: string;
+            description: string;
+        }>
+    ).map((item, index) => ({
+        ...item,
+        icon: [BookOpen, Gauge, ShieldCheck, GraduationCap][index] ?? BookOpen,
+    }));
+
+    const audiences = t("companyPage.audiences.items", {
+        returnObjects: true,
+    }) as string[];
+
+    const heroLabels = t("companyPage.hero.labels", {
+        returnObjects: true,
+    }) as string[];
+
     return (
-        <div className="min-h-screen bg-white text-hbt-dark">
+        <div className="company-page-ar min-h-screen bg-white text-hbt-dark">
 
             <Navbar />
 
@@ -203,7 +182,7 @@ export function CompanyPage() {
                                             text-hbt-orange
                                         "
                                     >
-                                        About HBTronics
+                                        {t("companyPage.hero.badge")}
                                     </span>
                                 </div>
 
@@ -220,16 +199,16 @@ export function CompanyPage() {
                                         lg:text-8xl
                                     "
                                 >
-                                    Training the
+                                    {t("companyPage.hero.titleA")}
                                     <br />
 
                                     <span className="text-hbt-orange">
-                                        technicians
+                                        {t("companyPage.hero.titleMid")}
                                     </span>
 
                                     <br />
 
-                                    behind the diagnosis.
+                                    {t("companyPage.hero.titleB")}
                                 </h1>
 
 
@@ -243,11 +222,7 @@ export function CompanyPage() {
                                         sm:text-lg
                                     "
                                 >
-                                    HBTronics is an automotive
-                                    education platform built to
-                                    make technical knowledge
-                                    practical, structured and
-                                    measurable.
+                                    {t("companyPage.hero.description")}
                                 </p>
 
 
@@ -274,7 +249,7 @@ export function CompanyPage() {
                                             hover:bg-[#e96916]
                                         "
                                     >
-                                        Explore the platform
+                                        {t("companyPage.hero.catalogBtn")}
 
                                         <ArrowUpRight
                                             className="
@@ -284,6 +259,9 @@ export function CompanyPage() {
                                                 duration-300
                                                 group-hover:-translate-y-0.5
                                                 group-hover:translate-x-0.5
+                                                rtl:-scale-x-100
+                                                rtl:group-hover:-translate-x-0.5
+                                                rtl:group-hover:translate-x-0
                                             "
                                         />
                                     </Link>
@@ -310,7 +288,7 @@ export function CompanyPage() {
                                             hover:bg-slate-50
                                         "
                                     >
-                                        Talk to us
+                                        {t("companyPage.hero.contactBtn")}
                                     </Link>
 
                                 </div>
@@ -406,11 +384,11 @@ export function CompanyPage() {
                                                 text-white/40
                                             "
                                         >
-                                            HBT SYSTEM
+                                            {t("companyPage.hero.systemLabel")}
                                         </span>
 
                                         <span className="mt-1 text-xs font-semibold text-white">
-                                            Learn · Diagnose
+                                            {t("companyPage.hero.systemSub")}
                                         </span>
 
                                     </div>
@@ -419,27 +397,27 @@ export function CompanyPage() {
                                     {/* Floating labels */}
 
                                     <TechnicalLabel
-                                        className="left-0 top-[20%]"
+                                        className="left-0 top-[20%] rtl:left-auto rtl:right-0"
                                         number="01"
-                                        label="Knowledge"
+                                        label={heroLabels[0] ?? "Knowledge"}
                                     />
 
                                     <TechnicalLabel
-                                        className="right-0 top-[32%]"
+                                        className="right-0 top-[32%] rtl:left-0 rtl:right-auto"
                                         number="02"
-                                        label="Practice"
+                                        label={heroLabels[1] ?? "Practice"}
                                     />
 
                                     <TechnicalLabel
-                                        className="bottom-[20%] left-[8%]"
+                                        className="bottom-[20%] left-[8%] rtl:left-auto rtl:right-[8%]"
                                         number="03"
-                                        label="Assessment"
+                                        label={heroLabels[2] ?? "Assessment"}
                                     />
 
                                     <TechnicalLabel
-                                        className="bottom-[14%] right-[5%]"
+                                        className="bottom-[14%] right-[5%] rtl:left-[5%] rtl:right-auto"
                                         number="04"
-                                        label="Certification"
+                                        label={heroLabels[3] ?? "Certification"}
                                     />
 
                                 </div>
@@ -486,7 +464,7 @@ export function CompanyPage() {
                                     text-hbt-orange
                                 "
                             >
-                                What is HBT?
+                                {t("companyPage.intro.eyebrow")}
                             </span>
 
                         </div>
@@ -506,9 +484,7 @@ export function CompanyPage() {
                                     lg:text-5xl
                                 "
                             >
-                                Automotive technology is
-                                becoming more complex.
-                                Training shouldn't.
+                                {t("companyPage.intro.title")}
                             </h2>
 
 
@@ -523,11 +499,7 @@ export function CompanyPage() {
                                     sm:leading-8
                                 "
                             >
-                                Modern vehicles combine electronics,
-                                sensors, networks, software and
-                                mechanical systems. Diagnosing them
-                                requires more than knowing what a
-                                component does.
+                                {t("companyPage.intro.paraA")}
                             </p>
 
 
@@ -542,10 +514,7 @@ export function CompanyPage() {
                                     sm:leading-8
                                 "
                             >
-                                HBTronics exists to help technicians
-                                develop the reasoning, practical
-                                experience and confidence required to
-                                diagnose those systems correctly.
+                                {t("companyPage.intro.paraB")}
                             </p>
 
                         </div>
@@ -598,7 +567,7 @@ export function CompanyPage() {
                                         text-hbt-orange
                                     "
                                 >
-                                    Our approach
+                                    {t("companyPage.principles.eyebrow")}
                                 </span>
 
                                 <h2
@@ -611,7 +580,7 @@ export function CompanyPage() {
                                         sm:text-4xl
                                     "
                                 >
-                                    Learn differently.
+                                    {t("companyPage.principles.title")}
                                 </h2>
 
                             </div>
@@ -625,10 +594,7 @@ export function CompanyPage() {
                                     text-slate-500
                                 "
                             >
-                                Every part of the platform is
-                                designed around one principle:
-                                technical knowledge should lead
-                                to better decisions.
+                                {t("companyPage.principles.side")}
                             </p>
 
                         </div>
@@ -781,7 +747,7 @@ export function CompanyPage() {
                                         text-hbt-orange
                                     "
                                 >
-                                    The platform
+                                    {t("companyPage.platform.eyebrow")}
                                 </span>
 
 
@@ -796,9 +762,7 @@ export function CompanyPage() {
                                         sm:text-4xl
                                     "
                                 >
-                                    Everything needed
-                                    to build diagnostic
-                                    confidence.
+                                    {t("companyPage.platform.title")}
                                 </h2>
 
 
@@ -811,10 +775,7 @@ export function CompanyPage() {
                                         text-white/40
                                     "
                                 >
-                                    From your first lesson to
-                                    professional certification,
-                                    HBT brings the learning
-                                    experience into one place.
+                                    {t("companyPage.platform.description")}
                                 </p>
 
 
@@ -833,7 +794,7 @@ export function CompanyPage() {
                                         hover:text-hbt-orange
                                     "
                                 >
-                                    Explore courses
+                                    {t("companyPage.platform.catalogBtn")}
 
                                     <ArrowRight
                                         className="
@@ -842,6 +803,9 @@ export function CompanyPage() {
                                             transition-transform
                                             duration-300
                                             group-hover:translate-x-1
+                                            rtl:-scale-x-100
+                                            rtl:group-hover:-translate-x-1
+                                            rtl:group-hover:translate-x-0
                                         "
                                     />
                                 </Link>
@@ -967,7 +931,7 @@ export function CompanyPage() {
                                     text-hbt-orange
                                 "
                             >
-                                Built for the field
+                                {t("companyPage.audiences.eyebrow")}
                             </span>
 
 
@@ -983,9 +947,7 @@ export function CompanyPage() {
                                     sm:text-4xl
                                 "
                             >
-                                For people who
-                                work with real
-                                vehicles.
+                                {t("companyPage.audiences.title")}
                             </h2>
 
 
@@ -998,11 +960,7 @@ export function CompanyPage() {
                                     text-slate-500
                                 "
                             >
-                                Whether you're starting your
-                                automotive career or sharpening
-                                years of workshop experience,
-                                HBT is designed around practical
-                                diagnostic work.
+                                {t("companyPage.audiences.description")}
                             </p>
 
                         </div>
@@ -1068,7 +1026,7 @@ export function CompanyPage() {
 
                                         <ArrowUpRight
                                             className="
-                                                ml-auto
+                                                ms-auto
                                                 h-4
                                                 w-4
                                                 text-slate-300
@@ -1077,6 +1035,9 @@ export function CompanyPage() {
                                                 group-hover:-translate-y-0.5
                                                 group-hover:translate-x-0.5
                                                 group-hover:text-hbt-orange
+                                                rtl:-scale-x-100
+                                                rtl:group-hover:-translate-x-0.5
+                                                rtl:group-hover:translate-x-0
                                             "
                                         />
 
@@ -1109,6 +1070,8 @@ export function CompanyPage() {
                             rounded-full
                             border
                             border-hbt-orange/10
+                            rtl:left-[-120px]
+                            rtl:right-auto
                         "
                     />
 
@@ -1124,6 +1087,8 @@ export function CompanyPage() {
                             rounded-full
                             border
                             border-hbt-orange/10
+                            rtl:left-[-40px]
+                            rtl:right-auto
                         "
                     />
 
@@ -1165,7 +1130,7 @@ export function CompanyPage() {
                                 text-hbt-orange
                             "
                         >
-                            Our mission
+                            {t("companyPage.mission.eyebrow")}
                         </span>
 
 
@@ -1183,10 +1148,10 @@ export function CompanyPage() {
                                 lg:text-6xl
                             "
                         >
-                            Make technical education
+                            {t("companyPage.mission.titleA")}
                             <span className="text-hbt-orange">
                                 {" "}
-                                useful.
+                                {t("companyPage.mission.titleB")}
                             </span>
                         </h2>
 
@@ -1202,10 +1167,7 @@ export function CompanyPage() {
                                 sm:text-lg
                             "
                         >
-                            We believe the best technicians aren't
-                            the ones who memorize the most.
-                            They're the ones who know how to think
-                            when the answer isn't obvious.
+                            {t("companyPage.mission.description")}
                         </p>
 
                     </div>
@@ -1260,6 +1222,8 @@ export function CompanyPage() {
                                     rounded-full
                                     border
                                     border-white/15
+                                    rtl:left-[-100px]
+                                    rtl:right-auto
                                 "
                             />
 
@@ -1274,6 +1238,8 @@ export function CompanyPage() {
                                     rounded-full
                                     border
                                     border-white/15
+                                    rtl:left-[-30px]
+                                    rtl:right-auto
                                 "
                             />
 
@@ -1295,8 +1261,7 @@ export function CompanyPage() {
                                         lg:text-5xl
                                     "
                                 >
-                                    Ready to take your
-                                    diagnostics further?
+                                    {t("companyPage.cta.title")}
                                 </h2>
 
 
@@ -1310,9 +1275,7 @@ export function CompanyPage() {
                                         sm:text-base
                                     "
                                 >
-                                    Start learning with HBT and
-                                    turn technical knowledge into
-                                    practical diagnostic ability.
+                                    {t("companyPage.cta.description")}
                                 </p>
 
 
@@ -1338,7 +1301,7 @@ export function CompanyPage() {
                                             hover:shadow-xl
                                         "
                                     >
-                                        Start learning
+                                        {t("companyPage.cta.startBtn")}
 
                                         <ArrowUpRight
                                             className="
@@ -1348,6 +1311,9 @@ export function CompanyPage() {
                                                 duration-300
                                                 group-hover:-translate-y-0.5
                                                 group-hover:translate-x-0.5
+                                                rtl:-scale-x-100
+                                                rtl:group-hover:-translate-x-0.5
+                                                rtl:group-hover:translate-x-0
                                             "
                                         />
                                     </Link>
@@ -1371,7 +1337,7 @@ export function CompanyPage() {
                                             hover:bg-white/10
                                         "
                                     >
-                                        Contact HBT
+                                        {t("companyPage.cta.contactBtn")}
                                     </Link>
 
                                 </div>

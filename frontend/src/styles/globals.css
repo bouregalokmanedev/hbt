@@ -6,6 +6,38 @@
 
 
 /* =========================================================
+   THMANYAH (Arabic display) — ARABIC ONLY
+   The Thmanyah license forbids redistributing/hosting the
+   files, so nothing is committed here. Drop them in as:
+     public/fonts/thmanyah/thmanyah-regular.woff2
+     public/fonts/thmanyah/thmanyah-bold.woff2
+   (or install the family system-wide via `local()`).
+   Until then the stack falls back to Tajawal / Noto Sans Arabic.
+   ========================================================= */
+
+@font-face {
+    font-family: "Thmanyah";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src:
+        local("Thmanyah Regular"),
+        local("Thmanyah"),
+        url("/fonts/thmanyah/thmanyah-regular.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Thmanyah";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src:
+        local("Thmanyah Bold"),
+        url("/fonts/thmanyah/thmanyah-bold.woff2") format("woff2");
+}
+
+
+/* =========================================================
    RESET
    ========================================================= */
 
@@ -33,12 +65,14 @@ body {
     color: var(--foreground);
 
     font-family:
-        Inter,
+        Tajawal,
+        "Noto Sans Arabic",
         ui-sans-serif,
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        Tahoma,
         sans-serif;
 
     font-size: 15px;
@@ -48,6 +82,23 @@ body {
     -moz-osx-font-smoothing: grayscale;
 
     text-rendering: optimizeLegibility;
+}
+
+
+/* Arabic-only stack: Thmanyah leads when available, Tajawal/Noto stay as
+   fallbacks. English keeps the Latin stack above untouched. */
+html[lang="ar"] body {
+    font-family:
+        "Thmanyah",
+        Tajawal,
+        "Noto Sans Arabic",
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Tahoma,
+        sans-serif;
 }
 
 
@@ -89,28 +140,38 @@ textarea::placeholder {
 
 /* =========================================================
    LINKS
-   ========================================================= */
-
-a {
-    color: inherit;
-    text-decoration: none;
+   =========================================================
+   Kept in @layer base for the same reason as img/svg below: an
+   unlayered `a { color: inherit }` beats every Tailwind utility,
+   so dark links (e.g. admin quick links) inherited the page's
+   #3A3A3A and painted dark-on-dark text.
+*/
+@layer base {
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
 }
 
 
 /* =========================================================
    IMAGES
-   ========================================================= */
+   =========================================================
+   Kept in @layer base so size utilities (h-*, w-*) can still
+   override them — unlayered rules would win over Tailwind
+   utilities and let flex rows stretch avatars into rectangles.
+*/
+@layer base {
+    img,
+    svg,
+    video {
+        display: block;
+        max-width: 100%;
+    }
 
-img,
-svg,
-video {
-    display: block;
-    max-width: 100%;
-}
-
-
-img {
-    height: auto;
+    img {
+        height: auto;
+    }
 }
 
 
@@ -174,13 +235,35 @@ div:has(> textarea[placeholder="Write a reply…"]):focus-within {
     box-shadow: 0 8px 24px rgba(244, 120, 34, 0.08) !important;
 }
 
+/* Certificate ID field: the rounded container owns the focus state. Keep
+   the input itself visually quiet so the global :focus-visible ring does
+   not draw a second rectangle over the field. */
+.verify-cert-input:focus,
+.verify-cert-input:focus-visible,
+.verify-cert-input:active {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Message inbox fields (thread search, compose inputs): keep focus quiet so
+   the global :focus-visible ring does not draw a second rectangle. Border
+   treatments on the fields themselves remain the visible focus state. */
+.messages-quiet-focus:focus,
+.messages-quiet-focus:focus-visible,
+.messages-quiet-focus:active {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
 
 /* =========================================================
    ARABIC
    ========================================================= */
 
 .font-cairo {
-    font-family: "Cairo", sans-serif !important;
+    font-family: "Thmanyah", "Tajawal", "Noto Sans Arabic", sans-serif !important;
 }
 
 
@@ -188,7 +271,84 @@ div:has(> textarea[placeholder="Write a reply…"]):focus-within {
 .font-cairo textarea,
 .font-cairo select,
 .font-cairo button {
-    font-family: "Cairo", sans-serif !important;
+    font-family: "Thmanyah", "Tajawal", "Noto Sans Arabic", sans-serif !important;
+}
+
+
+/* =========================================================
+   CONTACT + COMPANY + PRICING + VERIFY + CATALOG + DASHBOARD — ARABIC TYPOGRAPHY (scoped, brand untouched)
+   ========================================================= */
+
+html[lang="ar"] .contact-page-ar,
+html[lang="ar"] .contact-page-ar button,
+html[lang="ar"] .contact-page-ar input,
+html[lang="ar"] .contact-page-ar textarea,
+html[lang="ar"] .contact-page-ar select,
+html[lang="ar"] .contact-page-ar h1,
+html[lang="ar"] .contact-page-ar h2,
+html[lang="ar"] .contact-page-ar h3,
+html[lang="ar"] .contact-page-ar .font-mono,
+html[lang="ar"] .company-page-ar,
+html[lang="ar"] .company-page-ar button,
+html[lang="ar"] .company-page-ar input,
+html[lang="ar"] .company-page-ar textarea,
+html[lang="ar"] .company-page-ar select,
+html[lang="ar"] .company-page-ar h1,
+html[lang="ar"] .company-page-ar h2,
+html[lang="ar"] .company-page-ar h3,
+html[lang="ar"] .company-page-ar .font-mono,
+html[lang="ar"] .verify-page-ar,
+html[lang="ar"] .verify-page-ar button,
+html[lang="ar"] .verify-page-ar input,
+html[lang="ar"] .verify-page-ar textarea,
+html[lang="ar"] .verify-page-ar select,
+html[lang="ar"] .verify-page-ar h1,
+html[lang="ar"] .verify-page-ar h2,
+html[lang="ar"] .verify-page-ar h3,
+html[lang="ar"] .verify-page-ar .font-mono,
+html[lang="ar"] .site-footer-ar,
+html[lang="ar"] .site-footer-ar button,
+html[lang="ar"] .site-footer-ar input,
+html[lang="ar"] .site-footer-ar h3,
+html[lang="ar"] .site-footer-ar .font-mono,
+html[lang="ar"] .dashboard-page-ar,
+html[lang="ar"] .dashboard-page-ar button,
+html[lang="ar"] .dashboard-page-ar input,
+html[lang="ar"] .dashboard-page-ar textarea,
+html[lang="ar"] .dashboard-page-ar select,
+html[lang="ar"] .dashboard-page-ar h1,
+html[lang="ar"] .dashboard-page-ar h2,
+html[lang="ar"] .dashboard-page-ar h3,
+html[lang="ar"] .dashboard-page-ar .font-mono,
+html[lang="ar"] .catalog-page-ar,
+html[lang="ar"] .catalog-page-ar button,
+html[lang="ar"] .catalog-page-ar input,
+html[lang="ar"] .catalog-page-ar textarea,
+html[lang="ar"] .catalog-page-ar select,
+html[lang="ar"] .catalog-page-ar h1,
+html[lang="ar"] .catalog-page-ar h2,
+html[lang="ar"] .catalog-page-ar h3,
+html[lang="ar"] .catalog-page-ar .font-mono,
+html[lang="ar"] .pricing-page-ar,
+html[lang="ar"] .pricing-page-ar button,
+html[lang="ar"] .pricing-page-ar input,
+html[lang="ar"] .pricing-page-ar textarea,
+html[lang="ar"] .pricing-page-ar select,
+html[lang="ar"] .pricing-page-ar h1,
+html[lang="ar"] .pricing-page-ar h2,
+html[lang="ar"] .pricing-page-ar h3,
+html[lang="ar"] .pricing-page-ar .font-mono {
+    font-family: "Thmanyah", "Tajawal", "Noto Sans Arabic", Tahoma, sans-serif;
+}
+
+/* Arabic script must never be letter-spaced (it breaks letter joining). */
+html[lang="ar"] .contact-page-ar [class*="tracking-"],
+html[lang="ar"] .company-page-ar [class*="tracking-"],
+html[lang="ar"] .pricing-page-ar [class*="tracking-"],
+html[lang="ar"] .verify-page-ar [class*="tracking-"],
+html[lang="ar"] .catalog-page-ar [class*="tracking-"],
+html[lang="ar"] .site-footer-ar [class*="tracking-"] {
+    letter-spacing: normal;
 }
 @keyframes signal {
     0% {

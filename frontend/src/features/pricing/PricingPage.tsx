@@ -1,13 +1,15 @@
 import { ArrowRight, Check, HelpCircle, Sparkles } from "lucide-react";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { track } from "@/lib/track";
 
 type BillingPeriod = "monthly" | "yearly";
 
 interface PricingPlan {
+  id: "starter" | "professional" | "academy";
   name: string;
   description: string;
   monthly: number;
@@ -17,95 +19,66 @@ interface PricingPlan {
   cta: string;
 }
 
-const plans: PricingPlan[] = [
-  {
-    name: "Starter",
-    description:
-      "Everything you need to start building stronger diagnostic skills.",
-    monthly: 0,
-    yearly: 0,
-    features: [
-      "Access to free courses",
-      "Course previews",
-      "Basic learning progress",
-      "Learning resources",
-      "Community access",
-    ],
-    cta: "Start learning",
-  },
-
-  {
-    name: "Professional",
-    description:
-      "For technicians who want structured training and practical experience.",
-    monthly: 19,
-    yearly: 190,
-    popular: true,
-    features: [
-      "Full course library",
-      "Diagnostic scenarios",
-      "Practical simulations",
-      //  "Progress tracking",
-      "Certificates",
-      // "Advanced learning resources",
-      "Priority support",
-    ],
-    cta: "Start learning",
-  },
-
-  {
-    name: "Academy",
-    description:
-      "Advanced training for teams, workshops and professional development.",
-    monthly: 49,
-    yearly: 490,
-    features: [
-      "Everything in Professional",
-      "Advanced diagnostic training",
-      "Team learning",
-      "Performance analytics",
-      //  "Team management",
-      "Priority technical support",
-      // "Professional resources",
-    ],
-    cta: "Contact us",
-  },
-];
-
-const faqs = [
-  {
-    question: "Can I start learning for free?",
-    answer:
-      "Yes. HBTronics offers free learning content so you can explore the platform before choosing a paid plan.",
-  },
-  {
-    question: "Can I cancel my subscription?",
-    answer:
-      "Yes. You can cancel your subscription at any time. Your access remains available until the end of your current billing period.",
-  },
-  {
-    question: "Do courses include certificates?",
-    answer:
-      "Eligible courses include certificates after completing the required learning activities and assessments.",
-  },
-  {
-    question: "Are the simulations included?",
-    answer:
-      "Practical diagnostic simulations are included with Professional and Academy plans.",
-  },
-];
-
-function formatPrice(price: number): string {
-  if (price === 0) {
-    return "Free";
-  }
-
-  return `$${price}`;
-}
 
 export function PricingPage() {
   const { t } = useTranslation();
   const [billing, setBilling] = useState<BillingPeriod>("monthly");
+
+  const plans: PricingPlan[] = [
+    {
+      id: "starter",
+      name: t("pricing.plans.starter"),
+      description: t("pricing.plans.starterDescription"),
+      monthly: 0,
+      yearly: 0,
+      features: t("pricing.plans.starterFeatures", {
+        returnObjects: true,
+      }) as string[],
+      cta: t("pricing.plans.startLearning"),
+    },
+
+    {
+      id: "professional",
+      name: t("pricing.plans.professional"),
+      description: t("pricing.plans.professionalDescription"),
+      monthly: 19,
+      yearly: 190,
+      popular: true,
+      features: t("pricing.plans.professionalFeatures", {
+        returnObjects: true,
+      }) as string[],
+      cta: t("pricing.plans.startLearning"),
+    },
+
+    {
+      id: "academy",
+      name: t("pricing.plans.academy"),
+      description: t("pricing.plans.academyDescription"),
+      monthly: 49,
+      yearly: 490,
+      features: t("pricing.plans.academyFeatures", {
+        returnObjects: true,
+      }) as string[],
+      cta: t("pricing.plans.contactUs"),
+    },
+  ];
+
+  const faqs = t("pricing.faq.items", { returnObjects: true }) as Array<{
+    question: string;
+    answer: string;
+  }>;
+
+  function formatPrice(price: number): string {
+    if (price === 0) {
+      return t("pricing.price.free");
+    }
+
+    return `$${price}`;
+  }
+
+  useEffect(() => {
+    track("pricing_viewed", { source: "pricing_page" });
+  }, []);
 
   const yearlySavings = useMemo(() => {
     return plans.map((plan) => ({
@@ -115,7 +88,7 @@ export function PricingPage() {
   }, []);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-background text-foreground">
+    <main className="pricing-page-ar min-h-screen overflow-hidden bg-background text-foreground">
       {/* =====================================================
                 HERO
             ====================================================== */}
@@ -289,7 +262,7 @@ export function PricingPage() {
 
               return (
                 <article
-                  key={plan.name}
+                  key={plan.id}
                   className={[
                     "group relative flex flex-col",
                     "rounded-3xl",
@@ -373,7 +346,7 @@ export function PricingPage() {
                           plan.popular ? "text-orange-300" : "text-hbt-orange",
                         ].join(" ")}
                       >
-                        Save ${saving}
+                        {t("pricing.price.saveAmount", { amount: saving })}
                       </span>
                     )}
                   </div>
@@ -386,7 +359,7 @@ export function PricingPage() {
                       plan.popular ? "text-white" : "text-hbt-dark",
                     ].join(" ")}
                   >
-                    {t(`pricing.plans.${plan.name.toLowerCase()}`)}
+                    {plan.name}
                   </h2>
 
                   {/* Description */}
@@ -397,7 +370,7 @@ export function PricingPage() {
                       plan.popular ? "text-white/60" : "text-slate-500",
                     ].join(" ")}
                   >
-                    {t(`pricing.plans.${plan.name.toLowerCase()}Description`)}
+                    {plan.description}
                   </p>
 
                   {/* Price */}
@@ -420,7 +393,9 @@ export function PricingPage() {
                             plan.popular ? "text-white/50" : "text-slate-400",
                           ].join(" ")}
                         >
-                          /{billing === "monthly" ? "month" : "year"}
+                          {billing === "monthly"
+                            ? t("pricing.price.perMonth")
+                            : t("pricing.price.perYear")}
                         </span>
                       )}
                     </div>
@@ -432,8 +407,9 @@ export function PricingPage() {
                           plan.popular ? "text-white/40" : "text-slate-400",
                         ].join(" ")}
                       >
-                        ${monthlyEquivalent.toFixed(2)}
-                        /month billed yearly
+                        {t("pricing.price.monthlyBilledYearly", {
+                          amount: monthlyEquivalent.toFixed(2),
+                        })}
                       </p>
                     )}
                   </div>
@@ -441,7 +417,14 @@ export function PricingPage() {
                   {/* CTA */}
 
                   <Link
-                    to={plan.name === "Academy" ? "/contact" : "/register"}
+                    to={plan.id === "academy" ? "/contact" : "/subscription"}
+                    onClick={() =>
+                      track("plan_cta_clicked", {
+                        plan: plan.id,
+                        billing,
+                        source: "pricing_cards",
+                      })
+                    }
                     className={[
                       "mt-8 flex items-center justify-center gap-2 rounded-xl px-5 py-3.5",
                       "text-sm font-semibold",
@@ -463,11 +446,9 @@ export function PricingPage() {
                           ].join(" "),
                     ].join(" ")}
                   >
-                    {plan.name === "Academy"
-                      ? t("pricing.plans.contactUs")
-                      : t("pricing.plans.startLearning")}
+                    {plan.cta}
 
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
                   </Link>
 
                   {/* Divider */}
@@ -717,7 +698,7 @@ export function PricingPage() {
 
           <div className="relative">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-hbt-orange">
-              Ready to begin?
+              {t("pricing.cta.eyebrow")}
             </p>
 
             <h2
@@ -732,16 +713,22 @@ export function PricingPage() {
                                 sm:text-4xl
                             "
             >
-              Your next diagnostic skill starts here.
+              {t("pricing.cta.title")}
             </h2>
 
             <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/55 sm:text-base">
-              Join HBTronics and build practical automotive diagnostic skills
-              through structured learning.
+              {t("pricing.cta.description")}
             </p>
 
             <Link
               to="/register"
+              onClick={() =>
+                track("plan_cta_clicked", {
+                  plan: "register",
+                  billing,
+                  source: "pricing_final_cta",
+                })
+              }
               className="
                                 group
                                 mt-8
@@ -764,7 +751,7 @@ export function PricingPage() {
                                 hover:shadow-xl
                             "
             >
-              Start learning
+              {t("pricing.cta.startBtn")}
               <ArrowRight
                 className="
                                     h-4
@@ -772,6 +759,9 @@ export function PricingPage() {
                                     transition-transform
                                     duration-300
                                     group-hover:translate-x-1
+                                    rtl:-scale-x-100
+                                    rtl:group-hover:-translate-x-1
+                                    rtl:group-hover:translate-x-0
                                 "
               />
             </Link>

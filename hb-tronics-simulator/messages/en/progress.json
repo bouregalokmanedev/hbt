@@ -1,0 +1,14 @@
+{
+  "title": "Progress",
+  "kicker": "Learning record",
+  "overall": "Overall progress",
+  "skillLevels": "Module skill levels",
+  "stats": "Statistics",
+  "certifications": "Certifications",
+  "weakSpots": "Weak spots",
+  "recommendedPath": "Recommended path",
+  "coach": "Coach",
+  "focus": "Current focus",
+  "cert": { "earned": "Earned", "in-progress": "In progress" },
+  "open": "Open"
+}

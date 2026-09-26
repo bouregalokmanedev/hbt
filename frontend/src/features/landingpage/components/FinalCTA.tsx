@@ -6,18 +6,18 @@ import {
 
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
+import {
+    LandingSection,
+} from "./landing-ui";
+
 export function FinalCTA() {
+    const { t } = useTranslation();
+
     return (
-        <section
-            className="
-                group
-                relative
-                isolate
-                min-h-[720px]
-                overflow-hidden
-                bg-[#F3F3F1]
-                text-hbt-dark
-            "
+        <LandingSection
+            className="group min-h-[720px] bg-[#F3F3F1] text-hbt-dark"
         >
             {/* =====================================================
                 TECHNICAL GRID
@@ -274,12 +274,11 @@ export function FinalCTA() {
                     flex
                     min-h-[720px]
                     w-full
-                    max-w-[1600px]
+                    max-w-[1440px]
                     flex-col
                     items-center
                     justify-center
                     px-5
-                    py-24
                     text-center
                     sm:px-8
                     lg:px-12
@@ -324,7 +323,7 @@ export function FinalCTA() {
                             sm:text-[10px]
                         "
                     >
-                        System ready / Start your journey
+                        {t("landingPage.finalCta.status")}
                     </span>
                 </div>
 
@@ -345,18 +344,18 @@ export function FinalCTA() {
                         animate-[fadeUp_0.9s_0.2s_ease-out_forwards]
                     "
                 >
-                    Ready to
+                    {t("landingPage.finalCta.titleA")}
 
                     <br />
 
                     <span className="relative inline-block text-hbt-orange">
-                        diagnose
+                        {t("landingPage.finalCta.titleHighlight")}
                     </span>
 
                     <br />
 
                     <span className="relative">
-                        differently
+                        {t("landingPage.finalCta.titleB")}
                         <span className="text-hbt-orange">?</span>
                     </span>
                 </h2>
@@ -378,9 +377,7 @@ export function FinalCTA() {
                         sm:leading-8
                     "
                 >
-                    Learn the systems. Practice the diagnosis.
-                    Build the confidence to solve problems that
-                    actually matter.
+                    {t("landingPage.finalCta.description")}
                 </p>
 
                 {/* =================================================
@@ -443,7 +440,7 @@ export function FinalCTA() {
                         />
 
                         <span className="relative">
-                            Start learning
+                            {t("landingPage.finalCta.startLearning")}
                         </span>
 
                         <span
@@ -459,9 +456,10 @@ export function FinalCTA() {
                                 transition-transform
                                 duration-300
                                 group-hover/cta:translate-x-1
+                                rtl:group-hover/cta:-translate-x-1
                             "
                         >
-                            <ArrowUpRight className="h-4 w-4" />
+                            <ArrowUpRight className="h-4 w-4 rtl:-scale-x-100" />
                         </span>
                     </Link>
 
@@ -491,7 +489,7 @@ export function FinalCTA() {
                             hover:bg-white/70
                         "
                     >
-                        Explore platform
+                        {t("landingPage.finalCta.explorePlatform")}
 
                         <ArrowUpRight
                             className="
@@ -501,6 +499,9 @@ export function FinalCTA() {
                                 duration-300
                                 group-hover/explore:translate-x-0.5
                                 group-hover/explore:-translate-y-0.5
+                                rtl:-scale-x-100
+                                rtl:group-hover/explore:-translate-x-0.5
+                                rtl:group-hover/explore:translate-x-0
                             "
                         />
                     </Link>
@@ -590,13 +591,13 @@ export function FinalCTA() {
                 </span>
 
                 <span className="hidden sm:block">
-                    LEARN // PRACTICE // DIAGNOSE
+                    {t("landingPage.finalCta.stripMiddle")}
                 </span>
 
                 <span className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-hbt-orange" />
 
-                    SYSTEM READY
+                    {t("landingPage.finalCta.systemReady")}
                 </span>
             </div>
 
@@ -709,7 +710,7 @@ export function FinalCTA() {
                     lg:block
                 "
             >
-                FINAL DIAGNOSTIC
+                {t("landingPage.finalCta.finalLabel")}
             </div>
 
             {/* =====================================================
@@ -727,6 +728,6 @@ export function FinalCTA() {
                     bg-hbt-orange
                 "
             />
-        </section>
+        </LandingSection>
     );
 }

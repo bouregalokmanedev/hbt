@@ -9,6 +9,7 @@ import type {
 export interface LoginPayload {
     email: string;
     password: string;
+    remember?: boolean;
 }
 
 
@@ -23,6 +24,8 @@ export interface RegisterPayload {
     country?: string;
     language?: string;
     timezone?: string;
+    /** Invite code from the /register?ref= signup link. */
+    ref?: string;
 }
 
 
@@ -70,6 +73,10 @@ export const authApi = {
         return api<AuthData>("/v1/auth/two-factor/login/verify", { method: "POST", body: { email, code } });
     },
 
+    async resendTwoFactorLogin(email: string): Promise<{ resent: boolean }> {
+        return api<{ resent: boolean }>("/v1/auth/two-factor/login/resend", { method: "POST", body: { email } });
+    },
+
 
     async register(
         payload: RegisterPayload,
@@ -97,6 +104,27 @@ export const authApi = {
     async me(): Promise<User> {
         return api<User>(
             "/v1/auth/me",
+        );
+    },
+
+
+    async resendVerification(): Promise<void> {
+        await api<null>(
+            "/v1/auth/email/resend",
+            {
+                method: "POST",
+            },
+        );
+    },
+
+
+    async resendVerificationEmail(email: string): Promise<void> {
+        await api<null>(
+            "/v1/auth/email/resend-unverified",
+            {
+                method: "POST",
+                body: { email },
+            },
         );
     },
 
@@ -145,5 +173,23 @@ export const authApi = {
                 body: payload,
             },
         );
+    },
+
+    async sendPhoneOtp(): Promise<{
+        delivery: string | null;
+        phone_verified_at?: string;
+    }> {
+        return api("/v1/auth/phone/otp/send", {
+            method: "POST",
+        });
+    },
+
+    async verifyPhoneOtp(
+        code: string,
+    ): Promise<{ phone_verified_at: string }> {
+        return api("/v1/auth/phone/otp/verify", {
+            method: "POST",
+            body: { code },
+        });
     },
 };

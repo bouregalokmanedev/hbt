@@ -11,7 +11,7 @@ uses(RefreshDatabase::class);
 
 /*
 |--------------------------------------------------------------------------
-| Course Search API
+| Course Search API (public catalog: GET /api/v1/catalog/courses)
 |--------------------------------------------------------------------------
 */
 
@@ -27,7 +27,7 @@ it('lists courses with pagination', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses');
+        ->getJson('/api/v1/catalog/courses');
 
     $response
         ->assertSuccessful()
@@ -60,7 +60,7 @@ it('searches courses by title', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?search=Laravel');
+        ->getJson('/api/v1/catalog/courses?search=Laravel');
 
     $response
         ->assertSuccessful()
@@ -93,7 +93,7 @@ it('searches courses by description', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?search=Laravel');
+        ->getJson('/api/v1/catalog/courses?search=Laravel');
 
     $response
         ->assertSuccessful()
@@ -116,7 +116,7 @@ it('searches courses case insensitively', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?search=laravel');
+        ->getJson('/api/v1/catalog/courses?search=laravel');
 
     $response
         ->assertSuccessful()
@@ -147,7 +147,7 @@ it('filters courses by difficulty', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?difficulty=beginner');
+        ->getJson('/api/v1/catalog/courses?difficulty=beginner');
 
     $response
         ->assertSuccessful()
@@ -182,7 +182,7 @@ it('filters free courses', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?free=1');
+        ->getJson('/api/v1/catalog/courses?free=1');
 
     $response
         ->assertSuccessful()
@@ -215,7 +215,7 @@ it('filters courses by instructor', function () {
 
     $response = $this->actingAs($instructor)
         ->getJson(
-            '/api/v1/courses?instructor=' . $instructor->id
+            '/api/v1/catalog/courses?instructor=' . $instructor->id
         );
 
     $response
@@ -247,7 +247,7 @@ it('filters courses by visibility', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?visibility=public');
+        ->getJson('/api/v1/catalog/courses?visibility=public');
 
     $response
         ->assertSuccessful()
@@ -278,7 +278,7 @@ it('filters courses by status', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?status=published');
+        ->getJson('/api/v1/catalog/courses?status=published');
 
     $response
         ->assertSuccessful()
@@ -327,7 +327,7 @@ it('supports multiple search filters together', function () {
 
     $response = $this->actingAs($instructor)
         ->getJson(
-            '/api/v1/courses'
+            '/api/v1/catalog/courses'
             . '?search=Laravel'
             . '&difficulty=beginner'
             . '&free=1'
@@ -356,7 +356,7 @@ it('supports custom pagination size', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?per_page=5');
+        ->getJson('/api/v1/catalog/courses?per_page=5');
 
     $response
         ->assertSuccessful()
@@ -382,11 +382,11 @@ it('supports pagination using the page parameter', function () {
         ]);
 
     $firstPage = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?per_page=5&page=1')
+        ->getJson('/api/v1/catalog/courses?per_page=5&page=1')
         ->assertSuccessful();
 
     $secondPage = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?per_page=5&page=2')
+        ->getJson('/api/v1/catalog/courses?per_page=5&page=2')
         ->assertSuccessful();
 
     expect($firstPage->json('data'))
@@ -417,7 +417,7 @@ it('does not return soft deleted courses', function () {
     $deletedCourse->delete();
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses');
+        ->getJson('/api/v1/catalog/courses');
 
     $response
         ->assertSuccessful()
@@ -441,7 +441,7 @@ it('returns an empty result when no courses match the search', function () {
         ]);
 
     $response = $this->actingAs($instructor)
-        ->getJson('/api/v1/courses?search=NonExistentCourse');
+        ->getJson('/api/v1/catalog/courses?search=NonExistentCourse');
 
     $response
         ->assertSuccessful()
@@ -462,7 +462,7 @@ it('allows unauthenticated public course search', function () {
     ]);
 
     $response = $this->getJson(
-        '/api/v1/courses?search=Laravel'
+        '/api/v1/catalog/courses?search=Laravel'
     );
 
     $response->assertSuccessful();
@@ -488,7 +488,7 @@ it('does not expose private courses in the public published catalog', function (
         ]);
 
     $response = $this->getJson(
-        '/api/v1/courses?search=Laravel'
+        '/api/v1/catalog/courses?search=Laravel'
     );
 
     $response

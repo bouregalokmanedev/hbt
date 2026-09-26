@@ -1,15 +1,26 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { mentorApi, streamMentorMessage } from "../api/mentor-api";
 import type { MentorConversation, MentorMessage } from "../types/mentor";
 
-type Context = { title: string; courseId?: string; lessonId?: string };
+type Context = {
+    title: string;
+    courseId?: string;
+    lessonId?: string;
+    /** Load this conversation directly (history / open tab). */
+    conversationId?: string | null;
+    /** Always create a fresh conversation instead of resuming the active one. */
+    forceNew?: boolean;
+};
 
 export function useMentorChat(context: Context, enabled = true) {
+    const { t } = useTranslation();
     const [conversation, setConversation] = useState<MentorConversation | null>(null);
     const [messages, setMessages] = useState<MentorMessage[]>([]);
     const [loading, setLoading] = useState(false);
     const [sending, setSending] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const createLockRef = useRef(false);
 
     const loadConversation = useCallback(async (id: string) => {
         const full = await mentorApi.get(id);
@@ -23,6 +34,28 @@ export function useMentorChat(context: Context, enabled = true) {
         setLoading(true);
         setError(null);
         try {
+            if (context.conversationId) {
+                await loadConversation(context.conversationId);
+                return;
+            }
+
+            if (context.forceNew) {
+                if (createLockRef.current) return;
+                createLockRef.current = true;
+                try {
+                    const created = await mentorApi.create({
+                        title: context.title,
+                        course_id: context.courseId,
+                        lesson_id: context.lessonId,
+                    });
+                    await loadConversation(created.id);
+                } catch (cause) {
+                    createLockRef.current = false;
+                    throw cause;
+                }
+                return;
+            }
+
             const conversations = await mentorApi.list();
             const existing = conversations.find((item) =>
                 item.status === "active"
@@ -36,11 +69,11 @@ export function useMentorChat(context: Context, enabled = true) {
             });
             await loadConversation(selected.id);
         } catch (cause) {
-            setError(cause instanceof Error ? cause.message : "Unable to start the AI Mentor.");
+            setError(cause instanceof Error ? cause.message : t("mentor.startFail"));
         } finally {
             setLoading(false);
         }
-    }, [context.courseId, context.lessonId, context.title, enabled, loadConversation]);
+    }, [context.courseId, context.conversationId, context.forceNew, context.lessonId, context.title, enabled, loadConversation, t]);
 
     useEffect(() => { void initialise(); }, [initialise]);
 
@@ -72,12 +105,12 @@ export function useMentorChat(context: Context, enabled = true) {
             return true;
         } catch (cause) {
             setMessages((current) => current.filter((item) => item.id !== assistantId));
-            setError(cause instanceof Error ? cause.message : "The AI Mentor could not respond right now.");
+            setError(cause instanceof Error ? cause.message : t("mentor.respondFail"));
             return false;
         } finally {
             setSending(false);
         }
-    }, [conversation, loadConversation, sending]);
+    }, [conversation, loadConversation, sending, t]);
 
     const state = useMemo(() => ({ conversation, messages, loading, sending, error }), [conversation, error, loading, messages, sending]);
     return { ...state, send, retry: initialise, loadConversation };

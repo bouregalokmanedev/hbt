@@ -100,16 +100,20 @@ final class SubmitAssessmentAttemptAction
                 app(StudentProgressionService::class)->award($user, 'assessment_passed', 45, 65, "assessment-attempt:{$attempt->id}", ['label' => 'Assessment passed']);
             }
 
-            if ($result->passed) {
-    app(IssueCertificateAction::class)
-        ->execute($result);
-}
+            // Certificates are only issued for high-stakes assessments
+            // (summative/final). Low-stakes modes skip issuance entirely.
+            if ($result->passed && $attempt->assessment->assessment_mode->isHighStakes()) {
+                app(IssueCertificateAction::class)
+                    ->execute($result);
+            }
 
             app(StudentNotificationService::class)->send(
                 $user,
                 $passed ? 'assessment_passed' : 'assessment_submitted',
                 $passed ? 'Assessment passed' : 'Assessment submitted',
-                $passed ? 'Great work—you passed your final assessment and your certificate is being prepared.' : 'Your assessment has been submitted. Review the result and keep building your skills.',
+                $passed
+                    ? 'Great work — you passed. Your result is in, and your certificate is being prepared when this was a final assessment. We are proud of the effort you put in.'
+                    : 'Your assessment has been submitted. Review the result when you are ready and keep building your skills — every attempt moves you forward.',
                 $passed ? '/certificates' : '/assessments',
                 "assessment-result:{$result->id}",
             );

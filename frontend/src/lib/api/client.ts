@@ -53,6 +53,7 @@ export async function api<T>(
       errorPayload && "errors" in errorPayload
         ? errorPayload.errors
         : undefined,
+      payload,
     );
   }
 

@@ -1,0 +1,88 @@
+{
+  "title": "Multimètre",
+  "subtitle": "Diagnostic capteurs et actionneurs · multimètre numérique",
+  "views": {
+    "diagnosis": "Diagnostic",
+    "progress": "Progression"
+  },
+  "header": {
+    "time": "TEMPS",
+    "score": "SCORE",
+    "restart": "Redémarrer la session",
+    "print": "Imprimer",
+    "complaint": "Réclamation"
+  },
+  "sidebar": {
+    "title": "Composants électroniques",
+    "cleared": "{done} sur {total} terminés",
+    "steps": "{n} étapes de mesure"
+  },
+  "tabs": {
+    "wiring": "Schéma de câblage",
+    "ecu": "Broche et connecteur ECU",
+    "location": "Emplacement",
+    "parts": "Pièces associées",
+    "manuals": "Manuels de réparation",
+    "info": "Informations composant"
+  },
+  "tabDisabled": "Non inclus dans cette couverture",
+  "wiring": {
+    "reset": "Réinitialiser le schéma",
+    "viewPins": "Afficher câblage et broches",
+    "extended": "Schéma de câblage étendu",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "component": "Composant",
+    "controlUnit": "Calculateur",
+    "wire": "Fil",
+    "earth": "Masse moteur"
+  },
+  "ecu": {
+    "title": "Broche et connecteur ECU",
+    "connector": "Connecteur du composant",
+    "control": "{code} · {name}",
+    "pin": "Broche",
+    "fn": "Fonction"
+  },
+  "proc": {
+    "diagnosis": "Diagnostic {n}/{total}",
+    "yourMeasurement": "Votre mesure",
+    "redProbe": "Sonde rouge",
+    "blackProbe": "Sonde noire",
+    "rotary": "Commutateur rotatif",
+    "notPlaced": "non placée",
+    "notSet": "non réglé",
+    "yes": "Oui",
+    "no": "Non",
+    "hint": "Besoin d'un indice ?",
+    "hintPenalty": "−5 pts",
+    "componentPin": "broche composant {n}",
+    "ecuPin": "{code} broche {n}",
+    "earth": "masse moteur"
+  },
+  "dmm": {
+    "brand": "HB TRONICS",
+    "model": "DMM-772 · TRUE RMS",
+    "off": "ARRÊT",
+    "placeBoth": "Placez les deux sondes",
+    "wrongFunction": "Mauvaise fonction sélectionnée",
+    "atPoints": "Lecture à vos points de sonde",
+    "spec": "Spéc {spec}"
+  },
+  "probes": {
+    "title": "Sondes — glisser sur une broche",
+    "red": "Sonde rouge",
+    "black": "Sonde noire",
+    "instruction": "Glissez une sonde sur une broche, une cavité de connecteur ou le symbole de masse moteur. L'affichage n'indique une valeur que lorsque les deux sondes sont en place et le commutateur rotatif sur la bonne fonction."
+  },
+  "progress": {
+    "title": "Progression",
+    "cleared": "Terminés",
+    "remaining": "Restants",
+    "steps": "étapes",
+    "found": "TROUVÉ",
+    "clear": "SAIN",
+    "open": "Ouvrir",
+    "overall": "Progression globale"
+  }
+}

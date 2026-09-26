@@ -13,5 +13,6 @@ class RolePermissionSeeder extends Seeder
         Role::findOrCreate('Admin', 'web');
         Role::findOrCreate('Instructor', 'web');
         Role::findOrCreate('Student', 'web');
+        Role::findOrCreate('Support', 'web');
     }
 }

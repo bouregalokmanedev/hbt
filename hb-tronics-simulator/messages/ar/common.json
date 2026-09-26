@@ -1,0 +1,33 @@
+{
+  "action": {
+    "start": "ابدأ",
+    "stop": "إيقاف",
+    "reset": "إعادة تعيين",
+    "next": "التالي",
+    "previous": "السابق",
+    "continue": "متابعة",
+    "review": "مراجعة",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "export": "تصدير",
+    "close": "إغلاق",
+    "install": "تثبيت حزمة البيانات",
+    "request": "طلب التغطية",
+    "run": "تشغيل",
+    "record": "تسجيل",
+    "locked": "مقفل"
+  },
+  "status": {
+    "pass": "ناجح",
+    "fault": "عطل",
+    "warning": "تحذير",
+    "inSpec": "ضمن المواصفات",
+    "outOfSpec": "خارج المواصفات",
+    "belowTarget": "دون الهدف",
+    "ok": "سليم",
+    "current": "حالي",
+    "stored": "مخزّن",
+    "pending": "معلّق",
+    "intermittent": "متقطّع"
+  }
+}

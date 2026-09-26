@@ -41,7 +41,7 @@ event(new EnrollmentCompleted($enrollment));
                 $enrollment->user,
                 'course_completed',
                 'Course completed',
-                "You completed {$enrollment->course?->title}. Your next milestone is waiting.",
+                "You completed {$enrollment->course?->title}. Every module, every assessment — you saw it through. Your next milestone is waiting.",
                 '/my-courses',
                 "course-completed:{$enrollment->id}",
             );

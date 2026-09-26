@@ -33,3 +33,31 @@ export {
 export {
     InstructorCourseOutcomesPage,
 } from "./InstructorCourseOutcomesPage";
+
+export {
+    InstructorDiagnosticsPage,
+} from "./InstructorDiagnosticsPage";
+
+export {
+    InstructorSimulatorPage,
+} from "./InstructorSimulatorPage";
+
+export {
+    InstructorAssessmentWorkspacePage,
+} from "./InstructorAssessmentWorkspacePage";
+
+export {
+    InstructorLoungePage,
+} from "./InstructorLoungePage";
+
+export {
+    InstructorProfilePage,
+} from "./InstructorProfilePage";
+
+export {
+    InstructorRevenuePage,
+} from "./InstructorRevenuePage";
+
+export {
+    InstructorSettingsPage,
+} from "./InstructorSettingsPage";

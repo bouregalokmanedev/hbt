@@ -20,12 +20,16 @@ class SessionController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $data = $request->validate([
+            'all' => ['sometimes', 'boolean'],
+        ]);
+
         return $this->success(
 
             UserSessionResource::collection(
 
                 $this->sessions->all(auth()->user())
-                    ->when(! $request->boolean('all'), fn ($sessions) => $sessions->take(3))
+                    ->when(! ($data['all'] ?? false), fn ($sessions) => $sessions->take(3))
 
             )
 

@@ -1,0 +1,87 @@
+{
+  "title": "Location",
+  "subtitle": "Component location · engine bay, fuse box, ECUs & ground points",
+  "mode": {
+    "browse": "Browse",
+    "train": "Training",
+    "quiz": "Quiz"
+  },
+  "view": {
+    "sensors": "Sensors",
+    "ecu": "ECUs",
+    "ground": "Ground",
+    "fuse": "Fuse box",
+    "system": "Systems",
+    "vehicle": "Vehicle"
+  },
+  "sidebar": {
+    "search": "Search components, refs, circuits",
+    "inDataSet": "{n} components in data set",
+    "categories": "Categories",
+    "systems": "Vehicle systems",
+    "nSystems": "{n} systems",
+    "favourites": "Favourites",
+    "all": "All components"
+  },
+  "cat": {
+    "all": "All components",
+    "Sensors": "Sensors",
+    "Actuators": "Actuators",
+    "ECUs": "ECUs / Modules",
+    "Relays": "Relays",
+    "Fuses": "Fuses",
+    "Ground points": "Ground points",
+    "systems": "Vehicle systems"
+  },
+  "toolbar": {
+    "outlines": "Hotspot outlines",
+    "dim": "Dim others",
+    "fit": "FIT",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
+  },
+  "detail": {
+    "component": "Component",
+    "oem": "OEM ref",
+    "reference": "Reference",
+    "category": "Category",
+    "system": "Vehicle system",
+    "zone": "Zone",
+    "location": "Location",
+    "vehicle": "Vehicle",
+    "notes": "Notes",
+    "amp": "Rating",
+    "vehicleViews": "Vehicle views",
+    "practise": "Practise this"
+  },
+  "train": {
+    "progress": "Training progress",
+    "score": "SCORE",
+    "wrong": "WRONG PICKS",
+    "tasksDone": "Tasks completed: {n}",
+    "difficulty": "Difficulty",
+    "hint": "Hint {n} / 5",
+    "skip": "Skip task",
+    "log": "Attempt log",
+    "logEmpty": "Attempts appear here as you work through the tasks.",
+    "task": "Training task"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "time": "TIME",
+    "score": "SCORE",
+    "question": "Question {n}",
+    "results": "Results",
+    "restart": "Restart quiz"
+  },
+  "system": {
+    "kicker": "System trace",
+    "total": "{n} components",
+    "practise": "Practise this system",
+    "fuses": "Fuses",
+    "relays": "Relays",
+    "ecus": "Control units",
+    "note": "Every fuse whose circuit list names “{label}”, plus the relays and control units serving it. Select a row to jump to its position on the board."
+  },
+  "empty": "No components match your filters."
+}

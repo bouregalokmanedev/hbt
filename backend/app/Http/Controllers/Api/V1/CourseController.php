@@ -14,6 +14,7 @@ use App\Domains\Courses\Resources\CurriculumResource;
 use App\Domains\Courses\Actions\PublishCourseAction;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Enums\Courses\Difficulty;
 use Illuminate\Http\JsonResponse;
@@ -88,18 +89,35 @@ public function index(Request $request)
     }
 
     if ($request->filled('instructor')) {
-        $query->byInstructor(
-            (int) $request->input('instructor')
-        );
+        $instructorInput = $request->string('instructor')->toString();
+
+        // Accept a numeric id, a user uuid, or a username (used by the
+        // instructor spotlight to list "more courses by this instructor").
+        $instructorId = ctype_digit($instructorInput)
+            ? (int) $instructorInput
+            : (int) (User::query()
+                ->where('uuid', $instructorInput)
+                ->orWhere('username', strtolower($instructorInput))
+                ->value('id') ?? 0);
+
+        abort_unless($instructorId > 0, 422, 'Invalid instructor filter.');
+
+        $query->byInstructor((string) $instructorId);
     }
 
     if ($request->filled('difficulty')) {
-    $query->difficulty(
-        Difficulty::from(
+        $difficulty = Difficulty::tryFrom(
             $request->string('difficulty')->toString()
-        )
-    );
-}
+        );
+
+        abort_unless(
+            $difficulty !== null,
+            422,
+            'Invalid difficulty filter.'
+        );
+
+        $query->difficulty($difficulty);
+    }
 
     if ($request->boolean('free')) {
         $query->free();

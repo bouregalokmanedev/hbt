@@ -50,24 +50,58 @@ class StudentProgressionService
             $profile->level = $this->levelFor($profile->total_xp);
             $profile->save();
             if ($profile->current_streak > $previousStreak && $profile->current_streak > 1) {
-                app(StudentNotificationService::class)->send($user, 'learning_streak', 'Streak extended!', "You are on a {$profile->current_streak}-day learning streak.", '/achievements', 'streak:'.$profile->last_activity_date->toDateString());
+                $days = $profile->current_streak;
+                app(StudentNotificationService::class)->send(
+                    $user,
+                    'learning_streak',
+                    "{$days}-day learning streak",
+                    "Amazing — you have shown up {$days} days in a row. Consistency like this is how mastery is built. Don't break the chain today.",
+                    '/achievements',
+                    'streak:'.$profile->last_activity_date->toDateString(),
+                );
             }
             if ($profile->level > $previousLevel) {
                 $level = self::LEVELS[$profile->level];
-                app(StudentNotificationService::class)->send($user, 'level_up', 'Level up!', "You reached level {$profile->level}: {$level['title']}.", '/achievements', "level:{$profile->level}");
+                app(StudentNotificationService::class)->send(
+                    $user,
+                    'level_up',
+                    'Level up',
+                    "You reached level {$profile->level}: {$level['title']}. Every lesson you finish is moving you forward — keep going.",
+                    '/achievements',
+                    "level:{$profile->level}",
+                );
             }
             return $transaction;
         });
     }
 
+    /**
+     * XP events that represent real student work and therefore count as a
+     * "learning day". Derived rewards (streak_bonus, badge_earned) are
+     * excluded so page loads / bonus ticks never fabricate an active day.
+     */
+    private const LEARNING_EVENTS = [
+        'lesson_completed',
+        'quiz_passed',
+        'assessment_passed',
+        'simulator_completed',
+        'diagnostic_completed',
+        'course_enrolled',
+        'daily_challenge',
+        'profile_completed',
+        'section_completed',
+    ];
+
     public function summaryFor(User $user): array
     {
         $profile = StudentProgressionProfile::firstOrCreate(['user_id' => $user->id]);
-        $level = self::LEVELS[$profile->level] ?? end(self::LEVELS);
+        $levels = self::LEVELS;
+        $level = $levels[$profile->level] ?? end($levels);
         $next = self::LEVELS[$profile->level + 1] ?? null;
         $start = $level['threshold'];
         $progress = $next ? (int) min(100, round((($profile->total_xp - $start) / max(1, $next['threshold'] - $start)) * 100)) : 100;
         $activeDays = StudentXpTransaction::where('user_id', $user->id)
+            ->whereIn('event', self::LEARNING_EVENTS)
             ->where('created_at', '>=', now()->startOfDay()->subDays(6))
             ->get(['created_at'])
             ->map(fn (StudentXpTransaction $transaction) => $transaction->created_at->toDateString())
@@ -81,12 +115,27 @@ class StudentProgressionService
             'total_xp' => $profile->total_xp, 'level' => $profile->level, 'title' => $level['title'],
             'next_level_xp' => $next['threshold'] ?? $profile->total_xp, 'next_level_title' => $next['title'] ?? 'Maximum level',
             'progress_percent' => $progress,
-            'current_streak' => (int) ($profile->current_streak ?? 0),
+            'current_streak' => $this->effectiveStreak($profile),
             'longest_streak' => (int) ($profile->longest_streak ?? 0),
             'last_activity_date' => optional($profile->last_activity_date)->toDateString(),
             'learning_days' => $learningDays,
             'recent_awards' => StudentXpTransaction::where('user_id', $user->id)->latest()->take(6)->get(['id', 'event', 'xp', 'metadata', 'created_at']),
         ];
+    }
+
+    /**
+     * Display-safe streak: a streak only survives until the end of the day
+     * after the last activity. Once two or more calendar days have passed
+     * without activity the stored count is stale — report 0 until the next
+     * activity restarts it (recordLearningDay resets the stored value then).
+     */
+    public function effectiveStreak(StudentProgressionProfile $profile): int
+    {
+        $last = $profile->last_activity_date?->startOfDay();
+        if ($last === null) return 0;
+        $gap = (int) $last->diffInDays(now()->startOfDay());
+        if ($gap <= 1) return (int) ($profile->current_streak ?? 0);
+        return 0;
     }
 
     private function recordLearningDay(StudentProgressionProfile $profile): void
@@ -95,8 +144,11 @@ class StudentProgressionService
         $last = $profile->last_activity_date?->startOfDay();
         if ($last?->equalTo($today)) return;
 
-        $profile->current_streak = $last?->diffInDays($today) === 1 ? $profile->current_streak + 1 : 1;
-        $profile->longest_streak = max($profile->longest_streak, $profile->current_streak);
+        $previous = (int) ($profile->current_streak ?? 0);
+        // Carbon 3 diffInDays returns float; compare as int day gap.
+        $gap = $last === null ? null : (int) $last->diffInDays($today);
+        $profile->current_streak = $gap === 1 ? $previous + 1 : 1;
+        $profile->longest_streak = max((int) ($profile->longest_streak ?? 0), $previous, $profile->current_streak);
         $profile->last_activity_date = $today;
     }
 
@@ -105,5 +157,5 @@ class StudentProgressionService
         return collect(self::LEVELS)->filter(fn ($level) => $xp >= $level['threshold'])->keys()->max() ?? 1;
     }
 
-    public static function badgeXp(string $badge): int { return match ($badge) { 'learner' => 70, 'elite' => 55, 'striker' => 40, 'owner' => 35, 'pro' => 50, 'member' => 10, default => 25 }; }
+    public static function badgeXp(string $badge): int { return match ($badge) { 'learner' => 70, 'elite' => 55, 'striker' => 40, 'owner' => 35, 'pro' => 50, 'member' => 10, 'diagnostic-starter' => 30, 'diagnostic-solver' => 60, 'bench-starter' => 35, 'sim-explorer' => 70, 'bench-ace' => 55, default => 25 }; }
 }

@@ -39,7 +39,7 @@ export function DashboardNavItem({
                 ${
                     isActive
                         ? "bg-[#F47822]/10 text-[#F47822]"
-                        : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"
+                        : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5 hover:text-[#3A3A3A] dark:hover:text-[#ececef]"
                 }
                 ${collapsed ? "justify-center px-0" : ""}
                 `
@@ -58,7 +58,7 @@ export function DashboardNavItem({
                             ${
                                 isActive
                                     ? "text-[#F47822]"
-                                    : "text-[#3A3A3A]/40 group-hover:text-[#3A3A3A]"
+                                    : "text-[#3A3A3A]/40 dark:text-white/40 group-hover:text-[#3A3A3A] dark:group-hover:text-[#ececef]"
                             }
                         `}
                     />

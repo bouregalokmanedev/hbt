@@ -21,6 +21,9 @@ use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use App\Http\Middleware\UpdateSessionActivity;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SecurityHeaders;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -40,7 +43,11 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->appendToGroup('api', [
         SetLocale::class,
         UpdateSessionActivity::class,
+        SecurityHeaders::class,
     ]);
+
+    // Global API throttle — per-route throttles can still be stricter.
+    $middleware->throttleApi();
 
     $middleware->redirectGuestsTo(
         fn (Request $request) => $request->is('api/*')
@@ -197,6 +204,48 @@ $exceptions->render(function (
         'message' => $e->getMessage(),
     ], 422);
 });
-    })
 
+        /*
+        |--------------------------------------------------------------------------
+        | Student assessments
+        |--------------------------------------------------------------------------
+        */
+
+        $exceptions->render(function (
+            \App\Domains\StudentAssessments\Exceptions\AssessmentAccessDeniedException $e
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 403);
+        });
+
+        $exceptions->render(function (
+            \App\Domains\StudentAssessments\Exceptions\AttemptAlreadySubmittedException $e
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 409);
+        });
+
+        $exceptions->render(function (
+            \App\Domains\Assessments\Exceptions\AssessmentNotEligibleException $e
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'evidence' => $e->evidence,
+            ], 422);
+        });
+
+        $exceptions->render(function (
+            \App\Domains\Assessments\Exceptions\AssessmentMaxAttemptsExceededException $e
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+    })
     ->create();

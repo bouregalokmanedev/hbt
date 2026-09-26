@@ -1,0 +1,156 @@
+{
+  "brand": "SCHÉMA",
+  "loading": "Chargement du schéma…",
+  "legend": "Légende",
+  "mode": {
+    "study": "Étude",
+    "trace": "Tracé",
+    "training": "Entraînement",
+    "practice": "Exercice",
+    "exam": "Examen"
+  },
+  "view": {
+    "schematic": "Schéma",
+    "circuit": "Vue circuit"
+  },
+  "sheet": "PLANCHE 1/1 · IMPORTÉE",
+  "layout": {
+    "label": "DISPOSITION",
+    "a": "Espace à trois colonnes",
+    "b": "Canevas d’abord, inspecteur flottant",
+    "c": "Inspecteur ancré en bas"
+  },
+  "device": {
+    "desktop": "Bureau",
+    "tablet": "Tablette 1024×768",
+    "mobile": "Mobile 390×844"
+  },
+  "controls": {
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "fit": "Ajuster",
+    "reset": "Réinitialiser",
+    "print": "Imprimer",
+    "export": "Exporter",
+    "menu": "Menu",
+    "fullscreen": "Plein écran",
+    "minimap": "MINICARTE"
+  },
+  "search": {
+    "button": "Rechercher fil, broche, ECU, fusible, masse…",
+    "placeholder": "Rechercher couleur de fil, broche ECU, fusible, masse, composant…",
+    "footer": "Recherche uniquement dans le tableau de broches importé",
+    "results": "{n} résultats",
+    "kind": {
+      "component": "COMP",
+      "wire": "FIL"
+    }
+  },
+  "layers": {
+    "title": "Calques",
+    "count": "{n}/11 calques",
+    "noData": "AUCUNE DONNÉE",
+    "labels": "Étiquettes de composants",
+    "pins": "Numéros de broches ECU",
+    "colours": "Couleurs de fils",
+    "grounds": "Masses",
+    "power": "Alimentations & fusibles",
+    "canh": "CAN High",
+    "canl": "CAN Low",
+    "lin": "LIN",
+    "flexray": "FlexRay",
+    "wirenum": "Numéros de fils",
+    "circuit": "Noms de circuits"
+  },
+  "trace": {
+    "kicker": "TRACÉ",
+    "play": "Lecture",
+    "pause": "Pause",
+    "next": "Étape suivante",
+    "picker": "Tracés guidés"
+  },
+  "sidebar": {
+    "systems": "SYSTÈMES DU VÉHICULE",
+    "components": "COMPOSANTS DE LA PLANCHE",
+    "recent": "RÉCENTS",
+    "progress": "PROGRESSION D’ENTRAÎNEMENT",
+    "bookmarks": "SIGNETS",
+    "filter": "Filtrer les composants",
+    "attempts": "{n} tentatives",
+    "progressNote": "{done} tâches d’entraînement sur {total} localisées correctement."
+  },
+  "systems": {
+    "engine": "Gestion moteur",
+    "ecu": "ECU & connecteurs",
+    "can": "Réseau CAN",
+    "power": "Distribution d’alimentation & masses"
+  },
+  "bookmarks": {
+    "ecu": "ECU E1 — brochage connecteur A",
+    "ground": "Point de masse BA (B 16 / B 51 / B 59)",
+    "relay": "Relais de bobine d’allumage R16"
+  },
+  "inspector": {
+    "connections": "CONNEXIONS",
+    "ecuPins": "BROCHES ECU",
+    "sheet": "PLANCHE",
+    "selectedWire": "FIL SÉLECTIONNÉ",
+    "from": "E1 Calculateur moteur",
+    "pinRows": "LIGNES DU TABLEAU DE BROCHES",
+    "allRows": "TABLEAU DE BROCHES ECU — TOUTES LES LIGNES",
+    "rows": "{n} lignes",
+    "sharedGround": "MASSE PARTAGÉE — BROCHES ECU RELIÉES ICI",
+    "related": "COMPOSANTS LIÉS",
+    "oem": "DONNÉES OEM",
+    "information": "INFORMATION",
+    "sheetSummary": "RÉSUMÉ DE LA PLANCHE",
+    "connectors": "CONNECTEURS ECU",
+    "mismatchNote": "La couleur change au raccord — {a} côté ECU, {b} côté composant.",
+    "clear": "Effacer la sélection",
+    "pin": "broche {n}"
+  },
+  "oem": {
+    "image": "Image du composant",
+    "housing": "Image du boîtier de connecteur",
+    "location": "Emplacement sur le véhicule",
+    "rating": "Calibre du fusible",
+    "repair": "Notes de réparation",
+    "notes": "Notes OEM"
+  },
+  "summary": {
+    "components": "Composants de la planche",
+    "rows": "Lignes du tableau de broches",
+    "connectors": "Connecteurs ECU",
+    "pins": "Broches ECU distinctes",
+    "grounds": "Points de masse",
+    "can": "Réseaux CAN",
+    "connectorsValue": "A · B",
+    "groundsValue": "AB · BA · BB · EB"
+  },
+  "task": {
+    "trainingKicker": "TÂCHE D’ENTRAÎNEMENT",
+    "practiceKicker": "EXERCICE — GÉNÉRÉ DEPUIS LE TABLEAU DE BROCHES",
+    "examKicker": "EXAMEN",
+    "counter": "{n} / {total}",
+    "next": "Tâche suivante",
+    "nextQuestion": "Question suivante",
+    "submit": "Soumettre l’examen",
+    "restart": "Recommencer l’examen",
+    "showAnswer": "Afficher la réponse",
+    "wrongPicks": "MAUVAIS CHOIX",
+    "accuracy": "PRÉCISION",
+    "option": "Broche ECU {pin}",
+    "examSubmitted": "Examen soumis — score {pct}"
+  },
+  "connector": {
+    "title": "Calculateur moteur E1 — connecteur {code}",
+    "meta": "depuis le tableau de broches importé",
+    "tab": "Connecteur {code}",
+    "pinsInTable": "Connecteur {code} — {n} broches au tableau"
+  },
+  "vehicle": {
+    "title": "Véhicule",
+    "name": "TOYOTA Corolla 1.6 16V VVT-i (1ZR-FE)",
+    "years": "2013 – 2018 · Schéma de câblage · 1 planche importée"
+  }
+}

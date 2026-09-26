@@ -3,6 +3,7 @@
 namespace App\Domains\Certificates\Actions;
 
 use App\Domains\Assessments\Models\AssessmentResult;
+use App\Domains\Notifications\Services\StudentNotificationService;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +37,7 @@ final class IssueCertificateAction
                 );
             }
 
-            return Certificate::query()->firstOrCreate(
+            $certificate = Certificate::query()->firstOrCreate(
                 [
                     'assessment_result_id' => $result->id,
                 ],
@@ -49,6 +50,20 @@ final class IssueCertificateAction
                     'issued_at' => $result->completed_at ?? now(),
                 ],
             );
+
+            if ($certificate->wasRecentlyCreated) {
+                $courseTitle = (string) $result->assessment->course->title;
+                app(StudentNotificationService::class)->send(
+                    $result->user,
+                    'certificate_issued',
+                    'Certificate earned',
+                    "Your certificate for \"{$courseTitle}\" is ready. Well done — this one is yours to keep.",
+                    '/certificates',
+                    'certificate-issued:'.$certificate->id,
+                );
+            }
+
+            return $certificate;
         });
     }
 }

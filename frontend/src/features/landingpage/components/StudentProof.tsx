@@ -13,6 +13,15 @@ import {
 
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
+import {
+    Eyebrow,
+    LandingContainer,
+    LandingSection,
+    SectionTitle,
+} from "./landing-ui";
+
 import studentVideo01 from "@/assets/students/student-01.mp4";
 import studentVideo02 from "@/assets/students/student-02.mp4";
 import studentVideo03 from "@/assets/students/student-03.mp4";
@@ -64,6 +73,8 @@ function StudentVideoCard({
 }: {
     item: StudentVideo;
 }) {
+    const { t } = useTranslation();
+
     const videoRef =
         useRef<HTMLVideoElement | null>(null);
 
@@ -186,7 +197,7 @@ function StudentVideoCard({
                         <Play
                             size={21}
                             fill="currentColor"
-                            className="ml-1"
+                            className="ms-1"
                         />
                     </div>
                 </div>
@@ -205,8 +216,8 @@ function StudentVideoCard({
                         onClick={toggleMute}
                         aria-label={
                             isMuted
-                                ? "Unmute video"
-                                : "Mute video"
+                                ? t("landingPage.proof.unmuteVideo")
+                                : t("landingPage.proof.muteVideo")
                         }
                         className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/30 text-white/80 backdrop-blur-md transition-all duration-300 hover:border-[#F47822] hover:bg-[#F47822] hover:text-white"
                     >
@@ -233,8 +244,14 @@ function StudentVideoCard({
 ================================================================ */
 
 export default function StudentProof() {
+    const { t } = useTranslation();
+
+    const videoLabels = t("landingPage.proof.videoLabels", {
+        returnObjects: true,
+    }) as string[];
+
     return (
-        <section className="relative overflow-hidden bg-[#F7F7F7] py-24 sm:py-28 lg:py-32">
+        <LandingSection className="bg-[#F7F7F7]">
             {/* ====================================================
                 SUBTLE BACKGROUND
             ===================================================== */}
@@ -252,7 +269,7 @@ export default function StudentProof() {
                 MAIN CONTAINER
             ===================================================== */}
 
-            <div className="relative mx-auto max-w-[1500px] px-6 sm:px-8 lg:px-12">
+            <LandingContainer className="relative">
                 {/* =================================================
                     HEADER
                 ================================================== */}
@@ -261,31 +278,30 @@ export default function StudentProof() {
                     <div>
                         {/* Small label */}
 
-                        <div className="mb-5 flex items-center gap-3">
+                        <div className="flex items-center gap-3">
                             <span className="h-[2px] w-8 bg-[#F47822]" />
 
-                            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]/45">
-                                HBTronics Students
-                            </span>
+                            <Eyebrow tone="muted">
+                                {t("landingPage.proof.eyebrow")}
+                            </Eyebrow>
                         </div>
 
                         {/* Heading */}
 
-                        <h2 className="text-[46px] font-black leading-[0.92] tracking-[-0.045em] text-[#3A3A3A] sm:text-[60px] lg:text-[72px]">
-                            SEE IT
+                        <SectionTitle size="display" className="lowercase">
+                            {t("landingPage.proof.titleA")}
                             <br />
 
                             <span className="text-[#F47822]">
-                                IN PRACTICE.
+                                {t("landingPage.proof.titleB")}
                             </span>
-                        </h2>
+                        </SectionTitle>
                     </div>
 
                     {/* Small description */}
 
                     <p className="max-w-[330px] text-sm leading-6 text-[#3A3A3A]/50 lg:pb-2">
-                        Real students putting their
-                        diagnostic skills to work.
+                        {t("landingPage.proof.description")}
                     </p>
                 </div>
 
@@ -300,10 +316,15 @@ export default function StudentProof() {
                 ================================================== */}
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    {studentVideos.map((item) => (
+                    {studentVideos.map((item, index) => (
                         <StudentVideoCard
                             key={item.id}
-                            item={item}
+                            item={{
+                                ...item,
+                                label:
+                                    videoLabels[index] ??
+                                    item.label,
+                            }}
                         />
                     ))}
                 </div>
@@ -317,7 +338,7 @@ export default function StudentProof() {
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 
                         <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/35">
-                            Learning by doing
+                            {t("landingPage.proof.tagline")}
                         </span>
                     </div>
 
@@ -326,19 +347,19 @@ export default function StudentProof() {
                         className="group inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.12em] text-[#3A3A3A]"
                     >
                         <span>
-                            Start learning
+                            {t("landingPage.proof.startLearning")}
                         </span>
 
                         <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3A3A3A]/15 transition-all duration-300 group-hover:border-[#F47822] group-hover:bg-[#F47822] group-hover:text-white">
                             <ArrowRight
                                 size={15}
                                 strokeWidth={1.8}
-                                className="transition-transform duration-300 group-hover:translate-x-0.5"
+                                className="transition-transform duration-300 group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5"
                             />
                         </span>
                     </Link>
                 </div>
-            </div>
-        </section>
+            </LandingContainer>
+        </LandingSection>
     );
 }

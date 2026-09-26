@@ -2,31 +2,36 @@ import { env } from "@/config/env";
 import { ApiError } from "@/lib/api/errors";
 import { api } from "@/lib/api/client";
 import { authStorage } from "@/lib/storage/auth-storage";
-import type { MentorConversation, MentorMessage, MentorToolResult } from "../types/mentor";
+import type { MentorConversation, MentorToolResult } from "../types/mentor";
 
 export const mentorApi = {
-    list: () => api<MentorConversation[]>("/mentor/conversations"),
+    list: () => api<MentorConversation[]>("/v1/mentor/conversations"),
     create: (payload: { title?: string; course_id?: string; lesson_id?: string }) =>
-        api<MentorConversation>("/mentor/conversations", { method: "POST", body: payload }),
+        api<MentorConversation>("/v1/mentor/conversations", { method: "POST", body: payload }),
     get: (conversationId: string) =>
-        api<MentorConversation>(`/mentor/conversations/${conversationId}`),
+        api<MentorConversation>(`/v1/mentor/conversations/${conversationId}`),
     archive: (conversationId: string) =>
-        api<void>(`/mentor/conversations/${conversationId}`, { method: "DELETE" }),
+        api<void>(`/v1/mentor/conversations/${conversationId}`, { method: "DELETE" }),
     feedback: (messageId: string, rating: "positive" | "negative") =>
-        api(`/mentor/messages/${messageId}/feedback`, {
+        api(`/v1/mentor/messages/${messageId}/feedback`, {
             method: "POST",
             body: { rating, reason: rating === "positive" ? "helpful" : "incorrect" },
         }),
     voltageDrop: (sourceVoltage: number, loadVoltage: number) =>
-        api<MentorToolResult>("/mentor/tools/voltage-drop", {
+        api<MentorToolResult>("/v1/mentor/tools/voltage-drop", {
             method: "POST",
             body: { source_voltage: sourceVoltage, load_voltage: loadVoltage },
         }),
     checklist: (symptom: string) =>
-        api<MentorToolResult>("/mentor/tools/diagnostic-checklist", {
+        api<MentorToolResult>("/v1/mentor/tools/diagnostic-checklist", {
             method: "POST",
             body: { symptom },
         }),
+    practiceQuiz: (payload: { topic?: string; course_id?: string; lesson_id?: string }) =>
+        api<{ id: string; title: string; topic: string; questions: Array<{ id: string; question: string; options: Array<{ id: string; text: string; is_correct: boolean }>; points: number }> }>(
+            "/v1/mentor/practice-quiz",
+            { method: "POST", body: payload },
+        ),
 };
 
 /** Read the API's POST SSE response and expose text tokens to the chat surface. */
@@ -43,7 +48,7 @@ export async function streamMentorMessage(
     if (token) headers.set("Authorization", `Bearer ${token}`);
 
     const response = await fetch(
-        `${env.apiUrl}/mentor/conversations/${conversationId}/messages/stream`,
+        `${env.apiUrl}/v1/mentor/conversations/${conversationId}/messages/stream`,
         { method: "POST", headers, body: JSON.stringify({ message }) },
     );
 

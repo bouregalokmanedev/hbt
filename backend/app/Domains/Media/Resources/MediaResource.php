@@ -4,17 +4,22 @@ namespace App\Domains\Media\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class MediaResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $url = $this->type->value === 'video'
-            ? route('media.stream', [
-                'media' => $this->id,
-            ])
-            : Storage::disk($this->disk)->url($this->path);
+        /*
+         * All media uses a time-limited signed URL so files are never
+         * world-readable off the public disk. Authorization already
+         * happened when the parent lesson/course payload was loaded.
+         */
+        $url = URL::temporarySignedRoute(
+            'media.stream',
+            now()->addHours($this->type->value === 'video' ? 6 : 24),
+            ['media' => $this->id],
+        );
 
         return [
             'id' => $this->id,

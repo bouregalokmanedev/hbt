@@ -20,6 +20,11 @@ export function getCertificateDownloadUrl(certificateId: string): string {
     return `${env.apiUrl}/v1/certificates/${certificateId}/download`;
 }
 
+/** Public verification link a learner can paste anywhere (no auth needed). */
+export function certificateVerifyPath(certificate: Certificate): string {
+    return `/verify/${certificate.certificate_number}`;
+}
+
 export async function downloadCertificate(certificate: Certificate): Promise<void> {
     const response = await fetch(getCertificateDownloadUrl(certificate.id), {
         headers: {

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
     /* =========================================================
        HBT BRAND
@@ -126,6 +128,52 @@
 
     --content-width: 1280px;
     --page-padding: 1.25rem;
+}
+
+/* =========================================================
+   DARK THEME — applied when `.dark` sits on <html>.
+   Driven by the student Appearance setting (system/light/dark).
+   ========================================================= */
+
+.dark {
+    --hbt-orange-soft: #2a1a10;
+
+    --hbt-dark: #ececef;
+    --hbt-dark-hover: #ffffff;
+
+    --hbt-gray: #1b1b20;
+    --hbt-surface: #16161a;
+
+    --background: #101013;
+    --surface: #16161a;
+    --card: #1b1b20;
+
+    --foreground: #ececef;
+    --foreground-strong: #ffffff;
+
+    --muted: #9aa1ad;
+    --muted-foreground: #8b93a1;
+
+    --primary-foreground: #ffffff;
+
+    --secondary: #232329;
+    --secondary-hover: #2c2c34;
+    --secondary-foreground: #ececef;
+
+    --border: #2a2a31;
+    --border-strong: #3b3b45;
+
+    --success-background: #0a2e1c;
+    --success-foreground: #6ee7a8;
+
+    --warning-background: #33210a;
+    --warning-foreground: #fbbf24;
+
+    --danger-background: #3a1114;
+    --danger-foreground: #f87171;
+
+    --info-background: #0a2636;
+    --info-foreground: #7dd3fc;
 }
 
 

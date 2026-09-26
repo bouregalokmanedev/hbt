@@ -1,0 +1,791 @@
+[
+ {
+  "uuid": "5f1f4965-28e7-458d-9709-bf166528a132",
+  "type": "image/png",
+  "ref": "assets/ref-cam-hall.png",
+  "extracted": "simulator/ref-cam-hall.png",
+  "sha": "4fb7d1fd3541",
+  "referenced": true,
+  "bytes": 16223,
+  "required": true
+ },
+ {
+  "uuid": "d072d0a2-7d5f-4ffa-9243-cf93d14ae8e8",
+  "type": "image/png",
+  "ref": "assets/ref-inj-voltage.png",
+  "extracted": "simulator/ref-inj-voltage.png",
+  "sha": "5f1eb4c51bc2",
+  "referenced": true,
+  "bytes": 11005,
+  "required": true
+ },
+ {
+  "uuid": "d997f72a-07dc-44a5-8215-2b2c6a1276ea",
+  "type": "image/png",
+  "ref": "assets/ref-inj-d.png",
+  "extracted": "simulator/ref-inj-d.png",
+  "sha": "80d602b9e98a",
+  "referenced": true,
+  "bytes": 10427,
+  "required": true
+ },
+ {
+  "uuid": "2b212b5a-72ab-4938-b615-9312ac7a33da",
+  "type": "image/png",
+  "ref": "assets/ref-inj-current.png",
+  "extracted": "simulator/ref-inj-current.png",
+  "sha": "6fe2e5e33390",
+  "referenced": true,
+  "bytes": 11576,
+  "required": true
+ },
+ {
+  "uuid": "9cf26fa1-9310-42f9-86d8-80769616eb51",
+  "type": "image/png",
+  "ref": "assets/fusebox-layout.png",
+  "extracted": "simulator/fusebox-layout.png",
+  "sha": "9f41f6c2f38e",
+  "referenced": true,
+  "bytes": 73295,
+  "required": true
+ },
+ {
+  "uuid": "eb19c0ca-c0ef-457f-8e4f-b440c68ea24c",
+  "type": "image/png",
+  "ref": "ref/crank/3.png",
+  "extracted": "simulator/crank/3.png",
+  "sha": "f7522123aafc",
+  "referenced": true,
+  "bytes": 27612,
+  "required": true
+ },
+ {
+  "uuid": "ebc9a5ff-efa6-41a8-a7da-1ea6b8de81ea",
+  "type": "image/png",
+  "ref": "assets/ref-inj-b.png",
+  "extracted": "simulator/ref-inj-b.png",
+  "sha": "23610a3cdced",
+  "referenced": true,
+  "bytes": 11178,
+  "required": true
+ },
+ {
+  "uuid": "5cdf8999-a5d5-4ed4-b33d-c27ddebf2887",
+  "type": "image/png",
+  "ref": "assets/map-ecu.png",
+  "extracted": "simulator/map-ecu.png",
+  "sha": "87264fe08c16",
+  "referenced": true,
+  "bytes": 160866,
+  "required": true
+ },
+ {
+  "uuid": "a7970da6-2529-41de-b7c5-0d94f19322aa",
+  "type": "image/png",
+  "ref": "assets/ref-inj-c.png",
+  "extracted": "simulator/ref-inj-c.png",
+  "sha": "90704b3b1a5c",
+  "referenced": true,
+  "bytes": 11504,
+  "required": true
+ },
+ {
+  "uuid": "a71c3ef0-bcc7-48a8-a444-fb811367ace1",
+  "type": "image/png",
+  "ref": "ref/cam/1.png",
+  "extracted": "simulator/cam/1.png",
+  "sha": "422b38e0ce31",
+  "referenced": true,
+  "bytes": 49540,
+  "required": true
+ },
+ {
+  "uuid": "dca28c37-bfea-477a-98e2-e27749273f84",
+  "type": "image/png",
+  "ref": "assets/inj-photo.png",
+  "extracted": "simulator/inj-photo.png",
+  "sha": "0219e6ebbf6e",
+  "referenced": true,
+  "bytes": 42161,
+  "required": true
+ },
+ {
+  "uuid": "7fc4c31e-7fe7-4e6f-b592-a7d251856ff1",
+  "type": "image/png",
+  "ref": "ref/o2/6.png",
+  "extracted": "simulator/o2/6.png",
+  "sha": "dcf89b73b51f",
+  "referenced": true,
+  "bytes": 52121,
+  "required": true
+ },
+ {
+  "uuid": "13bf9e42-d50f-453e-b320-80d98440b709",
+  "type": "image/png",
+  "ref": "ref/maf/7.png",
+  "extracted": "simulator/maf/7.png",
+  "sha": "b0ff84240408",
+  "referenced": true,
+  "bytes": 42819,
+  "required": true
+ },
+ {
+  "uuid": "25d7ec81-5628-4e1d-b4b4-9cb729429e84",
+  "type": "image/jpeg",
+  "ref": "ref/knock/img.jpeg",
+  "extracted": "simulator/knock/img.jpeg",
+  "sha": "66cb9504ea54",
+  "referenced": true,
+  "bytes": 73610,
+  "required": true
+ },
+ {
+  "uuid": "9172efc5-b8aa-45bc-bcce-2dcda25b0d6c",
+  "type": "image/png",
+  "ref": "ref/coolant/4.png",
+  "extracted": "simulator/coolant/4.png",
+  "sha": "e909423a3c3b",
+  "referenced": true,
+  "bytes": 62111,
+  "required": true
+ },
+ {
+  "uuid": "487f2742-3b39-4f8f-8551-e43379fc709d",
+  "type": "image/png",
+  "ref": "ref/throttle/1.png",
+  "extracted": "simulator/throttle/1.png",
+  "sha": "6960aeee07b5",
+  "referenced": true,
+  "bytes": 73310,
+  "required": true
+ },
+ {
+  "uuid": "2288e8bd-b85e-470c-bb42-260a0ca7def3",
+  "type": "image/png",
+  "ref": "ref/app/1.png",
+  "extracted": "simulator/app/1.png",
+  "sha": "a83cf3d96c99",
+  "referenced": true,
+  "bytes": 63653,
+  "required": true
+ },
+ {
+  "uuid": "411eaf88-be78-4c01-9d54-ecca43d56437",
+  "type": "image/png",
+  "ref": "assets/fusebox-location.png",
+  "extracted": "simulator/fusebox-location.png",
+  "sha": "69b61f8acbfc",
+  "referenced": true,
+  "bytes": 152293,
+  "required": true
+ },
+ {
+  "uuid": "120020d1-70f6-4a91-b9bd-e3ac1504df1e",
+  "type": "image/png",
+  "ref": "assets/map-ground.png",
+  "extracted": "simulator/map-ground.png",
+  "sha": "2b37a8987538",
+  "referenced": true,
+  "bytes": 161374,
+  "required": true
+ },
+ {
+  "uuid": "50faf31c-9587-471d-a4a0-d72081095c19",
+  "type": "image/png",
+  "ref": "assets/detail-I2.png",
+  "extracted": "simulator/detail-I2.png",
+  "sha": "c0d094762eae",
+  "referenced": true,
+  "bytes": 233231,
+  "required": true
+ },
+ {
+  "uuid": "14f808fa-c5a2-4aea-8cfa-008e588c5e96",
+  "type": "image/png",
+  "ref": "assets/detail-X7.png",
+  "extracted": "simulator/detail-X7.png",
+  "sha": "c3dbe264e21a",
+  "referenced": true,
+  "bytes": 246233,
+  "required": true
+ },
+ {
+  "uuid": "24143689-f5e9-43c4-8337-1c0b1ada0f30",
+  "type": "image/png",
+  "ref": "assets/detail-L3.png",
+  "extracted": "simulator/detail-L3.png",
+  "sha": "7b29da1a8f6d",
+  "referenced": true,
+  "bytes": 283973,
+  "required": true
+ },
+ {
+  "uuid": "217187ee-156d-4798-b055-edd501d8db18",
+  "type": "image/png",
+  "ref": "assets/detail-X8.png",
+  "extracted": "simulator/detail-X8.png",
+  "sha": "792f5b13a201",
+  "referenced": true,
+  "bytes": 199294,
+  "required": true
+ },
+ {
+  "uuid": "92bda3ec-5e18-4266-b789-0a1ebeaf457c",
+  "type": "image/png",
+  "ref": "assets/views-X8.png",
+  "extracted": "simulator/views-X8.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "81146556-8fdd-47ed-a5bb-22103fa54298",
+  "type": "image/png",
+  "ref": "assets/views-L3.png",
+  "extracted": "simulator/views-L3.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "ce147fcf-5fa8-4959-bc6a-e1122903c531",
+  "type": "image/png",
+  "ref": "assets/detail-T1.png",
+  "extracted": "simulator/detail-T1.png",
+  "sha": "81783fed0e2e",
+  "referenced": true,
+  "bytes": 313502,
+  "required": true
+ },
+ {
+  "uuid": "0bd20833-16f9-45eb-b53c-3036714bcd8e",
+  "type": "image/png",
+  "ref": "assets/views-I2.png",
+  "extracted": "simulator/views-I2.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "132b4cbc-8022-4372-bfb0-d14e53729b8f",
+  "type": "image/png",
+  "ref": "assets/views-U2.png",
+  "extracted": "simulator/views-U2.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "1f790c5c-de78-4484-ba01-2453d5063a07",
+  "type": "image/png",
+  "ref": "assets/detail-V1.png",
+  "extracted": "simulator/detail-V1.png",
+  "sha": "bea3b2130b89",
+  "referenced": true,
+  "bytes": 276930,
+  "required": true
+ },
+ {
+  "uuid": "4a748805-8cbf-42af-bc39-7589d9a8e12b",
+  "type": "image/png",
+  "ref": "assets/detail-U2.png",
+  "extracted": "simulator/detail-U2.png",
+  "sha": "eed9e502690a",
+  "referenced": true,
+  "bytes": 245496,
+  "required": true
+ },
+ {
+  "uuid": "a5787aa5-d81e-4395-af3e-02ccf5ffa0e1",
+  "type": "image/png",
+  "ref": "assets/views-V1.png",
+  "extracted": "simulator/views-V1.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "cdb51fde-2f5e-42f2-8f85-8333253ac3f7",
+  "type": "image/png",
+  "ref": "assets/views-L1.png",
+  "extracted": "simulator/views-L1.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "15c844a0-5838-435f-acf7-9fdfedbd2759",
+  "type": "image/png",
+  "ref": "assets/detail-X1.png",
+  "extracted": "simulator/detail-X1.png",
+  "sha": "b836b93faf7c",
+  "referenced": true,
+  "bytes": 267432,
+  "required": true
+ },
+ {
+  "uuid": "da5f9ee7-59d6-4c4b-b5ec-75aeead06c1e",
+  "type": "image/png",
+  "ref": "assets/views-X1.png",
+  "extracted": "simulator/views-X1.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "b6524651-af9e-432e-93eb-462eae2c95f8",
+  "type": "image/png",
+  "ref": "assets/views-T1.png",
+  "extracted": "simulator/views-T1.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "dc0d49c5-a047-4318-9703-8963ec9da82f",
+  "type": "image/png",
+  "ref": "assets/views-X7.png",
+  "extracted": "simulator/views-X7.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "138e3f46-1c01-4173-afd6-55844340b0ac",
+  "type": "image/png",
+  "ref": "assets/views-H3.png",
+  "extracted": "simulator/views-H3.png",
+  "sha": "022ffc571b54",
+  "referenced": true,
+  "bytes": 235480,
+  "required": true
+ },
+ {
+  "uuid": "fa145afb-6af5-4416-b345-9c99f4c6781e",
+  "type": "image/png",
+  "ref": "assets/detail-L1.png",
+  "extracted": "simulator/detail-L1.png",
+  "sha": "7a2f7ff20533",
+  "referenced": true,
+  "bytes": 264512,
+  "required": true
+ },
+ {
+  "uuid": "19e20c4d-993c-4e0b-9e35-e08f9ca7db18",
+  "type": "image/png",
+  "ref": "assets/detail-H3.png",
+  "extracted": "simulator/detail-H3.png",
+  "sha": "a5e9975b16c8",
+  "referenced": true,
+  "bytes": 389950,
+  "required": true
+ },
+ {
+  "uuid": "5542ca64-3e8f-4387-8b7c-60dea65d6673",
+  "type": "image/png",
+  "ref": "assets/diagram-r16.png",
+  "extracted": "simulator/diagram-r16.png",
+  "sha": "7f7663fddd17",
+  "referenced": true,
+  "bytes": 348325,
+  "required": true
+ },
+ {
+  "uuid": "7ba20d46-e2c9-43df-9365-14ba6ae755d3",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-400-cyrillic-ext.woff2",
+  "sha": "c39ef070ae66",
+  "referenced": false,
+  "bytes": 6912,
+  "required": true
+ },
+ {
+  "uuid": "d9a5f62b-de88-43f5-b3aa-3eec9c0b109a",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-400-cyrillic.woff2",
+  "sha": "9836f315b5c3",
+  "referenced": false,
+  "bytes": 8356,
+  "required": true
+ },
+ {
+  "uuid": "ab0e8296-abb5-4c38-a173-666e714d5427",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-400-vietnamese.woff2",
+  "sha": "6c8912d7cfd8",
+  "referenced": false,
+  "bytes": 5868,
+  "required": true
+ },
+ {
+  "uuid": "208edf31-53fb-4d00-9f58-8f9a63d92d02",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-400-latin-ext.woff2",
+  "sha": "4af8cef522bd",
+  "referenced": false,
+  "bytes": 13348,
+  "required": true
+ },
+ {
+  "uuid": "a2261cfe-d26e-48e6-be13-9074de6c600e",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-400-latin.woff2",
+  "sha": "bb87500e3204",
+  "referenced": false,
+  "bytes": 14708,
+  "required": true
+ },
+ {
+  "uuid": "1fc8a59c-16c3-487d-97ab-892a688cb90f",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-500-cyrillic-ext.woff2",
+  "sha": "a458a7d1793d",
+  "referenced": false,
+  "bytes": 6972,
+  "required": true
+ },
+ {
+  "uuid": "a3a044a5-4c4f-4b13-8012-eeb675db57ae",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-500-cyrillic.woff2",
+  "sha": "caa0275bed3d",
+  "referenced": false,
+  "bytes": 8460,
+  "required": true
+ },
+ {
+  "uuid": "809732b2-bc02-459c-8a95-29659d1b8ba1",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-500-vietnamese.woff2",
+  "sha": "ed50e3834136",
+  "referenced": false,
+  "bytes": 6040,
+  "required": true
+ },
+ {
+  "uuid": "7f43cf75-8cfa-4dbe-b3f5-c9f34e6c204d",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-500-latin-ext.woff2",
+  "sha": "3e942f428e7d",
+  "referenced": false,
+  "bytes": 13432,
+  "required": true
+ },
+ {
+  "uuid": "ae98c6d8-3ab3-46a4-95f0-06b26a3f641e",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-500-latin.woff2",
+  "sha": "d32f0e0701ac",
+  "referenced": false,
+  "bytes": 14888,
+  "required": true
+ },
+ {
+  "uuid": "04ba4ddf-97d5-4ac9-8fac-4eca12068137",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-600-cyrillic-ext.woff2",
+  "sha": "47dfd30545f6",
+  "referenced": false,
+  "bytes": 7692,
+  "required": true
+ },
+ {
+  "uuid": "25db5b9e-3839-43c5-84b3-94c5e5b4ed40",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-600-cyrillic.woff2",
+  "sha": "5877f0f9968e",
+  "referenced": false,
+  "bytes": 9352,
+  "required": true
+ },
+ {
+  "uuid": "ec0f972e-d83c-4bf9-83d3-ed7b1280e5c6",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-600-vietnamese.woff2",
+  "sha": "ca53e370c286",
+  "referenced": false,
+  "bytes": 6932,
+  "required": true
+ },
+ {
+  "uuid": "550e2150-9a67-4ae4-979d-201a6989d58b",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-600-latin-ext.woff2",
+  "sha": "e57611a8ab8c",
+  "referenced": false,
+  "bytes": 14328,
+  "required": true
+ },
+ {
+  "uuid": "1782e16c-181f-4725-b577-401e461ea844",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Mono-600-latin.woff2",
+  "sha": "ce9a5ca3a874",
+  "referenced": false,
+  "bytes": 15620,
+  "required": true
+ },
+ {
+  "uuid": "51ee9568-5e81-4721-8436-082535d7b00d",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-400-cyrillic-ext.woff2",
+  "sha": "9a3103b2da76",
+  "referenced": false,
+  "bytes": 23568,
+  "required": true
+ },
+ {
+  "uuid": "a055bb44-9a13-4bac-9f61-904bad78a0e2",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-400-cyrillic.woff2",
+  "sha": "d60fe850d102",
+  "referenced": false,
+  "bytes": 29512,
+  "required": true
+ },
+ {
+  "uuid": "858c5481-cc26-4867-b154-8d14685e6839",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-400-greek.woff2",
+  "sha": "b77f87bbc412",
+  "referenced": false,
+  "bytes": 19500,
+  "required": true
+ },
+ {
+  "uuid": "09891ee2-5380-45af-a69c-a5dce97e68de",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-400-vietnamese.woff2",
+  "sha": "8b633380e51e",
+  "referenced": false,
+  "bytes": 13160,
+  "required": true
+ },
+ {
+  "uuid": "bbeffbab-9f70-4c76-9fb9-483be0fdb7ae",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-400-latin-ext.woff2",
+  "sha": "69ec30990085",
+  "referenced": false,
+  "bytes": 30964,
+  "required": true
+ },
+ {
+  "uuid": "8d3f3085-0211-4001-96a5-a82085f68ecc",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-400-latin.woff2",
+  "sha": "d8b4e62dbb82",
+  "referenced": false,
+  "bytes": 45712,
+  "required": true
+ },
+ {
+  "uuid": "6a7a4685-a047-4ed1-a42b-110627df2aea",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-600-cyrillic-ext.woff2",
+  "sha": "924b8b742145",
+  "referenced": false,
+  "bytes": 1388,
+  "required": true
+ },
+ {
+  "uuid": "903e58af-7e20-479c-b086-3fa63c8bdbea",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-600-vietnamese.woff2",
+  "sha": "caf818654381",
+  "referenced": false,
+  "bytes": 6808,
+  "required": true
+ },
+ {
+  "uuid": "be5db895-f297-40d0-8e4c-6284bf43e718",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-600-latin-ext.woff2",
+  "sha": "9cd3677acc1f",
+  "referenced": false,
+  "bytes": 16044,
+  "required": true
+ },
+ {
+  "uuid": "a2c2f355-475e-45f6-b747-fd99b49588ca",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-600-latin.woff2",
+  "sha": "3b6cf2bb73d5",
+  "referenced": false,
+  "bytes": 19816,
+  "required": true
+ },
+ {
+  "uuid": "c61ae94c-d2ec-44b6-909c-7062254237a8",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-700-cyrillic-ext.woff2",
+  "sha": "e682c9f57500",
+  "referenced": false,
+  "bytes": 1364,
+  "required": true
+ },
+ {
+  "uuid": "b272936a-ec45-4789-b961-3d92cb12e04e",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-700-vietnamese.woff2",
+  "sha": "78fc749ddd7a",
+  "referenced": false,
+  "bytes": 6960,
+  "required": true
+ },
+ {
+  "uuid": "d210c5a5-110d-405c-a85b-f84a25b8a7b5",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-700-latin-ext.woff2",
+  "sha": "7b4d698e32a6",
+  "referenced": false,
+  "bytes": 16092,
+  "required": true
+ },
+ {
+  "uuid": "11fb5c0b-4df3-4c30-8642-5cc6c3b03f01",
+  "type": "font/woff2",
+  "ref": "(none)",
+  "extracted": "fonts/IBM-Plex-Sans-Condensed-700-latin.woff2",
+  "sha": "a32174c64d3e",
+  "referenced": false,
+  "bytes": 19352,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "outer HTML #__bundler_thumbnail (splash logo)",
+  "extracted": "svg/hb-logo-splash.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{hub} inline path data",
+  "extracted": "icons/hub.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{scanner} inline path data",
+  "extracted": "icons/scanner.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{multimeter} inline path data",
+  "extracted": "icons/multimeter.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{oscilloscope} inline path data",
+  "extracted": "icons/oscilloscope.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{location} inline path data",
+  "extracted": "icons/location.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{schematic} inline path data",
+  "extracted": "icons/schematic.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{progress} inline path data",
+  "extracted": "icons/progress.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{reports} inline path data",
+  "extracted": "icons/reports.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{garage} inline path data",
+  "extracted": "icons/garage.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ },
+ {
+  "uuid": "(inline)",
+  "type": "image/svg+xml",
+  "ref": "app source I{settings} inline path data",
+  "extracted": "icons/settings.svg",
+  "sha": "-",
+  "referenced": true,
+  "required": true
+ }
+]

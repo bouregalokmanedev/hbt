@@ -130,7 +130,7 @@ it('returns the existing progress when the lesson is already completed', functio
         LessonCompleted::class,
     ]);
 
-    $existing = LessonProgress::factory()->create([
+    $existing = LessonProgress::factory()->completed()->create([
         'user_id' => $this->user->id,
         'lesson_id' => $this->lesson->id,
     ]);

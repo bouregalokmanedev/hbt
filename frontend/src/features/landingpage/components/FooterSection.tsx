@@ -6,16 +6,19 @@ import {
 
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 
 /* =============================================================
    FOOTER
-============================================================= */
+============================================================ */
 
 export function Footer() {
+    const { t } = useTranslation();
     const year = new Date().getFullYear();
 
     return (
-        <footer className="relative overflow-hidden bg-[#181818] text-white">
+        <footer className="site-footer-ar relative overflow-hidden bg-[#181818] text-white">
 
             {/* =====================================================
                 BACKGROUND GRID
@@ -107,7 +110,7 @@ export function Footer() {
                             ================================================== */}
 
                             <img
-    src="/src/assets/brand/hbt-logo-full.png"
+    src="/hbt-logo-full.png"
     alt="HBTronics"
     className="
         h-10
@@ -117,6 +120,7 @@ export function Footer() {
         transition-opacity
         duration-300
         group-hover:opacity-50
+        rtl:object-right
     "
 />
 
@@ -132,10 +136,7 @@ export function Footer() {
                                 text-white/40
                             "
                         >
-                            Practical automotive education
-                            built for technicians who want to
-                            understand the system — not just
-                            memorize the answer.
+                            {t("siteFooter.tagline")}
                         </p>
 
 
@@ -175,7 +176,7 @@ export function Footer() {
                                     text-white/40
                                 "
                             >
-                                Platform online
+                                {t("siteFooter.status")}
                             </span>
 
                         </div>
@@ -187,26 +188,26 @@ export function Footer() {
                         PLATFORM
                     ================================================== */}
 
-                    <FooterColumn title="Platform">
+                    <FooterColumn title={t("siteFooter.colPlatform")}>
 
                         <FooterLink
                             to="/catalog"
-                            label="Courses"
+                            label={t("siteFooter.courses")}
                         />
 
                         <FooterLink
                             to="/simulator"
-                            label="Diagnostic Simulator"
+                            label={t("siteFooter.simulator")}
                         />
 
                         <FooterLink
-                            to="/certifications"
-                            label="Certifications"
+                            to="/verify-certificate"
+                            label={t("siteFooter.certifications")}
                         />
 
                         <FooterLink
                             to="/pricing"
-                            label="Pricing"
+                            label={t("siteFooter.pricing")}
                         />
 
                     </FooterColumn>
@@ -216,26 +217,26 @@ export function Footer() {
                         COMPANY
                     ================================================== */}
 
-                    <FooterColumn title="Company">
+                    <FooterColumn title={t("siteFooter.colCompany")}>
 
                         <FooterLink
                             to="/company"
-                            label="About HBT"
+                            label={t("siteFooter.about")}
                         />
 
                         <FooterLink
                             to="/contact"
-                            label="Contact"
+                            label={t("siteFooter.contact")}
                         />
 
                         <FooterLink
                             to="/store"
-                            label="Store"
+                            label={t("siteFooter.store")}
                         />
 
                         <FooterLink
-                            to="/faq"
-                            label="FAQ"
+                            to="/contact"
+                            label={t("siteFooter.faq")}
                         />
 
                     </FooterColumn>
@@ -245,23 +246,25 @@ export function Footer() {
                         CONNECT
                     ================================================== */}
 
-                    <FooterColumn title="Connect">
+                    <FooterColumn title={t("siteFooter.colConnect")}>
 
                         {/* Email */}
 
                         <FooterLink
                             to="/contact"
-                            label="Get in touch"
+                            label={t("siteFooter.touch")}
                             icon={
                                 <Mail className="h-3.5 w-3.5" />
                             }
                         />
 
 
-                        {/* Instagram */}
+                        {/* Facebook */}
 
                         <a
-                            href="#"
+                            href="https://www.facebook.com/people/HB-Tronics-Online/100089757205634/"
+                            target="_blank"
+                            rel="noreferrer"
                             className="
                                 group
                                 flex
@@ -300,7 +303,7 @@ export function Footer() {
                                 />
                             </span>
 
-                            Instagram
+                            {t("siteFooter.facebook")}
 
                             <ArrowUpRight
                                 className="
@@ -312,6 +315,9 @@ export function Footer() {
                                     group-hover:translate-x-0.5
                                     group-hover:-translate-y-0.5
                                     group-hover:opacity-100
+                                    rtl:-scale-x-100
+                                    rtl:group-hover:-translate-x-0.5
+                                    rtl:group-hover:translate-x-0
                                 "
                             />
 
@@ -321,7 +327,9 @@ export function Footer() {
                         {/* LinkedIn */}
 
                         <a
-                            href="#"
+                            href="https://www.linkedin.com/company/hb-tronics/"
+                            target="_blank"
+                            rel="noreferrer"
                             className="
                                 group
                                 flex
@@ -353,7 +361,7 @@ export function Footer() {
                                 in
                             </span>
 
-                            LinkedIn
+                            {t("siteFooter.linkedin")}
 
                             <ArrowUpRight
                                 className="
@@ -365,6 +373,9 @@ export function Footer() {
                                     group-hover:translate-x-0.5
                                     group-hover:-translate-y-0.5
                                     group-hover:opacity-100
+                                    rtl:-scale-x-100
+                                    rtl:group-hover:-translate-x-0.5
+                                    rtl:group-hover:translate-x-0
                                 "
                             />
 
@@ -402,7 +413,7 @@ export function Footer() {
                                 text-white
                             "
                         >
-                            Keep learning.
+                            {t("siteFooter.stripTitle")}
                         </p>
 
                         <p
@@ -412,8 +423,7 @@ export function Footer() {
                                 text-white/35
                             "
                         >
-                            New courses, diagnostics and
-                            training updates.
+                            {t("siteFooter.stripDesc")}
                         </p>
 
                     </div>
@@ -438,7 +448,7 @@ export function Footer() {
                         "
                     >
 
-                        Explore courses
+                        {t("siteFooter.explore")}
 
                         <span
                             className="
@@ -455,7 +465,7 @@ export function Footer() {
                                 group-hover:text-white
                             "
                         >
-                            <ChevronRight className="h-3.5 w-3.5" />
+                            <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
                         </span>
 
                     </Link>
@@ -490,7 +500,7 @@ export function Footer() {
                             text-white/25
                         "
                     >
-                        © {year} HBTronics. All rights reserved.
+                        © {year} HBTronics. {t("siteFooter.rights")}
                     </p>
 
 
@@ -515,7 +525,7 @@ export function Footer() {
                                 hover:text-white
                             "
                         >
-                            Privacy
+                            {t("siteFooter.privacy")}
                         </Link>
 
                         <Link
@@ -527,7 +537,7 @@ export function Footer() {
                                 hover:text-white
                             "
                         >
-                            Terms
+                            {t("siteFooter.terms")}
                         </Link>
 
                         <Link
@@ -539,7 +549,7 @@ export function Footer() {
                                 hover:text-white
                             "
                         >
-                            Cookies
+                            {t("siteFooter.cookies")}
                         </Link>
 
                     </div>
@@ -660,7 +670,7 @@ function FooterLink({
 
             <ArrowUpRight
                 className="
-                    ml-0.5
+                    ms-0.5
                     h-3
                     w-3
                     opacity-0
@@ -669,6 +679,9 @@ function FooterLink({
                     group-hover:translate-x-0.5
                     group-hover:-translate-y-0.5
                     group-hover:opacity-100
+                    rtl:-scale-x-100
+                    rtl:group-hover:-translate-x-0.5
+                    rtl:group-hover:translate-x-0
                 "
             />
 

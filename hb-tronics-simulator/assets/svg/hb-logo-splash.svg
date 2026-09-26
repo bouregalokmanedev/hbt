@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0E1114">
+</rect>
+    <rect x="380" y="250" width="440" height="300" rx="36" fill="#F47822">
+</rect>
+    <text x="600" y="440" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="150" letter-spacing="-4" fill="#1A1206">HB</text>
+    <rect x="380" y="600" width="440" height="14" rx="7" fill="#2A3038">
+</rect>
+    <rect x="380" y="600" width="250" height="14" rx="7" fill="#F47822">
+</rect>
+  </svg>

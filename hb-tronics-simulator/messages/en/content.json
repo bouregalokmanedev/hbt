@@ -1,0 +1,1113 @@
+{
+  "oscFault": {
+    "none": "No fault injected — nominal waveform.",
+    "open": "Open circuit — signal collapses to a flat line.",
+    "shortGnd": "Short to ground — signal pinned near 0 V.",
+    "shortBat": "Short to battery — signal pinned high.",
+    "highRes": "High resistance — reduced amplitude and slewed edges.",
+    "weak": "Weak signal — low amplitude.",
+    "noise": "Electrical noise superimposed on the trace.",
+    "poorGnd": "Poor ground — offset drift and hash.",
+    "dropout": "Intermittent dropout — periodic missing cycles.",
+    "intermittent": "Intermittent — random missing events.",
+    "missing": "Missing teeth / events in the pattern.",
+    "coilWeak": "Weak coil — reduced primary kick and burn line.",
+    "injShort": "Injector winding short — reduced spike, high current."
+  },
+  "dtc": {
+    "P2118": {
+      "overview": "The ECM monitors throttle-actuator motor current. A resistance/performance fault trips P2118 when the measured current falls outside the modelled range for the commanded throttle position.",
+      "cause": {
+        "winding": "Open or high-resistance throttle motor winding",
+        "connector": "Corroded / spread connector terminals",
+        "wiring": "Damaged motor supply or ground wiring",
+        "ecu": "Internal ECM H-bridge fault"
+      },
+      "repair": "Replace the throttle body assembly (integrated actuator motor). Clear codes, perform throttle-actuator adaptation, and confirm TP1/TP2 correlation and current return to spec."
+    }
+  },
+  "location": {
+    "verdict": {
+      "training": {
+        "pass": "Good work — you located the components accurately. Move on or raise the difficulty.",
+        "retry": "Keep practising — re-read the location notes and try the components you missed."
+      },
+      "quiz": {
+        "pass": "Quiz passed — you know where these components live.",
+        "retry": "Not passed yet — review the atlas and retake the quiz."
+      }
+    },
+    "train": {
+      "prompt": "Locate: {name}",
+      "instruction": "Click the component on the diagram. Switch view if you need to.",
+      "correct": "Correct location.",
+      "wrong": "Not there — look again."
+    },
+    "quiz": {
+      "prompt": "Where is: {name}?",
+      "instruction": "Pick the correct hotspot.",
+      "correct": "Correct.",
+      "wrong": "Wrong — try again."
+    },
+    "difficulty": {
+      "Easy": "Hotspots outlined",
+      "Medium": "No outlines",
+      "Hard": "No hints",
+      "Expert": "Reference only"
+    },
+    "L3": {
+      "location": "Engine compartment — in the air cleaner outlet duct, between the air cleaner housing and the throttle body.",
+      "mount": "Clamped into the ribbed intake duct, on top of the air cleaner box."
+    },
+    "L1": {
+      "location": "Engine compartment — on the inlet manifold, close to the throttle body and the upper coolant hose.",
+      "mount": "Bolted to the inlet manifold body."
+    },
+    "H3": {
+      "location": "Engine compartment — the throttle body itself, at the inlet manifold end of the air duct.",
+      "mount": "Throttle body flange on the inlet manifold."
+    },
+    "T1": {
+      "location": "Engine compartment — screwed into the cylinder head, below the ignition coil on the inlet side.",
+      "mount": "Screwed into the cylinder head / coolant outlet."
+    },
+    "I2": {
+      "location": "Engine compartment — screwed into the cylinder block, behind and below the inlet manifold.",
+      "mount": "Screwed into the cylinder block, beside the coolant pipe."
+    },
+    "X1": {
+      "location": "Engine compartment — at the front of the engine, on the timing cover next to the crankshaft pulley.",
+      "mount": "Bolted to the timing cover at the crankshaft pulley."
+    },
+    "X7": {
+      "location": "Engine compartment — in the cylinder head cover at the timing end, on the inlet camshaft.",
+      "mount": "Bolted into the cylinder head cover, inlet camshaft."
+    },
+    "X8": {
+      "location": "Engine compartment — in the cylinder head at the timing end, on the outlet camshaft.",
+      "mount": "Screwed into the cylinder head, outlet camshaft."
+    },
+    "V1": {
+      "location": "Engine compartment — on a bracket on the inlet manifold, with purge hoses running to the charcoal canister.",
+      "mount": "Bracket-mounted on the inlet manifold."
+    },
+    "U2": {
+      "location": "Underneath the vehicle — screwed into the exhaust pipe downstream of the catalytic converter.",
+      "mount": "Screwed into the exhaust pipe behind the catalytic converter."
+    }
+  },
+  "multimeter": {
+    "verdict": {
+      "clear": "All measurements are within specification — this component is healthy.",
+      "found": "You localised the fault. Log the finding and renew or repair as indicated."
+    },
+    "feedback": {
+      "takeMeasurement": "Take the measurement first — set the rotary switch to the required function and seat both probes on the correct points.",
+      "wrongYes": "That does not match your reading — the value is outside the specification. Compare the reading with the spec before you answer.",
+      "wrongNo": "Look again — the reading is inside the specification. This circuit is good; continue to the next step."
+    },
+    "L3": {
+      "step": {
+        "0": {
+          "instruction": "Apply different temperatures to the sensor. Measure the resistance between pins 2 and 5. Compare the resistance with this chart:",
+          "fail": "The thermistor is open circuit. Renew the mass airflow meter with air temperature sensor.",
+          "question": "Does the resistance match the above specifications?"
+        },
+        "1": {
+          "instruction": "Disconnect the mass airflow meter with air temperature sensor. Turn the ignition on. Measure the voltage on pin 2 in the female connector. Is it between 4.8 and 5.2 V?",
+          "fail": "No 5 V reference at pin 2. Repair the open circuit between pin 2 and E1 pin B 122, then re-test."
+        },
+        "2": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 3. Is it between 12 and 14.4 V?",
+          "fail": "No battery supply at pin 3. Check fuse O7 (INJ/EFI-B) and relay R1, then repair the supply circuit."
+        },
+        "3": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 5. Is it between 0 and 0.2 V?",
+          "fail": "The sensor earth is open circuit. Repair the wire between pin 5 and E1 pin B 90."
+        },
+        "4": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 1. Is it between 0 and 0.2 V?",
+          "fail": "The meter earth is open circuit. Repair the wire between pin 1 and E1 pin B 91."
+        },
+        "5": {
+          "instruction": "Measure the resistance between pins 4 and B 92 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "The signal wire is open circuit. Repair the wire between pin 4 and E1 pin B 92."
+        }
+      },
+      "complaint": "Engine hesitates under acceleration and lacks power. MIL on. Stored code P0102 — mass air flow circuit low input."
+    },
+    "L1": {
+      "step": {
+        "0": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 3. Is it between 4.8 and 5.2 V?",
+          "fail": "No 5 V reference. Repair the open circuit between pin 3 and E1 pin B 118."
+        },
+        "1": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 1. Is it between 0 and 0.2 V?",
+          "fail": "The sensor earth is open circuit. Repair the wire between pin 1 and E1 pin B 119."
+        },
+        "2": {
+          "instruction": "Measure the resistance between pins 2 and B 87 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "The signal wire is open circuit. Repair the wire between pin 2 and E1 pin B 87."
+        }
+      },
+      "complaint": "Rough idle, black smoke under load. Stored code P0107 — manifold absolute pressure circuit low input."
+    },
+    "A1": {
+      "step": {
+        "0": {
+          "instruction": "Disconnect the component. Measure the resistance between pins 1 and 2. Is it between 11.6 and 12.4 Ω?",
+          "fail": "The injector winding is open circuit. Renew injector 1."
+        },
+        "1": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 1. Is it between 12 and 14.4 V?",
+          "fail": "No supply at pin 1. Check fuse O7 (INJ/EFI-B) and relay R1."
+        },
+        "2": {
+          "instruction": "Start the engine. Measure the voltage on pin 2 with the engine idling. Is it between 0.5 and 2 V?",
+          "fail": "The control unit is not switching the injector to earth. Check the wire to E1 pin B 20, then the control unit."
+        },
+        "3": {
+          "instruction": "Set the rotary switch to mA and connect the meter in series with pin 1. Start the engine. Is the peak current between 0.8 and 1.4 A?",
+          "fail": "Current is too low for the measured resistance. Renew injector 1 and re-test."
+        },
+        "4": {
+          "instruction": "Measure the resistance between pins 2 and B 20 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "The switching wire is open circuit. Repair the wire between pin 2 and E1 pin B 20."
+        }
+      },
+      "complaint": "Cylinder 1 misfire and strong fuel smell at idle. Stored code P0201 — injector 1 circuit malfunction."
+    },
+    "H3": {
+      "step": {
+        "0": {
+          "instruction": "Measure the resistance between pins 2 and 1. Is it between 0.3 and 100 Ω?",
+          "fail": "The motor winding is open circuit. Renew the throttle control motor."
+        },
+        "1": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 5. Is it between 4.5 and 5.5 V?",
+          "fail": "No 5 V reference. Repair the open circuit between pin 5 and E1 pin B 84."
+        },
+        "2": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 3. Is it between 0 and 0.2 V?",
+          "fail": "The potentiometer earth is open circuit. Repair the wire between pin 3 and E1 pin B 83."
+        },
+        "3": {
+          "instruction": "Disconnect the component. Apply 12 V briefly across pins 2 and 1 and measure the voltage across the motor. Does the throttle valve move smoothly through its full travel?",
+          "fail": "The motor is seized or open circuit. Renew the throttle body assembly."
+        },
+        "4": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 6 with the throttle valve closed. Is it between 0.4 and 1.0 V?",
+          "fail": "No position signal 1. Renew the throttle body assembly."
+        },
+        "5": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 4 with the throttle valve closed. Is it between 3.9 and 4.7 V?",
+          "fail": "No position signal 2. Renew the throttle body assembly."
+        },
+        "6": {
+          "instruction": "Measure the resistance between pins 6 and B 116 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 6 and E1 pin B 116. Repair the wiring."
+        },
+        "7": {
+          "instruction": "Measure the resistance between pins 4 and B 115 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 4 and E1 pin B 115. Repair the wiring."
+        },
+        "8": {
+          "instruction": "Measure the resistance between pins 1 and B 30 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 1 and E1 pin B 30. Repair the wiring."
+        },
+        "9": {
+          "instruction": "Measure the resistance between pins 2 and B 60 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 2 and E1 pin B 60. Repair the wiring."
+        }
+      },
+      "complaint": "Throttle valve does not open, engine in reduced-power mode. Stored code P2101 — throttle actuator control motor circuit range/performance."
+    },
+    "I1": {
+      "step": {
+        "0": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin A2. Is it between 12 and 14.4 V?",
+          "fail": "No supply at pin A2. Check the fuse and relay feeding the coils, then repair the supply circuit."
+        },
+        "1": {
+          "instruction": "Measure the resistance between pins A3 and B 57 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "The trigger wire is open circuit. Repair the wire between pin A3 and E1 pin B 57."
+        }
+      },
+      "complaint": "Misfire on cylinder 1 at all engine speeds. Stored code P0351 — ignition coil A primary/secondary circuit."
+    },
+    "I2": {
+      "step": {
+        "0": {
+          "instruction": "Measure the resistance between pins 2 and 1. Is it between 120 and 280 kΩ?",
+          "fail": "The piezo element is open circuit. Renew the knock sensor."
+        },
+        "1": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 1. Is it between 0 and 0.2 V?",
+          "fail": "The sensor earth is open circuit. Repair the wire between pin 1 and E1 pin B 124."
+        },
+        "2": {
+          "instruction": "Measure the resistance between pins 2 and B 123 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "The signal wire is open circuit. Repair the wire between pin 2 and E1 pin B 123."
+        },
+        "3": {
+          "instruction": "Measure the resistance between the screen at pin 1 and the engine earth point. Is it less than 1 Ω?",
+          "fail": "The screen is not earthed. Repair the screen connection at the engine earth point."
+        },
+        "4": {
+          "instruction": "Measure the resistance between the screen at pin 1 and the signal wire at pin 2. Is it more than 1 MΩ?",
+          "fail": "The screen is shorted to the signal wire. Renew the sensor harness section."
+        }
+      },
+      "complaint": "Loss of power under load, no knock control. Stored code P0325 — knock sensor 1 circuit."
+    },
+    "X1": {
+      "step": {
+        "0": {
+          "instruction": "Disconnect the component. Measure the resistance between pins 1 and 2. Is it between 1.63 and 2.74 kΩ?",
+          "fail": "The sensor winding is open circuit. Renew the crankshaft position sensor."
+        },
+        "1": {
+          "instruction": "Measure the resistance between pins 1 and B 78 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 1 and E1 pin B 78. Repair the wiring."
+        },
+        "2": {
+          "instruction": "Measure the resistance between pins 2 and B 110 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 2 and E1 pin B 110. Repair the wiring."
+        },
+        "3": {
+          "instruction": "Measure the resistance between the screen and the engine earth point. Is it less than 1 Ω?",
+          "fail": "The screen is not earthed. Repair the screen connection at the engine earth point."
+        },
+        "4": {
+          "instruction": "Measure the resistance between the screen and pin 1. Is it more than 1 MΩ?",
+          "fail": "The screen is shorted to the signal wire. Renew the sensor harness section."
+        }
+      },
+      "complaint": "Engine cranks but will not start, no rpm signal on the scan tool. Stored code P0335."
+    },
+    "X7": {
+      "step": {
+        "0": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 1. Is it between 4.8 and 5.2 V?",
+          "fail": "No 5 V reference. Repair the open circuit between pin 1 and E1 pin B 82."
+        },
+        "1": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 2. Is it between 0 and 0.2 V?",
+          "fail": "The sensor earth is open circuit. Repair the wire between pin 2 and E1 pin B 114."
+        },
+        "2": {
+          "instruction": "Crank the engine. Measure the voltage on pin 3. Does it switch between 0.3 V and 4.8 V as each tooth passes?",
+          "fail": "No Hall signal. Check the air gap and the trigger wheel, then renew the sensor."
+        },
+        "3": {
+          "instruction": "Measure the resistance between pins 3 and B 113 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "The signal wire is open circuit. Repair the wire between pin 3 and E1 pin B 113."
+        }
+      },
+      "complaint": "Long crank time, VVT-i inactive, engine runs rough after a hot start. Stored code P0340."
+    },
+    "G1": {
+      "step": {
+        "0": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 4. Is it between 4.8 and 5.2 V?",
+          "fail": "No 5 V reference on track 2. Repair the open circuit between pin 4 and E1 pin A 56."
+        },
+        "1": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 1. Is it between 4.8 and 5.2 V?",
+          "fail": "No 5 V reference on track 1. Repair the open circuit between pin 1 and E1 pin A 53."
+        },
+        "2": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 5. Is it between 0 and 0.2 V?",
+          "fail": "Track 1 earth is open circuit. Repair the wire between pin 5 and E1 pin A 52."
+        },
+        "3": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 2. Is it between 0 and 0.2 V?",
+          "fail": "Track 2 earth is open circuit. Repair the wire between pin 2 and E1 pin A 55."
+        },
+        "4": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin A 51 (E1 Engine control unit) and compare the findings with this table:",
+          "fail": "No output on track 1. Renew the accelerator pedal position sensor.",
+          "question": "Does this voltage match the above specifications?"
+        },
+        "5": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin A 54 (E1 Engine control unit) and compare the findings with this table:",
+          "fail": "No output on track 2. Renew the accelerator pedal position sensor.",
+          "question": "Does this voltage match the above specifications?"
+        }
+      },
+      "complaint": "Engine stays at idle, accelerator pedal has no effect, vehicle in limp home. Stored code P2135."
+    },
+    "U1": {
+      "step": {
+        "0": {
+          "instruction": "Measure the resistance between pins 2 and 1. Is it between 1.8 and 3.4 Ω?",
+          "fail": "The heater element is open circuit. Renew the oxygen sensor."
+        },
+        "1": {
+          "instruction": "Start the engine. Measure the voltage on pin 2. Is it between 12 and 14.4 V?",
+          "fail": "No heater supply. Check fuse O7 (EFI 2) and relay R1, then repair the supply circuit."
+        },
+        "2": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 4. Is it between 0 and 0.2 V?",
+          "fail": "The heater earth is not switched. Check the wire from pin 4, then the control unit."
+        },
+        "3": {
+          "instruction": "Measure the resistance between pins 1 and B 22 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 1 and E1 pin B 22. Repair the wiring."
+        },
+        "4": {
+          "instruction": "Measure the resistance between pins 3 and B 103 (E1 Engine control unit). Is it less than 1 Ω?",
+          "fail": "Open circuit between pin 3 and E1 pin B 103. Repair the wiring."
+        }
+      },
+      "complaint": "MIL on, high fuel consumption, fuel trim at limit. Stored code P0135 — O2 sensor heater circuit bank 1 sensor 1."
+    },
+    "T1": {
+      "step": {
+        "0": {
+          "instruction": "Disconnect the component. Measure the resistance between pins 1 and 2. Compare the resistance with this chart:",
+          "fail": "The thermistor is open circuit. Renew the coolant temperature sensor.",
+          "question": "Does the resistance match the above specifications?"
+        },
+        "1": {
+          "instruction": "Disconnect the coolant temperature sensor. Turn the ignition on. Measure the voltage on pin 1 in the female connector. Is it between 4.8 and 5.2 V?",
+          "fail": "No 5 V reference. Repair the open circuit between pin 1 and E1 pin B 93."
+        },
+        "2": {
+          "instruction": "Turn the ignition on. Measure the voltage on pin 2. Is it between 0 and 0.2 V?",
+          "fail": "The sensor earth is open circuit. Repair the wire between pin 2 and E1 pin B 94."
+        }
+      },
+      "complaint": "Difficult cold start, cooling fan runs constantly, gauge reads cold. Stored code P0117."
+    }
+  },
+  "scanner": {
+    "tree": {
+      "supply": {
+        "label": "Supply voltage at throttle body connector",
+        "hint": "Ignition on, engine off."
+      },
+      "connector": {
+        "label": "Connector integrity & terminal tension",
+        "hint": "Back-probe both motor pins."
+      },
+      "motorSupply": {
+        "label": "Motor supply from ECU",
+        "hint": "ECM drives H-bridge."
+      },
+      "ground": {
+        "label": "Ground circuit resistance",
+        "hint": "Motor return path."
+      },
+      "can": {
+        "label": "CAN communication with ECM",
+        "hint": "Rule out network."
+      },
+      "winding": {
+        "label": "Throttle motor winding resistance",
+        "hint": "Open/high-resistance winding."
+      },
+      "correlation": {
+        "label": "TP sensor correlation",
+        "hint": "Not reached — fault found."
+      },
+      "verdict": "Throttle motor winding open — 6.42 Ω vs 0.3–1.8 Ω spec."
+    },
+    "treeFeedback": {
+      "recheck": "Re-check: {hint}",
+      "correct": "Correct — advance.",
+      "confirmed": "Fault confirmed at this branch."
+    },
+    "adas": {
+      "calibType": {
+        "static": "Static calibration"
+      },
+      "item": {
+        "camera": {
+          "name": "Front camera — LDW / LKA / AEB",
+          "note": "Windscreen replaced 21 Jul"
+        },
+        "frontRadar": {
+          "name": "Front radar — ACC / FCW",
+          "note": "Calibrated 02 May 2026"
+        },
+        "blindL": {
+          "name": "Blind spot radar — left",
+          "note": "Calibrated 02 May 2026"
+        },
+        "blindR": {
+          "name": "Blind spot radar — right",
+          "note": "Bumper refinished"
+        },
+        "park": {
+          "name": "Parking sensors — 8-channel",
+          "note": "No action required"
+        },
+        "surround": {
+          "name": "360° surround view",
+          "note": "Not equipped on this trim"
+        }
+      },
+      "precondition": {
+        "0": "Vehicle levelled, tyres at 2.4 bar",
+        "1": "Fuel tank above ½, no load in cabin",
+        "2": "Target board 1.28 m from front axle centre",
+        "3": "Lateral offset within ± 5 mm",
+        "4": "Camera image quality accepted by ECU",
+        "5": "Calibration values written and verified"
+      },
+      "status": {
+        "idle": "Windscreen was replaced on 21 Jul, so the front camera requires a static calibration before lane keeping and automatic emergency braking are released. Set the target board, then start.",
+        "success": "Yaw 0.12° · pitch −0.04° · roll 0.03°, all within tolerance. B1483 cleared. Confirm with a road test above 40 km/h."
+      }
+    },
+    "training": {
+      "step": {
+        "codes": {
+          "label": "Read all fault codes and note status",
+          "detail": "ECM P0087 current, 11 occurrences · P2118 current"
+        },
+        "live": {
+          "label": "Compare requested and actual rail pressure at idle",
+          "detail": "Requested 330 bar · actual 284 bar · deviation −46 bar"
+        },
+        "graph": {
+          "label": "Observe the deviation under load",
+          "detail": "Graph both signals through a 3 000 rpm snap"
+        },
+        "supply": {
+          "label": "Measure the low-pressure supply",
+          "detail": "Feed pressure 2.1 bar against 4.5 – 5.5 bar specification"
+        },
+        "isolate": {
+          "label": "Rule out the high-pressure control circuit",
+          "detail": "Regulator duty cycle plausible, no electrical fault"
+        },
+        "confirm": {
+          "label": "State the root cause and the repair",
+          "detail": "Select one answer below — you have one attempt"
+        }
+      },
+      "answer": {
+        "pump": "Faulty high-pressure fuel pump",
+        "filter": "Restricted fuel filter starving the HP pump",
+        "injector": "Leaking fuel injector",
+        "sensor": "Failed fuel-pressure sensor"
+      },
+      "result": {
+        "correct": "Correct — a restricted fuel filter was starving the HP pump under load.",
+        "wrong": "Not the root cause. Rail pressure collapsed under load because supply was restricted upstream of the HP pump."
+      },
+      "verdict": {
+        "correct": "Restricted fuel filter starving the HP pump.",
+        "wrong": "Incorrect root-cause call."
+      },
+      "scenario": {
+        "title": "Intermittent power loss under load",
+        "desc": "A 2019 Camry arrives with a complaint of power loss on inclines and an illuminated MIL. Two fault codes are present in the ECM and they are not equally relevant. Work the process in order and justify each conclusion with a measurement — the simulator scores your route, not just your answer."
+      },
+      "obj": {
+        "0": "Separate a symptom-relevant code from a consequential one.",
+        "1": "Use set-point versus actual comparison instead of absolute values.",
+        "2": "Test load dependency before condemning a component.",
+        "3": "Work upstream from the failure point to the supply side."
+      },
+      "instructorNote": "Trainees commonly replace the high-pressure pump here. Watch for anyone who skips step 4 — the low-pressure measurement is the single decisive test in this scenario.",
+      "lib": {
+        "11": "Misfire on cylinder 3",
+        "12": "Power loss under load",
+        "13": "CAN-C bus off after retrofit",
+        "14": "ADAS after windscreen swap"
+      }
+    },
+    "ws": {
+      "header": {
+        "kicker": "Diagnostic workstation",
+        "heading": "Select a diagnostic function"
+      },
+      "hero": {
+        "cloudOnline": "Cloud online",
+        "startHere": "Start here",
+        "routines38": "38 routines",
+        "intelligent": {
+          "title": "Intelligent Diagnostic",
+          "desc": "VIN auto-identification, guided fault-tree from the HB knowledge cloud, confirmed-fix statistics."
+        },
+        "local": {
+          "title": "Local Diagnostic",
+          "desc": "Manual vehicle selection, full-system scan, ECU network, DTCs, live data and reports."
+        },
+        "reset": {
+          "title": "Reset & Service Functions",
+          "desc": "Oil reset, EPB, SAS, DPF regeneration, injector coding, battery registration, throttle relearn."
+        }
+      },
+      "mod": {
+        "adas": {
+          "title": "ADAS Calibration",
+          "subtitle": "Camera, radar, BSM, 360°"
+        },
+        "immobilizer": {
+          "title": "Immobilizer & Keys",
+          "subtitle": "Key learn, PIN, all-keys-lost"
+        },
+        "tpms": {
+          "title": "TPMS",
+          "subtitle": "Sensor ID, relearn, program"
+        },
+        "history": {
+          "title": "Diagnostic History",
+          "subtitle": "184 sessions · compare"
+        },
+        "software": {
+          "title": "Software Update",
+          "subtitle": "Vehicle databases"
+        },
+        "coverage": {
+          "title": "Vehicle Coverage",
+          "subtitle": "Function matrix by model"
+        },
+        "training": {
+          "title": "Training Simulator",
+          "subtitle": "64 scenarios · exams"
+        },
+        "knowledge": {
+          "title": "Knowledge Base",
+          "subtitle": "Wiring, bulletins, procedures"
+        },
+        "other": {
+          "title": "Other Modules",
+          "subtitle": "EV, oscilloscope, battery test"
+        },
+        "ecu": {
+          "title": "ECU Programming",
+          "subtitle": "Requires HB PRO+ licence"
+        }
+      },
+      "meta": {
+        "vci": "VCI interface",
+        "os": "Diagnostic OS",
+        "coverage": "Coverage"
+      },
+      "recent": {
+        "title": "Recent sessions",
+        "viewAll": "View all",
+        "dtc": "DTC"
+      },
+      "status": {
+        "connected": "HB-LINK 3 connected · ignition ON · engine running",
+        "coverage": "Vehicle coverage",
+        "start": "Start local diagnostic"
+      }
+    },
+    "report": {
+      "customerComplaint": "Loss of power under load on inclines, occasional rough idle when warm, MIL illuminated. Fault reported as intermittent over the past three weeks.",
+      "measurement": {
+        "throttleR": "Throttle motor resistance",
+        "motorSupply": "Motor supply voltage",
+        "ground": "Ground circuit",
+        "tp1": "TP sensor 1"
+      }
+    },
+    "assist": {
+      "seed": "You have P0087 and P2118 in the ECM. Before I say anything about parts: what is the actual rail pressure against the requested value at idle?",
+      "t0a": "284 bar actual against 330 bar requested",
+      "t0b": "I have not measured it yet",
+      "r0": "Rail pressure is 46 bar short of the set-point at idle. A control fault and a supply restriction look identical from here. Snap the throttle to 3 000 rpm — does the gap widen or hold constant?",
+      "t1a": "The gap widens to about 120 bar",
+      "t1b": "It stays roughly constant",
+      "r1": "A gap that grows with demand is a volume problem, not a control problem. Next, move to the low-pressure side: what is the feed pressure before the high-pressure pump?",
+      "t2a": "2.1 bar — below the 4.5 bar specification",
+      "t2b": "4.8 bar — within specification",
+      "r2": "2.1 bar against a 4.5 – 5.5 bar specification starves the high-pressure pump, so it can never reach the requested rail pressure. Confirm the filter restriction and pump delivery volume before condemning anything on the high-pressure side.",
+      "t3a": "Understood — logging the delivery-volume test",
+      "t3b": "Show me the wiring for the low-pressure pump",
+      "r3": "Your reasoning chain is sound: symptom → set-point deviation → load dependency → upstream supply. Log the delivery-volume test in the report so the next technician can see why the high-pressure pump was not replaced."
+    }
+  },
+  "record": {
+    "r-2026-0731": {
+      "finding": "Throttle actuator motor open circuit (P2118)",
+      "verdict": "Motor resistance 6.42 Ω against 0.3–1.8 Ω spec — actuator replaced.",
+      "step": {
+        "0": "Supply voltage at connector",
+        "1": "Connector integrity",
+        "2": "Motor supply",
+        "3": "Ground resistance",
+        "4": "CAN communication",
+        "5": "Motor resistance"
+      }
+    },
+    "r-2026-0729": {
+      "finding": "MAF L3 signal continuity to ECU B92",
+      "verdict": "All measurements within spec; harness continuity confirmed.",
+      "step": {
+        "0": "Air-temp resistance",
+        "1": "5 V reference",
+        "2": "+12 V supply",
+        "3": "Signal continuity pin 4 → B92"
+      }
+    },
+    "r-2026-0727": {
+      "finding": "Injector 1 peak & hold waveform",
+      "verdict": "Peak ~3 A, hold ~1.5 A, inductive spike ~68 V — nominal.",
+      "step": {
+        "0": "Connect probes A / GND / CLAMP",
+        "1": "Trigger & timebase",
+        "2": "Read peak current",
+        "3": "Diagnosis"
+      }
+    },
+    "r-2026-0724": {
+      "finding": "Fuse box & sensor placement quiz",
+      "verdict": "9 / 10 targets located within tolerance.",
+      "step": {
+        "0": "Under-hood fuse box",
+        "1": "MAF sensor",
+        "2": "Knock sensor",
+        "3": "Coolant sensor"
+      }
+    },
+    "r-2026-0722": {
+      "finding": "Scenario 12 — intermittent power loss under load",
+      "verdict": "Restricted fuel filter starving the HP pump — correct call.",
+      "step": {
+        "0": "Read fault codes",
+        "1": "Inspect live data",
+        "2": "Graph fuel-rail pressure",
+        "3": "Root-cause answer"
+      }
+    },
+    "r-2026-0719": {
+      "finding": "Ignition coil 1 harness trace",
+      "verdict": "A3 → B57, A2 → B102 traced correctly.",
+      "step": {
+        "0": "Locate COIL1 node",
+        "1": "Trace primary trigger",
+        "2": "Trace supply"
+      }
+    },
+    "r-2026-0715": {
+      "finding": "Coolant sensor T1 temperature-resistance",
+      "verdict": "Resistance tracked the temperature table across range.",
+      "step": {
+        "0": "Resistance @ 20 °C",
+        "1": "Resistance @ 80 °C",
+        "2": "Signal to ECU"
+      }
+    }
+  },
+  "progress": {
+    "cert": {
+      "0": "Powertrain diagnostics",
+      "1": "Oscilloscope fundamentals",
+      "2": "Network & CAN systems"
+    },
+    "weak": {
+      "0": "Ignition coil dwell & kick",
+      "1": "MAP sensor scaling",
+      "2": "Injector harness routing"
+    },
+    "rec": {
+      "0": "Review coil primary waveform",
+      "1": "Injector supply & resistance",
+      "2": "MAF live-data correlation"
+    },
+    "coach": "Your fault-tree work is strong. Focus next on oscilloscope waveform interpretation — coil primary dwell and injector current are your weakest reads."
+  },
+  "hub": {
+    "mod": {
+      "scanner": {
+        "subtitle": "Automotive diagnostic scanner",
+        "features": "DTCs · Live Data · Actuator Tests",
+        "lastActivity": "Yesterday · P2118 fault tree"
+      },
+      "multimeter": {
+        "subtitle": "Digital multimeter bench",
+        "features": "Resistance · Voltage · Continuity",
+        "lastActivity": "3 days ago · MAF signal check"
+      },
+      "oscilloscope": {
+        "subtitle": "Four-channel waveform lab",
+        "features": "Waveforms · Triggers · References",
+        "lastActivity": "Today · injector peak & hold"
+      },
+      "location": {
+        "subtitle": "Component location atlas",
+        "features": "Engine bay · Fuse box · Grounds",
+        "lastActivity": "Today · quiz 9/10 correct"
+      },
+      "schematic": {
+        "subtitle": "Wiring diagram workspace",
+        "features": "Circuits · Pins · Trace mode",
+        "lastActivity": "Not started this week"
+      }
+    },
+    "task": {
+      "0": {
+        "title": "Finish the injector current exercise",
+        "meta": "Oscilloscope · 2 steps left"
+      },
+      "1": {
+        "title": "Trace the ignition coil relay circuit",
+        "meta": "Schematic · not started"
+      },
+      "2": {
+        "title": "Measure the camshaft sensor circuit",
+        "meta": "Multimeter · 1 fail to clear"
+      },
+      "3": {
+        "title": "Clear the pending P0301 with a fault tree",
+        "meta": "Scanner · guided"
+      }
+    },
+    "coach": "Your context is Fuel injector — cylinder 1. A clean workflow is: find it in Location, read the circuit in Schematic, measure it statically with the Multimeter, then watch it live on the Oscilloscope."
+  },
+  "oscilloscope": {
+    "fault": {
+      "none": {
+        "label": "Healthy",
+        "desc": "No fault injected. The capture should sit inside the manual values."
+      },
+      "open": {
+        "label": "Open circuit",
+        "desc": "Circuit broken between the component and the ECU. The driver never pulls the line down."
+      },
+      "shortGnd": {
+        "label": "Short to ground",
+        "desc": "The measured line is shorted to chassis ground — it can no longer rise."
+      },
+      "shortBat": {
+        "label": "Short to battery",
+        "desc": "The measured line is shorted to a supply — it can no longer be pulled down."
+      },
+      "highRes": {
+        "label": "High resistance",
+        "desc": "Corrosion or a poor crimp adds resistance; amplitude collapses and edges soften."
+      },
+      "weak": {
+        "label": "Weak sensor",
+        "desc": "Component output has degraded with wear. Shape is correct, amplitude is not."
+      },
+      "noise": {
+        "label": "Noise",
+        "desc": "Unscreened wiring or a failing ground injects interference on top of the signal."
+      },
+      "poorGnd": {
+        "label": "Poor ground",
+        "desc": "Sensor ground is offset above chassis; the whole trace is lifted and unstable."
+      },
+      "dropout": {
+        "label": "Dropout",
+        "desc": "The signal disappears for whole cycles then returns."
+      },
+      "intermittent": {
+        "label": "Intermittent",
+        "desc": "Fault appears in bursts — only visible on a long capture."
+      },
+      "missing": {
+        "label": "Missing pulses",
+        "desc": "Pulses are missing from the pattern; the ECU loses synchronisation."
+      },
+      "coilWeak": {
+        "label": "Damaged coil",
+        "desc": "Primary inductive kick is far below spec — weak spark, secondary breakdown."
+      },
+      "injShort": {
+        "label": "Injector winding",
+        "desc": "Partially shorted injector winding: current rises too fast and too high."
+      }
+    },
+    "verdict": {
+      "correct": "Correct diagnosis — the capture matches this fault. Log the finding and move on.",
+      "wrong": "Not quite. Re-read the trace against the reference and the manual values before choosing again."
+    },
+    "ai": {
+      "supply": "Ch A is on a supply terminal — a flat line at supply voltage means the probe is on the feed, not the signal. Move Ch A to the signal terminal.",
+      "ground": "Ch A is on a ground terminal — the trace sits on 0 V with only noise. Nothing is being measured.",
+      "none": "No signal probe connected — the trace is only noise. Connect Ch A to the signal terminal and the ground clip.",
+      "spec": "Signal matches the reference for this component — shape, amplitude and timing all sit inside the manual values. Record it as a known-good reference."
+    },
+    "step": {
+      "probe": "Connect the probes to the correct terminals",
+      "vdiv": "Set Ch A to the correct V/div",
+      "timebase": "Set the time base for this component",
+      "trigger": "Trigger on the correct edge, level inside the signal",
+      "capture": "Freeze a capture with SINGLE",
+      "cursors": "Measure with cursors A and B",
+      "diagnosis": "Submit a diagnosis on the Score tab"
+    },
+    "ex": {
+      "inj": {
+        "sub": "Saturated / peak & hold · port injection",
+        "instruction": "Ch A on the injector driver terminal, ground clip to battery negative, current clamp around the supply wire. Trigger falling on Ch A, then read the spike height and the pulse width between cursors.",
+        "function": "The ECU switches the injector low side to ground. Current builds through the winding, the pintle lifts, and on switch-off the collapsing field produces the inductive voltage spike. Spike height and pulse width tell you winding condition and fuelling.",
+        "bullets": [
+          "Solenoid winding with a spring-loaded pintle",
+          "Low-side switched by the ECU driver",
+          "Peak & hold drivers current-limit after opening",
+          "Spike height depends on winding inductance"
+        ],
+        "probeNotes": [
+          "Back-probe terminal 2; do not pierce the insulation.",
+          "Ground clip on the battery negative post, not on a painted bracket.",
+          "Clamp the supply wire only — both wires in the clamp cancel out."
+        ],
+        "anim1": "Pintle lift",
+        "anim2": "Winding current",
+        "animEvent": "Inductive spike"
+      },
+      "coil": {
+        "sub": "Coil-on-plug, sequential ignition",
+        "instruction": "Ch A on the switched primary terminal, clamp on the +B feed. Watch current limiting during dwell, then the inductive kick and burn line at switch-off.",
+        "function": "The module switches the primary winding to ground; the magnetic field builds until the current limit, then collapses to induce the secondary high voltage. Primary voltage shows dwell, current limiting and the inductive kick.",
+        "bullets": [
+          "Primary electromagnet and high-voltage secondary winding",
+          "Current-limited module with a low-resistance coil",
+          "One coil per cylinder, individually driven",
+          "Kick height falls when the winding or the ground degrades"
+        ],
+        "probeNotes": [
+          "Use an attenuator or a ×10 probe: primary kick exceeds 300 V.",
+          "Clamp the +B wire to see the current limit plateau.",
+          "Never disconnect a coil with the engine running."
+        ],
+        "anim1": "Dwell",
+        "anim2": "Primary current",
+        "animEvent": "Spark event"
+      },
+      "cam": {
+        "sub": "Hall effect / MRE type · digital",
+        "instruction": "Ch A on the signal terminal, ground clip on the sensor ground. Confirm both levels, then count the segment pattern over one camshaft revolution.",
+        "function": "A semiconductor converts the changing magnetic field of the rotor into a switched voltage. Because it is a Hall device, amplitude does not change with engine speed — only the pattern timing does.",
+        "bullets": [
+          "Hall element with internal amplifier and output stage",
+          "Output level set by the supply voltage, not by rpm",
+          "Rotor segments give an asymmetric pattern for cylinder ID",
+          "MRE variants behave identically on the scope"
+        ],
+        "probeNotes": [
+          "Measure with the connector attached — an unloaded Hall output reads wrong.",
+          "Ground on terminal 3, the sensor ground, to see the true low level.",
+          "A clean square wave with a wrong pattern still means a mechanical timing fault."
+        ],
+        "anim1": "Rotor angle",
+        "anim2": "Output state",
+        "animEvent": "Edge detected"
+      },
+      "app": {
+        "sub": "Dual potentiometer · redundant tracks",
+        "instruction": "Ch A on VPA, Ch B on VPA2, ground on EPA. Sweep the pedal slowly full travel and back; both traces must move together with no steps or dropouts.",
+        "function": "Two independent voltage dividers move with the pedal angle. The ECU compares both signals for plausibility, so the ratio between the tracks matters as much as the values.",
+        "bullets": [
+          "Sliding contacts on two resistive tracks",
+          "Separate supplies and resistances per track",
+          "Independent signals for malfunction detection",
+          "Wear shows as spikes or flat spots mid-travel"
+        ],
+        "probeNotes": [
+          "Both tracks referenced to their own ground — do not share EPA and EPA2.",
+          "Sweep slowly: a worn track shows as a narrow spike, easy to miss fast.",
+          "Compare the ratio, not just the endpoints."
+        ],
+        "anim1": "Pedal travel",
+        "anim2": "VPA",
+        "animEvent": "Idle contact"
+      },
+      "map": {
+        "sub": "Analogue manifold absolute pressure",
+        "instruction": "Ch A on PIM, ground on E2. Capture a snap-throttle event: the trace must follow load without steps, and settle back to the idle value.",
+        "function": "A silicone diaphragm with integral strain gauges compares manifold pressure to a sealed reference vacuum. The resistance change is converted to a voltage proportional to engine load.",
+        "bullets": [
+          "Silicone diaphragm with four strain gauges",
+          "Sealed reference vacuum on one side",
+          "5 V supply from a regulator in the ECU",
+          "A digital variant outputs frequency instead of voltage"
+        ],
+        "probeNotes": [
+          "Check the 5 V supply on terminal 1 before condemning the sensor.",
+          "Ground on E2 at the sensor, so a poor sensor ground shows up.",
+          "A hose leak looks like a lazy sensor — check the vacuum line first."
+        ],
+        "anim1": "Manifold load",
+        "anim2": "Signal",
+        "animEvent": "Snap throttle"
+      },
+      "knock": {
+        "sub": "Piezoelectric · AC coupled",
+        "instruction": "Ch A on the signal terminal, ground on the shield. AC coupling only. Tap near the sensor with a small hammer and compare burst amplitude with background noise.",
+        "function": "A piezoelectric crystal between the body and a seismic mass produces a voltage proportional to the changing force. The ECU amplifies and filters the signal to isolate detonation frequencies.",
+        "bullets": [
+          "Piezo crystal compressed by a seismic mass",
+          "Signal amplified and band-filtered inside the ECU",
+          "Screened cable — shield integrity is critical",
+          "Infinite resistance when measured cold and disconnected"
+        ],
+        "probeNotes": [
+          "AC coupling: the DC offset hides the burst.",
+          "Keep the probe lead away from ignition leads — it picks up the coil.",
+          "A loose mounting bolt reads exactly like a weak sensor."
+        ],
+        "anim1": "Vibration level",
+        "anim2": "Burst amplitude",
+        "animEvent": "Detonation window"
+      },
+      "lambda": {
+        "sub": "Zirconia two-point · post-catalyst",
+        "instruction": "Ch A on the signal terminal, ground on the sensor ground. Warm the engine, then count crossings per second and check both extremes are reached.",
+        "function": "The zirconia ceramic compares exhaust oxygen with reference air and generates its own voltage. The ECU uses the switching rate and the extremes to trim the mixture and to judge the catalyst.",
+        "bullets": [
+          "Zirconium dioxide ceramic with electrodes on both faces",
+          "Integrated heater reaches operating temperature quickly",
+          "Never measure resistance on a zirconia sensor",
+          "Response time increases as the sensor wears"
+        ],
+        "probeNotes": [
+          "Never use an ohmmeter on a zirconia sensor.",
+          "The sensor generates its own voltage — no supply to check on the signal wire.",
+          "A lazy switch rate matters more than the peak values."
+        ],
+        "anim1": "Mixture",
+        "anim2": "Signal",
+        "animEvent": "Rich / lean switch"
+      }
+    }
+  },
+  "schematic": {
+    "trace": {
+      "inj": {
+        "label": "Injector 1",
+        "step": {
+          "0": "Fuse INJ/EFI-B pin 2",
+          "1": "ECU E1 pin A 1 — battery feed",
+          "2": "Fuel injection relay pin 5",
+          "3": "ECU E1 pin B 20 — injector driver",
+          "4": "Injector 1 pin 2",
+          "5": "Grounding point BA via ECU B 16"
+        }
+      },
+      "ign": {
+        "label": "Ignition coil 1",
+        "step": {
+          "0": "Fuse IGN pin 2",
+          "1": "ECU E1 pin A 37 — ignition sense",
+          "2": "Ignition coil relay pin 2",
+          "3": "ECU E1 pin B 102 — coil supply",
+          "4": "Ignition coil 1 pin A2",
+          "5": "ECU E1 pin B 57 — IGT signal",
+          "6": "Grounding point AB via ECU A 50"
+        }
+      },
+      "can": {
+        "label": "CAN system 1",
+        "step": {
+          "0": "ECU E1 pin A 13 — CAN High",
+          "1": "CAN system 1 — H",
+          "2": "ECU E1 pin A 26 — CAN Low",
+          "3": "CAN system 1 — L",
+          "4": "Diagnostic connector pin 13 via A 23"
+        }
+      }
+    },
+    "task": {
+      "0": {
+        "prompt": "Locate fuse EFI 1 on the power distribution rail.",
+        "explain": "Fuse EFI 1 pin 2 feeds ECU E1 pins A 2 and A 3 on black wires."
+      },
+      "1": {
+        "prompt": "Select the ignition coil relay R16.",
+        "explain": "R16 pin 2 is bonded to ECU pin A 50 on a white/black wire that becomes brown at the ECU."
+      },
+      "2": {
+        "prompt": "Identify the grounding point bonded to ECU pin B 16.",
+        "explain": "Grounding point BA pin 1 takes ECU pins B 16, B 51 and B 59."
+      },
+      "3": {
+        "prompt": "Locate the mass airflow meter with air temperature sensor.",
+        "explain": "L3 uses five ECU pins: A 2 / A 3 earth, B 90, B 91, B 92 and B 122."
+      },
+      "4": {
+        "prompt": "Select the component driven by ECU pin B 20.",
+        "explain": "ECU pin B 20 drives Injector 1 pin 2 on a black wire."
+      },
+      "5": {
+        "prompt": "Locate CAN system 1 on the network rail.",
+        "explain": "CAN system 1 H is on ECU A 13 (black), L is on ECU A 26 (white)."
+      },
+      "6": {
+        "prompt": "Select the accelerator pedal position sensor.",
+        "explain": "G1 uses six ECU pins, A 51 to A 56 — two supplies, two earths, two signals."
+      },
+      "7": {
+        "prompt": "Locate the main relay.",
+        "explain": "Main relay pin 1 is controlled from ECU A 46 (blue); pin 2 grounds via A 50."
+      }
+    },
+    "exam": {
+      "0": {
+        "prompt": "Identify the component at the highlighted position."
+      },
+      "1": {
+        "prompt": "Identify the highlighted grounding point."
+      },
+      "2": {
+        "prompt": "Identify the highlighted sensor."
+      },
+      "3": {
+        "prompt": "Identify the highlighted fuse."
+      },
+      "4": {
+        "prompt": "Identify the highlighted actuator."
+      },
+      "5": {
+        "prompt": "Identify the highlighted control unit."
+      }
+    },
+    "practice": {
+      "prompt": "Which ECU pin connects to {name} pin {pin}?"
+    },
+    "feedback": {
+      "correct": "Correct.",
+      "wrong": "Not this one — {code} {name}. Try again.",
+      "practiceCorrect": "Correct — ECU {pin} reaches {name} pin {tpin}.",
+      "practiceWrong": "Incorrect — check the pin-table rows for {code}.",
+      "traceWrong": "Not on this step — follow the highlighted path.",
+      "examRecorded": "Answer recorded."
+    },
+    "hud": {
+      "trace": "Step {n}/{total} — {desc}",
+      "examProgress": "Exam mode — labels hidden. Question {n} of {total}",
+      "examDone": "Exam mode — labels hidden. Submitted.",
+      "hover": "{code} — {name}"
+    },
+    "verdict": {
+      "training": {
+        "pass": "Good work — you located the components accurately across the sheet.",
+        "retry": "Keep practising — re-trace the wires and try the components you missed."
+      },
+      "practice": {
+        "pass": "Practice passed — you can read the ECU pin table confidently.",
+        "retry": "Not passed yet — review the pin-table rows and retake the practice."
+      },
+      "exam": {
+        "pass": "Exam passed — you identified the masked components correctly.",
+        "retry": "Not passed yet — study the sheet and retake the exam."
+      }
+    },
+    "na": {
+      "field": "Not available in uploaded project",
+      "wire": "Wire size, wire number and circuit name — not available in uploaded project.",
+      "connector": "Connector housing image, lock type and location — not available in uploaded project.",
+      "vehicle": "No other vehicles available in uploaded project.",
+      "systems": "Transmission, ABS, Airbag, Body, Lighting, HVAC, Hybrid, EV and Comfort — not available in uploaded project.",
+      "pins": "No pin-table rows for this component in the uploaded project.",
+      "search": "No match in uploaded project.",
+      "recent": "Nothing opened yet."
+    },
+    "empty": {
+      "title": "Select anything on the diagram",
+      "body": "Click a component to load its pin-table rows. Click a row to trace that wire end to end."
+    }
+  }
+}

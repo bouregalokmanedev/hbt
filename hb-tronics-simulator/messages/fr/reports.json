@@ -1,0 +1,12 @@
+{
+  "title": "Rapports",
+  "kicker": "Visionneuse de rapports de session",
+  "list": "Sessions",
+  "steps": "Étapes",
+  "verdict": "Verdict",
+  "meta": "Détail de la session",
+  "reopen": "Rouvrir dans l'outil",
+  "exportPdf": "Exporter en PDF",
+  "outcome": { "pass": "Réussi", "fault": "Panne" },
+  "fields": { "date": "Date", "tools": "Outils", "score": "Score", "vin": "VIN", "km": "Compteur", "tech": "Technicien" }
+}

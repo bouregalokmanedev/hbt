@@ -17,6 +17,7 @@ final class AssessmentQuestion extends Model
     protected $fillable = [
         'assessment_id',
         'quiz_question_id',
+        'competency_id',
         'position',
         'points',
     ];
@@ -42,6 +43,14 @@ final class AssessmentQuestion extends Model
         return $this->belongsTo(
             QuizQuestion::class,
             'quiz_question_id'
+        );
+    }
+
+    public function competency(): BelongsTo
+    {
+        return $this->belongsTo(
+            Competency::class,
+            'competency_id'
         );
     }
 

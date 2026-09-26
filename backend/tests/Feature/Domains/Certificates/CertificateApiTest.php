@@ -119,3 +119,44 @@ it('requires authentication to list certificates', function () {
     $this->getJson('/api/v1/certificates')
         ->assertUnauthorized();
 });
+it('downloads a branded PDF for an owned certificate', function () {
+    $student = User::factory()->create();
+    $enrollment = Enrollment::factory()->create(['user_id' => $student->id]);
+    $result = AssessmentResult::factory()->create(['user_id' => $student->id]);
+    $certificate = Certificate::factory()->create([
+        'enrollment_id' => $enrollment->id,
+        'assessment_result_id' => $result->id,
+        'course_id' => $enrollment->course_id,
+        'user_id' => $student->id,
+    ]);
+
+    Sanctum::actingAs($student);
+
+    $response = $this->get('/api/v1/certificates/'.$certificate->id.'/download');
+
+    $response->assertOk();
+
+    expect($response->headers->get('Content-Disposition'))
+        ->toContain('HBT-certificate-'.$certificate->certificate_number.'.pdf');
+    expect($response->headers->get('Content-Type'))->toContain('pdf');
+    expect(str_starts_with((string) $response->getContent(), '%PDF-'))->toBeTrue();
+});
+
+it('points the QR and verify link at the branded frontend page', function () {
+    $certificate = Certificate::factory()->create();
+
+    $html = view('certificates.certificate', [
+        'certificate' => $certificate,
+        'verificationUrl' => rtrim(config('app.frontend_url'), '/').'/verify/'.$certificate->certificate_number,
+        'issuedDate' => $certificate->issued_at?->format('F j, Y') ?? '',
+        'qrCode' => 'data:image/png;base64,iVBORw0KGgo=',
+        'logoData' => null,
+    ])->render();
+
+    expect($html)
+        ->toContain('/verify/'.$certificate->certificate_number)
+        ->toContain('Certificate of Achievement')
+        ->toContain($certificate->recipient_name)
+        ->toContain($certificate->course_title)
+        ->not->toContain('backend:');
+});

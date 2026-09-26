@@ -6,6 +6,10 @@ import {
     LockKeyhole,
 } from "lucide-react";
 
+import {
+    useTranslation,
+} from "react-i18next";
+
 import type {
     CourseLesson,
 } from "@/features/courses/types/course.types";
@@ -23,6 +27,7 @@ export function LessonCurriculumItem({
     locked,
     onClick,
 }: LessonCurriculumItemProps) {
+    const { t } = useTranslation();
     const isCompleted =
         lesson.progress?.is_completed === true ||
         lesson.progress?.completed_at != null;
@@ -60,7 +65,7 @@ export function LessonCurriculumItem({
             aria-current={active ? "page" : undefined}
             className={`
                 group relative flex w-full items-center gap-3
-                px-3 py-2.5 text-left
+                px-3 py-2.5 text-start
                 transition-colors duration-150
                 ${
                     active
@@ -78,8 +83,8 @@ export function LessonCurriculumItem({
             {active && !isLocked && (
                 <span
                     className="
-                        absolute inset-y-0 left-0
-                        w-[3px] rounded-r-full
+                        absolute inset-y-0 start-0
+                        w-[3px] rounded-e-full
                         bg-[#F47822]
                     "
                 />
@@ -105,7 +110,7 @@ export function LessonCurriculumItem({
             >
                 {isCompleted ? (
                     <CheckCircle2
-                        className="h-[17px] w-[17px] text-emerald-600"
+                        className="h-[17px] w-[17px] text-emerald-600 dark:text-emerald-400"
                         strokeWidth={2.2}
                     />
                 ) : isLocked ? (
@@ -139,7 +144,7 @@ export function LessonCurriculumItem({
                     <p
                         className={`
                             min-w-0 flex-1 truncate
-                            text-[12px] leading-4
+                            text-start text-[12px] leading-4
                             ${
                                 active
                                     ? "font-semibold text-[#F47822]"
@@ -162,6 +167,8 @@ export function LessonCurriculumItem({
                                 duration-150
                                 group-hover:translate-x-0.5
                                 group-hover:opacity-100
+                                rtl:rotate-180
+                                rtl:group-hover:-translate-x-0.5
                             "
                         />
                     )}
@@ -169,15 +176,15 @@ export function LessonCurriculumItem({
 
                 <div className="mt-0.5 flex items-center gap-1.5">
                     <span className="text-[11px] text-muted-foreground">
-                        {lesson.duration_minutes} min
+                        {lesson.duration_minutes} {t("lessonPlayer.curriculum.min")}
                     </span>
 
                     {isCompleted && (
                         <>
                             <span className="h-0.5 w-0.5 rounded-full bg-border" />
 
-                            <span className="text-[11px] font-medium text-emerald-600">
-                                Completed
+                            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                {t("lessonPlayer.curriculum.completed")}
                             </span>
                         </>
                     )}
@@ -197,7 +204,7 @@ export function LessonCurriculumItem({
                             <span className="h-0.5 w-0.5 rounded-full bg-border" />
 
                             <span className="text-[11px] text-muted-foreground">
-                                Locked
+                                {t("lessonPlayer.curriculum.locked")}
                             </span>
                         </>
                     )}

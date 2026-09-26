@@ -53,6 +53,11 @@ class UpdatePrivacySettingsRequest extends FormRequest
                 'sometimes',
                 'boolean',
             ],
+
+            'send_read_receipts' => [
+                'sometimes',
+                'boolean',
+            ],
         ];
     }
 }

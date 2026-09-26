@@ -90,6 +90,7 @@ final class LessonProgressService
 
             event(new LessonCompleted($progress));
             app(StudentProgressionService::class)->award($user, 'lesson_completed', 8, 14, "lesson:{$lesson->id}", ['lesson' => $lesson->title, 'label' => 'Lesson completed']);
+            app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($user, 'lesson_complete', ['title' => $lesson->title]);
 
             return $progress;
         }
@@ -114,6 +115,7 @@ final class LessonProgressService
 
             event(new LessonCompleted($progress));
             app(StudentProgressionService::class)->award($user, 'lesson_completed', 8, 14, "lesson:{$lesson->id}", ['lesson' => $lesson->title, 'label' => 'Lesson completed']);
+            app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($user, 'lesson_complete', ['title' => $lesson->title]);
         }
 
         return $progress;
@@ -156,6 +158,7 @@ final class LessonProgressService
             if ($progress->completed_at !== null) {
                 event(new LessonCompleted($progress));
                 app(StudentProgressionService::class)->award($user, 'lesson_completed', 8, 14, "lesson:{$lesson->id}", ['lesson' => $lesson->title, 'label' => 'Lesson completed']);
+                app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($user, 'lesson_complete', ['title' => $lesson->title]);
             }
 
             return $progress;
@@ -185,6 +188,7 @@ final class LessonProgressService
         if (! $wasCompleted && $result->completed_at !== null) {
             event(new LessonCompleted($result));
             app(StudentProgressionService::class)->award($user, 'lesson_completed', 8, 14, "lesson:{$lesson->id}", ['lesson' => $lesson->title, 'label' => 'Lesson completed']);
+            app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($user, 'lesson_complete', ['title' => $lesson->title]);
         }
 
         return $result;

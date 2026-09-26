@@ -1,523 +1,1113 @@
 import {
-    ArrowRight,
-    Award,
-    CheckCircle2,
-    ShieldCheck,
-    Sparkles,
+  ArrowRight,
+  Award,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  ExternalLink,
+  FileCheck2,
+  ScanLine,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  Wrench,
 } from "lucide-react";
 
+import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
+import {
+    Eyebrow,
+    LandingContainer,
+    LandingSection,
+    SectionTitle,
+} from "./landing-ui";
+
+import hbtLogo from "@/assets/brand/hbt-logo-full.png";
+
+const ORANGE = "#F47822";
+const DARK = "#181818";
+const PAPER = "#F7F5F0";
+
+type PipelineStep = {
+  number: string;
+  title: string;
+  description: string;
+  icon: typeof Award;
+};
+
+const stepIcons = [Target, FileCheck2, Wrench, Award];
+
+const stepNumbers = ["01", "02", "03", "04"];
+
+type TranslatedStep = {
+  title: string;
+  description: string;
+};
+
+type TranslatedLevel = {
+  level: string;
+  title: string;
+  description: string;
+};
+
+function CertificateSeal() {
+  return (
+    <div className="relative flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-full border border-[#F47822]/30 bg-[#F47822]/[0.035]">
+      <div className="absolute inset-[6px] rounded-full border border-dashed border-[#F47822]/30" />
+
+      <div className="absolute inset-[13px] rounded-full border border-[#F47822]/15" />
+
+      <div
+        className="
+          relative
+          flex
+          h-8
+          w-8
+          items-center
+          justify-center
+          rounded-full
+          bg-[#F47822]
+          text-white
+          shadow-[0_6px_20px_rgba(244,120,34,0.18)]
+        "
+      >
+        <ShieldCheck className="h-[17px] w-[17px]" strokeWidth={2.2} />
+      </div>
+    </div>
+  );
+}
+
+function TechnicalGrid() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 opacity-[0.45]"
+      style={{
+        backgroundImage: `
+          linear-gradient(rgba(24,24,24,0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(24,24,24,0.045) 1px, transparent 1px)
+        `,
+        backgroundSize: "42px 42px",
+      }}
+    />
+  );
+}
+
 export function CertificationSection() {
-    return (
-        <section className="relative overflow-hidden bg-white text-[#171717]">
-            {/* =========================================================
-                BACKGROUND GRID
-            ========================================================== */}
+  const { t } = useTranslation();
 
-            <div
-                className="
-                    pointer-events-none
-                    absolute inset-0
-                    opacity-[0.045]
-                    [background-image:linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]
-                    [background-size:64px_64px]
-                "
-            />
+  const translatedSteps = t("landingPage.certification.steps", {
+    returnObjects: true,
+  }) as TranslatedStep[];
 
-            {/* Large decorative mark */}
-            <div
-                className="
-                    pointer-events-none
-                    absolute
-                    -right-20
-                    top-32
-                    select-none
-                    text-[18rem]
-                    font-black
-                    leading-none
-                    tracking-[-0.08em]
-                    text-[#171717]/[0.025]
-                "
-            >
-                HBT
+  const pipelineSteps: PipelineStep[] = translatedSteps.map((step, index) => ({
+    number: stepNumbers[index] ?? String(index + 1).padStart(2, "0"),
+    title: step.title,
+    description: step.description,
+    icon: stepIcons[index] ?? Award,
+  }));
+
+  const certificationLevels = t("landingPage.certification.levels", {
+    returnObjects: true,
+  }) as TranslatedLevel[];
+
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const [isVisible, setIsVisible] = useState(false);
+  const [activeStep, setActiveStep] = useState(3);
+
+  useEffect(() => {
+    const element = sectionRef.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.15,
+      },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const interval = window.setInterval(() => {
+      setActiveStep((current) => (current + 1) % pipelineSteps.length);
+    }, 2600);
+
+    return () => window.clearInterval(interval);
+  }, [isVisible]);
+
+  return (
+    <LandingSection
+      id="certification"
+      sectionRef={sectionRef}
+      className="bg-[#E8E4DE]"
+    >
+      <TechnicalGrid />
+
+      {/* Decorative technical marks */}
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          left-0
+          top-32
+          h-px
+          w-[18vw]
+          bg-gradient-to-r
+          from-transparent
+          via-[#181818]/10
+          to-[#181818]/10
+          rtl:left-auto
+          rtl:right-0
+        "
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          right-0
+          top-[42%]
+          h-px
+          w-[14vw]
+          bg-gradient-to-l
+          from-transparent
+          via-[#F47822]/30
+          to-[#F47822]/30
+          rtl:left-0
+          rtl:right-auto
+        "
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          bottom-20
+          left-[8%]
+          h-20
+          w-20
+          rounded-full
+          border
+          border-[#181818]/10
+          rtl:left-auto
+          rtl:right-[8%]
+        "
+      />
+
+      <LandingContainer className="relative z-10">
+
+        {/* ============================================================
+            HEADER
+        ============================================================ */}
+
+        <div
+          className={`
+            max-w-3xl
+            transition-all
+            duration-1000
+            ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-8 opacity-0"
+            }
+          `}
+        >
+          <div className="flex items-center gap-3">
+            <span className="h-px w-10 bg-[#F47822]" />
+
+            <Eyebrow tone="muted">
+              {t("landingPage.certification.eyebrow")}
+            </Eyebrow>
+          </div>
+
+          <SectionTitle size="display" className="max-w-4xl lowercase">
+            {t("landingPage.certification.titleA")}
+            <br />
+
+            <span className="text-[#F47822]">{t("landingPage.certification.titleB")}</span>
+          </SectionTitle>
+
+          <p
+            className="
+              mt-7
+              max-w-2xl
+              text-base
+              leading-7
+              text-[#181818]/60
+              sm:text-lg
+            "
+          >
+            {t("landingPage.certification.description")}
+          </p>
+        </div>
+
+        {/* ============================================================
+            MAIN CERTIFICATE AREA
+        ============================================================ */}
+
+        <div className="mt-20 grid gap-14 lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] lg:items-center">
+
+          {/* ==========================================================
+              CERTIFICATE
+          ========================================================== */}
+
+          <div
+            className={`
+              relative
+              transition-all
+              delay-150
+              duration-1000
+              ${
+                isVisible
+                  ? "translate-x-0 opacity-100"
+                  : "-translate-x-10 opacity-0"
+              }
+            `}
+          >
+            {/* technical label */}
+
+            <div className="mb-4 flex items-center justify-between px-1">
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
+
+                <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#181818]/40">
+                  {t("landingPage.certification.previewLabel")}
+                </span>
+              </div>
+
+              <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#181818]/30">
+                HBT-CERT-01
+              </span>
             </div>
 
-            <div className="relative mx-auto max-w-[1400px] px-6 py-24 sm:px-10 lg:px-16 lg:py-32">
-                {/* =====================================================
-                    TOP LABEL
-                ====================================================== */}
+            {/* ========================================================
+                CERTIFICATE
+                No dark outer frame.
+            ======================================================== */}
 
-                <div className="flex items-center justify-between border-b border-[#171717]/10 pb-5">
-                    <div className="flex items-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#F47822]" />
+            <div
+              className="
+                relative
+                overflow-hidden
+                rounded-[24px]
+                bg-[#F7F5F0]
+                shadow-[0_35px_90px_rgba(24,24,24,0.14)]
+              "
+            >
+              <div
+                className="
+                  relative
+                  min-h-[590px]
+                  overflow-hidden
+                  rounded-[24px]
+                  border
+                  border-black/[0.07]
+                  bg-[#F7F5F0]
+                  px-7
+                  py-8
+                  sm:px-12
+                  sm:py-11
+                  lg:min-h-[630px]
+                  lg:px-14
+                  lg:py-12
+                "
+              >
+                {/* certificate technical border */}
 
-                        <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#171717]/60">
-                            HBT Certification
-                        </span>
-                    </div>
+                <div className="pointer-events-none absolute inset-4 rounded-[10px] border border-black/[0.055] sm:inset-6" />
 
-                    <span className="hidden text-[10px] font-bold tracking-[0.2em] text-[#171717]/30 sm:block">
-                        05 / 05
-                    </span>
-                </div>
+                <div className="pointer-events-none absolute inset-6 rounded-[7px] border border-[#F47822]/10 sm:inset-8" />
 
-                {/* =====================================================
-                    HERO COPY
-                ====================================================== */}
+                {/* decorative corners */}
 
-                <div className="grid gap-12 py-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:py-24">
+                <div className="absolute left-8 top-8 h-7 w-7 border-l border-t border-[#F47822]/40" />
+
+                <div className="absolute right-8 top-8 h-7 w-7 border-r border-t border-[#F47822]/40" />
+
+                <div className="absolute bottom-8 left-8 h-7 w-7 border-b border-l border-[#F47822]/40" />
+
+                <div className="absolute bottom-8 right-8 h-7 w-7 border-b border-r border-[#F47822]/40" />
+
+                {/* subtle paper grid */}
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 opacity-[0.22]"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(rgba(24,24,24,0.035) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(24,24,24,0.035) 1px, transparent 1px)
+                    `,
+                    backgroundSize: "28px 28px",
+                  }}
+                />
+
+                {/* orange identity strip */}
+
+                <div className="absolute bottom-0 left-0 top-0 w-[4px] bg-[#F47822] rtl:left-auto rtl:right-0" />
+
+                <div className="relative z-10 flex min-h-[530px] flex-col lg:min-h-[570px]">
+
+                  {/* ==================================================
+                      CERTIFICATE HEADER
+                  ================================================== */}
+
+                  <div className="flex items-start justify-between gap-6">
                     <div>
-                        <p className="mb-6 text-xs font-bold uppercase tracking-[0.28em] text-[#F47822]">
-                            Learn. Prove. Get certified.
-                        </p>
-
-                        <h2
-                            className="
-                                max-w-5xl
-                                text-6xl
-                                font-black
-                                uppercase
-                                leading-[0.84]
-                                tracking-[-0.055em]
-                                text-[#171717]
-                                sm:text-7xl
-                                lg:text-[8.5rem]
-                            "
-                        >
-                            Your skills.
-                            <br />
-
-                            <span className="text-[#F47822]">
-                                Your proof.
-                            </span>
-                        </h2>
-                    </div>
-
-                    <div className="max-w-md lg:pb-3">
-                        <div className="border-l-2 border-[#F47822] pl-6">
-                            <p className="text-base leading-7 text-[#171717]/65 sm:text-lg">
-                                Turn your learning into a verified
-                                professional credential. Complete the
-                                required training, demonstrate your
-                                knowledge, and earn an HBT certification
-                                that represents what you can actually do.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* =====================================================
-                    CERTIFICATION PREVIEW
-                ====================================================== */}
-
-                <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-                    {/* Certificate */}
-                    <div className="relative overflow-hidden border border-[#171717]/15 bg-[#F7F7F7]">
-                        {/* Orange top line */}
-                        <div className="h-1.5 bg-[#F47822]" />
-
-                        <div className="relative p-6 sm:p-10 lg:p-12">
-                            {/* Decorative circles */}
-                            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full border border-[#F47822]/10" />
-
-                            <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full border border-[#F47822]/10" />
-
-                            <div className="relative">
-                                {/* Certificate header */}
-                                <div className="flex items-start justify-between gap-6">
-                                    <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#F47822]">
-                                            HBTronics
-                                        </p>
-
-                                        <p className="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-[#171717]/40">
-                                            Professional Certification
-                                        </p>
-                                    </div>
-
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#F47822]/30 bg-white">
-                                        <Award className="h-6 w-6 text-[#F47822]" />
-                                    </div>
-                                </div>
-
-                                {/* Certificate title */}
-                                <div className="mt-16 max-w-2xl">
-                                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#171717]/40">
-                                        This certifies that
-                                    </p>
-
-                                    <h3 className="mt-3 text-3xl font-black uppercase tracking-tight text-[#171717] sm:text-4xl">
-                                        Certified Diagnostic
-                                        <br />
-                                        Technician
-                                    </h3>
-
-                                    <p className="mt-5 max-w-xl text-sm leading-6 text-[#171717]/55">
-                                        Has successfully completed the
-                                        required HBT learning path and
-                                        demonstrated the knowledge and
-                                        diagnostic reasoning required for
-                                        this certification level.
-                                    </p>
-                                </div>
-
-                                {/* Credential details */}
-                                <div className="mt-14 grid gap-4 border-t border-[#171717]/10 pt-6 sm:grid-cols-3">
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#171717]/35">
-                                            Certification
-                                        </p>
-
-                                        <p className="mt-1 text-sm font-bold">
-                                            HBT-CD Level 01
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#171717]/35">
-                                            Status
-                                        </p>
-
-                                        <div className="mt-1 flex items-center gap-1.5">
-                                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-
-                                            <span className="text-sm font-bold text-emerald-600">
-                                                Verified
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#171717]/35">
-                                            Credential
-                                        </p>
-
-                                        <p className="mt-1 text-sm font-bold">
-                                            HBT-••••-2048
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Signature / verification */}
-                                <div className="mt-8 flex flex-col gap-5 border-t border-[#171717]/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#171717]/35">
-                                            Issued by
-                                        </p>
-
-                                        <p className="mt-1 text-sm font-bold">
-                                            HBTronics Learning Platform
-                                        </p>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 text-xs font-semibold text-[#171717]/50">
-                                        <ShieldCheck className="h-4 w-4 text-[#F47822]" />
-                                        Digitally verifiable credential
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right information panel */}
-                    <div className="flex flex-col border border-[#171717]/10 bg-[#171717] text-white">
-                        <div className="flex-1 p-7 sm:p-9">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F47822]">
-                                    <ShieldCheck className="h-5 w-5 text-white" />
-                                </div>
-
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#F47822]">
-                                        Verified credential
-                                    </p>
-
-                                    <p className="mt-1 text-sm font-semibold">
-                                        Built around demonstrated skills
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="mt-10 space-y-0">
-                                {[
-                                    "Complete the required course",
-                                    "Pass the required quizzes",
-                                    "Complete diagnostic scenarios",
-                                    "Meet the certification score",
-                                    "Receive your verified credential",
-                                ].map((item, index) => (
-                                    <div
-                                        key={item}
-                                        className="flex gap-4 border-t border-white/10 py-4"
-                                    >
-                                        <span className="text-[10px] font-bold text-[#F47822]">
-                                            0{index + 1}
-                                        </span>
-
-                                        <span className="text-sm leading-5 text-white/70">
-                                            {item}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="border-t border-white/10 p-7 sm:p-9">
-                            <p className="text-xs leading-6 text-white/45">
-                                Your certification is connected to your
-                                learning record, making your achievement
-                                traceable and easier to validate.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* =====================================================
-                    WHAT CERTIFICATION MEANS
-                ====================================================== */}
-
-                <div className="mt-20 border-y border-[#171717]/10">
-                    <div className="grid md:grid-cols-3">
-                        <CertificationFeature
-                            number="01"
-                            title="Prove knowledge"
-                            description="Demonstrate that you understand the concepts covered by the certification path."
-                        />
-
-                        <CertificationFeature
-                            number="02"
-                            title="Prove reasoning"
-                            description="Use diagnostic scenarios and practical decisions to show how you apply what you learned."
-                        />
-
-                        <CertificationFeature
-                            number="03"
-                            title="Build credibility"
-                            description="Earn a professional credential that represents completed training and verified achievement."
-                        />
-                    </div>
-                </div>
-
-                {/* =====================================================
-                    CERTIFICATION LEVELS
-                ====================================================== */}
-
-                <div className="mt-20 grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
-                    <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F47822]">
-                            Certification paths
-                        </p>
-
-                        <h3 className="mt-4 max-w-lg text-4xl font-black uppercase leading-[0.95] tracking-[-0.04em] sm:text-5xl">
-                            Keep learning.
-                            <br />
-                            Keep leveling up.
-                        </h3>
-
-                        <p className="mt-5 max-w-md text-sm leading-6 text-[#171717]/55">
-                            Certifications can form a progression from
-                            foundational knowledge to advanced diagnostic
-                            capability.
-                        </p>
-                    </div>
-
-                    <div className="space-y-3">
-                        <CertificationLevel
-                            level="01"
-                            title="Foundations"
-                            description="Core concepts, systems, tools and diagnostic fundamentals."
-                            active
-                        />
-
-                        <CertificationLevel
-                            level="02"
-                            title="Advanced Diagnostics"
-                            description="Deeper diagnostic reasoning, testing strategies and real-world scenarios."
-                        />
-
-                        <CertificationLevel
-                            level="03"
-                            title="Professional Mastery"
-                            description="Advanced troubleshooting, complex cases and expert-level decision making."
-                        />
-                    </div>
-                </div>
-
-                {/* =====================================================
-                    CTA
-                ====================================================== */}
-
-                <div className="mt-24 flex flex-col gap-7 border-t border-[#171717]/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-start gap-4">
-                        <Sparkles className="mt-1 h-5 w-5 shrink-0 text-[#F47822]" />
-
-                        <div>
-                            <p className="text-sm font-bold uppercase tracking-[0.12em]">
-                                Ready to earn yours?
-                            </p>
-
-                            <p className="mt-1 text-sm text-[#171717]/50">
-                                Start learning and work toward your first
-                                HBT certification.
-                            </p>
-                        </div>
-                    </div>
-
-                    <Link
-                        to="/courses"
+                      <img
+                        src={hbtLogo}
+                        alt="HBTronics"
                         className="
-                            group
-                            inline-flex
+                          h-[15px]
+                          w-auto
+                          object-contain
+                          opacity-90
+                          sm:h-[18px]
+                        "
+                      />
+
+                      <p className="mt-2.5 font-mono text-[6px] uppercase tracking-[0.18em] text-black/30 sm:text-[7px]">
+                        {t("landingPage.certification.platformLine")}
+                      </p>
+                    </div>
+
+                    <div className="text-right rtl:text-left">
+                      <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                        {t("landingPage.certification.credentialLabel")}
+                      </p>
+
+                      <p className="mt-1 font-mono text-[8px] font-semibold tracking-[0.1em] text-black/65">
+                        HBT-9X42-EMS-26
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* ==================================================
+                      CERTIFICATE TITLE
+                  ================================================== */}
+
+                  <div className="mt-16 text-center sm:mt-20">
+                    <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.25em] text-[#F47822]">
+                      {t("landingPage.certification.certificateTitle")}
+                    </p>
+
+                    <h3 className="mt-5 text-[clamp(2rem,4vw,4rem)] font-semibold leading-none tracking-[-0.045em] text-[#181818]">
+                      {t("landingPage.certification.certificateNameA")}
+                      <br />
+                      {t("landingPage.certification.certificateNameB")}
+                    </h3>
+
+                    <p className="mx-auto mt-6 max-w-md text-[10px] leading-5 text-black/45 sm:text-xs sm:leading-6">
+                      {t("landingPage.certification.certificateDesc")}
+                    </p>
+                  </div>
+
+                  {/* ==================================================
+                      CREDENTIAL DATA
+                  ================================================== */}
+
+                  <div className="mx-auto mt-12 grid w-full max-w-2xl grid-cols-2 gap-x-8 gap-y-7 sm:mt-14 sm:grid-cols-4">
+                    <div>
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                        {t("landingPage.certification.candidateLabel")}
+                      </span>
+
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                        Alex Morgan
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                        {t("landingPage.certification.programLabel")}
+                      </span>
+
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                        {t("landingPage.certification.programValue")}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                        {t("landingPage.certification.issuedLabel")}
+                      </span>
+
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                        {t("landingPage.certification.issuedValue")}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                        {t("landingPage.certification.levelLabel")}
+                      </span>
+
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                        {t("landingPage.certification.levelValue")}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* ==================================================
+                      CERTIFICATE FOOTER
+                  ================================================== */}
+
+                  <div className="mt-auto border-t border-black/8 pt-7">
+                    <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
+
+                      {/* signature */}
+
+                      <div>
+                        <div className="mb-5 h-px w-32 bg-black/25" />
+
+                        <p className="text-[9px] font-semibold text-black/65">
+                          {t("landingPage.certification.boardName")}
+                        </p>
+
+                        <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.13em] text-black/30">
+                          {t("landingPage.certification.authorizedLabel")}
+                        </p>
+                      </div>
+
+                      {/* QR + status */}
+
+                      <div className="flex items-end gap-5">
+
+                        {/* QR */}
+
+                        <div className="flex items-center gap-3">
+                          <div className="rounded-lg border border-black/10 bg-white p-2">
+                            <QRCodeSVG
+                              value="https://hbtronics.dz/verify/HBT-9X42-EMS-26"
+                              size={58}
+                              bgColor="#FFFFFF"
+                              fgColor="#181818"
+                              level="M"
+                              marginSize={0}
+                            />
+                          </div>
+
+                          <div className="max-w-[80px]">
+                            <p className="text-[7px] font-bold uppercase tracking-[0.13em] text-black/45">
+                              {t("landingPage.certification.scanLabel")}
+                            </p>
+
+                            <p className="mt-1 font-mono text-[6px] leading-3 text-black/25">
+                              HBT-9X42-EMS-26
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* status */}
+
+                        <div className="flex items-center gap-4">
+                          <div className="text-right rtl:text-left">
+                            <span className="mb-1 block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                              {t("landingPage.certification.statusLabel")}
+                            </span>
+
+                            <span className="flex items-center justify-end gap-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-600 rtl:justify-start">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              {t("landingPage.certification.statusValue")}
+                            </span>
+                          </div>
+
+                          <CertificateSeal />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scanner removed intentionally */}
+              </div>
+            </div>
+
+            {/* floating credential badge */}
+
+            <div
+              className={`
+                absolute
+                -bottom-7
+                right-5
+                hidden
+                rounded-2xl
+                border
+                border-black/10
+                bg-[#F7F5F0]
+                px-5
+                py-4
+                shadow-[0_18px_45px_rgba(24,24,24,0.13)]
+                transition-all
+                delay-700
+                duration-1000
+                sm:block
+                rtl:left-5
+                rtl:right-auto
+                ${
+                  isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-5 opacity-0"
+                }
+              `}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F47822]/10 text-[#F47822]">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold text-[#181818]">
+                    {t("landingPage.certification.verifiableTitle")}
+                  </p>
+
+                  <p className="mt-0.5 font-mono text-[7px] uppercase tracking-[0.13em] text-[#181818]/35">
+                    {t("landingPage.certification.verifiableSub")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ==========================================================
+              RIGHT SIDE
+          ========================================================== */}
+
+          <div
+            className={`
+              transition-all
+              delay-300
+              duration-1000
+              ${
+                isVisible
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-10 opacity-0"
+              }
+            `}
+          >
+            {/* ========================================================
+                PIPELINE
+            ======================================================== */}
+
+            <div>
+              <div className="mb-8 flex items-center justify-between">
+                <div>
+                  <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35">
+                    {t("landingPage.certification.pathwayLabel")}
+                  </span>
+
+                  <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#181818] sm:text-3xl">
+                    {t("landingPage.certification.pathwayTitle")}
+                  </h3>
+                </div>
+
+                <div className="hidden h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#F7F5F0] sm:flex">
+                  <Sparkles className="h-4 w-4 text-[#F47822]" />
+                </div>
+              </div>
+
+              <div className="relative">
+
+                {/* Vertical connector removed */}
+
+                <div className="space-y-2">
+                  {pipelineSteps.map((step, index) => {
+                    const Icon = step.icon;
+                    const isActive = activeStep === index;
+                    const isComplete = index <= activeStep;
+
+                    return (
+                      <button
+                        key={step.number}
+                        type="button"
+                        onMouseEnter={() => setActiveStep(index)}
+                        onFocus={() => setActiveStep(index)}
+                        className="
+                          group
+                          relative
+                          flex
+                          w-full
+                          items-start
+                          gap-5
+                          rounded-2xl
+                          p-3
+                          text-left
+                          transition-all
+                          duration-300
+                          hover:bg-black/[0.025]
+                          rtl:text-right
+                        "
+                      >
+                        {/* node */}
+
+                        <div
+                          className={`
+                            relative
+                            z-10
+                            flex
+                            h-10
+                            w-10
                             shrink-0
                             items-center
                             justify-center
-                            gap-3
-                            bg-[#F47822]
-                            px-7
-                            py-4
-                            text-xs
-                            font-bold
-                            uppercase
-                            tracking-[0.16em]
-                            text-white
+                            rounded-full
+                            border
                             transition-all
                             duration-300
-                            hover:bg-[#df6819]
-                        "
-                    >
-                        Explore certification paths
+                            ${
+                              isActive
+                                ? "border-[#F47822] bg-[#F47822] text-white shadow-[0_8px_25px_rgba(244,120,34,0.22)]"
+                                : isComplete
+                                  ? "border-[#F47822]/30 bg-[#F47822]/10 text-[#F47822]"
+                                  : "border-black/10 bg-[#F7F5F0] text-black/35"
+                            }
+                          `}
+                        >
+                          {isComplete && !isActive ? (
+                            <Check className="h-4 w-4" />
+                          ) : (
+                            <Icon className="h-4 w-4" />
+                          )}
+                        </div>
 
-                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                    </Link>
+                        {/* content */}
+
+                        <div className="min-w-0 flex-1 pt-0.5">
+                          <div className="flex items-center justify-between gap-4">
+                            <div>
+                              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#181818]/30">
+                                {step.number}
+                              </span>
+
+                              <h4
+                                className={`
+                                  mt-1
+                                  text-sm
+                                  font-semibold
+                                  transition-colors
+                                  duration-300
+                                  ${
+                                    isActive
+                                      ? "text-[#F47822]"
+                                      : "text-[#181818]"
+                                  }
+                                `}
+                              >
+                                {step.title}
+                              </h4>
+                            </div>
+
+                            <ChevronRight
+                              className={`
+                                h-4
+                                w-4
+                                shrink-0
+                                transition-all
+                                duration-300
+                                rtl:-scale-x-100
+                                ${
+                                  isActive
+                                    ? "translate-x-0 text-[#F47822] opacity-100 rtl:-translate-x-0"
+                                    : "-translate-x-1 text-black/20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 rtl:translate-x-1 rtl:group-hover:-translate-x-0"
+                                }
+                              `}
+                            />
+                          </div>
+
+                          <p className="mt-2 max-w-md text-xs leading-5 text-[#181818]/50">
+                            {step.description}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
+              </div>
             </div>
-        </section>
-    );
-}
 
-/* =============================================================
-   FEATURE
-============================================================= */
+            {/* ========================================================
+                VERIFICATION CARD
+            ======================================================== */}
 
-interface CertificationFeatureProps {
-    number: string;
-    title: string;
-    description: string;
-}
+            <div className="mt-10 rounded-[24px] border border-black/10 bg-[#F7F5F0] p-6 shadow-[0_18px_50px_rgba(24,24,24,0.06)] sm:p-7">
+              <div className="flex items-start justify-between gap-5">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <ScanLine className="h-4 w-4 text-[#F47822]" />
 
-function CertificationFeature({
-    number,
-    title,
-    description,
-}: CertificationFeatureProps) {
-    return (
-        <div className="border-b border-[#171717]/10 p-7 last:border-b-0 md:border-b-0 md:border-r md:p-8 md:last:border-r-0 lg:p-10">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-[#F47822]">
-                {number}
-            </span>
+                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#181818]/40">
+                      {t("landingPage.certification.verifyTitle")}
+                    </span>
+                  </div>
 
-            <h4 className="mt-10 text-xl font-black uppercase tracking-tight">
-                {title}
-            </h4>
+                  <h4 className="mt-4 text-xl font-semibold tracking-[-0.025em] text-[#181818]">
+                    {t("landingPage.certification.verifyHeading")}
+                  </h4>
 
-            <p className="mt-3 max-w-sm text-sm leading-6 text-[#171717]/50">
-                {description}
-            </p>
-        </div>
-    );
-}
+                  <p className="mt-2 max-w-sm text-xs leading-5 text-[#181818]/50">
+                    {t("landingPage.certification.verifyDesc")}
+                  </p>
+                </div>
 
-/* =============================================================
-   CERTIFICATION LEVEL
-============================================================= */
+                <div className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822] sm:flex">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+              </div>
 
-interface CertificationLevelProps {
-    level: string;
-    title: string;
-    description: string;
-    active?: boolean;
-}
+              {/* ======================================================
+                  IMPROVED BUTTONS
+              ====================================================== */}
 
-function CertificationLevel({
-    level,
-    title,
-    description,
-    active = false,
-}: CertificationLevelProps) {
-    return (
-        <div
-            className={`
-                group
-                flex
-                items-center
-                gap-5
-                border
-                p-5
-                transition-all
-                duration-300
-                sm:p-6
-                ${
-                    active
-                        ? "border-[#F47822] bg-[#F47822]/[0.035]"
-                        : "border-[#171717]/10 hover:border-[#F47822]/40"
-                }
-            `}
-        >
-            <div
-                className={`
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+
+                {/* PRIMARY */}
+
+                <Link
+                  to="/verify-certificate"
+                  className="
+                    group
+                    relative
                     flex
-                    h-12
-                    w-12
-                    shrink-0
+                    min-h-[58px]
                     items-center
-                    justify-center
-                    text-xs
-                    font-black
-                    ${
-                        active
-                            ? "bg-[#F47822] text-white"
-                            : "bg-[#171717]/5 text-[#171717]/50"
-                    }
-                `}
-            >
-                {level}
-            </div>
-
-            <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-3">
-                    <h4 className="text-sm font-black uppercase tracking-wide">
-                        {title}
-                    </h4>
-
-                    {active && (
-                        <span className="rounded-full bg-[#F47822]/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#F47822]">
-                            Available
-                        </span>
-                    )}
-                </div>
-
-                <p className="mt-1 text-xs leading-5 text-[#171717]/45">
-                    {description}
-                </p>
-            </div>
-
-            <ArrowRight
-                className={`
-                    hidden
-                    h-4
-                    w-4
-                    shrink-0
-                    transition-transform
+                    justify-between
+                    overflow-hidden
+                    rounded-2xl
+                    bg-[#F47822]
+                    px-4
+                    py-3
+                    text-white
+                    shadow-[0_10px_25px_rgba(24,24,24,0.12)]
+                    transition-all
                     duration-300
-                    sm:block
-                    ${
-                        active
-                            ? "text-[#F47822] group-hover:translate-x-1"
-                            : "text-[#171717]/20"
-                    }
-                `}
-            />
+                    hover:-translate-y-0.5
+                    hover:bg-[#F47822]
+                    hover:shadow-[0_15px_32px_rgba(244,120,34,0.24)]
+                  "
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="
+                        flex
+                        h-9
+                        w-9
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-white/10
+                        transition-colors
+                        duration-300
+                        group-hover:bg-white/20
+                      "
+                    >
+                      <ShieldCheck className="h-4 w-4" />
+                    </span>
+
+                    <span className="text-left rtl:text-right">
+                      <span className="block text-[11px] font-bold">
+                        {t("landingPage.certification.verifyCta")}
+                      </span>
+
+                      <span className="mt-0.5 block font-mono text-[7px] uppercase tracking-[0.12em] text-white/40 group-hover:text-white/65">
+                        {t("landingPage.certification.verifySub")}
+                      </span>
+                    </span>
+                  </div>
+
+                  <span
+                    className="
+                      flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-white/10
+                      transition-all
+                      duration-300
+                      group-hover:translate-x-0.5
+                      group-hover:bg-white/20
+                      rtl:group-hover:-translate-x-0.5
+                      rtl:group-hover:translate-x-0
+                    "
+                  >
+                    <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                  </span>
+                </Link>
+
+                {/* SECONDARY */}
+
+                <Link
+                  to="/courses"
+                  className="
+                    group
+                    relative
+                    flex
+                    min-h-[58px]
+                    items-center
+                    justify-between
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-black/10
+                    bg-white/40
+                    px-4
+                    py-3
+                    text-[#181818]
+                    transition-all
+                    duration-300
+                    hover:-translate-y-0.5
+                    hover:border-[#F47822]/30
+                    hover:bg-white
+                    hover:shadow-[0_15px_32px_rgba(24,24,24,0.08)]
+                  "
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="
+                        flex
+                        h-9
+                        w-9
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-black/[0.045]
+                        text-[#181818]
+                        transition-all
+                        duration-300
+                        group-hover:bg-[#F47822]/10
+                        group-hover:text-[#F47822]
+                      "
+                    >
+                      <Target className="h-4 w-4" />
+                    </span>
+
+                    <span className="text-left rtl:text-right">
+                      <span className="block text-[11px] font-bold">
+                        {t("landingPage.certification.exploreCta")}
+                      </span>
+
+                      <span className="mt-0.5 block font-mono text-[7px] uppercase tracking-[0.12em] text-black/30 group-hover:text-[#F47822]/70">
+                        {t("landingPage.certification.exploreSub")}
+                      </span>
+                    </span>
+                  </div>
+
+                  <span
+                    className="
+                      flex
+                      h-8
+                      w-8
+                      items-center
+                      justify-center
+                      rounded-full
+                      border
+                      border-black/10
+                      transition-all
+                      duration-300
+                      group-hover:translate-x-0.5
+                      group-hover:border-[#F47822]/30
+                      group-hover:bg-[#F47822]/10
+                      group-hover:text-[#F47822]
+                      rtl:group-hover:-translate-x-0.5
+                      rtl:group-hover:translate-x-0
+                    "
+                  >
+                    <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+
+        {/* ============================================================
+            CERTIFICATION LEVELS
+        ============================================================ */}
+
+        <div
+          className={`
+            mt-28
+            border-t
+            border-black/10
+            pt-12
+            transition-all
+            delay-500
+            duration-1000
+            ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-8 opacity-0"
+            }
+          `}
+        >
+          <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+
+            <div>
+              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35">
+                {t("landingPage.certification.structureLabel")}
+              </span>
+
+              <h3 className="mt-3 max-w-md text-3xl font-semibold tracking-[-0.04em] text-[#181818] sm:text-4xl">
+                {t("landingPage.certification.structureTitle")}
+              </h3>
+
+              <p className="mt-5 max-w-md text-sm leading-6 text-[#181818]/50">
+                {t("landingPage.certification.structureDesc")}
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {certificationLevels.map((level, index) => (
+                <div
+                  key={level.level}
+                  className="
+                    group
+                    relative
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-black/10
+                    bg-[#F7F5F0]
+                    p-5
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:border-[#F47822]/30
+                    hover:shadow-[0_18px_40px_rgba(24,24,24,0.07)]
+                  "
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[8px] font-semibold uppercase tracking-[0.16em] text-[#F47822]">
+                      {level.level}
+                    </span>
+
+                    <span className="font-mono text-[8px] text-black/25">
+                      0{index + 1}
+                    </span>
+                  </div>
+
+                  <h4 className="mt-7 text-sm font-semibold text-[#181818]">
+                    {level.title}
+                  </h4>
+
+                  <p className="mt-3 text-xs leading-5 text-[#181818]/45">
+                    {level.description}
+                  </p>
+
+                  <div className="mt-7 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/35 transition-colors group-hover:text-[#F47822]">
+                    {t("landingPage.certification.pathwayCta")}
+
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" />
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-[#F47822] transition-all duration-500 group-hover:w-full rtl:left-auto rtl:right-0" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ============================================================
+            BOTTOM CTA
+        ============================================================ */}
+
+        <div
+          className={`
+            mt-20
+            flex
+            flex-col
+            gap-6
+            rounded-[28px]
+            bg-[#181818]
+            p-7
+            text-white
+            shadow-[0_30px_70px_rgba(24,24,24,0.15)]
+            transition-all
+            delay-700
+            duration-1000
+            sm:p-9
+            lg:flex-row
+            lg:items-center
+            lg:justify-between
+            lg:px-11
+            ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-8 opacity-0"
+            }
+          `}
+        >
+          <div className="max-w-2xl">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
+
+              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                {t("landingPage.certification.nextLabel")}
+              </span>
+            </div>
+
+            <h3 className="text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
+              {t("landingPage.certification.bottomTitle")}
+            </h3>
+
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/45">
+              {t("landingPage.certification.bottomDesc")}
+            </p>
+          </div>
+
+          <Link
+            to="/courses"
+            className="
+              group
+              inline-flex
+              shrink-0
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              bg-[#F47822]
+              px-6
+              py-3.5
+              text-xs
+              font-bold
+              text-white
+              transition-all
+              duration-300
+              hover:bg-white
+              hover:text-[#181818]
+              hover:shadow-[0_12px_30px_rgba(244,120,34,0.22)]
+            "
+          >
+            {t("landingPage.certification.startLearning")}
+
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" />
+          </Link>
+        </div>
+      </LandingContainer>
+    </LandingSection>
+  );
 }
+
+export default CertificationSection;

@@ -3,11 +3,14 @@ import {
     CheckCircle2,
     ChevronDown,
     Clock3,
+    GraduationCap,
+    Headset,
     Mail,
     MapPin,
     MessageCircle,
     Phone,
     Send,
+    Share2,
     ShieldCheck,
     Sparkles,
 } from "lucide-react";
@@ -17,10 +20,13 @@ import {
     useState,
 } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { Link } from "react-router-dom";
 
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/features/landingpage/components/FooterSection";
+import { sendContactMessage } from "./api/contact.api";
 
 
 // ============================================================
@@ -29,8 +35,6 @@ import { Footer } from "@/features/landingpage/components/FooterSection";
 
 const COMPANY = {
     name: "HBTronics",
-    address:
-        "03، شارع مولود فرعون، دار البيضاء، الجزائر العاصمة، الجزائر",
     phone: "+213 556 237 752",
     phoneHref: "tel:+213556237752",
     email: "support@hbtronics.dz",
@@ -47,53 +51,14 @@ const COMPANY = {
 };
 
 
-// ============================================================
-// FAQ
-// ============================================================
 
-const FAQS = [
-    {
-        question: "How can I enroll in an HBTronics course?",
-        answer:
-            "Browse our available courses, open the course you're interested in, and follow the enrollment process. Once enrolled, your learning progress will be available from your dashboard.",
-    },
-    {
-        question: "Do HBTronics courses include certification?",
-        answer:
-            "Selected HBTronics training programs include certification pathways. Course pages provide the specific requirements, assessments, and certification information.",
-    },
-    {
-        question: "Can I use the diagnostic simulator?",
-        answer:
-            "Yes. The HBTronics learning experience includes practical diagnostic scenarios designed to help you apply concepts before working on real vehicles.",
-    },
-    {
-        question: "Can businesses train their automotive teams?",
-        answer:
-            "Yes. If you represent a workshop, automotive business, or training organization, contact our team and tell us what type of training you need.",
-    },
-    {
-        question: "I have a problem with my account. Who should I contact?",
-        answer:
-            "For account, course, simulator, or certification issues, contact our support team using the form or the support email above.",
-    },
-];
 
 
 // ============================================================
 // INQUIRY TYPES
 // ============================================================
 
-const inquiryTypes = [
-    "General inquiry",
-    "Courses",
-    "Certification",
-    "Diagnostic simulator",
-    "Technical support",
-    "Business / Training",
-    "Partnership",
-    "Other",
-];
+
 
 
 // ============================================================
@@ -101,6 +66,41 @@ const inquiryTypes = [
 // ============================================================
 
 export function ContactPage() {
+    const { t, i18n } = useTranslation();
+
+    const inquiryTypes = [
+        t("contactPage.inquiry.general"),
+        t("contactPage.inquiry.courses"),
+        t("contactPage.inquiry.certification"),
+        t("contactPage.inquiry.simulator"),
+        t("contactPage.inquiry.support"),
+        t("contactPage.inquiry.business"),
+        t("contactPage.inquiry.partnership"),
+        t("contactPage.inquiry.joinInstructor"),
+        t("contactPage.inquiry.joinSupport"),
+        t("contactPage.inquiry.joinSocial"),
+        t("contactPage.inquiry.other"),
+    ];
+
+    const FAQS = (
+        t("contactPage.faq.items", { returnObjects: true }) as Array<{
+            question: string;
+            answer: string;
+        }>
+    );
+
+    const joinRoles = (
+        t("contactPage.join.roles", { returnObjects: true }) as Array<{
+            title: string;
+            description: string;
+            points: string[];
+        }>
+    ).map((role, index) => ({
+        ...role,
+        inquiry: inquiryTypes[7 + index],
+        icon: [GraduationCap, Headset, Share2][index] ?? GraduationCap,
+    }));
+
     const [openFaq, setOpenFaq] =
         useState<number | null>(0);
 
@@ -109,6 +109,9 @@ export function ContactPage() {
 
     const [isSending, setIsSending] =
         useState(false);
+
+    const [submitError, setSubmitError] =
+        useState<string | null>(null);
 
     const [form, setForm] = useState({
         firstName: "",
@@ -132,38 +135,56 @@ export function ContactPage() {
     }
 
 
+    function applyFor(role: { inquiry: string; title: string }) {
+        setForm((current) => ({
+            ...current,
+            inquiry: role.inquiry,
+            subject:
+                current.subject.trim() === ""
+                    ? t("contactPage.applicationSubject", {
+                        title: role.title,
+                    })
+                    : current.subject,
+        }));
+        setSubmitted(false);
+
+        requestAnimationFrame(() => {
+            document
+                .getElementById("contact-form")
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+        });
+    }
+
     async function handleSubmit(
         event: FormEvent<HTMLFormElement>,
     ) {
         event.preventDefault();
 
         setIsSending(true);
+        setSubmitError(null);
 
-        /*
-         * --------------------------------------------------------
-         * Backend integration
-         * --------------------------------------------------------
-         *
-         * Connect your Laravel contact endpoint here later.
-         *
-         * Example:
-         *
-         * await contactApi.send(form);
-         *
-         * --------------------------------------------------------
-         */
-
-        await new Promise((resolve) =>
-            setTimeout(resolve, 700),
-        );
-
-        setIsSending(false);
-        setSubmitted(true);
+        try {
+            await sendContactMessage(form);
+            setSubmitted(true);
+        } catch (error) {
+                    setSubmitError(
+                        error instanceof Error
+                            ? error.message
+                            : t("contactPage.form.submitError"),
+                    );
+        } finally {
+            setIsSending(false);
+        }
     }
 
 
+    const mapsSrc = `https://www.google.com/maps?q=03%20Rue%20Mouloud%20Feraoun%2C%20Dar%20El%20Beida%2C%20Algiers%2C%20Algeria&output=embed&hl=${i18n.language === "ar" ? "ar" : "en"}`;
+
     return (
-        <div className="min-h-screen bg-white text-hbt-dark">
+        <div className="contact-page-ar min-h-screen bg-white text-hbt-dark">
             <Navbar />
 
 
@@ -196,6 +217,8 @@ export function ContactPage() {
                         rounded-full
                         border
                         border-hbt-orange/10
+                        rtl:-left-24
+                        rtl:right-auto
                     "
                 />
 
@@ -210,6 +233,8 @@ export function ContactPage() {
                         rounded-full
                         border
                         border-hbt-orange/10
+                        rtl:-left-10
+                        rtl:right-auto
                     "
                 />
 
@@ -225,6 +250,8 @@ export function ContactPage() {
                         from-transparent
                         via-hbt-orange/30
                         to-transparent
+                        rtl:left-auto
+                        rtl:right-0
                     "
                 />
 
@@ -264,7 +291,7 @@ export function ContactPage() {
                         >
                             <Sparkles className="h-3.5 w-3.5" />
 
-                            We're here to help
+                            {t("contactPage.hero.badge")}
                         </div>
 
 
@@ -279,9 +306,9 @@ export function ContactPage() {
                                 lg:text-7xl
                             "
                         >
-                            Let's talk about
+                            {t("contactPage.hero.titleA")}
                             <span className="block text-hbt-orange">
-                                what's next.
+                                {t("contactPage.hero.titleB")}
                             </span>
                         </h1>
 
@@ -297,11 +324,7 @@ export function ContactPage() {
                                 sm:leading-8
                             "
                         >
-                            Whether you're looking for
-                            training, certification,
-                            technical support, or a
-                            partnership opportunity,
-                            our team is ready to help.
+                            {t("contactPage.hero.description")}
                         </p>
                     </div>
 
@@ -338,7 +361,7 @@ export function ContactPage() {
                                 hover:shadow-[0_12px_30px_rgba(244,120,34,0.28)]
                             "
                         >
-                            Email our team
+                            {t("contactPage.hero.emailBtn")}
 
                             <ArrowUpRight
                                 className="
@@ -348,6 +371,9 @@ export function ContactPage() {
                                     duration-300
                                     group-hover:-translate-y-0.5
                                     group-hover:translate-x-0.5
+                                    rtl:-scale-x-100
+                                    rtl:group-hover:-translate-x-0.5
+                                    rtl:group-hover:translate-x-0
                                 "
                             />
                         </a>
@@ -379,7 +405,7 @@ export function ContactPage() {
                         >
                             <MapPin className="h-4 w-4 text-hbt-orange" />
 
-                            Visit us
+                            {t("contactPage.hero.visitBtn")}
                         </a>
                     </div>
                 </div>
@@ -438,8 +464,8 @@ export function ContactPage() {
                                     items-center
                                     justify-center
                                     rounded-xl
-                                    bg-orange-50
-                                    text-hbt-orange
+                                    bg-slate-100
+                                    text-hbt-dark
                                     transition-transform
                                     duration-300
                                     group-hover:scale-110
@@ -449,16 +475,15 @@ export function ContactPage() {
                             </div>
 
                             <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                                Email
+                                {t("contactPage.methods.email")}
                             </p>
 
-                            <p className="mt-1 text-sm font-semibold text-hbt-dark">
+                            <p className="mt-1 text-sm font-semibold text-hbt-dark" dir="ltr">
                                 {COMPANY.email}
                             </p>
 
                             <p className="mt-2 text-xs leading-5 text-slate-500">
-                                Send us your question
-                                anytime.
+                                {t("contactPage.methods.emailDesc")}
                             </p>
                         </a>
 
@@ -500,16 +525,15 @@ export function ContactPage() {
                             </div>
 
                             <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                                Phone
+                                {t("contactPage.methods.phone")}
                             </p>
 
-                            <p className="mt-1 text-sm font-semibold text-hbt-dark">
+                            <p className="mt-1 text-sm font-semibold text-hbt-dark" dir="ltr">
                                 {COMPANY.phone}
                             </p>
 
                             <p className="mt-2 text-xs leading-5 text-slate-500">
-                                Talk directly with our
-                                team.
+                                {t("contactPage.methods.phoneDesc")}
                             </p>
                         </a>
 
@@ -555,17 +579,15 @@ export function ContactPage() {
                             </div>
 
                             <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                                Visit us
+                                {t("contactPage.methods.visit")}
                             </p>
 
                             <p className="mt-1 text-sm font-semibold leading-6 text-hbt-dark">
-                                Dar El Beida,
-                                Algiers
+                                {t("contactPage.methods.locationCity")}
                             </p>
 
                             <p className="mt-2 text-xs leading-5 text-slate-500">
-                                Open directions in
-                                Google Maps.
+                                {t("contactPage.methods.locationDesc")}
                             </p>
                         </a>
 
@@ -579,10 +601,12 @@ export function ContactPage() {
             ===================================================== */}
 
             <section
+                id="contact-form"
                 className="
                     border-y
                     border-black/5
                     bg-[#F7F7F7]
+                    scroll-mt-24
                 "
             >
                 <div
@@ -616,7 +640,7 @@ export function ContactPage() {
                                 text-hbt-orange
                             "
                         >
-                            Get in touch
+                            {t("contactPage.formSide.eyebrow")}
                         </p>
 
 
@@ -632,8 +656,7 @@ export function ContactPage() {
                                 sm:text-4xl
                             "
                         >
-                            Tell us what
-                            you're working on.
+                            {t("contactPage.formSide.title")}
                         </h2>
 
 
@@ -646,10 +669,7 @@ export function ContactPage() {
                                 text-slate-500
                             "
                         >
-                            Give us a little context
-                            and we'll make sure your
-                            message reaches the right
-                            person.
+                            {t("contactPage.formSide.description")}
                         </p>
 
 
@@ -675,16 +695,11 @@ export function ContactPage() {
 
                                 <div>
                                     <p className="text-sm font-semibold text-hbt-dark">
-                                        Need technical
-                                        support?
+                                        {t("contactPage.formSide.supportTitle")}
                                     </p>
 
                                     <p className="mt-1 text-xs leading-5 text-slate-500">
-                                        Tell us about
-                                        your issue and
-                                        we'll help you
-                                        find the next
-                                        step.
+                                        {t("contactPage.formSide.supportDesc")}
                                     </p>
                                 </div>
                             </div>
@@ -710,16 +725,11 @@ export function ContactPage() {
 
                                 <div>
                                     <p className="text-sm font-semibold text-hbt-dark">
-                                        Training &
-                                        certification
+                                        {t("contactPage.formSide.trainingTitle")}
                                     </p>
 
                                     <p className="mt-1 text-xs leading-5 text-slate-500">
-                                        Ask about
-                                        courses,
-                                        certification
-                                        pathways, or
-                                        team training.
+                                        {t("contactPage.formSide.trainingDesc")}
                                     </p>
                                 </div>
                             </div>
@@ -745,16 +755,11 @@ export function ContactPage() {
 
                                 <div>
                                     <p className="text-sm font-semibold text-hbt-dark">
-                                        We'll get back
-                                        to you
+                                        {t("contactPage.formSide.responseTitle")}
                                     </p>
 
                                     <p className="mt-1 text-xs leading-5 text-slate-500">
-                                        Our team will
-                                        review your
-                                        message and
-                                        respond as soon
-                                        as possible.
+                                        {t("contactPage.formSide.responseDesc")}
                                     </p>
                                 </div>
                             </div>
@@ -814,7 +819,7 @@ export function ContactPage() {
                                         text-hbt-dark
                                     "
                                 >
-                                    Message received.
+                                    {t("contactPage.form.successTitle")}
                                 </h3>
 
                                 <p
@@ -826,12 +831,7 @@ export function ContactPage() {
                                         text-slate-500
                                     "
                                 >
-                                    Thank you for
-                                    reaching out to
-                                    HBTronics. Our team
-                                    will review your
-                                    message and get
-                                    back to you.
+                                    {t("contactPage.form.successDesc")}
                                 </p>
 
                                 <button
@@ -855,8 +855,7 @@ export function ContactPage() {
                                         hover:bg-slate-50
                                     "
                                 >
-                                    Send another
-                                    message
+                                    {t("contactPage.form.sendAnother")}
                                 </button>
                             </div>
 
@@ -883,7 +882,7 @@ export function ContactPage() {
                                             htmlFor="firstName"
                                             className="mb-2 block text-xs font-semibold text-hbt-dark"
                                         >
-                                            First name
+                                            {t("contactPage.form.firstName")}
                                             <span className="text-hbt-orange">
                                                 {" "}
                                                 *
@@ -906,7 +905,7 @@ export function ContactPage() {
                                                         .value,
                                                 )
                                             }
-                                            placeholder="Your first name"
+                                            placeholder={t("contactPage.form.firstNamePh")}
                                             className="
                                                 h-12
                                                 w-full
@@ -934,7 +933,7 @@ export function ContactPage() {
                                             htmlFor="lastName"
                                             className="mb-2 block text-xs font-semibold text-hbt-dark"
                                         >
-                                            Last name
+                                            {t("contactPage.form.lastName")}
                                         </label>
 
                                         <input
@@ -952,7 +951,7 @@ export function ContactPage() {
                                                         .value,
                                                 )
                                             }
-                                            placeholder="Your last name"
+                                            placeholder={t("contactPage.form.lastNamePh")}
                                             className="
                                                 h-12
                                                 w-full
@@ -990,7 +989,7 @@ export function ContactPage() {
                                             htmlFor="email"
                                             className="mb-2 block text-xs font-semibold text-hbt-dark"
                                         >
-                                            Email
+                                            {t("contactPage.form.email")}
                                             <span className="text-hbt-orange">
                                                 {" "}
                                                 *
@@ -1042,7 +1041,7 @@ export function ContactPage() {
                                             htmlFor="phone"
                                             className="mb-2 block text-xs font-semibold text-hbt-dark"
                                         >
-                                            Phone
+                                            {t("contactPage.form.phone")}
                                         </label>
 
                                         <input
@@ -1092,8 +1091,7 @@ export function ContactPage() {
                                         htmlFor="inquiry"
                                         className="mb-2 block text-xs font-semibold text-hbt-dark"
                                     >
-                                        What can we
-                                        help with?
+                                        {t("contactPage.form.inquiry")}
                                         <span className="text-hbt-orange">
                                             {" "}
                                             *
@@ -1135,8 +1133,7 @@ export function ContactPage() {
                                         "
                                     >
                                         <option value="">
-                                            Select an
-                                            inquiry type
+                                            {t("contactPage.form.inquiryPh")}
                                         </option>
 
                                         {inquiryTypes.map(
@@ -1164,7 +1161,7 @@ export function ContactPage() {
                                         htmlFor="subject"
                                         className="mb-2 block text-xs font-semibold text-hbt-dark"
                                     >
-                                        Subject
+                                        {t("contactPage.form.subject")}
                                         <span className="text-hbt-orange">
                                             {" "}
                                             *
@@ -1187,7 +1184,7 @@ export function ContactPage() {
                                                     .value,
                                             )
                                         }
-                                        placeholder="How can we help?"
+                                        placeholder={t("contactPage.form.subjectPh")}
                                         className="
                                             h-12
                                             w-full
@@ -1217,7 +1214,7 @@ export function ContactPage() {
                                         htmlFor="message"
                                         className="mb-2 block text-xs font-semibold text-hbt-dark"
                                     >
-                                        Message
+                                        {t("contactPage.form.message")}
                                         <span className="text-hbt-orange">
                                             {" "}
                                             *
@@ -1241,7 +1238,7 @@ export function ContactPage() {
                                                     .value,
                                             )
                                         }
-                                        placeholder="Tell us a little about what you need..."
+                                        placeholder={t("contactPage.form.messagePh")}
                                         className="
                                             w-full
                                             resize-none
@@ -1267,6 +1264,15 @@ export function ContactPage() {
 
 
                                 {/* Submit */}
+
+                                {submitError && (
+                                    <p
+                                        role="alert"
+                                        className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600"
+                                    >
+                                        {submitError}
+                                    </p>
+                                )}
 
                                 <button
                                     type="submit"
@@ -1310,11 +1316,11 @@ export function ContactPage() {
                                                 "
                                             />
 
-                                            Sending...
+                                            {t("contactPage.form.sending")}
                                         </>
                                     ) : (
                                         <>
-                                            Send message
+                                            {t("contactPage.form.send")}
 
                                             <Send
                                                 className="
@@ -1323,6 +1329,9 @@ export function ContactPage() {
                                                     transition-transform
                                                     duration-300
                                                     group-hover:translate-x-1
+                                                    rtl:-scale-x-100
+                                                    rtl:group-hover:-translate-x-1
+                                                    rtl:group-hover:translate-x-0
                                                 "
                                             />
                                         </>
@@ -1331,12 +1340,7 @@ export function ContactPage() {
 
 
                                 <p className="text-center text-[11px] leading-5 text-slate-400">
-                                    By submitting this
-                                    form, you agree
-                                    that HBTronics
-                                    may contact you
-                                    regarding your
-                                    inquiry.
+                                    {t("contactPage.form.consent")}
                                 </p>
 
                             </form>
@@ -1374,7 +1378,7 @@ export function ContactPage() {
                                 text-hbt-orange
                             "
                         >
-                            Find us
+                            {t("contactPage.location.eyebrow")}
                         </p>
 
                         <h2
@@ -1387,16 +1391,11 @@ export function ContactPage() {
                                 sm:text-4xl
                             "
                         >
-                            Visit HBTronics.
+                            {t("contactPage.location.title")}
                         </h2>
 
                         <p className="mt-4 text-sm leading-7 text-slate-500">
-                            Our agency is located in
-                            Dar El Beida, Algiers.
-                            Come talk to us about
-                            training, diagnostics,
-                            certification, or your
-                            next automotive project.
+                            {t("contactPage.location.description")}
                         </p>
                     </div>
 
@@ -1418,8 +1417,8 @@ export function ContactPage() {
                         <div className="relative min-h-[420px] bg-slate-100">
 
                             <iframe
-                                title="HBTronics location"
-                                src={`https://www.google.com/maps?q=03%20Rue%20Mouloud%20Feraoun%2C%20Dar%20El%20Beida%2C%20Algiers%2C%20Algeria&output=embed`}
+                                title={t("contactPage.location.mapTitle")}
+                                src={mapsSrc}
                                 className="
                                     absolute
                                     inset-0
@@ -1481,7 +1480,9 @@ export function ContactPage() {
                                         text-slate-500
                                     "
                                 >
-                                    {COMPANY.address}
+                                    {t(
+                                        "contactPage.location.address",
+                                    )}
                                 </p>
 
 
@@ -1491,6 +1492,7 @@ export function ContactPage() {
                                         href={
                                             COMPANY.phoneHref
                                         }
+                                        dir="ltr"
                                         className="
                                             flex
                                             items-center
@@ -1514,6 +1516,7 @@ export function ContactPage() {
                                         href={
                                             COMPANY.emailHref
                                         }
+                                        dir="ltr"
                                         className="
                                             flex
                                             items-center
@@ -1564,7 +1567,7 @@ export function ContactPage() {
                                     hover:bg-orange-50
                                 "
                             >
-                                Get directions
+                                {t("contactPage.location.directions")}
 
                                 <ArrowUpRight
                                     className="
@@ -1574,6 +1577,9 @@ export function ContactPage() {
                                         duration-300
                                         group-hover:-translate-y-0.5
                                         group-hover:translate-x-0.5
+                                        rtl:-scale-x-100
+                                        rtl:group-hover:-translate-x-0.5
+                                        rtl:group-hover:translate-x-0
                                     "
                                 />
                             </a>
@@ -1617,7 +1623,7 @@ export function ContactPage() {
                                 text-hbt-orange
                             "
                         >
-                            FAQ
+                            {t("contactPage.faq.eyebrow")}
                         </p>
 
                         <h2
@@ -1630,13 +1636,11 @@ export function ContactPage() {
                                 sm:text-4xl
                             "
                         >
-                            Before you reach out.
+                            {t("contactPage.faq.title")}
                         </h2>
 
                         <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500">
-                            A few quick answers to
-                            common questions about
-                            HBTronics.
+                            {t("contactPage.faq.description")}
                         </p>
                     </div>
 
@@ -1685,7 +1689,7 @@ export function ContactPage() {
                                                 gap-5
                                                 px-5
                                                 py-5
-                                                text-left
+                                                text-start
                                             "
                                         >
                                             <span className="text-sm font-semibold text-hbt-dark">
@@ -1752,6 +1756,142 @@ export function ContactPage() {
 
             <section
                 className="
+                    border-t
+                    border-black/5
+                    bg-white
+                "
+            >
+                <div
+                    className="
+                        mx-auto
+                        max-w-7xl
+                        px-5
+                        py-16
+                        sm:px-8
+                        sm:py-20
+                        lg:px-10
+                        lg:py-24
+                    "
+                >
+                    <div className="text-center">
+                        <p
+                            className="
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-[0.18em]
+                                text-hbt-orange
+                            "
+                        >
+                            {t("contactPage.join.eyebrow")}
+                        </p>
+
+                        <h2
+                            className="
+                                mt-3
+                                text-3xl
+                                font-bold
+                                tracking-[-0.03em]
+                                text-hbt-dark
+                                sm:text-4xl
+                            "
+                        >
+                            {t("contactPage.join.title")}
+                        </h2>
+
+                        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500">
+                            {t("contactPage.join.description")}
+                        </p>
+                    </div>
+
+                    <div className="mt-10 grid gap-5 md:grid-cols-3">
+                        {joinRoles.map((role) => (
+                            <div
+                                key={role.inquiry}
+                                className="
+                                    group
+                                    flex
+                                    flex-col
+                                    rounded-3xl
+                                    border
+                                    border-black/5
+                                    bg-[#F7F7F7]
+                                    p-6
+                                    transition-all
+                                    duration-300
+                                    hover:-translate-y-1
+                                    hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)]
+                                "
+                            >
+                                <div
+                                    className="
+                                        flex
+                                        h-12
+                                        w-12
+                                        items-center
+                                        justify-center
+                                        rounded-2xl
+                                        bg-hbt-orange/10
+                                        text-hbt-orange
+                                        transition-colors
+                                        group-hover:bg-hbt-orange
+                                        group-hover:text-white
+                                    "
+                                >
+                                    <role.icon className="h-6 w-6" />
+                                </div>
+
+                                <h3 className="mt-5 text-lg font-bold text-hbt-dark">
+                                    {role.title}
+                                </h3>
+
+                                <p className="mt-2 flex-1 text-sm leading-6 text-slate-500">
+                                    {role.description}
+                                </p>
+
+                                <ul className="mt-4 space-y-2">
+                                    {role.points.map((point) => (
+                                        <li
+                                            key={point}
+                                            className="flex items-start gap-2 text-xs leading-5 text-hbt-dark/70"
+                                        >
+                                            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-hbt-orange" />
+                                            {point}
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button
+                                    type="button"
+                                    onClick={() => applyFor(role)}
+                                    className="
+                                        mt-6
+                                        inline-flex
+                                        h-11
+                                        w-full
+                                        items-center
+                                        justify-center
+                                        gap-2
+                                        rounded-xl
+                                        bg-hbt-dark
+                                        text-sm
+                                        font-semibold
+                                        text-white
+                                        transition-all
+                                        hover:bg-hbt-orange
+                                    "
+                                >
+                                    {t("contactPage.join.applyAs", { title: role.title })}
+                                    <ArrowUpRight className="h-4 w-4 rtl:-scale-x-100" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section
+                className="
                     relative
                     overflow-hidden
                     bg-hbt-dark
@@ -1769,6 +1909,8 @@ export function ContactPage() {
                         rounded-full
                         border
                         border-hbt-orange/20
+                        rtl:-left-20
+                        rtl:right-auto
                     "
                 />
 
@@ -1784,6 +1926,8 @@ export function ContactPage() {
                         rounded-full
                         border
                         border-hbt-orange/20
+                        rtl:-left-4
+                        rtl:right-auto
                     "
                 />
 
@@ -1808,7 +1952,7 @@ export function ContactPage() {
                 >
                     <div className="max-w-2xl">
                         <p className="text-xs font-bold uppercase tracking-[0.18em] text-hbt-orange">
-                            Ready when you are
+                            {t("contactPage.cta.eyebrow")}
                         </p>
 
                         <h2
@@ -1822,16 +1966,13 @@ export function ContactPage() {
                                 sm:text-4xl
                             "
                         >
-                            Your next diagnostic
-                            skill starts with a
-                            conversation.
+                            {t("contactPage.cta.titleA")}{" "}
+                            {t("contactPage.cta.titleB")}{" "}
+                            {t("contactPage.cta.titleC")}
                         </h2>
 
                         <p className="mt-4 text-sm leading-6 text-white/55">
-                            Explore HBTronics training,
-                            certification, and
-                            practical automotive
-                            learning.
+                            {t("contactPage.cta.description")}
                         </p>
                     </div>
 
@@ -1860,7 +2001,7 @@ export function ContactPage() {
                             hover:shadow-[0_15px_35px_rgba(244,120,34,0.35)]
                         "
                     >
-                        Explore courses
+                        {t("contactPage.cta.coursesBtn")}
 
                         <ArrowUpRight
                             className="
@@ -1870,6 +2011,9 @@ export function ContactPage() {
                                 duration-300
                                 group-hover:-translate-y-0.5
                                 group-hover:translate-x-0.5
+                                rtl:-scale-x-100
+                                rtl:group-hover:-translate-x-0.5
+                                rtl:group-hover:translate-x-0
                             "
                         />
                     </Link>

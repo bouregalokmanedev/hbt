@@ -3,6 +3,7 @@
 namespace App\Domains\DiagnosticScenarios\Models;
 
 use App\Domains\DiagnosticScenarios\Enums\DiagnosticActionType;
+use App\Domains\DiagnosticScenarios\Enums\DiagnosticTool;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,8 +27,11 @@ final class DiagnosticScenarioStep extends Model
         'title',
         'description',
         'action_type',
+        'tool',
         'configuration',
         'evidence',
+        'duration_seconds',
+        'discipline',
         'is_required',
         'is_terminal',
     ];
@@ -36,7 +40,9 @@ final class DiagnosticScenarioStep extends Model
     {
         return [
             'action_type' => DiagnosticActionType::class,
+            'tool' => DiagnosticTool::class,
             'position' => 'integer',
+            'duration_seconds' => 'integer',
             'configuration' => 'array',
             'evidence' => 'array',
             'is_required' => 'boolean',

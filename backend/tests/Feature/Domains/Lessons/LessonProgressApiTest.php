@@ -208,7 +208,7 @@ it('rejects a student with a cancelled enrollment', function () {
         ->toBe(0);
 });
 
-it('rejects a student with a completed enrollment', function () {
+it('allows a student with a completed enrollment to complete a lesson', function () {
     [$student, $course, $section, $lesson] =
         lessonProgressScenario();
 
@@ -222,10 +222,14 @@ it('rejects a student with a completed enrollment', function () {
         ->postJson(
             "/api/v1/lessons/{$lesson->id}/complete"
         )
-        ->assertForbidden();
+        ->assertCreated();
 
-    expect(LessonProgress::query()->count())
-        ->toBe(0);
+    expect(
+        LessonProgress::query()
+            ->where('user_id', $student->id)
+            ->where('lesson_id', $lesson->id)
+            ->exists()
+    )->toBeTrue();
 });
 
 it('rejects completion of a draft lesson', function () {

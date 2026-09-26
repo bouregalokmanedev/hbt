@@ -1,437 +1,751 @@
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Check,
+  ChevronRight,
+  CircleHelp,
+  Gauge,
+  MessageSquare,
+  Radio,
+  ScanLine,
+  Sparkles,
+  Terminal,
+  Zap,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
-    BrainCircuit,
-    Check,
-    ChevronRight,
-    Circle,
-    Cpu,
-    Gauge,
-    MessageSquare,
-    Radio,
-    Sparkles,
-    UserRound,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+    Eyebrow,
+    LandingContainer,
+    LandingSection,
+    SectionTitle,
+} from "./landing-ui";
 
-const STREAMING_MESSAGE =
-    "Based on your Level 02 training, let's start with the fuel-pressure data under load. Before replacing any parts, compare the pressure at idle with the pressure during acceleration. This will help us narrow down the cause.";
+type DiagnosticMetric = {
+  label: string;
+  value: string;
+  unit?: string;
+  status?: "normal" | "warning" | "critical";
+};
 
-const INITIAL_VISIBLE_LENGTH = 0;
-
-const capabilities = [
-    {
-        number: "01",
-        title: "UNDERSTANDS",
-        description:
-            "Reads the lesson, course and diagnostic context before responding.",
-    },
-    {
-        number: "02",
-        title: "ADAPTS",
-        description:
-            "Adjusts explanations and questions to your level and progress.",
-    },
-    {
-        number: "03",
-        title: "GUIDES",
-        description:
-            "Helps you reason through problems instead of simply giving the answer.",
-    },
+const metricValues: Array<Pick<DiagnosticMetric, "value" | "unit" | "status">> = [
+  {
+    value: "812",
+    unit: "rpm",
+    status: "normal",
+  },
+  {
+    value: "91",
+    unit: "°C",
+    status: "normal",
+  },
+  {
+    value: "+18.4",
+    unit: "%",
+    status: "warning",
+  },
+  {
+    value: "+12.1",
+    unit: "%",
+    status: "warning",
+  },
 ];
 
-export function AIMentor() {
-    const [visibleLength, setVisibleLength] = useState(
-        INITIAL_VISIBLE_LENGTH,
-    );
+function StatusDot({
+  status = "normal",
+}: {
+  status?: DiagnosticMetric["status"];
+}) {
+  return (
+    <span
+      className={[
+        "inline-block h-1.5 w-1.5 rounded-full",
+        status === "normal" && "bg-emerald-500",
+        status === "warning" && "bg-[#F47822]",
+        status === "critical" && "bg-red-500",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    />
+  );
+}
 
-    useEffect(() => {
-        let index = 0;
+function Waveform() {
+  return (
+    <div className="relative h-[118px] overflow-hidden rounded-2xl border border-white/8 bg-[#111111]">
+      <div
+        className="absolute inset-0 opacity-[0.12]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px)",
+          backgroundSize: "26px 26px",
+        }}
+      />
 
-        const interval = window.setInterval(() => {
-            index += 1;
+      <div className="absolute left-3 top-3 flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.18em] text-white/35">
+        <Radio className="h-3 w-3 text-[#F47822]" />
+        CKP SIGNAL
+      </div>
 
-            setVisibleLength(index);
+      <svg
+        viewBox="0 0 700 160"
+        preserveAspectRatio="none"
+        className="absolute inset-x-0 bottom-0 h-[82px] w-full"
+      >
+        <path
+          d="
+            M0 92
+            L25 92
+            L32 55
+            L40 118
+            L48 92
+            L76 92
+            L84 48
+            L92 121
+            L100 92
+            L128 92
+            L136 56
+            L144 116
+            L152 92
+            L180 92
+            L188 47
+            L196 121
+            L204 92
+            L232 92
+            L240 57
+            L248 117
+            L256 92
+            L284 92
+            L292 48
+            L300 120
+            L308 92
+            L336 92
+            L344 56
+            L352 116
+            L360 92
+            L388 92
+            L396 46
+            L404 122
+            L412 92
+            L440 92
+            L448 57
+            L456 116
+            L464 92
+            L492 92
+            L500 49
+            L508 120
+            L516 92
+            L544 92
+            L552 55
+            L560 117
+            L568 92
+            L596 92
+            L604 48
+            L612 121
+            L620 92
+            L650 92
+            L658 57
+            L666 117
+            L674 92
+            L700 92
+          "
+          fill="none"
+          stroke="#F47822"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
 
-            if (index >= STREAMING_MESSAGE.length) {
-                window.clearInterval(interval);
-            }
-        }, 22);
+      <div className="absolute bottom-3 left-3 text-[9px] uppercase tracking-[0.16em] text-white/30">
+        5V / 2ms
+      </div>
+    </div>
+  );
+}
 
-        return () => {
-            window.clearInterval(interval);
-        };
-    }, []);
+function Metric({
+  label,
+  value,
+  unit,
+  status,
+}: DiagnosticMetric) {
+  return (
+    <div className="border-b border-black/8 py-3 last:border-b-0">
+      <div className="mb-1.5 flex items-center justify-between gap-3">
+        <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-black/40">
+          {label}
+        </span>
 
-    return (
-        <section
-            id="ai-mentor"
-            className="relative overflow-hidden bg-[#191919] text-white"
+        <StatusDot status={status} />
+      </div>
+
+      <div className="flex items-baseline gap-1.5">
+        <span
+          className={[
+            "font-mono text-[18px] font-semibold tracking-tight",
+            status === "warning" ? "text-[#F47822]" : "text-[#181818]",
+          ].join(" ")}
         >
-            {/* =========================================================
-                BACKGROUND GRID
-            ========================================================== */}
+          {value}
+        </span>
 
-            <div
-                className="pointer-events-none absolute inset-0 opacity-[0.055]"
-                style={{
-                    backgroundImage: `
-                        linear-gradient(
-                            rgba(255,255,255,0.8) 1px,
-                            transparent 1px
-                        ),
-                        linear-gradient(
-                            90deg,
-                            rgba(255,255,255,0.8) 1px,
-                            transparent 1px
-                        )
-                    `,
-                    backgroundSize: "68px 68px",
-                }}
-            />
-
-            {/* Large decorative background text */}
-            <div className="pointer-events-none absolute -bottom-28 right-[-2%] select-none text-[22rem] font-black leading-none tracking-[-0.12em] text-white/[0.025]">
-                AI
-            </div>
-
-            <div className="relative mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10">
-                {/* =====================================================
-                    TOP LABEL
-                ====================================================== */}
-
-                <div className="flex h-16 items-center justify-between border-b border-white/10">
-                    <div className="flex items-center gap-3">
-                        <span className="h-2 w-2 rounded-full bg-[#F47822]" />
-
-                        <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-white">
-                            The AI Mentor
-                        </span>
-                    </div>
-
-                    <span className="font-mono text-[10px] tracking-[0.2em] text-white/30">
-                        05 / 05
-                    </span>
-                </div>
-
-                {/* =====================================================
-                    HERO
-                ====================================================== */}
-
-                <div className="grid min-h-[760px] items-center gap-16 py-20 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-20">
-                    {/* LEFT */}
-                    <div className="relative">
-                        <p className="mb-8 text-[11px] font-bold uppercase tracking-[0.34em] text-[#F47822]">
-                            Intelligent learning / adaptive mentoring
-                        </p>
-
-                        <h2 className="max-w-[850px] text-[clamp(4rem,8vw,8.5rem)] font-black leading-[0.82] tracking-[-0.065em]">
-                            YOUR
-                            <br />
-                            PERSONAL
-                            <br />
-                            DIAGNOSTIC
-                            <br />
-                            <span className="text-[#F47822]">
-                                MENTOR.
-                            </span>
-                        </h2>
-
-                        <div className="mt-12 grid max-w-2xl grid-cols-[auto_1fr] gap-5">
-                            <div className="mt-1 h-12 w-px bg-[#F47822]" />
-
-                            <div>
-                                <p className="max-w-xl text-base leading-7 text-white/60 sm:text-lg">
-                                    An AI mentor that understands what
-                                    you're learning, where you are in
-                                    the course, and how you learn best.
-                                </p>
-
-                                <p className="mt-5 max-w-xl text-sm leading-6 text-white/35">
-                                    It adapts its explanations, asks the
-                                    right questions, uses your course
-                                    content, and guides you through
-                                    diagnostic reasoning.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Technical pipeline */}
-                        <div className="mt-14 flex flex-wrap items-center gap-x-4 gap-y-3 font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-white/35">
-                            <span>PROMPT</span>
-                            <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                            <span>CONTEXT</span>
-                            <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                            <span>ADAPT</span>
-                            <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                            <span>TEACH</span>
-                            <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                            <span>FEEDBACK</span>
-                        </div>
-                    </div>
-
-                    {/* RIGHT — AI PREVIEW */}
-                    <div className="relative">
-                        {/* Orange offset frame */}
-                        <div className="absolute -bottom-3 -left-3 h-full w-full border border-[#F47822]/50" />
-
-                        <div className="relative overflow-hidden border border-white/15 bg-[#111111]">
-                            {/* Window header */}
-                            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-8 w-8 items-center justify-center border border-[#F47822]/30 bg-[#F47822]/10">
-                                        <BrainCircuit className="h-4 w-4 text-[#F47822]" />
-                                    </div>
-
-                                    <div>
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40">
-                                            AI Mentor
-                                        </p>
-
-                                        <p className="mt-0.5 text-xs font-semibold text-white">
-                                            Diagnostic mode
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F47822] opacity-60" />
-                                        <span className="relative inline-flex h-2 w-2 rounded-full bg-[#F47822]" />
-                                    </span>
-
-                                    <span className="font-mono text-[9px] uppercase tracking-widest text-white/40">
-                                        Live
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Context indicators */}
-                            <div className="grid grid-cols-2 border-b border-white/10 sm:grid-cols-4">
-                                <MentorStatus
-                                    icon={<MessageSquare />}
-                                    label="Lesson"
-                                    value="Connected"
-                                />
-
-                                <MentorStatus
-                                    icon={<Gauge />}
-                                    label="Level"
-                                    value="02"
-                                />
-
-                                <MentorStatus
-                                    icon={<Cpu />}
-                                    label="Knowledge"
-                                    value="Active"
-                                />
-
-                                <MentorStatus
-                                    icon={<Radio />}
-                                    label="Mode"
-                                    value="Reasoning"
-                                />
-                            </div>
-
-                            {/* Conversation */}
-                            <div className="min-h-[430px] p-5 sm:p-6">
-                                {/* Student */}
-                                <div className="mb-7 flex gap-3">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-white/10 bg-white/[0.04]">
-                                        <UserRound className="h-3.5 w-3.5 text-white/50" />
-                                    </div>
-
-                                    <div className="min-w-0">
-                                        <div className="mb-2 flex items-center gap-2">
-                                            <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/30">
-                                                Student
-                                            </span>
-
-                                            <span className="font-mono text-[8px] text-white/20">
-                                                19:42:08
-                                            </span>
-                                        </div>
-
-                                        <p className="text-sm leading-6 text-white/75">
-                                            The engine hesitates when
-                                            accelerating. What should I
-                                            check first?
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* AI */}
-                                <div className="flex gap-3">
-                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-[#F47822]">
-                                        <Sparkles className="h-3.5 w-3.5 text-white" />
-                                    </div>
-
-                                    <div className="min-w-0 flex-1">
-                                        <div className="mb-2 flex items-center gap-2">
-                                            <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#F47822]">
-                                                AI Mentor
-                                            </span>
-
-                                            <span className="font-mono text-[8px] text-white/20">
-                                                STREAMING
-                                            </span>
-                                        </div>
-
-                                        <p className="text-sm leading-7 text-white/80">
-                                            {STREAMING_MESSAGE.slice(
-                                                0,
-                                                visibleLength,
-                                            )}
-
-                                            <span className="ml-1 inline-block h-4 w-[2px] translate-y-1 animate-pulse bg-[#F47822]" />
-                                        </p>
-
-                                        {/* Reasoning hint */}
-                                        <div className="mt-6 border-l border-[#F47822]/50 pl-4">
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/30">
-                                                Mentor approach
-                                            </p>
-
-                                            <p className="mt-2 text-xs leading-5 text-white/40">
-                                                Guide the student toward
-                                                the evidence before
-                                                revealing the diagnosis.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Footer */}
-                            <div className="flex items-center justify-between border-t border-white/10 px-5 py-4">
-                                <div className="flex items-center gap-2">
-                                    <Check className="h-3 w-3 text-[#F47822]" />
-
-                                    <span className="text-[9px] uppercase tracking-[0.15em] text-white/30">
-                                        Course context loaded
-                                    </span>
-                                </div>
-
-                                <span className="font-mono text-[9px] text-white/20">
-                                    HBT-AI / 02
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* =====================================================
-                    CAPABILITIES
-                ====================================================== */}
-
-                <div className="border-t border-white/10">
-                    <div className="grid lg:grid-cols-3">
-                        {capabilities.map((item, index) => (
-                            <div
-                                key={item.number}
-                                className={`
-                                    relative min-h-[220px] py-10 lg:px-8
-                                    ${
-                                        index !== 0
-                                            ? "border-t border-white/10 lg:border-l lg:border-t-0"
-                                            : ""
-                                    }
-                                `}
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#F47822]">
-                                        {item.number}
-                                    </span>
-
-                                    <Circle className="h-3 w-3 fill-white/10 text-white/20" />
-                                </div>
-
-                                <h3 className="mt-10 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">
-                                    {item.title}
-                                </h3>
-
-                                <p className="mt-4 max-w-sm text-sm leading-6 text-white/35">
-                                    {item.description}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* =====================================================
-                    BOTTOM CTA
-                ====================================================== */}
-
-                <div className="flex flex-col gap-6 border-t border-white/10 py-8 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3">
-                        <span className="text-[9px] uppercase tracking-[0.25em] text-white/25">
-                            Learn
-                        </span>
-
-                        <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                        <span className="text-[9px] uppercase tracking-[0.25em] text-white/25">
-                            Practice
-                        </span>
-
-                        <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                        <span className="text-[9px] uppercase tracking-[0.25em] text-white/25">
-                            Diagnose
-                        </span>
-
-                        <ChevronRight className="h-3 w-3 text-[#F47822]" />
-
-                        <span className="text-[9px] uppercase tracking-[0.25em] text-white/50">
-                            Adapt
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white transition-colors hover:text-[#F47822]"
-                    >
-                        Meet your AI mentor
-
-                        <span className="flex h-7 w-7 items-center justify-center border border-white/15 transition-all group-hover:border-[#F47822] group-hover:bg-[#F47822]">
-                            <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </section>
-    );
+        {unit && (
+          <span className="text-[10px] font-medium uppercase text-black/35">
+            {unit}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
-interface MentorStatusProps {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-}
+function MentorMessage({
+  children,
+  active = false,
+}: {
+  children: React.ReactNode;
+  active?: boolean;
+}) {
+  const { t } = useTranslation();
 
-function MentorStatus({
-    icon,
-    label,
-    value,
-}: MentorStatusProps) {
-    return (
-        <div className="border-r border-white/10 px-4 py-3 last:border-r-0">
-            <div className="flex items-center gap-2">
-                <span className="text-[#F47822] [&>svg]:h-3 [&>svg]:w-3">
-                    {icon}
-                </span>
-
-                <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-white/30">
-                    {label}
-                </span>
-            </div>
-
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-wider text-white/60">
-                {value}
-            </p>
+  return (
+    <div
+      className={[
+        "relative rounded-2xl border px-4 py-4 transition-all duration-500",
+        active
+          ? "border-[#F47822]/35 bg-[#F47822]/[0.06] shadow-[0_12px_35px_rgba(244,120,34,0.08)]"
+          : "border-black/8 bg-[#F7F7F7]",
+      ].join(" ")}
+    >
+      <div className="mb-3 flex items-center gap-2">
+        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#181818] text-white">
+          <Sparkles className="h-3 w-3" />
         </div>
+
+        <div>
+          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/70">
+            HBTronics Mentor
+          </p>
+
+          <p className="text-[8px] uppercase tracking-[0.12em] text-black/30">
+            {t("landingPage.mentor.mentorRole")}
+          </p>
+        </div>
+      </div>
+
+      <div className="text-[12px] leading-5 text-black/65">{children}</div>
+    </div>
+  );
+}
+
+type MentorMetricLabel = {
+  label: string;
+};
+
+type MentorBottomItem = {
+  label: string;
+  text: string;
+};
+
+export default function AIMentorSection() {
+  const { t } = useTranslation();
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const [visible, setVisible] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
+  const [selectedTest, setSelectedTest] = useState<string | null>(null);
+  const [typedText, setTypedText] = useState("");
+
+  const metricLabels = t("landingPage.mentor.metrics", {
+    returnObjects: true,
+  }) as MentorMetricLabel[];
+
+  const metrics: DiagnosticMetric[] = metricLabels.map((item, index) => ({
+    label: item.label,
+    ...metricValues[index % metricValues.length],
+  }));
+
+  const diagnosticSteps = t("landingPage.mentor.steps", {
+    returnObjects: true,
+  }) as string[];
+
+  const bottomItems = t("landingPage.mentor.bottom", {
+    returnObjects: true,
+  }) as MentorBottomItem[];
+
+  const testOptions = [
+    {
+      id: "intake",
+      icon: Terminal,
+      label: t("landingPage.mentor.testIntake"),
+    },
+    {
+      id: "fuel",
+      icon: Gauge,
+      label: t("landingPage.mentor.testFuel"),
+    },
+    {
+      id: "vacuum",
+      icon: ScanLine,
+      label: t("landingPage.mentor.testVacuum"),
+    },
+  ];
+
+  const mentorText = t("landingPage.mentor.mentorText");
+
+  useEffect(() => {
+    const element = sectionRef.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.2,
+      },
     );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    setTypedText("");
+
+    let index = 0;
+
+    const interval = window.setInterval(() => {
+      index += 1;
+
+      setTypedText(mentorText.slice(0, index));
+
+      if (index >= mentorText.length) {
+        window.clearInterval(interval);
+      }
+    }, 22);
+
+    return () => window.clearInterval(interval);
+  }, [visible, mentorText]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const interval = window.setInterval(() => {
+      setActiveStep((current) =>
+        current >= diagnosticSteps.length - 1 ? 1 : current + 1,
+      );
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, [visible, diagnosticSteps.length]);
+
+  const handleTest = (test: string) => {
+    setSelectedTest(test);
+    setActiveStep(2);
+  };
+
+  return (
+    <LandingSection
+      id="ai-mentor"
+      sectionRef={sectionRef}
+      className="bg-[#E8E4DE]"
+    >
+      {/* Background technical grid */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.22]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(24,24,24,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(24,24,24,.08) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
+
+      {/* Orange diagnostic trace */}
+      <div
+        aria-hidden="true"
+        className={[
+          "pointer-events-none absolute left-0 top-[46%] h-px bg-[#F47822]/45 transition-all duration-[1800ms] ease-out rtl:left-auto rtl:right-0",
+          visible ? "w-[62%]" : "w-0",
+        ].join(" ")}
+      />
+
+      <LandingContainer className="relative">
+        {/* Section header */}
+        <div
+          className={[
+            "mb-12 grid gap-8 transition-all duration-1000 lg:grid-cols-[1fr_auto] lg:items-end",
+            visible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-8 opacity-0",
+          ].join(" ")}
+        >
+          <div>
+            <div className="flex items-center gap-3">
+              <Eyebrow>
+                {t("landingPage.mentor.eyebrow")}
+              </Eyebrow>
+
+              <span className="h-px w-10 bg-[#F47822]/40" />
+
+
+            </div>
+
+            <SectionTitle size="display" className="max-w-[850px] lowercase">
+              {t("landingPage.mentor.titleA")}
+              <br />
+              <span className="text-[#F47822]">{t("landingPage.mentor.titleHighlight")}</span>
+            </SectionTitle>
+          </div>
+
+          <div className="max-w-[390px] pb-1 lg:text-right rtl:lg:text-left">
+            <p className="text-[15px] leading-7 text-black/55">
+              {t("landingPage.mentor.description")}
+            </p>
+          </div>
+        </div>
+
+        {/* Main diagnostic workstation */}
+        <div
+          className={[
+            "relative overflow-hidden rounded-[34px] border border-black/10 bg-[#F7F7F7] shadow-[0_35px_100px_rgba(24,24,24,0.12)] transition-all duration-[1200ms] ease-out",
+            visible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-14 opacity-0",
+          ].join(" ")}
+        >
+          {/* Top bar */}
+          <div className="flex min-h-[62px] items-center justify-between border-b border-black/8 px-5 sm:px-7">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+
+                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.17em] text-black/55">
+                  {t("landingPage.mentor.sessionLabel")}
+                </span>
+              </div>
+
+              <span className="hidden h-4 w-px bg-black/10 sm:block" />
+
+              <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-black/30 sm:block">
+                {t("landingPage.mentor.vehicleLabel")}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="hidden text-[9px] uppercase tracking-[0.14em] text-black/30 sm:block">
+                {t("landingPage.mentor.aiAssist")}
+              </span>
+
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#181818] text-white">
+                <Sparkles className="h-3 w-3" />
+              </div>
+            </div>
+          </div>
+
+          {/* Workstation */}
+          <div className="grid lg:grid-cols-[1.45fr_0.85fr]">
+            {/* Diagnostic side */}
+            <div className="border-b border-black/8 p-5 sm:p-7 lg:border-b-0 lg:border-r rtl:lg:border-l rtl:lg:border-r-0">
+              <div className="mb-7 flex items-start justify-between gap-5">
+                <div>
+                  <div className="mb-2 flex items-center gap-2">
+                    <Gauge className="h-4 w-4 text-[#F47822]" />
+
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-black/40">
+                      {t("landingPage.mentor.category")}
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-semibold tracking-[-0.04em] text-[#181818] sm:text-3xl">
+                    {t("landingPage.mentor.caseTitle")}
+                  </h3>
+                </div>
+
+                <div className="hidden shrink-0 rounded-xl border border-[#F47822]/20 bg-[#F47822]/[0.06] px-3 py-2 text-right sm:block rtl:text-left">
+                  <span className="block font-mono text-[8px] uppercase tracking-[0.16em] text-black/35">
+                    DTC
+                  </span>
+
+                  <span className="font-mono text-sm font-bold text-[#F47822]">
+                    P0171
+                  </span>
+                </div>
+              </div>
+
+              {/* Complaint */}
+              <div className="mb-7 rounded-2xl border border-black/8 bg-[#ECE9E3] p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <CircleHelp className="h-3.5 w-3.5 text-[#F47822]" />
+
+                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40">
+                    {t("landingPage.mentor.complaintLabel")}
+                  </span>
+                </div>
+
+                <p className="max-w-[680px] text-[13px] leading-6 text-black/60">
+                  {t("landingPage.mentor.complaintText")}
+                </p>
+              </div>
+
+              {/* Live data */}
+              <div className="mb-7">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
+
+                    <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40">
+                      {t("landingPage.mentor.liveData")}
+                    </span>
+                  </div>
+
+                  <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-emerald-600">
+                    {t("landingPage.mentor.connected")}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-5 border-y border-black/8 sm:grid-cols-4">
+                  {metrics.map((metric) => (
+                    <Metric
+                      key={metric.label}
+                      label={metric.label}
+                      value={metric.value}
+                      unit={metric.unit}
+                      status={metric.status}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Waveform */}
+              <div>
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-3.5 w-3.5 text-[#F47822]" />
+
+                    <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40">
+                      {t("landingPage.mentor.signalTitle")}
+                    </span>
+                  </div>
+
+                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-black/25">
+                    {t("landingPage.mentor.channelLabel")}
+                  </span>
+                </div>
+
+                <Waveform />
+              </div>
+            </div>
+
+            {/* Mentor side */}
+            <div className="bg-white p-5 sm:p-7">
+              <div className="mb-7 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#181818] text-white">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#181818]">
+                      {t("landingPage.mentor.mentorTitle")}
+                    </h3>
+
+                    <p className="text-[9px] uppercase tracking-[0.14em] text-black/30">
+                      {t("landingPage.mentor.mentorSub")}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+
+                  <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-black/35">
+                    {t("landingPage.mentor.online")}
+                  </span>
+                </div>
+              </div>
+
+              <MentorMessage active>
+                <p className="min-h-[72px]">
+                  {typedText}
+                  {typedText.length < mentorText.length && (
+                    <span className="ml-0.5 inline-block h-3 w-px animate-pulse bg-[#F47822]" />
+                  )}
+                </p>
+              </MentorMessage>
+
+              {/* Test choices */}
+              <div className="mt-5 space-y-2.5">
+                {testOptions.map((option) => {
+                  const Icon = option.icon;
+                  const isSelected = selectedTest === option.id;
+
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => handleTest(option.id)}
+                      className={[
+                        "group flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left transition-all duration-300 rtl:text-right",
+                        isSelected
+                          ? "border-[#F47822]/40 bg-[#F47822]/[0.06]"
+                          : "border-black/8 bg-white hover:border-[#F47822]/30 hover:bg-[#F47822]/[0.03]",
+                      ].join(" ")}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F0EEEA] text-black/50 transition-colors group-hover:bg-[#F47822] group-hover:text-white">
+                          <Icon className="h-3.5 w-3.5" />
+                        </span>
+
+                        <span className="text-[11px] font-medium text-black/65">
+                          {option.label}
+                        </span>
+                      </span>
+
+                      <ChevronRight className="h-3.5 w-3.5 text-black/25 transition-transform group-hover:translate-x-1 group-hover:text-[#F47822] rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Result */}
+              <div
+                className={[
+                  "mt-5 overflow-hidden transition-all duration-500",
+                  selectedTest
+                    ? "max-h-40 opacity-100"
+                    : "max-h-0 opacity-0",
+                ].join(" ")}
+              >
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.05] p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+
+                    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-emerald-700">
+                      {t("landingPage.mentor.resultTitle")}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] leading-5 text-black/55">
+                    {t("landingPage.mentor.resultText")}
+                  </p>
+                </div>
+              </div>
+
+              {/* Progress */}
+              <div className="mt-7">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/35">
+                    {t("landingPage.mentor.progressLabel")}
+                  </span>
+
+                  <span className="font-mono text-[9px] text-[#F47822]">
+                    {String(activeStep + 1).padStart(2, "0")} / 04
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1.5">
+                  {diagnosticSteps.map((step, index) => (
+                    <div key={step}>
+                      <div
+                        className={[
+                          "mb-2 h-1 rounded-full transition-all duration-700",
+                          index <= activeStep
+                            ? "bg-[#F47822]"
+                            : "bg-black/8",
+                        ].join(" ")}
+                      />
+
+                      <span
+                        className={[
+                          "text-[8px] uppercase leading-3 tracking-[0.08em]",
+                          index <= activeStep
+                            ? "text-black/60"
+                            : "text-black/25",
+                        ].join(" ")}
+                      >
+                        {step}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom footer */}
+          <div className="flex flex-col gap-5 border-t border-black/8 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-3.5 w-3.5 text-[#F47822]" />
+
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
+                  {t("landingPage.mentor.footerAsk")}
+                </span>
+              </div>
+
+              <ChevronRight className="h-3 w-3 text-black/20 rtl:-scale-x-100" />
+
+              <div className="flex items-center gap-2">
+                <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
+
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
+                  {t("landingPage.mentor.footerTest")}
+                </span>
+              </div>
+
+              <ChevronRight className="h-3 w-3 text-black/20 rtl:-scale-x-100" />
+
+              <div className="flex items-center gap-2">
+                <Check className="h-3.5 w-3.5 text-[#F47822]" />
+
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
+                  {t("landingPage.mentor.footerUnderstand")}
+                </span>
+              </div>
+            </div>
+
+            <Link
+              to="/simulator"
+              className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#181818] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#F47822] hover:shadow-[0_12px_30px_rgba(244,120,34,0.22)]"
+            >
+              {t("landingPage.mentor.cta")}
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Bottom statement */}
+        <div
+          className={[
+            "mt-10 grid gap-8 transition-all delay-200 duration-1000 sm:grid-cols-3",
+            visible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-6 opacity-0",
+          ].join(" ")}
+        >
+          {bottomItems.map((item) => (
+            <div key={item.label}>
+              <span className="mb-2 block font-mono text-[9px] uppercase tracking-[0.18em] text-[#F47822]">
+                {item.label}
+              </span>
+
+              <p className="text-sm leading-6 text-black/50">
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </LandingContainer>
+    </LandingSection>
+  );
 }

@@ -12,7 +12,9 @@ it('creates a section through the complete API workflow', function () {
 
     $user = User::factory()->create();
 
-    $course = Course::factory()->create();
+    $course = Course::factory()->create([
+        'instructor_id' => $user->id,
+    ]);
 
     $response = $this
         ->actingAs($user)

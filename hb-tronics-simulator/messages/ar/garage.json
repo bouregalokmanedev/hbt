@@ -1,0 +1,14 @@
+{
+  "title": "الورشة",
+  "kicker": "مدير المركبات",
+  "activeVehicle": "المركبة النشطة",
+  "facts": { "vin": "رقم الهيكل", "engine": "المحرّك", "transmission": "ناقل الحركة", "odometer": "عدّاد المسافة" },
+  "matrix": "مصفوفة التغطية",
+  "columns": { "vehicle": "المركبة", "scanner": "SCN", "multimeter": "DMM", "oscilloscope": "OSC", "location": "LOC", "schematic": "WDG" },
+  "switch": "تعيين كنشط",
+  "install": "تثبيت",
+  "request": "طلب",
+  "decode": "فك رقم الهيكل",
+  "recentSessions": "الجلسات الأخيرة",
+  "cell": { "ok": "مثبّت", "avail": "متوفّر", "none": "غير مغطّى" }
+}

@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-plex-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-plex-mono: "IBM Plex Mono", monospace;
+  --font-plex-cond: "IBM Plex Sans Condensed", var(--font-plex-sans);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-plex-sans);
+  background: #0e1114;
+  color: #131a26;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Technical LTR islands (14 §13): waveforms, schematics, ECU maps never mirror. */
+[dir="ltr"].ltr-island,
+.ltr-island {
+  direction: ltr;
+}
+
+/*
+ * Arabic web font (14 §15): fold IBM Plex Sans Arabic into the sans/cond stacks
+ * for the `ar` locale only. Redefining the variables at `html[lang="ar"]`
+ * (specificity 0,1,1) overrides next/font's element class (0,1,0), so every
+ * `var(--font-plex-sans)` use — body and all `.t-*` presets — resolves Arabic
+ * glyphs to the Arabic face while Latin/digits still fall through to IBM Plex
+ * Sans. Mono stays canonical (technical readings are LTR Latin). EN/FR pages are
+ * untouched and never fetch the Arabic subset (styles/fonts.ts, preload:false).
+ */
+html[lang="ar"] {
+  --font-plex-sans: var(--font-plex-arabic), "IBM Plex Sans", system-ui, sans-serif;
+  --font-plex-cond: var(--font-plex-arabic), "IBM Plex Sans", sans-serif;
+}
+
+/* Arabic typography (14 §15): connected script — no tracking, more line-height. */
+:lang(ar) {
+  letter-spacing: normal !important;
+  line-height: 1.75;
+}
+:lang(ar) .uppercase {
+  text-transform: none;
+}
+
+@layer components {
+  /* Type presets matching source `font:` shorthands (09 §4.2). */
+  .t-eyebrow {
+    font: 600 8.5px/1 var(--font-plex-sans);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .t-kicker {
+    font: 600 11px/1 var(--font-plex-sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .t-code {
+    font: 600 9px/1 var(--font-plex-mono);
+    letter-spacing: 0.06em;
+  }
+  .t-cta {
+    font: 600 11.5px/1 var(--font-plex-sans);
+    letter-spacing: 0.06em;
+  }
+  .t-section {
+    font: 600 12.5px/1 var(--font-plex-sans);
+    letter-spacing: 0.04em;
+  }
+  .t-rail {
+    font: 500 12.5px/1.3 var(--font-plex-sans);
+  }
+  .t-body {
+    font: 400 13px/1.5 var(--font-plex-sans);
+  }
+  .t-body-sm {
+    font: 400 12px/1.5 var(--font-plex-sans);
+  }
+  .t-title {
+    font: 600 26px/1.15 var(--font-plex-sans);
+    letter-spacing: -0.02em;
+  }
+  .t-display {
+    font: 600 24px/1 var(--font-plex-sans);
+    letter-spacing: -0.01em;
+  }
+  .t-mono {
+    font-family: var(--font-plex-mono);
+  }
+
+  /* Focus ring (09 §7 / 10 §17). */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(244, 120, 34, 0.15);
+  }
+}
+
+/* Custom scrollbars — subtle, matching the dense instrument aesthetic. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c2c8d0 transparent;
+}
+
+/* Visually-hidden accessible alternatives for technical SVG canvases (10 §17). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reduced-motion: disable non-essential animation (10 §17, 12 Phase 12). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Schematic tool (P6.2) — guided-trace dash motion + overlay fade. */
+@keyframes sch-dash { to { stroke-dashoffset: -64; } }
+@keyframes sch-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes sch-pulse { 0%, 100% { opacity: .15; } 50% { opacity: .4; } }

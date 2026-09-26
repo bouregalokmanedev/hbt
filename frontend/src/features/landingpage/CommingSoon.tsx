@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const LAUNCH_DATE = new Date(
     new Date().setMonth(new Date().getMonth() + 5),
@@ -78,6 +79,12 @@ function pad(value: number): string {
 }
 
 export function ComingSoonPage() {
+    const { t } = useTranslation();
+
+    const countdownLabels = t("landingPage.comingSoon.countdownLabels", {
+        returnObjects: true,
+    }) as string[];
+
     const [countdown, setCountdown] =
         useState<Countdown>(() =>
             getCountdown(LAUNCH_DATE),
@@ -95,30 +102,26 @@ export function ComingSoonPage() {
         };
     }, []);
 
-    const countdownItems = useMemo(
+    const countdownValues = useMemo(
         () => [
-            {
-                value: countdown.months,
-                label: "Months",
-            },
-            {
-                value: countdown.days,
-                label: "Days",
-            },
-            {
-                value: countdown.hours,
-                label: "Hours",
-            },
-            {
-                value: countdown.minutes,
-                label: "Minutes",
-            },
-            {
-                value: countdown.seconds,
-                label: "Seconds",
-            },
+            countdown.months,
+            countdown.days,
+            countdown.hours,
+            countdown.minutes,
+            countdown.seconds,
         ],
         [countdown],
+    );
+
+    const countdownItems = useMemo(
+        () =>
+            countdownValues.map((value, index) => ({
+                value,
+                label:
+                    countdownLabels[index] ??
+                    String(index),
+            })),
+        [countdownValues, countdownLabels],
     );
 
     return (
@@ -193,7 +196,7 @@ export function ComingSoonPage() {
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-[#F47822]" />
                     </span>
 
-                    System building
+                    {t("landingPage.comingSoon.status")}
                 </div>
             </header>
 
@@ -220,7 +223,7 @@ export function ComingSoonPage() {
                     <Radio className="h-3.5 w-3.5 text-[#F47822]" />
 
                     <span className="font-mono text-[9px] font-bold uppercase tracking-[0.3em] text-white/40">
-                        HBT / SYSTEM INITIALIZATION
+                        {t("landingPage.comingSoon.initLabel")}
                     </span>
 
                     <span className="h-px w-10 bg-[#F47822]/40" />
@@ -241,17 +244,17 @@ export function ComingSoonPage() {
                         animate-[fadeUp_0.9s_0.2s_ease-out_forwards]
                     "
                 >
-                    The next
+                    {t("landingPage.comingSoon.titleA")}
 
                     <br />
 
                     <span className="text-[#F47822]">
-                        diagnosis
+                        {t("landingPage.comingSoon.titleB")}
                     </span>
 
                     <br />
 
-                    starts soon.
+                    {t("landingPage.comingSoon.titleC")}
                 </h1>
 
                 {/* Slogan */}
@@ -268,9 +271,9 @@ export function ComingSoonPage() {
                         sm:text-base
                     "
                 >
-                    Train smarter. Diagnose deeper.
+                    {t("landingPage.comingSoon.sloganA")}
                     <br className="hidden sm:block" />
-                    Become unstoppable.
+                    {t("landingPage.comingSoon.sloganB")}
                 </p>
 
                 {/* =================================================
@@ -369,21 +372,21 @@ export function ComingSoonPage() {
                 >
                     <span className="flex items-center gap-2">
                         <Gauge className="h-3 w-3 text-[#F47822]" />
-                        Training engine
+                        {t("landingPage.comingSoon.infoEngine")}
                     </span>
 
                     <span className="hidden h-3 w-px bg-white/10 sm:block" />
 
                     <span className="flex items-center gap-2">
                         <Crosshair className="h-3 w-3 text-[#F47822]" />
-                        Diagnostic intelligence
+                        {t("landingPage.comingSoon.infoIntel")}
                     </span>
 
                     <span className="hidden h-3 w-px bg-white/10 sm:block" />
 
                     <span className="flex items-center gap-2">
                         <Zap className="h-3 w-3 text-[#F47822]" />
-                        AI-powered learning
+                        {t("landingPage.comingSoon.infoAi")}
                     </span>
                 </div>
 
@@ -438,11 +441,11 @@ export function ComingSoonPage() {
                         />
 
                         <span className="relative">
-                            Explore HBTronics
+                            {t("landingPage.comingSoon.cta")}
                         </span>
 
                         <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-white/15">
-                            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
+                            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5 rtl:-scale-x-100 rtl:group-hover/cta:-translate-x-0.5 rtl:group-hover/cta:translate-x-0" />
                         </span>
                     </Link>
                 </div>
@@ -457,12 +460,12 @@ export function ComingSoonPage() {
                     <span>HBTRONICS / 2026</span>
 
                     <span className="hidden sm:block">
-                        DIAGNOSIS // TRAINING // CERTIFICATION
+                        {t("landingPage.comingSoon.footerMid")}
                     </span>
 
                     <span className="flex items-center gap-2">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F47822] shadow-[0_0_10px_rgba(244,120,34,0.7)]" />
-                        BUILD IN PROGRESS
+                        {t("landingPage.comingSoon.footerStatus")}
                     </span>
                 </div>
             </div>

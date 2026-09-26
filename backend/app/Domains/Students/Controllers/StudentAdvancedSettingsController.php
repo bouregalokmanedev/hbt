@@ -29,7 +29,7 @@ class StudentAdvancedSettingsController extends Controller
         abort_unless($request->user()->hasVerifiedEmail(), 422, 'Verify your email before enabling two-factor authentication.');
         $data = $request->validate(['method' => ['required', 'in:email,phone']]);
         $record = $otp->generate($request->user(), 'two_factor_enable');
-        $delivery->send($request->user(), $record->code, $data['method']);
+        $delivery->send($request->user(), $record['code'], $data['method']);
         return response()->json(['message' => 'A verification code was sent to your '.($data['method'] === 'phone' ? 'phone number' : 'email').'.', 'data' => ['verification_required' => true, 'method' => $data['method']]]);
     }
     public function verifyTwoFactor(Request $request, OtpService $otp): JsonResponse
@@ -38,12 +38,28 @@ class StudentAdvancedSettingsController extends Controller
         abort_unless($otp->verify($request->user(), 'two_factor_enable', $data['code']), 422, 'That verification code is invalid or expired.');
         $setting = $request->user()->studentSecuritySetting()->firstOrCreate([], []);
         $setting->update(['two_factor_enabled' => true, 'two_factor_method' => $data['method'], 'two_factor_verified_at' => now()]);
+        app(\App\Services\Audit\AuditService::class)->log(
+            'security.2fa.enabled',
+            $request->user(),
+            ['two_factor_enabled' => false],
+            ['two_factor_enabled' => true, 'method' => $data['method']],
+        );
         return response()->json(['message' => 'Two-factor authentication is enabled.', 'data' => $this->service->securityFor($request->user())]);
     }
     public function disableTwoFactor(Request $request): JsonResponse
     {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+        ]);
+
         $setting = $request->user()->studentSecuritySetting()->firstOrCreate([], []);
         $setting->update(['two_factor_enabled' => false, 'two_factor_method' => null, 'two_factor_verified_at' => null]);
+        app(\App\Services\Audit\AuditService::class)->log(
+            'security.2fa.disabled',
+            $request->user(),
+            ['two_factor_enabled' => true],
+            ['two_factor_enabled' => false],
+        );
         return response()->json(['message' => 'Two-factor authentication is disabled.', 'data' => $this->service->securityFor($request->user())]);
     }
     public function achievements(Request $request): JsonResponse { return response()->json(['data' => $this->service->achievementsFor($request->user())]); }
@@ -52,6 +68,12 @@ class StudentAdvancedSettingsController extends Controller
     public function export(Request $request): JsonResponse { return response()->json(['data' => $this->service->exportFor($request->user())]); }
     public function destroy(DeleteStudentAccountRequest $request): JsonResponse
     {
+        app(\App\Services\Audit\AuditService::class)->log(
+            'security.account.deleted',
+            $request->user(),
+            [],
+            ['email' => $request->user()->email],
+        );
         $this->service->delete($request->user(), $request->validated());
         return response()->json(['message' => 'Your account has been deleted. We are sorry to see you go.']);
     }

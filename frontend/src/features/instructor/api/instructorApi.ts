@@ -7,6 +7,11 @@ import type {
 } from "@/features/courses/types/course.types";
 
 import type {
+    AssessmentMode,
+    AvailableAssessmentQuestion,
+    AvailableCompetency,
+    FlaggedAttempt,
+    InstructorAssessment,
     InstructorCourseAnalytics,
     InstructorCourseCertificates,
     InstructorCourseFeedback,
@@ -15,9 +20,14 @@ import type {
     InstructorCourseListResponse,
     InstructorCurriculum,
     InstructorQuiz,
+    InstructorSimulatorSessionsParams,
     InstructorStudentListItem,
     InstructorStudentProfile,
     InstructorLessonMedia,
+    PendingReview,
+    SimulatorAnalytics,
+    SimulatorSessionsPage,
+    SimulatorStudentActivity,
 } from "../types/instructor";
 
 export interface InstructorCoursesParams {
@@ -302,6 +312,60 @@ export async function getInstructorStudent(studentId: number): Promise<Instructo
     return api<InstructorStudentProfile>(`/v1/instructor/students/${studentId}`);
 }
 
+export async function getInstructorSimulatorAnalytics(): Promise<SimulatorAnalytics> {
+    return api<SimulatorAnalytics>("/v1/instructor/simulator/analytics");
+}
+
+export async function getInstructorSimulatorSessions(
+    params: InstructorSimulatorSessionsParams = {},
+): Promise<SimulatorSessionsPage> {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== "" && value !== null) {
+            searchParams.set(key, String(value));
+        }
+    });
+    const query = searchParams.toString();
+    const token = authStorage.getToken();
+    const response = await fetch(
+        `${env.apiUrl}/v1/instructor/simulator/sessions${query ? `?${query}` : ""}`,
+        {
+            headers: {
+                Accept: "application/json",
+                ...(token
+                    ? {
+                        Authorization: `Bearer ${token}`,
+                    }
+                    : {}),
+            },
+        },
+    );
+
+    const payload: unknown = await response.json().catch(() => null);
+
+    if (!response.ok) {
+        const message =
+            payload &&
+            typeof payload === "object" &&
+            "message" in payload &&
+            typeof payload.message === "string"
+                ? payload.message
+                : "Unable to load simulator sessions.";
+
+        throw new ApiError(message, response.status);
+    }
+
+    return payload as SimulatorSessionsPage;
+}
+
+export async function getInstructorStudentSimulator(
+    studentId: number,
+): Promise<SimulatorStudentActivity> {
+    return api<SimulatorStudentActivity>(
+        `/v1/instructor/students/${studentId}/simulator`,
+    );
+}
+
 export async function getInstructorCourseAnalytics(
     courseId: string,
 ): Promise<InstructorCourseAnalytics> {
@@ -352,5 +416,540 @@ export async function getInstructorCourseStudents(
         `/v1/instructor/courses/${courseId}/students${
             query ? `?${query}` : ""
         }`,
+    );
+}
+
+export interface InstructorDiagnosticAttempt {
+    id: string;
+    scenario_id: string;
+    scenario?: { id: string; title: string } | null;
+    attempt_number?: number | null;
+    scenario_version?: number | null;
+    status?: string | null;
+    passed: boolean;
+    score?: number | null;
+    hints_used?: number | null;
+    submitted_at?: string | null;
+    started_at?: string | null;
+    student?: { id?: string; name: string; email: string } | null;
+}
+
+export interface InstructorDiagnosticResultDetail {
+    id: string;
+    attempt_id: string;
+    scenario_id: string;
+    score: number | null;
+    accuracy?: number | null;
+    process_score?: number | null;
+    points_earned?: number | null;
+    points_possible?: number | null;
+    passed: boolean;
+    strengths?: string[];
+    weaknesses?: string[];
+    breakdown?: Record<string, { step_id: string; title: string; points_earned: number; points_possible: number; is_correct: boolean }>;
+    generated_at?: string | null;
+}
+
+export interface InstructorDiagnosticScenario {
+    id: string;
+    title: string;
+    slug: string;
+    version: number;
+    status: string;
+    course: { id: string; title: string } | null;
+    customer_complaint?: string | null;
+    fault_codes?: string[];
+    system_tag?: string | null;
+    data_pack_id?: string | null;
+    max_hints?: number;
+    passing_score: number;
+    is_required: boolean;
+    steps_count: number;
+    hints_count: number;
+    assignments_count: number;
+    attempts_count: number;
+    pass_rate: number | null;
+    updated_at?: string | null;
+}
+
+export interface InstructorDiagnosticVehicle {
+    label: string | null;
+    make: string | null;
+    model: string | null;
+    variant: string;
+    engine_code: string | null;
+    vin?: string | null;
+    odometer_km?: number | null;
+    pack_version?: string | null;
+}
+
+export interface InstructorDiagnosticScoringCriterion {
+    id: string;
+    step_id: string | null;
+    key: string;
+    title: string;
+    description?: string | null;
+    points: number;
+    evaluation_type: string;
+    rules?: Record<string, unknown> | null;
+    is_required?: boolean;
+    position?: number;
+}
+
+export interface InstructorDiagnosticHint {
+    id: string;
+    step_id: string | null;
+    level: number;
+    title: string | null;
+    content: string;
+    penalty_points: number;
+    position?: number;
+}
+
+export interface InstructorDiagnosticStep {
+    id: string;
+    position: number;
+    title: string;
+    description?: string | null;
+    action_type: string;
+    tool?: string | null;
+    configuration?: Record<string, unknown> | null;
+    evidence?: Record<string, unknown> | null;
+    duration_seconds?: number | null;
+    discipline?: string | null;
+    is_required: boolean;
+    is_terminal: boolean;
+}
+
+export interface InstructorDiagnosticScenarioDetail {
+    id: string;
+    title: string;
+    description?: string | null;
+    customer_complaint?: string | null;
+    fault_codes?: string[];
+    system_tag?: string | null;
+    data_pack_id?: string | null;
+    vehicle?: InstructorDiagnosticVehicle | null;
+    slug: string;
+    version: number;
+    status: string;
+    course: { id: string; title: string } | null;
+    passing_score: number;
+    time_limit?: number | null;
+    max_hints?: number;
+    is_required: boolean;
+    position?: number | null;
+    steps: InstructorDiagnosticStep[];
+    scoring_criteria?: InstructorDiagnosticScoringCriterion[];
+    hints?: InstructorDiagnosticHint[];
+    recent_attempts?: { id: string; student?: string | null; score?: number | null; passed?: boolean | null; status?: string | null }[];
+}
+
+export async function getInstructorDiagnosticAnalytics(): Promise<{
+    total_scenarios: number;
+    total_attempts: number;
+    avg_score?: number | null;
+    pass_rate?: number | null;
+}> {
+    return api<{
+        total_scenarios: number;
+        total_attempts: number;
+        avg_score?: number | null;
+        pass_rate?: number | null;
+    }>(`/v1/instructor/diagnostics/analytics`);
+}
+
+export async function getInstructorDiagnosticAttempts(params: {
+    per_page?: number;
+} = {}): Promise<{ items: InstructorDiagnosticAttempt[] }> {
+    const searchParams = new URLSearchParams();
+
+    if (params.per_page !== undefined) {
+        searchParams.set("per_page", String(params.per_page));
+    }
+
+    const query = searchParams.toString();
+
+    const data = await api<InstructorDiagnosticAttempt[]>(
+        `/v1/instructor/diagnostics/attempts${query ? `?${query}` : ""}`,
+    );
+
+    return { items: data ?? [] };
+}
+
+export async function getInstructorDiagnosticResult(
+    attemptId: string,
+): Promise<InstructorDiagnosticResultDetail> {
+    return api<InstructorDiagnosticResultDetail>(
+        `/v1/instructor/diagnostics/attempts/${attemptId}/result`,
+    );
+}
+
+export async function getInstructorDiagnosticScenarios(params: {
+    page?: number;
+    per_page?: number;
+} = {}): Promise<{ data: InstructorDiagnosticScenario[] }> {
+    const searchParams = new URLSearchParams();
+
+    if (params.page !== undefined) {
+        searchParams.set("page", String(params.page));
+    }
+
+    if (params.per_page !== undefined) {
+        searchParams.set("per_page", String(params.per_page));
+    }
+
+    const query = searchParams.toString();
+
+    const data = await api<InstructorDiagnosticScenario[]>(
+        `/v1/instructor/diagnostics${query ? `?${query}` : ""}`,
+    );
+
+    return { data };
+}
+
+export async function getInstructorDiagnosticScenario(
+    scenarioId: string,
+): Promise<InstructorDiagnosticScenarioDetail> {
+    return api<InstructorDiagnosticScenarioDetail>(
+        `/v1/instructor/diagnostics/${scenarioId}`,
+    );
+}
+
+export async function createInstructorDiagnosticScenario(payload: {
+    course_id: string;
+    title: string;
+    description?: string;
+    customer_complaint?: string | null;
+    fault_codes?: string[];
+    system_tag?: string | null;
+    data_pack_id?: string | null;
+    passing_score?: number;
+    time_limit?: number | null;
+    max_hints?: number | null;
+    is_required?: boolean;
+}): Promise<{ id: string; slug: string; version: number }> {
+    return api<{ id: string; slug: string; version: number }>(
+        `/v1/instructor/diagnostics`,
+        { method: "POST", body: payload },
+    );
+}
+
+export async function updateInstructorDiagnosticScenario(
+    scenarioId: string,
+    payload: Record<string, string | number | boolean | null | string[]>,
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}`,
+        { method: "PUT", body: payload },
+    );
+}
+
+export async function publishInstructorDiagnosticScenario(
+    scenarioId: string,
+): Promise<{ id: string; status: string }> {
+    return api<{ id: string; status: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}/publish`,
+        { method: "POST" },
+    );
+}
+
+export async function unpublishInstructorDiagnosticScenario(
+    scenarioId: string,
+): Promise<{ id: string; status: string }> {
+    return api<{ id: string; status: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}/unpublish`,
+        { method: "POST" },
+    );
+}
+
+export async function archiveInstructorDiagnosticScenario(
+    scenarioId: string,
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}/archive`,
+        { method: "POST" },
+    );
+}
+
+export async function forkInstructorDiagnosticScenario(
+    scenarioId: string,
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}/fork`,
+        { method: "POST" },
+    );
+}
+
+export interface InstructorDiagnosticStepPayload {
+    title: string;
+    description?: string | null;
+    action_type: string;
+    tool?: string | null;
+    configuration?: Record<string, unknown> | null;
+    evidence?: Record<string, unknown> | null;
+    duration_seconds?: number | null;
+    discipline?: string | null;
+    is_required?: boolean;
+    is_terminal?: boolean;
+}
+
+export async function createInstructorDiagnosticStep(
+    scenarioId: string,
+    payload: InstructorDiagnosticStepPayload,
+): Promise<InstructorDiagnosticStep> {
+    return api<InstructorDiagnosticStep>(
+        `/v1/instructor/diagnostics/${scenarioId}/steps`,
+        { method: "POST", body: payload },
+    );
+}
+
+export async function updateInstructorDiagnosticStep(
+    stepId: string,
+    payload: Partial<InstructorDiagnosticStepPayload>,
+): Promise<InstructorDiagnosticStep> {
+    return api<InstructorDiagnosticStep>(
+        `/v1/instructor/diagnostics/steps/${stepId}`,
+        { method: "PATCH", body: payload },
+    );
+}
+
+export async function deleteInstructorDiagnosticStep(stepId: string): Promise<{ success: boolean }> {
+    return api<{ success: boolean }>(
+        `/v1/instructor/diagnostics/steps/${stepId}`,
+        { method: "DELETE" },
+    );
+}
+
+export async function reorderInstructorDiagnosticSteps(
+    scenarioId: string,
+    ids: string[],
+): Promise<{ success: boolean }> {
+    return api<{ success: boolean }>(
+        `/v1/instructor/diagnostics/${scenarioId}/steps/reorder`,
+        { method: "POST", body: { ids } },
+    );
+}
+
+export async function createInstructorDiagnosticCriterion(
+    scenarioId: string,
+    payload: {
+        step_id?: string | null;
+        key: string;
+        title: string;
+        description?: string | null;
+        points: number;
+        evaluation_type: string;
+        rules?: Record<string, unknown> | null;
+        is_required?: boolean;
+    },
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}/criteria`,
+        { method: "POST", body: payload },
+    );
+}
+
+export async function updateInstructorDiagnosticCriterion(
+    criterionId: string,
+    payload: Partial<{
+        title: string;
+        description: string | null;
+        points: number;
+        evaluation_type: string;
+        rules: Record<string, unknown> | null;
+        is_required: boolean;
+    }>,
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/criteria/${criterionId}`,
+        { method: "PATCH", body: payload },
+    );
+}
+
+export async function deleteInstructorDiagnosticCriterion(criterionId: string): Promise<{ deleted: boolean }> {
+    return api<{ deleted: boolean }>(
+        `/v1/instructor/diagnostics/criteria/${criterionId}`,
+        { method: "DELETE" },
+    );
+}
+
+export async function createInstructorDiagnosticHint(
+    scenarioId: string,
+    payload: {
+        diagnostic_scenario_step_id?: string | null;
+        level?: number;
+        title?: string | null;
+        content: string;
+        penalty_points?: number;
+    },
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/${scenarioId}/hints`,
+        { method: "POST", body: payload },
+    );
+}
+
+export async function updateInstructorDiagnosticHint(
+    hintId: string,
+    payload: Partial<{
+        level: number;
+        title: string | null;
+        content: string;
+        penalty_points: number;
+    }>,
+): Promise<{ id: string }> {
+    return api<{ id: string }>(
+        `/v1/instructor/diagnostics/hints/${hintId}`,
+        { method: "PATCH", body: payload },
+    );
+}
+
+export async function deleteInstructorDiagnosticHint(hintId: string): Promise<{ deleted: boolean }> {
+    return api<{ deleted: boolean }>(
+        `/v1/instructor/diagnostics/hints/${hintId}`,
+        { method: "DELETE" },
+    );
+}
+
+export async function getInstructorAssessments(
+    courseId: string,
+): Promise<InstructorAssessment[]> {
+    return api<InstructorAssessment[]>(
+        `/v1/instructor/courses/${courseId}/assessments`,
+    );
+}
+
+export async function createInstructorAssessment(
+    courseId: string,
+    payload: {
+        title: string;
+        assessment_mode: AssessmentMode | string;
+        section_id?: string | null;
+        lesson_id?: string | null;
+    },
+): Promise<InstructorAssessment> {
+    const response = await api<{ data: InstructorAssessment }>(
+        `/v1/instructor/courses/${courseId}/assessments`,
+        { method: "POST", body: payload },
+    );
+
+    return response.data;
+}
+
+export async function updateInstructorAssessment(
+    courseId: string,
+    assessmentId: string,
+    payload: {
+        title?: string;
+        description?: string | null;
+        minimum_score?: number;
+        max_attempts?: number | null;
+        assessment_mode?: AssessmentMode | string;
+        is_required?: boolean;
+    },
+): Promise<InstructorAssessment> {
+    const response = await api<{ data: InstructorAssessment }>(
+        `/v1/instructor/courses/${courseId}/assessments/${assessmentId}`,
+        { method: "PUT", body: payload },
+    );
+
+    return response.data;
+}
+
+export async function runInstructorAssessmentAction(
+    courseId: string,
+    assessmentId: string,
+    action: "publish" | "unpublish",
+): Promise<InstructorAssessment> {
+    const response = await api<{ data: InstructorAssessment }>(
+        `/v1/instructor/courses/${courseId}/assessments/${assessmentId}/${action}`,
+        { method: "POST" },
+    );
+
+    return response.data;
+}
+
+export async function deleteInstructorAssessment(
+    courseId: string,
+    assessmentId: string,
+): Promise<void> {
+    await api<void>(
+        `/v1/instructor/courses/${courseId}/assessments/${assessmentId}`,
+        { method: "DELETE" },
+    );
+}
+
+export async function getAvailableAssessmentQuestions(
+    courseId: string,
+): Promise<AvailableAssessmentQuestion[]> {
+    const data = await api<AvailableAssessmentQuestion[]>(
+        `/v1/instructor/courses/${courseId}/assessments/questions/available`,
+    );
+
+    return data ?? [];
+}
+
+export async function getAvailableCompetencies(
+    courseId: string,
+): Promise<AvailableCompetency[]> {
+    const data = await api<AvailableCompetency[]>(
+        `/v1/instructor/courses/${courseId}/assessments/competencies/available`,
+    );
+
+    return data ?? [];
+}
+
+export async function syncInstructorAssessmentQuestions(
+    courseId: string,
+    assessmentId: string,
+    rows: Array<{
+        quiz_question_id: string;
+        position: number;
+        points: number;
+        competency_id?: string | null;
+    }>,
+): Promise<void> {
+    await api<void>(
+        `/v1/instructor/courses/${courseId}/assessments/${assessmentId}/questions`,
+        { method: "PUT", body: { questions: rows } },
+    );
+}
+
+export async function syncInstructorAssessmentCompetencies(
+    courseId: string,
+    assessmentId: string,
+    rows: Array<{ competency_id: string; position: number; weight: number }>,
+): Promise<void> {
+    await api<void>(
+        `/v1/instructor/courses/${courseId}/assessments/${assessmentId}/competencies`,
+        { method: "PUT", body: { competencies: rows } },
+    );
+}
+
+export async function getPendingAssessmentReviews(
+    courseId: string,
+): Promise<PendingReview[]> {
+    return api<PendingReview[]>(
+        `/v1/instructor/courses/${courseId}/assessments/reviews/pending`,
+    );
+}
+
+export async function regradeAssessmentAttempt(
+    courseId: string,
+    attemptId: string,
+    grades: Record<string, { points_earned: number; feedback?: string | null }>,
+): Promise<void> {
+    await api<void>(
+        `/v1/instructor/courses/${courseId}/assessments/attempts/${attemptId}/regrade`,
+        { method: "POST", body: { grades } },
+    );
+}
+
+export async function getFlaggedAssessmentAttempts(
+    courseId: string,
+): Promise<FlaggedAttempt[]> {
+    return api<FlaggedAttempt[]>(
+        `/v1/instructor/courses/${courseId}/assessments/attempts/flagged`,
     );
 }

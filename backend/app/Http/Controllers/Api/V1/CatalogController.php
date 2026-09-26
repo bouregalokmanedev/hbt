@@ -31,15 +31,27 @@ final class CatalogController extends Controller
         }
 
         if ($request->filled('difficulty')) {
-            $query->difficulty(
-                Difficulty::from(
-                    $request->string('difficulty')->toString()
-                )
+            $difficulty = Difficulty::tryFrom(
+                $request->string('difficulty')->toString()
             );
+
+            abort_unless(
+                $difficulty !== null,
+                422,
+                'Invalid difficulty filter.'
+            );
+
+            $query->difficulty($difficulty);
         }
 
         if ($request->boolean('free')) {
             $query->free();
+        }
+
+        if ($request->filled('instructor')) {
+            $query->byInstructor(
+                $request->string('instructor')->toString()
+            );
         }
 
         if ($request->filled('language')) {
@@ -116,6 +128,8 @@ final class CatalogController extends Controller
                 },
             ]);
         }
+
+        $course->loadMissing('instructor:id,uuid,first_name,last_name,username,avatar,bio');
 
         return new CourseResource($course);
     }

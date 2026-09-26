@@ -55,6 +55,7 @@ class StudentSettingsService
                 'show_course_progress' => false,
                 'allow_personalized_recommendations' => true,
                 'allow_analytics' => true,
+                'send_read_receipts' => true,
             ],
 
             'learning' => [

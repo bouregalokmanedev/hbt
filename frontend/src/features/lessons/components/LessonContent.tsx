@@ -1,6 +1,7 @@
 import type {
     Lesson,
 } from "../types/lesson.types";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 
 interface LessonContentProps {
     lesson: Lesson;
@@ -39,7 +40,7 @@ export function LessonContent({
                         className="prose prose-neutral max-w-none dark:prose-invert"
                         dangerouslySetInnerHTML={{
                             __html:
-                                lesson.content,
+                                sanitizeHtml(lesson.content),
                         }}
                     />
                 </div>

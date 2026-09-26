@@ -3,7 +3,10 @@
 namespace App\Domains\Students\Services;
 
 use App\Domains\Students\Models\StudentNotificationSetting;
+use App\Mail\StudentNotificationMail;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class StudentNotificationSettingsService
 {
@@ -49,6 +52,8 @@ class StudentNotificationSettingsService
     ): StudentNotificationSetting {
         $settings = $this->getFor($user);
 
+        $emailWasEnabled = (bool) $settings->email_enabled;
+
         $allowed = array_keys($this->defaults());
 
         $settings->fill(
@@ -59,7 +64,33 @@ class StudentNotificationSettingsService
         );
 
         $settings->save();
+        $settings->refresh();
 
-        return $settings->refresh();
+        // Confirm by email exactly when the student turns email
+        // notifications back on — not on every save.
+        if (! $emailWasEnabled && (bool) $settings->email_enabled && filled($user->email)) {
+            $this->sendEnabledConfirmation($user);
+        }
+
+        return $settings;
+    }
+
+    private function sendEnabledConfirmation(User $user): void
+    {
+        $name = trim((string) ($user->first_name ?? ''));
+
+        try {
+            Mail::to($user->email)->queue(new StudentNotificationMail(
+                appTitle: (string) config('app.name', 'HBT Learning'),
+                notifyTitle: 'Email notifications enabled',
+                notifyMessage: ($name !== '' ? "Hello {$name}," : 'Hello,')
+                    .' email notifications are now enabled on your HBT Learning account. You will receive course updates, assessment results, certificates, and security alerts by email. You can change this anytime in Settings → Notifications.',
+                actionUrl: null,
+                firstName: $name,
+                type: 'security',
+            ));
+        } catch (\Throwable $e) {
+            Log::warning('Notification opt-in confirmation email failed: '.$e->getMessage(), ['user_id' => $user->id]);
+        }
     }
 }

@@ -27,12 +27,14 @@ class CreateUserRequest extends FormRequest
                 'required',
                 'string',
                 'max:100',
+                'regex:/^[\p{L}][\p{L}\s\'’-]*$/u',
             ],
 
             'last_name' => [
                 'required',
                 'string',
                 'max:100',
+                'regex:/^[\p{L}][\p{L}\s\'’-]*$/u',
             ],
 
             'username' => [
@@ -118,6 +120,12 @@ class CreateUserRequest extends FormRequest
 
             'password.confirmed' =>
                 'Password confirmation does not match.',
+
+            'first_name.regex' =>
+                'The first name may only contain letters.',
+
+            'last_name.regex' =>
+                'The last name may only contain letters.',
 
         ];
     }

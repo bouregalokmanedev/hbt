@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./components/*"],
+      "@/features/*": ["./features/*"],
+      "@/stores/*": ["./stores/*"],
+      "@/providers/*": ["./providers/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/data/*": ["./data/*"],
+      "@/styles/*": ["./styles/*"],
+      "@sim/core": ["./packages/sim-core/index.ts"],
+      "@sim/core/*": ["./packages/sim-core/*"],
+      "@sim/scanner": ["./packages/sim-scanner/index.ts"],
+      "@sim/multimeter": ["./packages/sim-multimeter/index.ts"],
+      "@sim/oscilloscope": ["./packages/sim-oscilloscope/index.ts"],
+      "@sim/location": ["./packages/sim-location/index.ts"],
+      "@sim/schematic": ["./packages/sim-schematic/index.ts"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "HB TRONICS SaaS Simulator (offline).html"]
+}

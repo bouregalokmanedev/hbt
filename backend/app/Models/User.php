@@ -40,6 +40,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'first_name',
         'last_name',
         'username',
+        'referral_code',
+        'referred_by',
         'email',
         'phone',
         'avatar',
@@ -67,6 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'deleted_at' => 'datetime',
         ];
@@ -158,5 +161,15 @@ public function studentSecuritySetting(): HasOne
 public function studentAssessmentPreference(): HasOne
 {
     return $this->hasOne(StudentAssessmentPreference::class);
+}
+
+public function simulatorSessions(): HasMany
+{
+    return $this->hasMany(\App\Domains\Simulator\Models\SimulatorSession::class);
+}
+
+public function simulatorResults(): HasMany
+{
+    return $this->hasMany(\App\Domains\Simulator\Models\SimulatorResult::class);
 }
 }

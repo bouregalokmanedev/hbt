@@ -17,6 +17,7 @@ class StudentPrivacySetting extends Model
         'show_course_progress',
         'allow_personalized_recommendations',
         'allow_analytics',
+        'send_read_receipts',
     ];
 
     protected function casts(): array
@@ -28,6 +29,7 @@ class StudentPrivacySetting extends Model
             'show_course_progress' => 'boolean',
             'allow_personalized_recommendations' => 'boolean',
             'allow_analytics' => 'boolean',
+            'send_read_receipts' => 'boolean',
         ];
     }
 

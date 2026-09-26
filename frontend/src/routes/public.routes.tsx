@@ -10,7 +10,10 @@ import { LandingPage } from "@/features/landingpage/LandingPage";
 import { CompanyPage } from "@/features/company/CompanyPage";
 import { ContactPage } from "@/features/contact/ContactPage";
 import { PricingPage } from "@/features/pricing/PricingPage";
-import { ComingSoonPage } from "@/features/landingpage/CommingSoon";
+import { Navigate } from "react-router-dom";
+import { VerifyCertificatePage } from "@/features/verify-certificate/pages/VerifyCertificatePage";
+import { LegalPage } from "@/features/legal/LegalPage";
+import { DemoExperiencePage, AiMentorIntroPage } from "@/features/demo";
 
 function HomePage() {
   return <LandingPage />
@@ -23,6 +26,14 @@ export const publicRoutes: RouteObject[] = [
             {
                 path: "/",
                 element: <HomePage />,
+            },
+            {
+                path: "/demo",
+                element: <DemoExperiencePage />,
+            },
+            {
+                path: "/ai-mentor/intro",
+                element: <AiMentorIntroPage />,
             },
             {
                 path: "/catalog",
@@ -44,9 +55,8 @@ export const publicRoutes: RouteObject[] = [
                 <CompanyPage />
             },
             {
-                path:"/store",
-                element:
-                <ComingSoonPage />
+                path: "/store",
+                element: <Navigate to="/catalog" replace />,
             },
             {
                 path:"/contact",
@@ -57,6 +67,37 @@ export const publicRoutes: RouteObject[] = [
                 path:"/pricing",
                 element:
                 <PricingPage />
+            },
+            {
+                path:"/verify-certificate",
+                element:
+                <VerifyCertificatePage />
+            },
+            {
+                path:"/verify-certificate/:certificateNumber",
+                element:
+                <VerifyCertificatePage />
+            },
+            // Short shareable form used by the certificate share button.
+            {
+                path:"/verify/:certificateNumber",
+                element:
+                <VerifyCertificatePage />
+            },
+            {
+                path:"/privacy",
+                element:
+                <LegalPage page="privacy" />
+            },
+            {
+                path:"/terms",
+                element:
+                <LegalPage page="terms" />
+            },
+            {
+                path:"/cookies",
+                element:
+                <LegalPage page="cookies" />
             },
             {
                 path: "/dev/ui",

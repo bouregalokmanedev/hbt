@@ -138,7 +138,7 @@ it('rejects a cancelled enrollment', function () {
     );
 });
 
-it('rejects a completed enrollment', function () {
+it('allows a completed enrollment to complete a lesson again', function () {
     Event::fake([
         LessonCompleted::class,
     ]);
@@ -149,17 +149,14 @@ it('rejects a completed enrollment', function () {
         EnrollmentStatus::COMPLETED
     );
 
-    expect(fn () => $this->service->complete(
+    $progress = $this->service->complete(
         $this->user,
         $this->lesson
-    ))->toThrow(LessonCannotBeCompletedException::class);
-
-    expect(LessonProgress::query()->count())
-        ->toBe(0);
-
-    Event::assertNotDispatched(
-        LessonCompleted::class
     );
+
+    expect($progress->completed_at)->not->toBeNull();
+
+    Event::assertDispatched(LessonCompleted::class);
 });
 
 it('rejects a draft lesson', function () {
@@ -253,7 +250,7 @@ it('does not create duplicate progress when the lesson is already completed', fu
         $this->course
     );
 
-    $existing = LessonProgress::factory()->create([
+    $existing = LessonProgress::factory()->completed()->create([
         'user_id' => $this->user->id,
         'lesson_id' => $this->lesson->id,
     ]);

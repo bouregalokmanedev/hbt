@@ -23,22 +23,45 @@ final class AssessmentEligibilityService
     ): array {
         $assessment->loadMissing([
             'course.sections.lessons',
+            'section.lessons',
+            'lesson',
             'quizzes',
             'diagnosticScenarios',
         ]);
 
-        $lessons = $assessment->course
-            ->sections
-            ->flatMap(fn ($section) => $section->lessons);
+        $scope = $assessment->scope();
+        $isPublished = $assessment->status->value === 'published';
 
-        $requiredLessons = $lessons->count();
+        $lessons = match ($scope) {
+            'lesson' => collect($assessment->lesson ? [$assessment->lesson] : []),
+            'section' => $assessment->section
+                ? $assessment->section->lessons
+                : collect(),
+            default => $assessment->course
+                ->sections
+                ->flatMap(fn ($section) => $section->lessons),
+        };
 
-        $completedLessons = $this->completedLessons(
-            $lessons,
-            $user
-        );
+        if ($scope === 'lesson') {
+            $lesson = $assessment->lesson;
+            $requiredLessons = 1;
+            $lessonAccessible = $lesson !== null
+                && $lesson->status?->value === 'published'
+                && ($assessment->section_id === null
+                    || $lesson->section_id === $assessment->section_id);
+            $completedLessons = $lessonAccessible
+                ? $this->completedLessons($lessons, $user)
+                : 0;
+            // Formative/lesson-scoped assessments open mid-course without
+            // requiring prior completions as long as the lesson is live.
+            $lessonEligible = $lessonAccessible;
+        } else {
+            $requiredLessons = $lessons->count();
+            $completedLessons = $this->completedLessons($lessons, $user);
+            $lessonEligible = $completedLessons >= $requiredLessons;
+        }
 
-        $lessonEligible = $completedLessons >= $requiredLessons;
+        $sectionEvidence = $this->evaluateSectionAssessments($assessment, $user, $scope);
 
         $quizEvidence = $this->evaluateQuizzes(
             $assessment,
@@ -50,11 +73,10 @@ final class AssessmentEligibilityService
             $user
         );
 
-        $isPublished = $assessment->status->value === 'published';
-
         $eligible =
             $isPublished
             && $lessonEligible
+            && $sectionEvidence['eligible']
             && $quizEvidence['eligible']
             && $scenarioEvidence['eligible'];
 
@@ -64,17 +86,77 @@ final class AssessmentEligibilityService
             'assessment' => [
                 'id' => $assessment->id,
                 'status' => $assessment->status->value,
+                'scope' => $scope,
             ],
 
             'lessons' => [
                 'required' => $requiredLessons,
                 'completed' => $completedLessons,
                 'eligible' => $lessonEligible,
+                'scope' => $scope,
             ],
+
+            'section_assessments' => $sectionEvidence,
 
             'quizzes' => $quizEvidence,
 
             'scenarios' => $scenarioEvidence,
+        ];
+    }
+
+    /**
+     * Course-scoped assessments may require passed section assessments
+     * before the final attempt unlocks.
+     */
+    private function evaluateSectionAssessments(
+        Assessment $assessment,
+        User $user,
+        string $scope,
+    ): array {
+        if ($scope !== 'course') {
+            return [
+                'required' => 0,
+                'completed' => 0,
+                'eligible' => true,
+                'items' => [],
+            ];
+        }
+
+        $required = Assessment::query()
+            ->where('course_id', $assessment->course_id)
+            ->whereNotNull('section_id')
+            ->whereNull('lesson_id')
+            ->where('is_required', true)
+            ->where('status', 'published')
+            ->get();
+
+        if ($required->isEmpty()) {
+            return [
+                'required' => 0,
+                'completed' => 0,
+                'eligible' => true,
+                'items' => [],
+            ];
+        }
+
+        $passedIds = \App\Domains\Assessments\Models\AssessmentResult::query()
+            ->where('user_id', $user->id)
+            ->whereIn('assessment_id', $required->pluck('id'))
+            ->where('passed', true)
+            ->pluck('assessment_id')
+            ->all();
+
+        $completed = count($passedIds);
+
+        return [
+            'required' => $required->count(),
+            'completed' => $completed,
+            'eligible' => $completed >= $required->count(),
+            'items' => $required->map(fn ($a) => [
+                'assessment_id' => $a->id,
+                'section_id' => $a->section_id,
+                'passed' => in_array($a->id, $passedIds, true),
+            ])->values()->all(),
         ];
     }
 

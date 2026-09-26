@@ -8,26 +8,20 @@ use Illuminate\Support\Facades\Password;
 
 final class ForgotPasswordAction
 {
+    /**
+     * Always return the same success payload so callers cannot
+     * distinguish registered vs unknown emails (enumeration).
+     */
     public function execute(
         ForgotPasswordData $dto
     ): ActionResult {
-
-        $status = Password::sendResetLink([
-
+        Password::sendResetLink([
             'email' => $dto->email,
-
         ]);
-
-        if ($status !== Password::RESET_LINK_SENT) {
-
-            return ActionResult::failure(
-                __($status)
-            );
-        }
 
         return ActionResult::success(
             null,
-            __($status)
+            'If an account exists for that email, a password reset link has been sent.'
         );
     }
 }

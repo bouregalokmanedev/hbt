@@ -1,0 +1,12 @@
+{
+  "title": "Reports",
+  "kicker": "Session report viewer",
+  "list": "Sessions",
+  "steps": "Steps",
+  "verdict": "Verdict",
+  "meta": "Session detail",
+  "reopen": "Re-open in tool",
+  "exportPdf": "Export PDF",
+  "outcome": { "pass": "Pass", "fault": "Fault" },
+  "fields": { "date": "Date", "tools": "Tools", "score": "Score", "vin": "VIN", "km": "Odometer", "tech": "Technician" }
+}
