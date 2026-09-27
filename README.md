@@ -23,3 +23,4 @@ Start here: `docs/01-project-overview.md` → `docs/03-development-setup.md`.
    `diagnostic_scenarios` graph.
 4. **Standalone simulator auth** — Next.js workspace is separate; add SSO or
    shared-token link before deep integration.
+# HBTv1
