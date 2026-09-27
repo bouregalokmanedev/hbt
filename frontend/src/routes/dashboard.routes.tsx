@@ -11,78 +11,46 @@ import {
     DashboardLayout,
 } from "@/layouts/DashboardLayout";
 
-import {
-    DashboardPage,
-} from "@/features/dashboard/pages";
-import { AchievementsPage } from "@/features/dashboard/pages/AchievementsPage";
-
-import { SettingsPage } from "@/features/settings/pages/SettingsPage";
-import {
-    ProfilePage,
-} from "@/features/profile/pages/ProfilePage";
-import { MyCoursesPage } from "@/features/enrollments/pages/MyCoursesPage";
-import { CertificatesPage } from "@/features/certificates/pages/CertificatesPage";
-import { AssessmentsPage } from "@/features/assessments/pages/AssessmentsPage";
-import { AssessmentExamPage } from "@/features/assessments/pages/AssessmentExamPage";
-import { AiMentorPage } from "@/features/ai-mentor/pages/AiMentorPage";
 import { AnnouncementsPage, MessagesPage } from "@/features/messages/pages/MessagesPage";
-import {
-    DiagnosticBriefingPage,
-    DiagnosticResultPage,
-    DiagnosticWorkspacePage,
-    DiagnosticsHistoryPage,
-    DiagnosticsPage,
-} from "@/features/diagnostics";
-import { SimulatorHubPage } from "@/features/simulator/pages/SimulatorHubPage";
-import { SimulatorLabPage } from "@/features/simulator/pages/SimulatorLabPage";
-import { SimulatorReportsPage } from "@/features/simulator/pages/SimulatorReportsPage";
-import { CheckoutPage, CheckoutSuccessPage } from "@/features/payments/CheckoutPage";
-import { BillingPage } from "@/features/payments/BillingPage";
-import { FavouritesPage } from "@/features/favorites/pages/FavouritesPage";
-import { SubscriptionPage } from "@/features/subscription/pages/SubscriptionPage";
-import { SupportPage } from "@/features/support/pages/SupportPage";
-import { ChallengesPage } from "@/features/challenges/pages/ChallengesPage";
-
-
 
 export const dashboardRoutes:
     RouteObject[] = [
         {
             element: <AuthGuard />,
             children: [
-                { path: "/checkout", element: <CheckoutPage /> },
-                { path: "/checkout/:orderId", element: <CheckoutPage /> },
-                { path: "/checkout/:orderId/success", element: <CheckoutSuccessPage /> },
+                { path: "/checkout", lazy: () => import("@/features/payments/CheckoutPage").then((m) => ({ Component: m.CheckoutPage })) },
+                { path: "/checkout/:orderId", lazy: () => import("@/features/payments/CheckoutPage").then((m) => ({ Component: m.CheckoutPage })) },
+                { path: "/checkout/:orderId/success", lazy: () => import("@/features/payments/CheckoutPage").then((m) => ({ Component: m.CheckoutSuccessPage })) },
                 {
                     element: <RoleGuard roles={["Student"]} />,
                     children: [
                         {
                             element: <DashboardLayout />,
                             children: [
-                                { path: "/dashboard", element: <DashboardPage /> },
-                                { path: "/challenges", element: <ChallengesPage /> },
-                                { path: "/my-courses", element: <MyCoursesPage /> },
-                                { path: "/certificates", element: <CertificatesPage /> },
-                                { path: "/achievements", element: <AchievementsPage /> },
-                                { path: "/assessments", element: <AssessmentsPage /> },
-                                { path: "/assessments/:assessmentId/exam", element: <AssessmentExamPage /> },
-                                { path: "/diagnostics", element: <DiagnosticsPage /> },
-                                { path: "/diagnostics/history", element: <DiagnosticsHistoryPage /> },
-                                { path: "/diagnostics/:scenarioId", element: <DiagnosticBriefingPage /> },
-                                { path: "/diagnostics/attempts/:attemptId", element: <DiagnosticWorkspacePage /> },
-                                { path: "/diagnostics/attempts/:attemptId/result", element: <DiagnosticResultPage /> },
-                                 { path: "/simulator", element: <SimulatorHubPage /> },
-                                 { path: "/simulator/:tool", element: <SimulatorLabPage /> },
-                                 { path: "/reports", element: <SimulatorReportsPage /> },
-                                { path: "/favourite", element: <FavouritesPage /> },
-                                { path: "/subscription", element: <SubscriptionPage /> },
-                                { path: "/billing", element: <BillingPage /> },
-                                { path: "/support", element: <SupportPage /> },
-                                { path: "/ai-mentor", element: <AiMentorPage /> },
+                                { path: "/dashboard", lazy: () => import("@/features/dashboard/pages/DashboardPage").then((m) => ({ Component: m.DashboardPage })) },
+                                { path: "/challenges", lazy: () => import("@/features/challenges/pages/ChallengesPage").then((m) => ({ Component: m.ChallengesPage })) },
+                                { path: "/my-courses", lazy: () => import("@/features/enrollments/pages/MyCoursesPage").then((m) => ({ Component: m.MyCoursesPage })) },
+                                { path: "/certificates", lazy: () => import("@/features/certificates/pages/CertificatesPage").then((m) => ({ Component: m.CertificatesPage })) },
+                                { path: "/achievements", lazy: () => import("@/features/dashboard/pages/AchievementsPage").then((m) => ({ Component: m.AchievementsPage })) },
+                                { path: "/assessments", lazy: () => import("@/features/assessments/pages/AssessmentsPage").then((m) => ({ Component: m.AssessmentsPage })) },
+                                { path: "/assessments/:assessmentId/exam", lazy: () => import("@/features/assessments/pages/AssessmentExamPage").then((m) => ({ Component: m.AssessmentExamPage })) },
+                                { path: "/diagnostics", lazy: () => import("@/features/diagnostics/pages/DiagnosticsPage").then((m) => ({ Component: m.DiagnosticsPage })) },
+                                { path: "/diagnostics/history", lazy: () => import("@/features/diagnostics/pages/DiagnosticsHistoryPage").then((m) => ({ Component: m.DiagnosticsHistoryPage })) },
+                                { path: "/diagnostics/:scenarioId", lazy: () => import("@/features/diagnostics/pages/DiagnosticBriefingPage").then((m) => ({ Component: m.DiagnosticBriefingPage })) },
+                                { path: "/diagnostics/attempts/:attemptId", lazy: () => import("@/features/diagnostics/pages/DiagnosticWorkspacePage").then((m) => ({ Component: m.DiagnosticWorkspacePage })) },
+                                { path: "/diagnostics/attempts/:attemptId/result", lazy: () => import("@/features/diagnostics/pages/DiagnosticResultPage").then((m) => ({ Component: m.DiagnosticResultPage })) },
+                                 { path: "/simulator", lazy: () => import("@/features/simulator/pages/SimulatorHubPage").then((m) => ({ Component: m.SimulatorHubPage })) },
+                                 { path: "/simulator/:tool", lazy: () => import("@/features/simulator/pages/SimulatorLabPage").then((m) => ({ Component: m.SimulatorLabPage })) },
+                                 { path: "/reports", lazy: () => import("@/features/simulator/pages/SimulatorReportsPage").then((m) => ({ Component: m.SimulatorReportsPage })) },
+                                { path: "/favourite", lazy: () => import("@/features/favorites/pages/FavouritesPage").then((m) => ({ Component: m.FavouritesPage })) },
+                                { path: "/subscription", lazy: () => import("@/features/subscription/pages/SubscriptionPage").then((m) => ({ Component: m.SubscriptionPage })) },
+                                { path: "/billing", lazy: () => import("@/features/payments/BillingPage").then((m) => ({ Component: m.BillingPage })) },
+                                { path: "/support", lazy: () => import("@/features/support/pages/SupportPage").then((m) => ({ Component: m.SupportPage })) },
+                                { path: "/ai-mentor", lazy: () => import("@/features/ai-mentor/pages/AiMentorPage").then((m) => ({ Component: m.AiMentorPage })) },
                                 { path: "/messages", element: <MessagesPage /> },
                                 { path: "/announcements", element: <AnnouncementsPage /> },
-                                { path: "/settings", element: <SettingsPage /> },
-                                { path: "/profile", element: <ProfilePage /> },
+                                { path: "/settings", lazy: () => import("@/features/settings/pages/SettingsPage").then((m) => ({ Component: m.SettingsPage })) },
+                                { path: "/profile", lazy: () => import("@/features/profile/pages/ProfilePage").then((m) => ({ Component: m.ProfilePage })) },
                             ],
                         },
                     ],

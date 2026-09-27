@@ -22,22 +22,27 @@ import { AuthLanguageProvider } from "@/features/auth/i18n/auth-language";
 import { QueryProvider } from "@/providers/QueryProvider";
 
 import "@/styles/globals.css";
-import "@/i18n";
-import i18n from "@/i18n";
+import i18n, { initialLocaleReady } from "@/i18n";
 import { initTheme } from "@/lib/theme";
 
 initTheme();
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <I18nextProvider i18n={i18n}>
-      <AuthLanguageProvider>
-        <AuthInitializer>
-          <QueryProvider>
-            <RouterProvider router={router} />
-          </QueryProvider>
-        </AuthInitializer>
-      </AuthLanguageProvider>
-    </I18nextProvider>
-  </React.StrictMode>,
-);
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+
+// Resolves on the next microtask for English, after the (lazy) Arabic chunk
+// for Arabic, so the first paint never shows fallback strings.
+void initialLocaleReady.then(() => {
+  root.render(
+    <React.StrictMode>
+      <I18nextProvider i18n={i18n}>
+        <AuthLanguageProvider>
+          <AuthInitializer>
+            <QueryProvider>
+              <RouterProvider router={router} />
+            </QueryProvider>
+          </AuthInitializer>
+        </AuthLanguageProvider>
+      </I18nextProvider>
+    </React.StrictMode>,
+  );
+});

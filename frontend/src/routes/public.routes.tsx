@@ -1,23 +1,8 @@
 import type { RouteObject } from "react-router-dom";
 
-import { UiShowcasePage } from "@/features/dev";
 import { PublicLayout } from "@/layouts/PublicLayout";
-import { CoursesPage } from "@/features/courses";
-import { CourseDetailsPage } from "@/features/courses/pages/CourseDetailsPage";
-import { LessonPlayerPage } from "@/features/lessons/pages/LessonPlayerPage";
-import { QuizPlayerPage } from "@/features/lessons/pages/QuizPlayerPage";
-import { LandingPage } from "@/features/landingpage/LandingPage";
-import { CompanyPage } from "@/features/company/CompanyPage";
-import { ContactPage } from "@/features/contact/ContactPage";
-import { PricingPage } from "@/features/pricing/PricingPage";
 import { Navigate } from "react-router-dom";
-import { VerifyCertificatePage } from "@/features/verify-certificate/pages/VerifyCertificatePage";
 import { LegalPage } from "@/features/legal/LegalPage";
-import { DemoExperiencePage, AiMentorIntroPage } from "@/features/demo";
-
-function HomePage() {
-  return <LandingPage />
-}
 
 export const publicRoutes: RouteObject[] = [
     {
@@ -25,34 +10,32 @@ export const publicRoutes: RouteObject[] = [
         children: [
             {
                 path: "/",
-                element: <HomePage />,
+                lazy: () => import("@/features/landingpage/LandingPage").then((m) => ({ Component: m.LandingPage })),
             },
             {
                 path: "/demo",
-                element: <DemoExperiencePage />,
+                lazy: () => import("@/features/demo/pages/DemoExperiencePage").then((m) => ({ Component: m.DemoExperiencePage })),
             },
             {
                 path: "/ai-mentor/intro",
-                element: <AiMentorIntroPage />,
+                lazy: () => import("@/features/demo/pages/AiMentorIntroPage").then((m) => ({ Component: m.AiMentorIntroPage })),
             },
             {
                 path: "/catalog",
-                element: <CoursesPage />,
+                lazy: () => import("@/features/courses/pages/CoursesPage").then((m) => ({ Component: m.CoursesPage })),
             },
             {
                 path:"/courses/:id",
-                element:<CourseDetailsPage />
+                lazy: () => import("@/features/courses/pages/CourseDetailsPage").then((m) => ({ Component: m.CourseDetailsPage }))
             },
             {
                 path:"/courses/:courseId/lessons/:lessonId",
-                element:
-                <LessonPlayerPage />
+                lazy: () => import("@/features/lessons/pages/LessonPlayerPage").then((m) => ({ Component: m.LessonPlayerPage }))
             },
-            { path: "/courses/:courseId/quizzes/:quizId", element: <QuizPlayerPage /> },
+            { path: "/courses/:courseId/quizzes/:quizId", lazy: () => import("@/features/lessons/pages/QuizPlayerPage").then((m) => ({ Component: m.QuizPlayerPage })) },
             {
                 path:"/company",
-                element:
-                <CompanyPage />
+                lazy: () => import("@/features/company/CompanyPage").then((m) => ({ Component: m.CompanyPage }))
             },
             {
                 path: "/store",
@@ -60,29 +43,24 @@ export const publicRoutes: RouteObject[] = [
             },
             {
                 path:"/contact",
-                element:
-                <ContactPage />
+                lazy: () => import("@/features/contact/ContactPage").then((m) => ({ Component: m.ContactPage }))
             },
             {
                 path:"/pricing",
-                element:
-                <PricingPage />
+                lazy: () => import("@/features/pricing/PricingPage").then((m) => ({ Component: m.PricingPage }))
             },
             {
                 path:"/verify-certificate",
-                element:
-                <VerifyCertificatePage />
+                lazy: () => import("@/features/verify-certificate/pages/VerifyCertificatePage").then((m) => ({ Component: m.VerifyCertificatePage }))
             },
             {
                 path:"/verify-certificate/:certificateNumber",
-                element:
-                <VerifyCertificatePage />
+                lazy: () => import("@/features/verify-certificate/pages/VerifyCertificatePage").then((m) => ({ Component: m.VerifyCertificatePage }))
             },
             // Short shareable form used by the certificate share button.
             {
                 path:"/verify/:certificateNumber",
-                element:
-                <VerifyCertificatePage />
+                lazy: () => import("@/features/verify-certificate/pages/VerifyCertificatePage").then((m) => ({ Component: m.VerifyCertificatePage }))
             },
             {
                 path:"/privacy",
@@ -101,7 +79,7 @@ export const publicRoutes: RouteObject[] = [
             },
             {
                 path: "/dev/ui",
-                element: <UiShowcasePage />,
+                lazy: () => import("@/features/dev/pages/UiShowcasePage").then((m) => ({ Component: m.UiShowcasePage })),
             },
         ],
     },

@@ -4,8 +4,6 @@ import { initReactI18next } from "react-i18next";
 
 import { en } from "./locales/en";
 
-import { ar } from "./locales/ar";
-
 export type SupportedLocale = "en" | "ar";
 
 export const DEFAULT_LOCALE: SupportedLocale = "en";
@@ -25,10 +23,6 @@ i18n.use(initReactI18next).init({
     en: {
       translation: en,
     },
-
-    ar: {
-      translation: ar,
-    },
   },
 
   lng: initialLanguage,
@@ -42,18 +36,47 @@ i18n.use(initReactI18next).init({
   returnNull: false,
 });
 
+// The Arabic dictionary is a separate chunk: it is only downloaded when the
+// interface actually needs it (initial language or a live switch), so English
+// visitors never pay for it.
+let arBundle: Promise<void> | null = null;
+
+function ensureArBundle(): Promise<void> {
+  if (!arBundle) {
+    arBundle = import("./locales/ar")
+      .then((mod) => {
+        i18n.addResourceBundle("ar", "translation", mod.ar, true, true);
+      })
+      .catch(() => {
+        // Fall back to English rather than blocking the UI.
+      });
+  }
+  return arBundle;
+}
+
+export const initialLocaleReady: Promise<void> =
+  initialLanguage === "ar" ? ensureArBundle() : Promise.resolve();
+
 export function changeLanguage(language: SupportedLocale) {
   localStorage.setItem("hbt-language", language);
 
-  void i18n.changeLanguage(language);
+  const apply = () => {
+    void i18n.changeLanguage(language);
 
-  document.documentElement.lang = language;
+    document.documentElement.lang = language;
 
-  document.documentElement.dir = isRTL(language) ? "rtl" : "ltr";
+    document.documentElement.dir = isRTL(language) ? "rtl" : "ltr";
 
-  document.body.dir = isRTL(language) ? "rtl" : "ltr";
+    document.body.dir = isRTL(language) ? "rtl" : "ltr";
 
-  document.documentElement.classList.toggle("rtl", isRTL(language));
+    document.documentElement.classList.toggle("rtl", isRTL(language));
+  };
+
+  if (language === "ar") {
+    void ensureArBundle().then(apply);
+  } else {
+    apply();
+  }
 }
 
 // Keep direction and typography correct even when a component changes

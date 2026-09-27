@@ -1,7 +1,7 @@
 import { Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-import heropic from "@/assets/landing/heropic.jpg";
-import heropic2 from "@/assets/landing/heropic2.jpg";
+import heropic from "@/assets/landing/heropic.webp";
+import heropic2 from "@/assets/landing/heropic2.webp";
 
 interface CourseThumbnailProps {
     title: string;

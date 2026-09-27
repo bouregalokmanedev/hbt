@@ -6,19 +6,11 @@ import {
     GuestGuard,
 } from "@/features/auth";
 
-import {
-    LoginPage,
-    GoogleCallbackPage,
-    RegisterPage,
-    ForgotPasswordPage,
-    ResetPasswordPage,
-} from "@/features/auth/pages";
-
 export const authRoutes:
     RouteObject[] = [
         {
             path: "/auth/google/callback",
-            element: <GoogleCallbackPage />,
+            lazy: () => import("@/features/auth/pages/GoogleCallbackPage").then((m) => ({ Component: m.GoogleCallbackPage })),
         },
         {
             element: <GuestGuard />,
@@ -26,26 +18,22 @@ export const authRoutes:
                
                         {
                             path: "/login",
-                            element:
-                                <LoginPage />,
+                            lazy: () => import("@/features/auth/pages/LoginPage").then((m) => ({ Component: m.LoginPage })),
                         },
 
                         {
                             path: "/register",
-                            element:
-                                <RegisterPage />,
+                            lazy: () => import("@/features/auth/pages/RegisterPage").then((m) => ({ Component: m.RegisterPage })),
                         },
 
                         {
                             path: "/forgot-password",
-                            element:
-                                <ForgotPasswordPage />,
+                            lazy: () => import("@/features/auth/pages/ForgotPasswordPage").then((m) => ({ Component: m.ForgotPasswordPage })),
                         },
 
                         {
                             path: "/reset-password",
-                            element:
-                                <ResetPasswordPage />,
+                            lazy: () => import("@/features/auth/pages/ResetPasswordPage").then((m) => ({ Component: m.ResetPasswordPage })),
                         },
                     ],
                 },

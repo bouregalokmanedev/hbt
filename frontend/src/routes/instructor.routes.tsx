@@ -8,29 +8,9 @@ import {
 } from "@/features/auth";
 
 import {
-    InstructorAssessmentWorkspacePage,
-    InstructorCourseAnalyticsPage,
-    InstructorCourseEditorPage,
-    InstructorCourseOutcomesPage,
-    InstructorCoursePage,
-    InstructorCurriculumPage,
-    InstructorDashboardPage,
-    InstructorDiagnosticsPage,
-    InstructorSimulatorPage,
-    InstructorLoungePage,
-    InstructorProfilePage,
-    InstructorQuizWorkspacePage,
-    InstructorRevenuePage,
-    InstructorSettingsPage,
-    InstructorStudentProfilePage,
-    InstructorStudentsPage,
-} from "@/features/instructor/pages";
-
-import {
     InstructorLayout,
 } from "@/layouts/instructor/InstructorLayout";
 import { MessagesPage } from "@/features/messages/pages/MessagesPage";
-import { InstructorAnnouncementsPage } from "@/features/instructor/pages/InstructorAnnouncementsPage";
 
 export const instructorRoutes: RouteObject[] = [
     {
@@ -51,68 +31,57 @@ export const instructorRoutes: RouteObject[] = [
                         children: [
                             {
                                 path: "/instructor",
-                                element:
-                                    <InstructorDashboardPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorDashboardPage").then((m) => ({ Component: m.InstructorDashboardPage })),
                             },
                             {
                                 path: "/instructor/courses",
-                                element:
-                                    <InstructorCoursePage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorCoursePage").then((m) => ({ Component: m.InstructorCoursePage })),
                             },
                             {
                                 path: "/instructor/courses/new",
-                                element:
-                                    <InstructorCourseEditorPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorCourseEditorPage").then((m) => ({ Component: m.InstructorCourseEditorPage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId",
-                                element:
-                                    <InstructorCourseEditorPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorCourseEditorPage").then((m) => ({ Component: m.InstructorCourseEditorPage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId/curriculum",
-                                element:
-                                    <InstructorCurriculumPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorCurriculumPage").then((m) => ({ Component: m.InstructorCurriculumPage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId/quizzes",
-                                element:
-                                    <InstructorQuizWorkspacePage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorQuizWorkspacePage").then((m) => ({ Component: m.InstructorQuizWorkspacePage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId/assessments",
-                                element:
-                                    <InstructorAssessmentWorkspacePage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorAssessmentWorkspacePage").then((m) => ({ Component: m.InstructorAssessmentWorkspacePage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId/analytics",
-                                element:
-                                    <InstructorCourseAnalyticsPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorCourseAnalyticsPage").then((m) => ({ Component: m.InstructorCourseAnalyticsPage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId/outcomes",
-                                element:
-                                    <InstructorCourseOutcomesPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorCourseOutcomesPage").then((m) => ({ Component: m.InstructorCourseOutcomesPage })),
                             },
                             {
                                 path: "/instructor/students",
-                                element:
-                                    <InstructorStudentsPage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorStudentsPage").then((m) => ({ Component: m.InstructorStudentsPage })),
                             },
                             {
                                 path: "/instructor/students/:studentId",
-                                element:
-                                    <InstructorStudentProfilePage />,
+                                lazy: () => import("@/features/instructor/pages/InstructorStudentProfilePage").then((m) => ({ Component: m.InstructorStudentProfilePage })),
                             },
                             { path: "/instructor/messages", element: <MessagesPage basePath="/instructor" getProfilePath={(participant) => participant.role === "Student" && participant.user_id ? `/instructor/students/${participant.user_id}` : null} /> },
                             { path: "/instructor/announcements", element: <MessagesPage mode="announcements" basePath="/instructor" announceHref="/instructor/announcements/new" /> },
-                            { path: "/instructor/announcements/new", element: <InstructorAnnouncementsPage /> },
-                            { path: "/instructor/diagnostics", element: <InstructorDiagnosticsPage /> },
-                            { path: "/instructor/simulator", element: <InstructorSimulatorPage /> },
-                            { path: "/instructor/lounge", element: <InstructorLoungePage /> },
-                            { path: "/instructor/revenue", element: <InstructorRevenuePage /> },
-                            { path: "/instructor/profile", element: <InstructorProfilePage /> },
-                            { path: "/instructor/settings", element: <InstructorSettingsPage /> },
+                            { path: "/instructor/announcements/new", lazy: () => import("@/features/instructor/pages/InstructorAnnouncementsPage").then((m) => ({ Component: m.InstructorAnnouncementsPage })) },
+                            { path: "/instructor/diagnostics", lazy: () => import("@/features/instructor/pages/InstructorDiagnosticsPage").then((m) => ({ Component: m.InstructorDiagnosticsPage })) },
+                            { path: "/instructor/simulator", lazy: () => import("@/features/instructor/pages/InstructorSimulatorPage").then((m) => ({ Component: m.InstructorSimulatorPage })) },
+                            { path: "/instructor/lounge", lazy: () => import("@/features/instructor/pages/InstructorLoungePage").then((m) => ({ Component: m.InstructorLoungePage })) },
+                            { path: "/instructor/revenue", lazy: () => import("@/features/instructor/pages/InstructorRevenuePage").then((m) => ({ Component: m.InstructorRevenuePage })) },
+                            { path: "/instructor/profile", lazy: () => import("@/features/instructor/pages/InstructorProfilePage").then((m) => ({ Component: m.InstructorProfilePage })) },
+                            { path: "/instructor/settings", lazy: () => import("@/features/instructor/pages/InstructorSettingsPage").then((m) => ({ Component: m.InstructorSettingsPage })) },
                         ],
                     },
                 ],

@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 
-import heroImage from "@/assets/landing/heropic2.jpg";
+import heroImage from "@/assets/landing/heropic2.webp";
 
 import {
     Eyebrow,
