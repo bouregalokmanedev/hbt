@@ -95,6 +95,10 @@ backToLogin:
             title: "Sign in to your account",
             description:
                 "Continue learning and building your automotive diagnostic skills.",
+            emailVerified:
+                "Email verified — sign in to continue to your dashboard.",
+            verifyLinkInvalid:
+                "This verification link is invalid or has expired. Sign in to request a new one.",
             submit: "Sign in",
             mfaTitle: "Verify your sign-in",
             mfaDescription:
@@ -309,6 +313,11 @@ backToLogin:
 
             description:
                 "تابع تعلمك وطوّر مهاراتك في تشخيص أعطال السيارات.",
+
+            emailVerified:
+                "تم التحقق من بريدك الإلكتروني — سجّل الدخول للمتابعة إلى لوحة التحكم.",
+            verifyLinkInvalid:
+                "رابط التحقق غير صالح أو منتهي الصلاحية. سجّل الدخول لطلب رابط جديد.",
 
             submit:
                 "تسجيل الدخول",

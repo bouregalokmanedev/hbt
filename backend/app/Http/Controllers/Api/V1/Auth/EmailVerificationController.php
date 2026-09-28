@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Enums\UserStatus;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use App\Services\Security\AuthenticationLogService;
 
 class EmailVerificationController extends Controller
@@ -18,24 +19,26 @@ class EmailVerificationController extends Controller
 ) {}
     use ApiResponse;
 
-    public function verify(Request $request, $id, $hash): JsonResponse
+    public function verify(Request $request, $id, $hash): JsonResponse|RedirectResponse
 {
-    $user = User::findOrFail($id);
-
     if (! $request->hasValidSignature()) {
-        return $this->error(
-            'Invalid or expired verification link.',
-            403
+        return $this->verificationOutcome(
+            $request,
+            false,
+            'Invalid or expired verification link.'
         );
     }
+
+    $user = User::findOrFail($id);
 
     if (! hash_equals(
         sha1($user->getEmailForVerification()),
         $hash
     )) {
-        return $this->error(
-            'Invalid verification hash.',
-            403
+        return $this->verificationOutcome(
+            $request,
+            false,
+            'Invalid verification hash.'
         );
     }
 
@@ -62,11 +65,36 @@ class EmailVerificationController extends Controller
         );
     }
 
-    return $this->success(
-        null,
+    return $this->verificationOutcome(
+        $request,
+        true,
         'Email verified successfully.'
     );
 }
+
+    /**
+     * The link is opened from the verification email, so browsers get sent
+     * straight into the app: `/login?verified=1` lands signed-in sessions on
+     * their dashboard (GuestGuard) and shows the success note otherwise.
+     * API clients keep the JSON contract.
+     */
+    private function verificationOutcome(
+        Request $request,
+        bool $verified,
+        string $message
+    ): JsonResponse|RedirectResponse {
+        if ($request->wantsJson()) {
+            return $verified
+                ? $this->success(null, $message)
+                : $this->error($message, 403);
+        }
+
+        $query = $verified ? 'verified=1' : 'verify=error';
+
+        return redirect()->away(
+            rtrim(config('app.frontend_url'), '/') . '/login?' . $query
+        );
+    }
     public function resend(): JsonResponse
 {
     $user = auth()->user();

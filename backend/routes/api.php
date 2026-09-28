@@ -1241,11 +1241,12 @@ Route::middleware('auth:sanctum')
     });
 
 
+// The controller validates the signature itself so expired links can send
+// browsers to a friendly frontend message instead of a bare 403 page.
 Route::get(
     '/verify-email/{id}/{hash}',
     [EmailVerificationController::class, 'verify']
 )
-->middleware('signed')
 ->name('verification.verify');
 
 

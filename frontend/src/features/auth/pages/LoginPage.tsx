@@ -57,8 +57,28 @@ function isMfaChallenge(caught: unknown): boolean {
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const next = safeNext(searchParams.get("next"));
+
+  // Captured on mount from /login?verified=1 (email link) or ?verify=error
+  // (expired link); the query is then stripped so a refresh stays quiet.
+  const [verificationNote] = useState<"verified" | "invalid" | null>(() =>
+    searchParams.get("verified") === "1"
+      ? "verified"
+      : searchParams.get("verify") === "error"
+        ? "invalid"
+        : null,
+  );
+
+  useEffect(() => {
+    if (!searchParams.has("verified") && !searchParams.has("verify")) {
+      return;
+    }
+    const params = new URLSearchParams(searchParams);
+    params.delete("verified");
+    params.delete("verify");
+    setSearchParams(params, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const continueAfterAuthentication = (user: { roles: string[] }) => {
     sessionStorage.removeItem("hbt:auth-return-to");
@@ -381,6 +401,24 @@ export function LoginPage() {
                 {t.common.forgotPassword}
               </Link>
             </div>
+
+            {verificationNote === "verified" && (
+              <div
+                role="status"
+                className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
+              >
+                {t.login.emailVerified}
+              </div>
+            )}
+
+            {verificationNote === "invalid" && (
+              <div
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+              >
+                {t.login.verifyLinkInvalid}
+              </div>
+            )}
 
             {bannerMessage && (
               <div
