@@ -48,7 +48,7 @@ return new class extends Migration
         });
 
         Schema::table('diagnostic_scenario_scoring_criteria', function (Blueprint $table) {
-            $table->foreign('diagnostic_scenario_id')
+            $table->foreign('diagnostic_scenario_id', 'dssc_scen_fk')
                 ->references('id')
                 ->on('diagnostic_scenarios')
                 ->cascadeOnDelete();
@@ -84,9 +84,7 @@ return new class extends Migration
          * diagnostic_scenario_scoring_criteria
          */
         Schema::table('diagnostic_scenario_scoring_criteria', function (Blueprint $table) {
-            $table->dropForeign([
-                'diagnostic_scenario_id',
-            ]);
+            $table->dropForeign('dssc_scen_fk');
         });
 
         Schema::table('diagnostic_scenario_scoring_criteria', function (Blueprint $table) {

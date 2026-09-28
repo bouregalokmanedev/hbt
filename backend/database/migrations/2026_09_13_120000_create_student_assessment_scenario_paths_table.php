@@ -18,7 +18,10 @@ return new class extends Migration {
             $table->unsignedInteger('points_earned')->default(0);
             $table->json('metadata')->nullable();
             $table->timestamps();
-            $table->unique(['attempt_id', 'scenario_id', 'order']);
+            $table->unique(
+                ['attempt_id', 'scenario_id', 'order'],
+                'sasp_attempt_scenario_order_unique'
+            );
         });
     }
 

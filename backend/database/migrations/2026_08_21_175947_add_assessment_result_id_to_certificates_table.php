@@ -20,12 +20,29 @@ return new class extends Migration
         });
 
         Schema::table('certificates', function (Blueprint $table): void {
+            // MySQL cannot drop an index that backs a foreign key, so detach
+            // the enrollment FK before removing its unique index, then restore it.
+            $table->dropForeign(['enrollment_id']);
+        });
+
+        Schema::table('certificates', function (Blueprint $table): void {
             $table->dropUnique('certificates_enrollment_id_unique');
+        });
+
+        Schema::table('certificates', function (Blueprint $table): void {
+            $table->foreign('enrollment_id')
+                ->references('id')
+                ->on('enrollments')
+                ->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
+        Schema::table('certificates', function (Blueprint $table): void {
+            $table->dropForeign(['enrollment_id']);
+        });
+
         Schema::table('certificates', function (Blueprint $table): void {
             $table->dropForeign([
                 'assessment_result_id',
@@ -36,8 +53,15 @@ return new class extends Migration
             ]);
 
             $table->dropColumn('assessment_result_id');
+        });
 
+        Schema::table('certificates', function (Blueprint $table): void {
             $table->unique('enrollment_id');
+
+            $table->foreign('enrollment_id')
+                ->references('id')
+                ->on('enrollments')
+                ->cascadeOnDelete();
         });
     }
 };

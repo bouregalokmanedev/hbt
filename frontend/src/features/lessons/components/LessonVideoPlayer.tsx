@@ -1247,7 +1247,9 @@ export function LessonVideoPlayer({
                     {t("lessonPlayer.video.noSupport")}
                 </video>
 
-                <div className="pointer-events-none absolute inset-x-3 top-1/2 flex -translate-y-1/2 justify-between sm:inset-x-4">
+                {/* Prev / Next lesson — pinned LTR so the arrows keep their
+                    meaning in Arabic (previous on the left, next on the right). */}
+                <div dir="ltr" className="pointer-events-none absolute inset-x-3 top-1/2 flex -translate-y-1/2 justify-between sm:inset-x-4">
                     <button
                         type="button"
                         disabled={!onPreviousLesson}
@@ -1300,8 +1302,10 @@ export function LessonVideoPlayer({
 
             {/* Controls */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-4 pb-3.5 pt-14 opacity-0 transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100 sm:group-focus-within:pointer-events-auto sm:group-focus-within:opacity-100 max-sm:pointer-events-auto max-sm:opacity-100">
-                {/* Seek slider */}
+                {/* Seek slider — always LTR so progress fills left to right
+                    like in English, even in Arabic. */}
                 <input
+                    dir="ltr"
                     type="range"
                     min={0}
                     max={
@@ -1337,7 +1341,9 @@ export function LessonVideoPlayer({
                     aria-label={t("lessonPlayer.video.seek")}
                 />
 
-                <div className="flex items-center gap-2 text-white sm:gap-3">
+                {/* Control bar — pinned LTR so button order, time readout,
+                    and volume slider match the English layout in Arabic. */}
+                <div dir="ltr" className="flex items-center gap-2 text-white sm:gap-3">
                     {/* Play / Pause */}
                     <button
                         type="button"

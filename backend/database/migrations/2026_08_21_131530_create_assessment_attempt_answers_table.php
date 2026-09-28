@@ -28,7 +28,7 @@ return new class extends Migration
             $table->unique([
                 'assessment_attempt_id',
                 'question_id',
-            ]);
+            ], 'aaa_attempt_question_unique');
         });
     }
 

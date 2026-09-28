@@ -51,7 +51,7 @@ return new class extends Migration
                 'scenario_id',
                 'user_id',
                 'attempt_number',
-            ]);
+            ], 'dsa_scen_user_attempt_unique');
 
             $table->index([
                 'scenario_id',

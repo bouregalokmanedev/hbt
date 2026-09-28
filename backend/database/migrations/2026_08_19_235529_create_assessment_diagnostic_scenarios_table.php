@@ -33,7 +33,7 @@ return new class extends Migration
             $table->primary([
                 'assessment_id',
                 'diagnostic_scenario_id',
-            ]);
+            ], 'ads_assessment_scenario_pk');
 
             $table->unique([
                 'assessment_id',

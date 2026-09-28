@@ -8,6 +8,7 @@ use App\Domains\Quizzes\Models\QuizQuestion;
 use App\Domains\Quizzes\Models\QuizQuestionOption;
 use App\Models\Course;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 final class AutomotiveAssessmentSeeder extends Seeder
 {
@@ -38,7 +39,32 @@ final class AutomotiveAssessmentSeeder extends Seeder
             ['course_id' => $course->id, 'slug' => 'engine-management-final-assessment'],
             ['title' => 'Engine management final assessment', 'description' => 'Demonstrate that you can interpret ECU inputs and follow a safe diagnostic process.', 'minimum_score' => 80, 'required_quiz_score' => 70, 'required_scenarios' => 0, 'max_attempts' => 3, 'is_required' => true, 'status' => 'published', 'published_at' => now()],
         );
-        $assessment->quizzes()->syncWithoutDetaching([$quiz->id => ['position' => 1, 'is_required' => true]]);
-        $assessment->questions()->syncWithoutDetaching(QuizQuestion::query()->where('quiz_id', $quiz->id)->pluck('id')->mapWithKeys(fn ($id, $index) => [$id => ['position' => $index + 1, 'points' => 1]])->all());
+        $alreadyLinked = DB::table('assessment_quizzes')
+            ->where('assessment_id', $assessment->id)
+            ->where('quiz_id', $quiz->id)
+            ->exists();
+        if (! $alreadyLinked) {
+            $nextPosition = ((int) DB::table('assessment_quizzes')
+                ->where('assessment_id', $assessment->id)
+                ->max('position')) + 1;
+            $assessment->quizzes()->syncWithoutDetaching([$quiz->id => ['position' => $nextPosition, 'is_required' => true]]);
+        }
+
+        $linkedQuestionIds = DB::table('assessment_questions')
+            ->where('assessment_id', $assessment->id)
+            ->pluck('quiz_question_id');
+        $nextQuestionPosition = ((int) DB::table('assessment_questions')
+            ->where('assessment_id', $assessment->id)
+            ->max('position')) + 1;
+        $questionLinks = [];
+        foreach (QuizQuestion::query()->where('quiz_id', $quiz->id)->pluck('id') as $questionId) {
+            if ($linkedQuestionIds->contains($questionId)) {
+                continue;
+            }
+            $questionLinks[$questionId] = ['position' => $nextQuestionPosition++, 'points' => 1];
+        }
+        if ($questionLinks !== []) {
+            $assessment->questions()->syncWithoutDetaching($questionLinks);
+        }
     }
 }

@@ -105,6 +105,36 @@ public function roots(
         $repository->roots()
     );
 }
+
+public function active()
+{
+    return CategoryResource::collection(
+        Category::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+    );
+}
+
+public function inactive()
+{
+    return CategoryResource::collection(
+        Category::query()
+            ->where('is_active', false)
+            ->orderBy('name')
+            ->get()
+    );
+}
+
+public function leaves()
+{
+    return CategoryResource::collection(
+        Category::query()
+            ->whereDoesntHave('children')
+            ->orderBy('name')
+            ->get()
+    );
+}
   public function tree(
     TreeService $tree
 )
