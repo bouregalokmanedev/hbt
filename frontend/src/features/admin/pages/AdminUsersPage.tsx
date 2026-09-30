@@ -1,24 +1,125 @@
-import { useDeferredValue, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, ShieldCheck, UserCheck, UsersRound } from "lucide-react";
-
+import { RefreshCw, ShieldCheck, UserCheck, UsersRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { AVATAR_SQUARE_SHAPE } from "@/components/ui";
-
-import { adminApi } from "../api/adminApi";
-import { AdminHeading, AdminPanel, ErrorAdminPage, LoadingAdminPage, PageControls, Status } from "../components/AdminUi";
+import {
+    AdminButton,
+    AdminHeading,
+    AdminPanel,
+    ErrorAdminPage,
+    LoadingAdminPage,
+    PageControls,
+} from "../components/AdminUi";
+import { UsersTable } from "../components/UsersTable";
+import { UsersToolbar } from "../components/UsersToolbar";
+import { useAdminUsers } from "../hooks/useAdminUsers";
 
 export function AdminUsersPage() {
-    const { t, i18n } = useTranslation(); const isRTL = i18n.language === "ar";
-    const [search, setSearch] = useState(""); const [role, setRole] = useState(""); const [status, setStatus] = useState(""); const [page, setPage] = useState(1);
-    const deferredSearch = useDeferredValue(search); const client = useQueryClient();
-    const users = useQuery({ queryKey: ["admin", "users", deferredSearch, role, status, page], queryFn: () => adminApi.users({ search: deferredSearch, role, status, page, per_page: 12 }) });
-    const mutate = useMutation({ mutationFn: ({ id, action, roleValue }: { id: string; action: "suspend" | "activate" | "role"; roleValue?: string }) => action === "role" ? adminApi.setRole(id, roleValue ?? "Student") : action === "suspend" ? adminApi.suspendUser(id) : adminApi.activateUser(id), onSuccess: () => void client.invalidateQueries({ queryKey: ["admin", "users"] }) });
-    if (users.isLoading) return <LoadingAdminPage />; if (users.isError || !users.data) return <ErrorAdminPage onRetry={() => void users.refetch()} />;
+    const { t } = useTranslation();
+    const {
+        users,
+        filters,
+        hasFilters,
+        setFilters,
+        clearFilters,
+        run,
+        isPending,
+        isFetching,
+        actionError,
+        refetch,
+    } = useAdminUsers();
+
+    if (users.isLoading) return <LoadingAdminPage />;
+    if (users.isError || !users.data) return <ErrorAdminPage onRetry={refetch} />;
+
     const data = users.data;
-    return <div className="mx-auto max-w-7xl space-y-6"><AdminHeading eyebrow={t("admin.users.eyebrow")} title={t("admin.users.title")} description={t("admin.users.description")} /><div className="grid gap-4 sm:grid-cols-3"><Mini label={t("admin.users.metrics.total")} value={data.meta.total} icon={UsersRound} /><Mini label={t("admin.users.metrics.verified")} value={data.data.filter((user) => user.email_verified_at).length} icon={UserCheck} /><Mini label={t("admin.users.metrics.roleProtection")} value={t("admin.users.metrics.enabled")} icon={ShieldCheck} /></div><AdminPanel><div className="flex flex-wrap gap-3"><label className="relative min-w-[220px] flex-1"><Search className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/38 ${isRTL ? "right-3" : "left-3"}`} /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder={t("admin.users.searchPh")} className={`h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] text-sm outline-none transition focus:border-[#F47822] ${isRTL ? "pl-3 pr-10" : "pl-10 pr-3"}`} /></label><Filter value={role} onChange={(value) => { setRole(value); setPage(1); }} options={[["", t("admin.users.filters.allRoles")], ["Student", t("admin.users.filters.students")], ["Instructor", t("admin.users.filters.instructors")], ["Admin", t("admin.users.filters.admins")], ["Support", t("admin.users.filters.support")]]} /><Filter value={status} onChange={(value) => { setStatus(value); setPage(1); }} options={[["", t("admin.users.filters.allStatuses")], ["active", t("admin.users.filters.active")], ["suspended", t("admin.users.filters.suspended")], ["pending", t("admin.users.filters.pending")]]} /></div><div className="mt-6 overflow-x-auto"><table className="w-full min-w-[780px] text-left rtl:text-right"><thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/38"><tr><th className="pb-3">{t("admin.users.headers.person")}</th><th className="pb-3">{t("admin.users.headers.role")}</th><th className="pb-3">{t("admin.users.headers.verification")}</th><th className="pb-3">{t("admin.users.headers.status")}</th><th className="pb-3">{t("admin.users.headers.joined")}</th><th className="pb-3 text-right rtl:text-left">{t("admin.users.headers.actions")}</th></tr></thead><tbody className="divide-y divide-[#3A3A3A]/7">{data.data.map((user) => <tr key={user.id} className="transition hover:bg-[#FCFCFC]"><td className="py-4"><div className="flex items-center gap-3"><div className={`grid h-9 w-9 place-items-center ${AVATAR_SQUARE_SHAPE} bg-[#F47822]/10 text-xs font-bold text-[#F47822]`}>{user.first_name[0]}{user.last_name[0]}</div><div><p className="text-sm font-semibold">{user.first_name} {user.last_name}</p><p className="mt-0.5 text-xs text-[#3A3A3A]/45">{user.email}</p></div></div></td><td className="py-4"><select value={user.roles[0] ?? "Student"} onChange={(event) => mutate.mutate({ id: user.id, action: "role", roleValue: event.target.value })} disabled={mutate.isPending} className="rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-[#F47822]"><option value="Student">{t("admin.users.row.roles.student")}</option><option value="Instructor">{t("admin.users.row.roles.instructor")}</option><option value="Admin">{t("admin.users.row.roles.admin")}</option><option value="Super Admin">{t("admin.users.row.roles.superAdmin")}</option><option value="Support">{t("admin.users.row.roles.support")}</option></select></td><td className="py-4 text-xs text-[#3A3A3A]/55">{user.email_verified_at ? t("admin.users.row.verified") : t("admin.users.row.notVerified")}</td><td className="py-4"><Status value={user.status} /></td><td className="py-4 text-xs text-[#3A3A3A]/50">{formatDate(user.created_at, i18n.language)}</td><td className="py-4 text-right rtl:text-left"><button type="button" disabled={mutate.isPending} onClick={() => mutate.mutate({ id: user.id, action: user.status === "suspended" ? "activate" : "suspend" })} className={`rounded-lg px-3 py-2 text-xs font-bold transition ${user.status === "suspended" ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "bg-red-50 text-red-600 hover:bg-red-100"}`}>{user.status === "suspended" ? t("admin.users.row.activate") : t("admin.users.row.suspend")}</button></td></tr>)}</tbody></table></div><div className="mt-5"><PageControls page={data.meta.current_page} lastPage={data.meta.last_page} onPage={setPage} /></div></AdminPanel></div>;
+    const verifiedOnPage = data.data.filter((user) => user.email_verified_at).length;
+
+    return (
+        <div className="mx-auto max-w-7xl space-y-6">
+            <AdminHeading
+                eyebrow={t("admin.users.eyebrow")}
+                title={t("admin.users.title")}
+                description={t("admin.users.description")}
+                action={
+                    <AdminButton variant="secondary" size="md" onClick={refetch} className="rounded-full ps-3.5">
+                        <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+                        {t("admin.users.refresh")}
+                    </AdminButton>
+                }
+            />
+
+            {actionError && (
+                <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                    {actionError}
+                </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-3">
+                <Mini
+                    label={t("admin.users.metrics.total")}
+                    value={data.meta.total}
+                    icon={<UsersRound className="h-4 w-4" />}
+                />
+                <Mini
+                    label={t("admin.users.metrics.verified")}
+                    value={verifiedOnPage}
+                    icon={<UserCheck className="h-4 w-4" />}
+                />
+                <Mini
+                    label={t("admin.users.metrics.roleProtection")}
+                    value={t("admin.users.metrics.enabled")}
+                    icon={<ShieldCheck className="h-4 w-4" />}
+                />
+            </div>
+
+            <AdminPanel>
+                <UsersToolbar
+                    search={filters.search}
+                    role={filters.role}
+                    status={filters.status}
+                    onSearch={(value) => setFilters({ search: value })}
+                    onRole={(value) => setFilters({ role: value })}
+                    onStatus={(value) => setFilters({ status: value })}
+                    onClear={clearFilters}
+                    hasFilters={hasFilters}
+                />
+
+                <UsersTable
+                    users={data.data}
+                    total={data.meta.total}
+                    isFetching={isFetching}
+                    disabled={isPending}
+                    onAction={run}
+                />
+
+                <div className="mt-5">
+                    <PageControls
+                        page={data.meta.current_page}
+                        lastPage={data.meta.last_page}
+                        onPage={(page) => setFilters({ page: String(page) })}
+                    />
+                </div>
+            </AdminPanel>
+        </div>
+    );
 }
-function Filter({ value, onChange, options }: { value: string; onChange(value: string): void; options: Array<[string, string]> }) { return <select value={value} onChange={(event) => onChange(event.target.value)} className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-semibold outline-none focus:border-[#F47822]">{options.map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select>; }
-function Mini({ label, value, icon: Icon }: { label: string; value: string | number; icon: typeof UsersRound }) { return <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-4 shadow-[0_8px_22px_rgba(58,58,58,.035)]"><Icon className="h-4 w-4 text-[#F47822]" /><p className="mt-4 text-2xl font-semibold">{value}</p><p className="mt-1 text-xs text-[#3A3A3A]/47">{label}</p></div>; }
-function formatDate(value: string, locale: string) { return new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" }).format(new Date(value)); }
+
+function Mini({
+    label,
+    value,
+    icon,
+}: {
+    label: string;
+    value: string | number;
+    icon: React.ReactNode;
+}) {
+    return (
+        <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-4 shadow-[0_8px_22px_rgba(58,58,58,.035)]">
+            <span className="grid h-8 w-8 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
+                {icon}
+            </span>
+            <p className="mt-4 text-2xl font-semibold">{value}</p>
+            <p className="mt-1 text-xs text-[#3A3A3A]/47">{label}</p>
+        </div>
+    );
+}

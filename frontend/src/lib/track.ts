@@ -1,4 +1,5 @@
 import { env } from "@/config/env";
+import { hasAnalyticsConsent } from "@/features/cookies/consent";
 import { authStorage } from "@/lib/storage/auth-storage";
 
 /**
@@ -55,6 +56,9 @@ export function track(
   event: FunnelEvent,
   properties?: FunnelProperties,
 ): void {
+  // No analytics until the visitor opts in from the cookie banner.
+  if (!hasAnalyticsConsent()) return;
+
   try {
     const headers: Record<string, string> = {
       Accept: "application/json",

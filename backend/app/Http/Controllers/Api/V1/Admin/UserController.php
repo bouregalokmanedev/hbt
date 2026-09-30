@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Domains\Admin\Queries\AdminUserQuery;
 use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Admin\ChangePasswordRequest;
+use App\Http\Requests\Api\V1\Admin\ChangeUserStatusRequest;
 use App\Http\Requests\Api\V1\Admin\CreateUserRequest;
 use App\Http\Requests\Api\V1\Admin\UpdateUserRequest;
-use App\Http\Requests\Api\V1\Admin\ChangePasswordRequest;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -159,6 +161,104 @@ class UserController extends Controller
         abort_unless($user->trashed(), 422, 'This user has not been deleted.');
 
         $user->restore();
+
+        return new UserResource($user->fresh()->load('roles'));
+    }
+
+    /**
+     * Admin marks the account as verified (same effect as the signed
+     * email-verification link) and lifts a pending status to active.
+     */
+    public function verify(User $user): UserResource
+    {
+        $this->authorize('verify', $user);
+
+        $old = [
+            'status' => $user->status,
+            'email_verified_at' => $user->email_verified_at,
+        ];
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
+        if ($user->status === UserStatus::PENDING->value) {
+            $user->update(['status' => UserStatus::ACTIVE->value]);
+        }
+
+        $user = $user->fresh();
+
+        app(\App\Services\Audit\AuditService::class)->log(
+            'admin.user.verified',
+            $user,
+            $old,
+            ['status' => $user->status, 'email_verified_at' => $user->email_verified_at],
+            ['actor_id' => request()->user()?->id],
+        );
+
+        return new UserResource($user->load('roles'));
+    }
+
+    /**
+     * Undo an admin verification. The account returns to `pending`, which
+     * blocks sign-in until it is verified again.
+     */
+    public function unverify(User $user): UserResource
+    {
+        $this->authorize('verify', $user);
+
+        $old = [
+            'status' => $user->status,
+            'email_verified_at' => $user->email_verified_at,
+        ];
+
+        $updates = ['email_verified_at' => null];
+
+        if ($user->status === UserStatus::ACTIVE->value) {
+            $updates['status'] = UserStatus::PENDING->value;
+        }
+
+        $user->forceFill($updates)->save();
+        $user = $user->fresh();
+
+        app(\App\Services\Audit\AuditService::class)->log(
+            'admin.user.unverified',
+            $user,
+            $old,
+            ['status' => $user->status, 'email_verified_at' => null],
+            ['actor_id' => request()->user()?->id],
+        );
+
+        return new UserResource($user->load('roles'));
+    }
+
+    /**
+     * Move any user to any status in the UserStatus enum. Leaving `active`
+     * revokes the account's tokens and sessions, mirroring suspend().
+     */
+    public function changeStatus(ChangeUserStatusRequest $request, User $user): UserResource
+    {
+        $this->authorize('changeStatus', $user);
+
+        $status = $request->validated('status');
+        $previous = $user->status;
+
+        if ($status !== $previous) {
+            if ($status !== UserStatus::ACTIVE->value) {
+                $user->tokens()->delete();
+                $user->sessions()->update(['logged_out_at' => now(), 'is_current' => false]);
+            }
+
+            $user->update(['status' => $status]);
+
+            app(\App\Services\Audit\AuditService::class)->log(
+                'admin.user.status_changed',
+                $user,
+                ['status' => $previous],
+                ['status' => $status],
+                ['actor_id' => request()->user()?->id],
+            );
+        }
 
         return new UserResource($user->fresh()->load('roles'));
     }

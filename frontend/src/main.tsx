@@ -19,6 +19,8 @@ import { AuthInitializer } from "@/features/auth/AuthInitializer";
 
 import { AuthLanguageProvider } from "@/features/auth/i18n/auth-language";
 
+import { CookieConsentBanner } from "@/features/cookies/CookieConsentBanner";
+
 import { QueryProvider } from "@/providers/QueryProvider";
 
 import "@/styles/globals.css";
@@ -39,6 +41,7 @@ void initialLocaleReady.then(() => {
           <AuthInitializer>
             <QueryProvider>
               <RouterProvider router={router} />
+              <CookieConsentBanner />
             </QueryProvider>
           </AuthInitializer>
         </AuthLanguageProvider>

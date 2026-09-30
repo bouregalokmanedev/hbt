@@ -23,9 +23,9 @@ const CONTENT: Record<string, { title: string; updated: string; body: string[] }
         title: "Cookie Policy",
         updated: "Last updated 2026",
         body: [
-            "We use strictly-necessary cookies for auth (hbtronics_access_token), language (hbt-language), and security.",
+            "Strictly necessary storage keeps you signed in, secures requests, and remembers your language (hbt-language) and cookie choice (hbt-cookie-consent). It is always active and cannot be disabled from the banner.",
+            "Preference, analytics, and marketing categories are optional. Analytics events are only sent after you accept them, and you can change your choice at any time from the cookie banner.",
             "No third-party advertising trackers are set by the learning platform itself. Embedded maps or videos may set their own cookies.",
-            "Clearing cookies will sign you out; your progress stays saved on your account.",
         ],
     },
 };

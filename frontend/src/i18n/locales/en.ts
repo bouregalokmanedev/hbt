@@ -41,6 +41,30 @@ export const en = {
     aiMentor: "AI Mentor",
   },
 
+  cookieConsent: {
+    badge: "Privacy",
+    title: "Your privacy, your choice",
+    description:
+      "We use cookies to keep the platform secure, remember your preferences, and see which courses actually help. You decide what stays on — and can change it anytime.",
+    acceptAll: "Accept all",
+    reject: "Reject all",
+    manage: "Customize",
+    hidePreferences: "Hide preferences",
+    save: "Save preferences",
+    cancel: "Cancel",
+    trust: "No third-party trackers",
+    alwaysOn: "Always on",
+    policyLink: "Cookie policy",
+    necessary: "Strictly necessary",
+    necessaryHint: "Required for sign-in, security, and core features. Always on.",
+    preferences: "Preferences",
+    preferencesHint: "Remembers language, theme, and other choices on this device.",
+    analytics: "Analytics",
+    analyticsHint: "Helps us understand which courses and pages are useful.",
+    marketing: "Marketing",
+    marketingHint: "Used to measure campaigns. No third-party ad trackers are set today.",
+  },
+
   profile: {
     dashboard: "Dashboard",
     dashboardDescription: "Your learning overview",
@@ -942,6 +966,7 @@ export const en = {
     privacy: "Privacy",
     terms: "Terms",
     cookies: "Cookies",
+    cookieSettings: "Cookie settings",
     rights: "All rights reserved.",
   },
 
@@ -5595,6 +5620,17 @@ export const en = {
         enabled: "Enabled",
       },
       searchPh: "Search name, username, or email",
+      clearFilters: "Clear filters",
+      empty: "No users match these filters.",
+      refresh: "Refresh",
+      confirmSuspend:
+        "Suspend this account? The user will be signed out on every device.",
+      changeStatus: "Change status",
+      confirmStatus: "Change this user's status to {{status}}?",
+      confirmUnverify:
+        "Remove verification from this user? They will not be able to sign in until verified again.",
+      updateFailed:
+        "Unable to update this user. You may not have permission for this account.",
       filters: {
         allRoles: "All roles",
         students: "Students",
@@ -5603,6 +5639,7 @@ export const en = {
         support: "Support",
         allStatuses: "All statuses",
         active: "Active",
+        inactive: "Inactive",
         suspended: "Suspended",
         pending: "Pending",
       },
@@ -5617,6 +5654,8 @@ export const en = {
       row: {
         verified: "Verified",
         notVerified: "Not verified",
+        verify: "Verify",
+        undoVerify: "Undo",
         activate: "Activate",
         suspend: "Suspend",
         roles: {

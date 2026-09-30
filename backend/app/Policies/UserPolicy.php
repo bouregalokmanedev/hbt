@@ -59,6 +59,16 @@ class UserPolicy
         return $this->delete($authUser, $user);
     }
 
+    public function verify(User $authUser, User $user): bool
+    {
+        return $this->delete($authUser, $user);
+    }
+
+    public function changeStatus(User $authUser, User $user): bool
+    {
+        return $this->delete($authUser, $user);
+    }
+
     public function assignRole(User $authUser, User $user): bool
     {
         return $this->update($authUser, $user);

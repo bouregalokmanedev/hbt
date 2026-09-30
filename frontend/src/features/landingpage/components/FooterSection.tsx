@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 
+import { openCookieConsent } from "@/features/cookies/consent";
+
 
 /* =============================================================
    FOOTER
@@ -551,6 +553,19 @@ export function Footer() {
                         >
                             {t("siteFooter.cookies")}
                         </Link>
+
+                        <button
+                            type="button"
+                            onClick={openCookieConsent}
+                            className="
+                                text-[10px]
+                                text-white/30
+                                transition-colors
+                                hover:text-white
+                            "
+                        >
+                            {t("siteFooter.cookieSettings")}
+                        </button>
 
                     </div>
 

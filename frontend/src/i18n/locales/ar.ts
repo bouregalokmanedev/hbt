@@ -41,6 +41,30 @@ export const ar = {
     aiMentor: "المرشد الذكي",
   },
 
+  cookieConsent: {
+    badge: "الخصوصية",
+    title: "خصوصيتك، اختيارك",
+    description:
+      "نستخدم ملفات تعريف الارتباط لتأمين المنصة وتذكر تفضيلاتك ومعرفة الدورات التي تساعدك فعلاً. القرار بيدك ويمكنك تغييره في أي وقت.",
+    acceptAll: "قبول الكل",
+    reject: "رفض الكل",
+    manage: "تخصيص",
+    hidePreferences: "إخفاء التفضيلات",
+    save: "حفظ التفضيلات",
+    cancel: "إلغاء",
+    trust: "بدون متتبعات خارجية",
+    alwaysOn: "مفعّلة دائمًا",
+    policyLink: "سياسة الكوكيز",
+    necessary: "ضرورية بالكامل",
+    necessaryHint: "مطلوبة لتسجيل الدخول والأمان والوظائف الأساسية. مفعّلة دائمًا.",
+    preferences: "التفضيلات",
+    preferencesHint: "تتذكر اللغة والمظهر والخيارات الأخرى على هذا الجهاز.",
+    analytics: "التحليلات",
+    analyticsHint: "تساعدنا على معرفة الدورات والصفحات المفيدة.",
+    marketing: "التسويق",
+    marketingHint: "تُستخدم لقياس الحملات. لا توجد متتبعات إعلانية خارجية حاليًا.",
+  },
+
   profile: {
     dashboard: "لوحة التحكم",
     dashboardDescription: "نظرة عامة على رحلة التعلم الخاصة بك",
@@ -956,6 +980,7 @@ export const ar = {
     privacy: "الخصوصية",
     terms: "الشروط",
     cookies: "الكوكيز",
+    cookieSettings: "إعدادات ملفات تعريف الارتباط",
     rights: "جميع الحقوق محفوظة.",
   },
 
@@ -5617,6 +5642,16 @@ export const ar = {
         enabled: "مفعّلة",
       },
       searchPh: "ابحث بالاسم أو اسم المستخدم أو البريد",
+      clearFilters: "مسح الفلاتر",
+      empty: "لا يوجد مستخدمون مطابقون للفلاتر.",
+      refresh: "تحديث",
+      confirmSuspend: "هل تريد إيقاف هذا الحساب؟ سيتم تسجيل خروج المستخدم من كل أجهزته.",
+      changeStatus: "تغيير الحالة",
+      confirmStatus: "هل تريد تغيير حالة هذا المستخدم إلى {{status}}؟",
+      confirmUnverify:
+        "إزالة التوثيق عن هذا المستخدم؟ لن يتمكن من تسجيل الدخول حتى يتم توثيقه مجدداً.",
+      updateFailed:
+        "تعذّر تحديث هذا المستخدم. قد لا تملك صلاحية لهذا الحساب.",
       filters: {
         allRoles: "كل الأدوار",
         students: "الطلاب",
@@ -5625,6 +5660,7 @@ export const ar = {
         support: "الدعم الفني",
         allStatuses: "كل الحالات",
         active: "نشط",
+        inactive: "غير نشط",
         suspended: "موقوف",
         pending: "قيد الانتظار",
       },
@@ -5639,6 +5675,8 @@ export const ar = {
       row: {
         verified: "موثّق",
         notVerified: "غير موثّق",
+        verify: "توثيق",
+        undoVerify: "تراجع",
         activate: "تفعيل",
         suspend: "إيقاف",
         roles: {

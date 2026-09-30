@@ -183,6 +183,9 @@ Route::post('/phone/otp/verify', [PhoneVerificationController::class, 'verify'])
                 ->withTrashed();
             Route::patch('users/{user}/activate', [UserController::class, 'activate']);
             Route::patch('users/{user}/suspend', [UserController::class, 'suspend']);
+            Route::patch('users/{user}/verify', [UserController::class, 'verify']);
+            Route::patch('users/{user}/unverify', [UserController::class, 'unverify']);
+            Route::patch('users/{user}/status', [UserController::class, 'changeStatus']);
             Route::patch('users/{user}/role', [UserController::class, 'assignRole']);
             Route::patch('users/{user}/password', [UserController::class, 'changePassword']);
 

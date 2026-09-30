@@ -98,3 +98,99 @@ it('allows only a super administrator to assign a privileged role', function () 
         ->assertOk()
         ->assertJsonPath('data.roles.0', 'Instructor');
 });
+
+it('lets an administrator verify and unverify a user', function () {
+    $admin = adminUser();
+    $student = User::factory()->unverified()->create(['status' => 'pending']);
+    $student->assignRole('Student');
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/verify")
+        ->assertOk()
+        ->assertJsonPath('data.status', 'active')
+        ->assertJsonPath('data.email_verified_at', fn ($value) => $value !== null);
+
+    expect($student->fresh()->hasVerifiedEmail())->toBeTrue();
+    expect($student->fresh()->status)->toBe('active');
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/unverify")
+        ->assertOk()
+        ->assertJsonPath('data.status', 'pending')
+        ->assertJsonPath('data.email_verified_at', null);
+
+    expect($student->fresh()->hasVerifiedEmail())->toBeFalse();
+});
+
+it('lets an administrator move any user to any status', function () {
+    $admin = adminUser();
+    $student = User::factory()->create(['status' => 'active']);
+    $student->assignRole('Student');
+    $student->createToken('mobile-device');
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/status", ['status' => 'inactive'])
+        ->assertOk()
+        ->assertJsonPath('data.status', 'inactive');
+
+    expect($student->fresh()->status)->toBe('inactive');
+    expect($student->tokens()->count())->toBe(0);
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/status", ['status' => 'pending'])
+        ->assertOk()
+        ->assertJsonPath('data.status', 'pending');
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/status", ['status' => 'active'])
+        ->assertOk()
+        ->assertJsonPath('data.status', 'active');
+});
+
+it('rejects a status outside the user status enum', function () {
+    $admin = adminUser();
+    $student = User::factory()->create();
+    $student->assignRole('Student');
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/status", ['status' => 'banned'])
+        ->assertUnprocessable();
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$student->uuid}/status", [])
+        ->assertUnprocessable();
+
+    expect($student->fresh()->status)->not->toBe('banned');
+});
+
+it('prevents an administrator from verifying or restatusing a privileged account', function () {
+    $admin = adminUser();
+    $otherAdmin = User::factory()->unverified()->create();
+    $otherAdmin->assignRole('Admin');
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$otherAdmin->uuid}/verify")
+        ->assertForbidden();
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$otherAdmin->uuid}/unverify")
+        ->assertForbidden();
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$otherAdmin->uuid}/status", ['status' => 'inactive'])
+        ->assertForbidden();
+});
+
+it('prevents an administrator from changing their own status or verification', function () {
+    $admin = adminUser();
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$admin->uuid}/status", ['status' => 'suspended'])
+        ->assertForbidden();
+
+    $this->actingAs($admin)
+        ->patchJson("/api/v1/admin/users/{$admin->uuid}/unverify")
+        ->assertForbidden();
+
+    expect($admin->fresh()->status)->not->toBe('suspended');
+});

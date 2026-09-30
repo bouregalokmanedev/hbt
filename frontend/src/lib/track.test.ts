@@ -1,6 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { COOKIE_CONSENT_KEY } from "@/features/cookies/consent";
+
 import { track, trackOnce } from "./track";
+
+function grantAnalyticsConsent(analytics = true) {
+  localStorage.setItem(
+    COOKIE_CONSENT_KEY,
+    JSON.stringify({
+      necessary: true,
+      preferences: true,
+      analytics,
+      marketing: false,
+      updatedAt: new Date().toISOString(),
+    }),
+  );
+}
 
 describe("track", () => {
   const fetchMock = vi.fn();
@@ -8,10 +23,13 @@ describe("track", () => {
   beforeEach(() => {
     fetchMock.mockReset().mockResolvedValue({ ok: true });
     vi.stubGlobal("fetch", fetchMock);
+    localStorage.clear();
+    grantAnalyticsConsent();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    localStorage.clear();
   });
 
   it("posts the funnel event with page, properties and a session hash", () => {
@@ -53,5 +71,21 @@ describe("track", () => {
 
     expect(() => track("pricing_viewed")).not.toThrow();
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("sends nothing before a consent choice is stored", () => {
+    localStorage.clear();
+
+    track("referral_invite_shared");
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("sends nothing when analytics are rejected", () => {
+    grantAnalyticsConsent(false);
+
+    track("plan_cta_clicked");
+
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
