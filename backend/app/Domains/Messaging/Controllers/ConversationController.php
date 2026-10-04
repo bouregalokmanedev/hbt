@@ -8,12 +8,28 @@ use App\Domains\Messaging\Services\MessagingService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 final class ConversationController
 {
     public function index(Request $request, MessagingService $messaging)
     {
-        return ConversationResource::collection($messaging->conversationsFor($request->user()));
+        $data = $request->validate([
+            'limit' => ['nullable', 'integer', 'min:1', 'max:200'],
+            'offset' => ['nullable', 'integer', 'min:0', 'max:10000'],
+            'type' => ['nullable', Rule::in([...MessagingService::INBOX_TYPES, 'not_announcement'])],
+        ]);
+
+        $type = $data['type'] ?? null;
+        $types = match ($type) {
+            null => null,
+            'not_announcement' => ['direct', 'group', MessagingService::STAFF_ROOM_TYPE],
+            default => [$type],
+        };
+
+        return ConversationResource::collection(
+            $messaging->conversationsFor($request->user(), (int) ($data['limit'] ?? MessagingService::INBOX_LIMIT), (int) ($data['offset'] ?? 0), $types)
+        );
     }
 
     public function contacts(Request $request, MessagingService $messaging)
@@ -63,10 +79,20 @@ final class ConversationController
         return new ConversationResource($conversation->fresh(['participants']));
     }
 
-    public function show(Request $request, MessageConversation $conversation)
+    public function show(Request $request, MessageConversation $conversation, MessagingService $messaging)
     {
         Gate::authorize('view', $conversation);
-        $conversation->load(['broadcast', 'participants' => fn ($query) => $query->select('users.id', 'users.uuid', 'users.first_name', 'users.last_name', 'users.email')->with('roles:id,name')]);
+        $conversation->load(['broadcast', 'participants' => $messaging->participantsLoader()]);
+        $viewer = $request->user();
+
+        // Single-thread reads are also the only place these are meaningful:
+        // typing state and presence are per-thread, and the unread marker
+        // costs a query — neither belongs on the inbox list.
+        $conversation->setAttribute('typing_user_ids', $messaging->typingUserIds($conversation, $viewer));
+        $conversation->setAttribute('first_unread_at', $messaging->firstUnreadAt($viewer, $conversation));
+        $participant = $conversation->participants->first(fn (User $member) => (int) $member->id !== (int) $viewer->id);
+        $conversation->setAttribute('participant_online', $participant !== null && $messaging->isOnline($participant));
+
         $messages = $conversation->messages()->reorder()
             ->with(['sender:id,uuid,first_name,last_name', 'replyTo.sender:id,uuid,first_name,last_name'])
             ->orderByDesc('messages.created_at')->orderByDesc('messages.id')->limit(30)->get()
@@ -77,8 +103,24 @@ final class ConversationController
 
     public function archive(MessageConversation $conversation)
     {
-        Gate::authorize('update', $conversation);
+        Gate::authorize('archive', $conversation);
         $conversation->update(['status' => 'archived']);
         return response()->noContent();
+    }
+
+    /**
+     * Muting is per participant — unlike `status`, it must never affect anyone
+     * else in the conversation. A muted thread stops contributing to the
+     * sidebar badge but stays in the inbox and stays readable.
+     */
+    public function mute(Request $request, MessageConversation $conversation, MessagingService $messaging)
+    {
+        Gate::authorize('view', $conversation);
+
+        $data = $request->validate(['muted' => ['required', 'boolean']]);
+        $muted = (bool) $data['muted'];
+        $messaging->setMuted($request->user(), $conversation, $muted);
+
+        return response()->json(['data' => ['muted' => $muted]]);
     }
 }

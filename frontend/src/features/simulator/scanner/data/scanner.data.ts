@@ -6,6 +6,8 @@
  * stays in the i18n dictionaries. Version with the dataset: 2026.7.
  */
 
+import type { DtcDetail } from "./dtc.details";
+
 export const SCANNER_DATASET_VERSION = "2026.7";
 
 /* ---------------- ECUs ---------------- */
@@ -64,23 +66,27 @@ export interface Dtc {
     code: string;
     desc: string;
     ecu: string;
+    /** System group shown next to the ECU (Engine, Chassis, ADAS, …). */
+    sys?: string;
     status: DtcStatus;
     severity: "high" | "medium" | "low";
     count: number;
     firstKm: number;
     lastKm: number;
+    firstSeen?: string;
+    lastSeen?: string;
     freezeFrame: boolean;
 }
 
 export const DTCS: Dtc[] = [
-    { code: "P2118", desc: "Throttle actuator control motor current range/performance", ecu: "ECM", status: "Current", severity: "high", count: 4, firstKm: 97800, lastKm: 98420, freezeFrame: true },
-    { code: "P0087", desc: "Fuel rail/system pressure too low", ecu: "ECM", status: "Stored", severity: "high", count: 2, firstKm: 97500, lastKm: 98010, freezeFrame: true },
-    { code: "P0504", desc: "Brake switch A/B correlation", ecu: "ECM", status: "Pending", severity: "medium", count: 1, firstKm: 98200, lastKm: 98200, freezeFrame: false },
-    { code: "C1201", desc: "Electronic stability control system malfunction", ecu: "ABS", status: "Current", severity: "high", count: 3, firstKm: 98000, lastKm: 98420, freezeFrame: false },
-    { code: "U0129", desc: "Lost communication with brake system control module", ecu: "ABS", status: "Intermittent", severity: "medium", count: 5, firstKm: 97000, lastKm: 98300, freezeFrame: false },
-    { code: "B1483", desc: "Front camera calibration not complete", ecu: "ADAS", status: "Stored", severity: "low", count: 1, firstKm: 98100, lastKm: 98100, freezeFrame: false },
-    { code: "P0741", desc: "Torque converter clutch circuit performance", ecu: "TCM", status: "Pending", severity: "medium", count: 2, firstKm: 96000, lastKm: 98000, freezeFrame: false },
-    { code: "C2126", desc: "TPMS sensor battery low", ecu: "TPMS", status: "Stored", severity: "low", count: 1, firstKm: 95000, lastKm: 95000, freezeFrame: false },
+    { code: "P2118", desc: "Throttle actuator control motor current range/performance", ecu: "ECM", sys: "Engine", status: "Current", severity: "high", count: 4, firstKm: 97800, lastKm: 98420, firstSeen: "21 Jul", lastSeen: "27 Jul", freezeFrame: true },
+    { code: "P0087", desc: "Fuel rail/system pressure too low", ecu: "ECM", sys: "Engine", status: "Stored", severity: "high", count: 2, firstKm: 97500, lastKm: 98010, firstSeen: "11 Jul", lastSeen: "24 Jul", freezeFrame: true },
+    { code: "P0504", desc: "Brake switch A/B correlation", ecu: "ECM", sys: "Engine", status: "Pending", severity: "medium", count: 1, firstKm: 98200, lastKm: 98200, firstSeen: "25 Jul", lastSeen: "25 Jul", freezeFrame: false },
+    { code: "C1201", desc: "Engine control system malfunction — ESC inhibited", ecu: "ABS", sys: "Chassis", status: "Current", severity: "high", count: 3, firstKm: 98000, lastKm: 98420, firstSeen: "21 Jul", lastSeen: "27 Jul", freezeFrame: false },
+    { code: "U0129", desc: "Lost communication with brake system control module", ecu: "ABS", sys: "Chassis", status: "Intermittent", severity: "medium", count: 5, firstKm: 97000, lastKm: 98300, firstSeen: "09 Jul", lastSeen: "26 Jul", freezeFrame: false },
+    { code: "B1483", desc: "Front camera calibration not complete", ecu: "ADAS", sys: "ADAS", status: "Stored", severity: "low", count: 1, firstKm: 98100, lastKm: 98100, firstSeen: "22 Jul", lastSeen: "22 Jul", freezeFrame: false },
+    { code: "P0741", desc: "Torque converter clutch circuit performance", ecu: "TCM", sys: "Transmission", status: "Pending", severity: "medium", count: 2, firstKm: 96000, lastKm: 98000, firstSeen: "02 Jul", lastSeen: "24 Jul", freezeFrame: false },
+    { code: "C2126", desc: "TPMS sensor battery low", ecu: "TPMS", sys: "Chassis", status: "Stored", severity: "low", count: 1, firstKm: 95000, lastKm: 95000, firstSeen: "01 Jul", lastSeen: "01 Jul", freezeFrame: false },
 ];
 
 export interface DtcCause {
@@ -317,6 +323,8 @@ export interface VehicleProfile {
     dtcs: Dtc[];
     pids: Pid[];
     adasDone: boolean[];
+    /** Instructor-authored DTC dossiers from the pack manifest, keyed by code. */
+    dtcDetails?: Record<string, DtcDetail>;
 }
 
 function withNodes(statuses: Partial<Record<string, { status: NodeStatus; dtc: number }>>): EcuNode[] {

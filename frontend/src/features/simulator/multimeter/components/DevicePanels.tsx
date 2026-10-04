@@ -205,6 +205,7 @@ export function DmmPanel({
                             style={{ cursor: "pointer" }}
                         >
                             <circle
+                                data-jack-target={jack}
                                 cx={x}
                                 cy={JACK_Y}
                                 r={14}

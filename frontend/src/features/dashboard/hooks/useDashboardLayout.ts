@@ -11,23 +11,30 @@ import {
   toggleCardWidth,
   type DashboardCardId,
   type DashboardLayout,
+  type DashboardLayoutScope,
   type DashboardSectionId,
 } from "../layout/layout";
 
+/**
+ * Shared by the student and instructor dashboards. `scope` selects which
+ * section registry and which localStorage slot are used, so the two layouts
+ * never overwrite one another.
+ */
 export function useDashboardLayout(
   isAvailable: (id: DashboardCardId) => boolean,
   userId?: string | null,
+  scope: DashboardLayoutScope = "student",
 ) {
   const [layout, setLayout] = useState<DashboardLayout>(() => {
     setLayoutOwner(userId ?? null);
-    return loadLayout(userId ?? null);
+    return loadLayout(userId ?? null, scope);
   });
 
-  // Switch storage scope when the signed-in student is known / changes.
+  // Switch storage scope when the signed-in user is known / changes.
   useEffect(() => {
     setLayoutOwner(userId ?? null);
-    setLayout(loadLayout(userId ?? null));
-  }, [userId]);
+    setLayout(loadLayout(userId ?? null, scope));
+  }, [userId, scope]);
 
   const visibleSections = useMemo(
     () => getVisibleSections(layout, isAvailable),
@@ -51,8 +58,8 @@ export function useDashboardLayout(
   }, []);
 
   const reset = useCallback(() => {
-    setLayout(resetLayout());
-  }, []);
+    setLayout(resetLayout(scope, userId ?? null));
+  }, [scope, userId]);
 
   return {
     layout,

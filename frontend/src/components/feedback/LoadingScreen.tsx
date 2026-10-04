@@ -1,6 +1,10 @@
+import { useTranslation } from "react-i18next";
+
 import { Spinner } from "@/components/ui";
 
 export function LoadingScreen() {
+    const { t } = useTranslation();
+
     return (
         <div
             className="grid min-h-screen place-items-center bg-[var(--background)]"
@@ -10,7 +14,7 @@ export function LoadingScreen() {
                 <Spinner size="lg" />
 
                 <p className="text-sm text-[var(--muted)]">
-                    Loading...
+                    {t("common.loading")}
                 </p>
             </div>
         </div>

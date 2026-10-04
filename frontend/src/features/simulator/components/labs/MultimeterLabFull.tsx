@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { readVehicleItem, removeVehicleItem, writeVehicleItem } from "@/features/simulator/lib/vehicleStorage";
-import { MeterGate } from "@/features/simulator/multimeter/components/MeterGate";
+import { VehicleGate } from "@/features/simulator/scanner/components/VehicleGate";
 import { MultimeterWorkbench } from "@/features/simulator/multimeter/components/MultimeterWorkbench";
 
 const METER_VEHICLE_KEY = "hbt:meter-vehicle";
@@ -9,7 +9,8 @@ export function MultimeterLabFull({ sessionId = null }: { sessionId?: string | n
     const [vehicleId, setVehicleId] = useState<string | null>(() => readVehicleItem(METER_VEHICLE_KEY));
     if (!vehicleId) {
         return (
-            <MeterGate
+            <VehicleGate
+                tool="multimeter"
                 onSelect={(id) => {
                     writeVehicleItem(METER_VEHICLE_KEY, id);
                     setVehicleId(id);
@@ -28,4 +29,3 @@ export function MultimeterLabFull({ sessionId = null }: { sessionId?: string | n
         />
     );
 }
-

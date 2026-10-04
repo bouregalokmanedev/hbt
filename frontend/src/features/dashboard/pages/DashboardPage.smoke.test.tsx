@@ -375,6 +375,10 @@ describe("DashboardPage personalization", () => {
       "leaderboard",
       "certificates",
       "favorites",
+      "progression",
+      "attention",
+      "topCourses",
+      "momentum",
     ]);
 
     renderPage();

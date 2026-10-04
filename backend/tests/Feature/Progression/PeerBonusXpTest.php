@@ -5,11 +5,17 @@ use App\Domains\Progression\Models\StudentProgressionProfile;
 use App\Domains\Progression\Models\StudentXpTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    Role::findOrCreate('Student', 'web');
+});
+
 it('returns avatar and last badges for the podium', function () {
     $leader = User::factory()->create(['first_name' => 'Sara', 'last_name' => 'Ali', 'avatar' => 'data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=']);
+    $leader->assignRole('Student');
     StudentProgressionProfile::create(['user_id' => $leader->id, 'total_xp' => 500, 'level' => 3]);
     UserAchievement::create(['user_id' => $leader->id, 'badge' => 'member', 'earned_at' => now()->subDays(3)]);
     UserAchievement::create(['user_id' => $leader->id, 'badge' => 'learner', 'earned_at' => now()->subDays(2)]);

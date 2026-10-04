@@ -42,6 +42,19 @@ final class PublishAssessmentAction
             'published_at' => now(),
         ]);
 
-        return $assessment->fresh();
+        $published = $assessment->fresh();
+
+        if ($published->course_id !== null) {
+            app(\App\Domains\Notifications\Actions\NotifyEnrolledStudentsAction::class)->execute(
+                    (string) $published->course_id,
+                'assessment_ready',
+                'New assessment available',
+                "\"{$published->title}\" is now live in \"{$assessment->course->title}\". Head to Assessments whenever you are ready to take it.",
+                '/assessments',
+                "assessment-published:{$published->id}",
+            );
+        }
+
+        return $published;
     }
 }

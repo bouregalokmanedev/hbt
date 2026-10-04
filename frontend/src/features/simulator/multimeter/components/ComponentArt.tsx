@@ -1,4 +1,5 @@
 import type { SVGProps } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Procedural SVG illustrations for common bench components so students
@@ -50,11 +51,12 @@ function PinRow({ pins, y = 58 }: { pins: number; y?: number }) {
 }
 
 export function ComponentArt({ sym, className }: { sym: string; className?: string }) {
+    const { t } = useTranslation();
     const s: SVGProps<SVGSVGElement> = { className, role: "img" };
     switch (sym) {
         case "maf":
             return (
-                <Shell {...s} aria-label="Mass airflow sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.maf")}>
                     <path d="M8 28h48v24H8z" fill={BODY} stroke={STROKE} strokeWidth="1.5" />
                     <path d="M56 34h28v12H56z" fill="#D0D5DB" stroke={STROKE} strokeWidth="1.5" />
                     <path d="M14 34h36v12H14z" fill="#0E7C66" opacity="0.25" stroke="#0E7C66" strokeWidth="1" />
@@ -75,7 +77,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "inj":
             return (
-                <Shell {...s} aria-label="Fuel injector">
+                <Shell {...s} aria-label={t("simulator.componentArt.injector")}>
                     <rect x="34" y="8" width="28" height="22" rx="4" fill="#2B3036" stroke={STROKE} strokeWidth="1.2" />
                     <rect x="38" y="12" width="20" height="8" rx="2" fill={ACCENT} opacity="0.85" />
                     <path d="M40 30h16v10l-4 8v6H44v-6l-4-8V30z" fill={BODY} stroke={STROKE} strokeWidth="1.4" />
@@ -86,7 +88,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "motorpot":
             return (
-                <Shell {...s} aria-label="Throttle body">
+                <Shell {...s} aria-label={t("simulator.componentArt.throttle")}>
                     <circle cx="40" cy="32" r="22" fill={BODY} stroke={STROKE} strokeWidth="1.5" />
                     <circle cx="40" cy="32" r="12" fill="#9AA1A9" stroke={STROKE} strokeWidth="1" />
                     <path d="M32 32h16" stroke={STROKE} strokeWidth="2" />
@@ -97,7 +99,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "coil":
             return (
-                <Shell {...s} aria-label="Ignition coil">
+                <Shell {...s} aria-label={t("simulator.componentArt.coil")}>
                     <rect x="30" y="6" width="36" height="40" rx="6" fill="#2B3036" stroke={STROKE} strokeWidth="1.4" />
                     <rect x="36" y="12" width="24" height="18" rx="3" fill={ACCENT} opacity="0.75" />
                     <path d="M42 46v10M54 46v10" stroke="#8A9099" strokeWidth="2" />
@@ -115,7 +117,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "knock":
             return (
-                <Shell {...s} aria-label="Knock sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.knock")}>
                     <circle cx="48" cy="30" r="18" fill={BODY} stroke={STROKE} strokeWidth="1.5" />
                     <circle cx="48" cy="30" r="7" fill="#9AA1A9" stroke={STROKE} />
                     <circle cx="48" cy="30" r="2.5" fill={ACCENT} />
@@ -126,7 +128,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "ind":
             return (
-                <Shell {...s} aria-label="Crankshaft position sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.crank")}>
                     <rect x="28" y="16" width="20" height="36" rx="4" fill={BODY} stroke={STROKE} strokeWidth="1.4" />
                     <path d="M32 24h12M32 30h12M32 36h12" stroke={SIGNAL} strokeWidth="1.3" />
                     <circle cx="64" cy="34" r="14" fill="#C5CBD2" stroke={STROKE} strokeWidth="1.2" />
@@ -138,7 +140,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "hall":
             return (
-                <Shell {...s} aria-label="Camshaft position sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.cam")}>
                     <rect x="18" y="18" width="28" height="30" rx="4" fill={BODY} stroke={STROKE} strokeWidth="1.4" />
                     <rect x="24" y="24" width="16" height="10" rx="2" fill={SIGNAL} opacity="0.35" stroke={SIGNAL} />
                     <circle cx="66" cy="34" r="16" fill="#C5CBD2" stroke={STROKE} strokeWidth="1.2" />
@@ -152,7 +154,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "pot2":
             return (
-                <Shell {...s} aria-label="Accelerator pedal position sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.pedal")}>
                     <path d="M36 8h18l8 40H30l6-40z" fill={BODY} stroke={STROKE} strokeWidth="1.5" />
                     <rect x="34" y="40" width="24" height="14" rx="3" fill="#2B3036" stroke={STROKE} />
                     <path d="M38 44h16M38 48h12" stroke={SIGNAL} strokeWidth="1.2" />
@@ -162,7 +164,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "lambda":
             return (
-                <Shell {...s} aria-label="Oxygen sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.o2")}>
                     <rect x="40" y="6" width="16" height="18" rx="3" fill="#2B3036" stroke={STROKE} strokeWidth="1.2" />
                     <path d="M44 24h8v8l4 6v6H40v-6l4-6v-8z" fill={BODY} stroke={STROKE} strokeWidth="1.3" />
                     <path d="M42 44h12v6H42z" fill="#9AA1A9" stroke={STROKE} />
@@ -174,7 +176,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         case "ntc":
             return (
-                <Shell {...s} aria-label="Coolant temperature sensor">
+                <Shell {...s} aria-label={t("simulator.componentArt.ect")}>
                     <rect x="36" y="8" width="24" height="16" rx="3" fill="#2B3036" stroke={STROKE} strokeWidth="1.2" />
                     <path d="M40 24h16l4 10v8H36v-8l4-10z" fill={BODY} stroke={STROKE} strokeWidth="1.3" />
                     <path d="M42 42h12v6H42z" fill="#9AA1A9" stroke={STROKE} />
@@ -185,7 +187,7 @@ export function ComponentArt({ sym, className }: { sym: string; className?: stri
             );
         default:
             return (
-                <Shell {...s} aria-label="Component">
+                <Shell {...s} aria-label={t("simulator.componentArt.generic")}>
                     <rect x="20" y="14" width="56" height="36" rx="6" fill={BODY} stroke={STROKE} strokeWidth="1.5" />
                     <circle cx="48" cy="32" r="8" fill={ACCENT} opacity="0.5" stroke={ACCENT} />
                     <PinRow pins={3} />

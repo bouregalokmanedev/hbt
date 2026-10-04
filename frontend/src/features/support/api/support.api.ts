@@ -11,6 +11,9 @@ export interface SupportTicket {
     resolved_at: string | null;
     created_at: string | null;
     replies_count: number;
+    rating?: number | null;
+    rating_comment?: string | null;
+    rated_at?: string | null;
 }
 
 export interface SupportReply {
@@ -40,4 +43,17 @@ export const supportApi = {
     reply: (id: string, message: string) =>
         api<SupportTicketDetail>(`/v1/support/tickets/${id}/reply`, { method: "POST", body: { message } }),
     close: (id: string) => api<SupportTicket>(`/v1/support/tickets/${id}/close`, { method: "POST" }),
+    rate: (id: string, rating: number, comment?: string) =>
+        api<SupportTicketDetail>(`/v1/support/tickets/${id}/rating`, {
+            method: "POST",
+            body: comment ? { rating, comment } : { rating },
+        }),
+    /**
+     * Public status lookup: no session required, only the ticket reference
+     * plus the address the ticket was filed with.
+     */
+    track: (id: string, email: string) =>
+        api<SupportTicketDetail>(
+            `/v1/support/tickets/${id}/status?email=${encodeURIComponent(email)}`,
+        ),
 };

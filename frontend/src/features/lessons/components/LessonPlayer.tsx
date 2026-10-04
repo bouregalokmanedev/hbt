@@ -3,6 +3,8 @@ import {
     useRef,
 } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import type {
     Lesson,
 } from "../types/lesson.types";
@@ -21,6 +23,8 @@ export function LessonPlayer({
     onProgress,
     onComplete,
 }: LessonPlayerProps) {
+    const { t } = useTranslation();
+
     const videoRef =
         useRef<HTMLVideoElement | null>(
             null,
@@ -46,12 +50,11 @@ export function LessonPlayer({
             <div className="flex aspect-video items-center justify-center rounded-2xl bg-black">
                 <div className="text-center text-white">
                     <p className="text-lg font-semibold">
-                        No video available
+                        {t("lessonPlayer.video.noVideo")}
                     </p>
 
                     <p className="mt-1 text-sm text-white/60">
-                        This lesson does not have
-                        a video yet.
+                        {t("lessonPlayer.video.noVideoDesc")}
                     </p>
                 </div>
             </div>

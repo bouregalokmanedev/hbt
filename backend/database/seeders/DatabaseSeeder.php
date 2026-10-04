@@ -9,6 +9,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Roles, permissions and the default Admin/Support permission sets.
+            AccessControlSeeder::class,
             RolePermissionSeeder::class,
             // Lookup data for plans/subscriptions UI (idempotent).
             SubscriptionFeaturesSeeder::class,

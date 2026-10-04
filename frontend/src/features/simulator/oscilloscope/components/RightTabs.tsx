@@ -62,7 +62,7 @@ export function RightTabs({
               {t("oscilloscope.info.function", { defaultValue: "Function" }) as string}
             </div>
             <p className="mt-1 text-sm text-[#3A3A3A] dark:text-white">
-              {t(`oscilloscope.ex.${comp.id}.function`, { defaultValue: comp.chA.label }) as string}
+              {t(`content.oscilloscope.ex.${comp.id}.function`, { defaultValue: comp.chA.label }) as string}
             </p>
             <LiveState engine={engine} state={state} t={t} />
             <div className="mt-3 text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
@@ -72,7 +72,7 @@ export function RightTabs({
               {[0, 1, 2, 3].map((i) => (
                 <li key={i} className="flex gap-2 text-sm text-[#3A3A3A]/60 dark:text-white/60">
                   <span className="text-[#0E9F6E]">•</span>
-                  {t(`oscilloscope.ex.${comp.id}.bullets.${i}`, { defaultValue: "" }) as string}
+                  {t(`content.oscilloscope.ex.${comp.id}.bullets.${i}`, { defaultValue: "" }) as string}
                 </li>
               ))}
             </ul>
@@ -131,7 +131,7 @@ export function RightTabs({
               {[0, 1, 2].map((i) => (
                 <li key={i} className="flex gap-2 text-sm text-[#3A3A3A]/60 dark:text-white/60">
                   <span className="text-[#0E9F6E]">›</span>
-                  {t(`oscilloscope.ex.${comp.id}.probeNotes.${i}`, { defaultValue: "" }) as string}
+                  {t(`content.oscilloscope.ex.${comp.id}.probeNotes.${i}`, { defaultValue: "" }) as string}
                 </li>
               ))}
             </ul>
@@ -155,15 +155,15 @@ export function RightTabs({
           <div>
             {wrong === "supply" || wrong === "ground" || wrong === "none" ? (
               <p className="rounded-xl bg-amber-50 p-3 text-sm font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
-                {t(`oscilloscope.ai.${wrong}`, { defaultValue: wrong === "none" ? "No probe connected — connect Ch A to the signal terminal." : wrong === "supply" ? "Wrong probe: supply terminal — check pinout." : "Wrong probe: ground terminal." }) as string}
+                {t(`content.oscilloscope.ai.${wrong}`, { defaultValue: wrong === "none" ? "No probe connected — connect Ch A to the signal terminal." : wrong === "supply" ? "Wrong probe: supply terminal — check pinout." : "Wrong probe: ground terminal." }) as string}
               </p>
             ) : state.fault === "none" ? (
               <p className="rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                {t("oscilloscope.ai.spec", { defaultValue: "Signal within specification — healthy waveform." }) as string}
+                {t("content.oscilloscope.ai.spec", { defaultValue: "Signal within specification — healthy waveform." }) as string}
               </p>
             ) : (
               <p className="rounded-xl bg-[#0E9F6E]/10 p-3 text-sm text-[#3A3A3A] dark:text-white">
-                {t(`oscilloscope.fault.${state.fault}.desc`, { defaultValue: state.fault }) as string}
+                {t(`content.oscilloscope.fault.${state.fault}.desc`, { defaultValue: state.fault }) as string}
               </p>
             )}
           </div>
@@ -181,7 +181,7 @@ export function RightTabs({
             >
               {comp.faults.map((f) => (
                 <option key={f} value={f}>
-                  {t(`oscilloscope.fault.${f}.label`, { defaultValue: f }) as string}
+                  {t(`content.oscilloscope.fault.${f}.label`, { defaultValue: f }) as string}
                 </option>
               ))}
             </select>
@@ -205,7 +205,7 @@ export function RightTabs({
                 )}
               >
                 {t(
-                  `oscilloscope.verdict.${engine.stepChecks().diagOk ? "correct" : "wrong"}`,
+                  `content.oscilloscope.verdict.${engine.stepChecks().diagOk ? "correct" : "wrong"}`,
                   { defaultValue: engine.stepChecks().diagOk ? "Correct — diagnosis matches fault." : "Incorrect — check measurements again." },
                 ) as string}
               </p>

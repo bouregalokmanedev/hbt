@@ -22,6 +22,7 @@ class SupportTicket extends Model
     protected $fillable = [
         'user_id', 'subject', 'category', 'priority', 'status',
         'assigned_to', 'level', 'due_at', 'resolved_at', 'closed_at',
+        'rating', 'rating_comment', 'rated_at',
     ];
 
     protected function casts(): array
@@ -33,6 +34,8 @@ class SupportTicket extends Model
             'due_at' => 'datetime',
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',
+            'rating' => 'integer',
+            'rated_at' => 'datetime',
         ];
     }
 

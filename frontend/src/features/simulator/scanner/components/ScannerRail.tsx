@@ -62,7 +62,7 @@ export function ScannerRail({
 }) {
     const { t } = useTranslation();
     return (
-        <nav aria-label="Scanner" className="flex w-[68px] shrink-0 flex-col items-center gap-1 self-stretch overflow-y-auto bg-[#14181C] px-2 pb-3 pt-3">
+        <nav aria-label={t("simulator.toolNames.scanner")} className="flex w-[68px] shrink-0 flex-col items-center gap-1 self-stretch overflow-y-auto bg-[#14181C] px-2 pb-3 pt-3">
             <div className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[9px] border border-[#F47822]/40 bg-[#F47822]/[.08] font-mono text-[8px] font-black tracking-[0.08em] text-[#F47822]">
                 SCAN
             </div>

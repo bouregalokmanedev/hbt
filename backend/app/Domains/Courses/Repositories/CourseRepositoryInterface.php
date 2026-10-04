@@ -18,10 +18,6 @@ interface CourseRepositoryInterface
         array $data
     ): Course;
 
-    public function publish(
-        Course $course
-    ): Course;
-
     public function delete(
         Course $course
     ): void;

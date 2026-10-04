@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\V1;
 use App\Domains\Achievements\Models\UserAchievement;
 use App\Domains\Progression\Models\StudentProgressionProfile;
 use App\Domains\Progression\Services\StudentProgressionService;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,7 +18,7 @@ class LeaderboardController extends Controller
     {
         $limit = min(max((int) $request->integer('limit', 10), 1), 50);
 
-        $profileModels = StudentProgressionProfile::query()
+        $profileModels = $this->studentsOnly(StudentProgressionProfile::query())
             ->with('user:id,first_name,last_name,username,avatar')
             ->orderByDesc('total_xp')
             ->orderBy('updated_at')
@@ -39,21 +41,25 @@ class LeaderboardController extends Controller
             ->values();
 
         $me = null;
-        if ($request->user()) {
-            $myProfile = StudentProgressionProfile::firstOrCreate(['user_id' => $request->user()->id]);
+        $viewer = $request->user();
+        // Staff never sit on the students' table: no rank row, and no
+        // profile row is created just for looking at the leaderboard.
+        if ($viewer && $viewer->hasRole(UserRole::STUDENT->value)) {
+            $myProfile = StudentProgressionProfile::firstOrCreate(['user_id' => $viewer->id]);
             $myTotalXp = (int) ($myProfile->total_xp ?? 0);
-            $rank = StudentProgressionProfile::query()->where('total_xp', '>', $myTotalXp)->count() + 1;
-            $user = $request->user();
+            $rank = $this->studentsOnly(StudentProgressionProfile::query())
+                ->where('total_xp', '>', $myTotalXp)
+                ->count() + 1;
             $me = [
                 'user_id' => $myProfile->user_id,
-                'name' => $user->first_name ? trim($user->first_name.' '.$user->last_name) : ($user->username ?? 'Student'),
-                'username' => $user->username,
-                'avatar' => $user->avatar,
+                'name' => $viewer->first_name ? trim($viewer->first_name.' '.$viewer->last_name) : ($viewer->username ?? 'Student'),
+                'username' => $viewer->username,
+                'avatar' => $viewer->avatar,
                 'total_xp' => $myTotalXp,
                 'level' => $myProfile->level ?? 1,
                 'rank' => $rank,
                 'current_streak' => $progression->effectiveStreak($myProfile),
-                'badges' => $this->badgesFor([$user->id])[$user->id] ?? [],
+                'badges' => $this->badgesFor([$viewer->id])[$viewer->id] ?? [],
             ];
         }
 
@@ -104,10 +110,33 @@ class LeaderboardController extends Controller
             ], 409);
         }
 
+        // The recipient has no other reason to look at the podium today, so
+        // without this the bonus lands silently and nobody ever sees it.
+        app(\App\Domains\Notifications\Services\StudentNotificationService::class)->send(
+            $target,
+            'achievement',
+            'Peer bonus received',
+            "{$giver->full_name} sent you {$transaction->xp} XP. Check your standing on the Achievements podium.",
+            '/achievements',
+            "peer-bonus-notice:{$transaction->id}",
+        );
+
         return response()->json([
             'success' => true,
             'xp' => $transaction->xp,
         ]);
+    }
+
+    /**
+     * The leaderboard is a students-only table: staff accounts (Admin,
+     * Instructor, Support) never appear in it and never take a rank slot.
+     */
+    private function studentsOnly(Builder $query): Builder
+    {
+        return $query->whereHas('user', fn (Builder $users) => $users->whereHas(
+            'roles',
+            fn (Builder $roles) => $roles->where('name', UserRole::STUDENT->value),
+        ));
     }
 
     /**

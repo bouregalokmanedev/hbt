@@ -1,6 +1,8 @@
 import { ChevronRight, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/cn";
 
 export interface BreadcrumbItem {
@@ -17,9 +19,11 @@ export function Breadcrumb({
     items,
     className,
 }: BreadcrumbProps) {
+    const { t } = useTranslation();
+
     return (
         <nav
-            aria-label="Breadcrumb"
+            aria-label={t("navigation.breadcrumb")}
             className={cn(
                 "flex items-center gap-1.5 text-sm",
                 className,
@@ -27,7 +31,7 @@ export function Breadcrumb({
         >
             <Link
                 to="/"
-                aria-label="Home"
+                aria-label={t("navigation.home")}
                 className="text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
             >
                 <Home className="size-4" />

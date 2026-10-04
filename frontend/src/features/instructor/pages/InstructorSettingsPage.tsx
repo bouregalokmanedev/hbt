@@ -97,9 +97,9 @@ export function InstructorSettingsPage(){
               ))}
             </div>
             <div className="mt-4 rounded-xl bg-[#FFF8F4] p-3">
-              <p className="text-[11px] font-semibold text-[#3A3A3A]">{t("instructor.settings.loungeTitle")}</p>
-              <p className="mt-1 text-[11px] leading-4 text-[#3A3A3A]/50">{t("instructor.settings.loungeDesc")}</p>
-              <a href="/instructor/lounge" className="mt-2 inline-flex text-xs font-bold text-[#F47822] hover:underline">{t("instructor.settings.loungeCta")}</a>
+              <p className="text-[11px] font-semibold text-[#3A3A3A]">{t("instructor.settings.staffRoomTitle")}</p>
+              <p className="mt-1 text-[11px] leading-4 text-[#3A3A3A]/50">{t("instructor.settings.staffRoomDesc")}</p>
+              <a href="/instructor/staff-hub/room" className="mt-2 inline-flex text-xs font-bold text-[#F47822] hover:underline">{t("instructor.settings.staffRoomCta")}</a>
             </div>
           </aside>
 

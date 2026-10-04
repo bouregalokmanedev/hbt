@@ -17,6 +17,8 @@ interface SimulatorUsage {
     limit: number | null;
     remaining: number | null;
     unlimited: boolean;
+    /** Extra sessions granted by unlocked simulator badges (+1/+2/+3). */
+    bonus?: number;
     resets_at?: string | null;
 }
 
@@ -252,6 +254,14 @@ export function SimulatorHubPage() {
                             <p className="shrink-0 font-mono text-[11px] font-black text-[#1A1A1A] dark:text-white">
                                 {t("simulator.hub.usage.progress", { used: usage.used, limit: usage.limit })}
                             </p>
+                            {!!usage.bonus && (
+                                <p
+                                    data-testid="simulator-usage-bonus"
+                                    className="shrink-0 rounded-full bg-[#F47822]/12 px-2 py-0.5 text-[10px] font-black text-[#B85708] dark:bg-[#F47822]/15 dark:text-[#F47822]"
+                                >
+                                    {t("simulator.hub.usage.badgeBonus", { count: usage.bonus })}
+                                </p>
+                            )}
                             <p className="hidden shrink-0 text-[11px] text-[#3A3A3A]/45 sm:block dark:text-white/45">
                                 {t("simulator.hub.usage.resets")}
                             </p>

@@ -57,13 +57,13 @@ export function LiveState({
       </div>
       <div className="mt-2 space-y-2.5">
         {bar(
-          t(`oscilloscope.ex.${comp.id}.anim1`, { defaultValue: comp.anim.unit }) as string,
+          t(`content.oscilloscope.ex.${comp.id}.anim1`, { defaultValue: comp.anim.unit }) as string,
           live.p1,
           live.v1,
           "#0E9F6E",
         )}
         {bar(
-          t(`oscilloscope.ex.${comp.id}.anim2`, { defaultValue: comp.anim.unit2 }) as string,
+          t(`content.oscilloscope.ex.${comp.id}.anim2`, { defaultValue: comp.anim.unit2 }) as string,
           live.p2,
           live.v2,
           "#8B5CF6",
@@ -71,7 +71,7 @@ export function LiveState({
         <div className="flex items-center gap-2">
           <span className={clsx("h-2.5 w-2.5 rounded-full transition-colors", live.hot ? "bg-[#0E9F6E]" : "bg-[#3A3A3A]/15 dark:bg-white/15")} />
           <span className="text-sm text-[#3A3A3A]/60 dark:text-white/60">
-            {t(`oscilloscope.ex.${comp.id}.animEvent`, { defaultValue: "Event" }) as string}
+            {t(`content.oscilloscope.ex.${comp.id}.animEvent`, { defaultValue: "Event" }) as string}
           </span>
         </div>
       </div>

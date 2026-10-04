@@ -6,6 +6,7 @@ import { env } from "@/config/env";
 import { authStorage } from "@/lib/storage/auth-storage";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toast } from "sonner";
+import { errorMessage } from "@/lib/api/safe-error";
 
 interface Plan {
   id: string;
@@ -41,7 +42,7 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     },
   });
   const body = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(body?.message ?? "Request failed");
+  if (!res.ok) throw new Error(errorMessage(body?.message, "Request failed"));
   return (body?.data ?? body) as T;
 }
 
@@ -67,7 +68,7 @@ export function SubscriptionPage() {
       setPlans(Array.isArray(plansData) ? plansData : []);
       setSubscriptions(Array.isArray(subsData) ? subsData : []);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("subscription.loadFail"));
+      setError(errorMessage(e, t("subscription.loadFail")));
     } finally {
       setLoading(false);
     }
@@ -94,7 +95,7 @@ export function SubscriptionPage() {
       toast.success(t("subscription.created"));
       await load();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : t("subscription.createFail"));
+      toast.error(errorMessage(e, t("subscription.createFail")));
     } finally {
       setActionLoading(null);
     }
@@ -108,7 +109,7 @@ export function SubscriptionPage() {
       toast.success(t("subscription.cancelled"));
       await load();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : t("subscription.cancelFail"));
+      toast.error(errorMessage(e, t("subscription.cancelFail")));
     } finally {
       setActionLoading(null);
     }
@@ -124,7 +125,7 @@ export function SubscriptionPage() {
       toast.success(t("subscription.changed"));
       await load();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : t("subscription.changeFail"));
+      toast.error(errorMessage(e, t("subscription.changeFail")));
     } finally {
       setActionLoading(null);
     }
@@ -258,6 +259,13 @@ export function SubscriptionPage() {
           <h2 className="flex items-center gap-2 text-lg font-bold">
             <Sparkles className="h-5 w-5 text-hbt-orange" /> {t("subscription.gridTitle")}
           </h2>
+            {plans.length === 0 ? (
+              <div className="mt-4 rounded-3xl border border-dashed border-slate-300 px-6 py-10 text-center dark:border-white/15">
+                <Sparkles className="mx-auto h-8 w-8 text-hbt-orange" />
+                <h3 className="mt-3 text-base font-bold">{t("subscription.plansEmptyTitle")}</h3>
+                <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">{t("subscription.plansEmptyDesc")}</p>
+              </div>
+            ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-3">
             {plans.map((plan) => {
               const isCurrent = activeSub?.plan?.toLowerCase() === plan.name.toLowerCase();
@@ -308,13 +316,14 @@ export function SubscriptionPage() {
               );
             })}
           </div>
+            )}
         </section>
 
         {/* History */}
         {subscriptions.length > 1 && (
           <section className="mt-8 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6">
             <h3 className="flex items-center gap-2 text-sm font-bold">
-              <CreditCard className="h-4 w-4 text-hbt-orange" /> Subscription history
+              <CreditCard className="h-4 w-4 text-hbt-orange" /> {t("subscription.historyTitle")}
             </h3>
             <div className="mt-4 divide-y divide-slate-100 dark:divide-white/10">
               {subscriptions.map((s) => (

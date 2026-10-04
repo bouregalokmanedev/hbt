@@ -24,7 +24,10 @@ final class SendLessonCompletedNotification
 
         $course = $lesson->section?->course;
         $courseTitle = $course?->title;
-        $actionUrl = $course?->id !== null ? '/my-courses/'.$course->id : '/my-courses';
+        // Always the list page: /my-courses/:id has no frontend route (it
+        // 404s), and useSidebarBadges only auto-clears on the exact
+        // /my-courses path, so the deep link left a permanent badge behind.
+        $actionUrl = '/my-courses';
 
         $message = $courseTitle !== null
             ? "You finished \"{$lesson->title}\" in {$courseTitle}. Solid work — keep the momentum going."

@@ -16,6 +16,7 @@ import {
     LogOut,
     MonitorCog,
     MessageCircle,
+    PieChart,
     Settings,
     ShieldAlert,
     ShieldCheck,
@@ -73,12 +74,14 @@ const sections: NavSection[] = [
         items: [
             { labelKey: "admin.sidebar.commerce", to: "/admin/commerce", icon: CreditCard },
             { labelKey: "admin.sidebar.analytics", to: "/admin/analytics", icon: BarChart3 },
+            { labelKey: "admin.sidebar.crmStats", to: "/admin/crm-stats", icon: PieChart },
             { labelKey: "admin.sidebar.activity", to: "/admin/activity", icon: Activity },
         ],
     },
     {
         titleKey: "admin.sidebar.communication",
         items: [
+            { labelKey: "admin.sidebar.staffHub", to: "/admin/staff-hub", icon: Users },
             { labelKey: "admin.sidebar.announcements", to: "/admin/announcements", icon: BellRing },
             { labelKey: "admin.sidebar.messages", to: "/admin/messages", icon: MessageCircle },
             { labelKey: "admin.sidebar.support", to: "/admin/support", icon: LifeBuoy },

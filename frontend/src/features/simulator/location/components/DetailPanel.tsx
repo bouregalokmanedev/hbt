@@ -30,9 +30,9 @@ export function DetailPanel({
   const notes = hasProse ? trc(`location.${c.key}.mount`, "") : undefined;
 
   const Row = ({ label, value, mono }: { label: string; value: string; mono?: boolean }) => (
-    <div className="flex gap-3 py-1.5">
-      <dt className="w-28 shrink-0 text-xs font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{label}</dt>
-      <dd dir={mono ? "ltr" : undefined} className={clsx("min-w-0 flex-1 text-sm text-[#3A3A3A] dark:text-white", mono && "font-mono text-xs")}>
+    <div className="flex gap-3 border-b border-dashed border-[#3A3A3A]/[0.08] py-2 last:border-0 dark:border-white/[0.08]">
+      <dt className="w-28 shrink-0 text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{label}</dt>
+      <dd dir={mono ? "ltr" : undefined} className={clsx("min-w-0 flex-1 text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]", mono && "font-mono text-xs")}>
         {value}
       </dd>
     </div>
@@ -40,14 +40,14 @@ export function DetailPanel({
 
   return (
     <aside className="flex w-80 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/8 bg-gradient-to-b from-[#F47822]/[0.06] to-transparent p-4 dark:border-white/8">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="text-[11px] font-black uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">
+            <div className="text-[11px] font-black uppercase tracking-[0.16em] text-[#F47822]">
               {tr(`location.cat.${c.cat}`, c.cat)}
             </div>
-            <h2 className="mt-0.5 flex items-center gap-2 text-lg font-black text-[#3A3A3A] dark:text-white">
-              <span dir="ltr" className="rounded bg-[#F47822]/10 px-1.5 py-0.5 font-mono text-xs font-bold text-[#F47822]">
+            <h2 className="mt-1 flex items-center gap-2 text-lg font-black leading-snug text-[#3A3A3A] dark:text-white">
+              <span dir="ltr" className="rounded-md bg-[#F47822] px-1.5 py-0.5 font-mono text-xs font-bold text-white shadow-[0_4px_10px_rgba(244,120,34,0.25)]">
                 {c.ref}
               </span>
               {c.name}
@@ -58,7 +58,10 @@ export function DetailPanel({
             onClick={() => engine.toggleFavourite(c.key)}
             aria-pressed={fav}
             aria-label={tr("location.sidebar.favourites", "Favourites")}
-            className={clsx("rounded-lg px-1.5 py-1 text-lg focus:outline-none focus:ring-2 focus:ring-[#F47822]/20", fav ? "text-amber-400" : "text-[#3A3A3A]/30 dark:text-white/30")}
+            className={clsx(
+              "grid h-8 w-8 shrink-0 place-items-center rounded-full text-lg transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/30",
+              fav ? "bg-amber-400/15 text-amber-500 shadow-[0_4px_10px_rgba(245,158,11,0.2)]" : "text-[#3A3A3A]/30 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/30",
+            )}
           >
             {fav ? "★" : "☆"}
           </button>
@@ -67,14 +70,14 @@ export function DetailPanel({
           <button
             type="button"
             onClick={() => engine.setView("vehicle")}
-            className="flex-1 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+            className="flex-1 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-2 text-xs font-black text-[#3A3A3A] transition hover:-translate-y-px hover:border-[#F47822]/50 hover:text-[#F47822] focus:outline-none focus:ring-2 focus:ring-[#F47822]/25 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
           >
             {tr("location.detail.vehicleViews", "Vehicle views")}
           </button>
           <button
             type="button"
             onClick={() => engine.practise(c.key)}
-            className="flex-1 rounded-xl bg-[#F47822] px-3 py-1.5 text-xs font-black text-white transition hover:bg-[#E96D18] focus:outline-none focus:ring-2 focus:ring-[#F47822]/30"
+            className="flex-1 rounded-xl bg-[#F47822] px-3 py-2 text-xs font-black text-white shadow-[0_6px_14px_rgba(244,120,34,0.25)] transition hover:-translate-y-px hover:bg-[#E96D18] focus:outline-none focus:ring-2 focus:ring-[#F47822]/30"
           >
             {tr("location.detail.practise", "Practise this")}
           </button>

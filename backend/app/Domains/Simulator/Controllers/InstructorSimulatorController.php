@@ -262,7 +262,7 @@ class InstructorSimulatorController
 
     /**
      * Manifest shape (v2): per-tool overrides merged over the static dataset.
-     * Scanner: [{ nodes: [{id,status,dtc}], dtcs: [...], pids: [...], adasDone: bool[6], trainingSessions: [...] }]
+     * Scanner: [{ nodes: [{id,status,dtc}], dtcs: [...], pids: [...], adasDone: bool[6], trainingSessions: [...], dtcDetails: { CODE: { meaning?, causes?, live?, repair? } } }]
      * Multimeter: [{ procedures: [{ ref, name, group, pins, pinFn, ecu, links, supply, steps: [{mode,red,black,spec,good,bad,unit}] }] }]
      * Oscilloscope: [{ exercises: [{ id, code, name, period, supply, faults, chA, trig, ... }] }]
      * Location: [{ components: [{ key, ref, name, cat, kind, view, hot: {x,y,w,h,W,H} }] }]
@@ -305,6 +305,47 @@ class InstructorSimulatorController
                         422,
                         'Tree steps need id, label, measure, expected and ok.',
                     );
+                }
+            }
+            if (array_key_exists('dtcDetails', $entry) && $entry['dtcDetails'] !== null) {
+                $details = $entry['dtcDetails'];
+                abort_unless(
+                    is_array($details) && ($details === [] || ! array_is_list($details)),
+                    422,
+                    'dtcDetails must be an object keyed by DTC code.',
+                );
+                foreach ($details as $code => $detail) {
+                    abort_unless(is_string($code) && $code !== '' && is_array($detail), 422, 'Each dtcDetails entry must be an object keyed by a DTC code.');
+                    if (array_key_exists('meaning', $detail)) {
+                        abort_unless(is_string($detail['meaning']), 422, 'dtcDetails meaning must be a string.');
+                    }
+                    if (array_key_exists('repair', $detail)) {
+                        abort_unless(is_array($detail['repair']), 422, 'dtcDetails repair must be an object.');
+                        foreach (['decision', 'evidence', 'doNotStop'] as $repairField) {
+                            if (array_key_exists($repairField, $detail['repair'])) {
+                                abort_unless(is_string($detail['repair'][$repairField]), 422, 'dtcDetails repair fields must be strings.');
+                            }
+                        }
+                    }
+                    foreach ($detail['causes'] ?? [] as $cause) {
+                        abort_unless(
+                            is_array($cause) && isset($cause['label']) && is_string($cause['label'])
+                                && (! array_key_exists('note', $cause) || is_string($cause['note']))
+                                && (! array_key_exists('pct', $cause) || is_numeric($cause['pct'])),
+                            422,
+                            'dtcDetails causes need a label, optional note and numeric pct.',
+                        );
+                    }
+                    foreach ($detail['live'] ?? [] as $row) {
+                        abort_unless(
+                            is_array($row) && isset($row['k']) && is_string($row['k'])
+                                && (! array_key_exists('spec', $row) || is_string($row['spec']))
+                                && (! array_key_exists('measured', $row) || is_string($row['measured']))
+                                && (! array_key_exists('ok', $row) || is_bool($row['ok'])),
+                            422,
+                            'dtcDetails live rows need k, optional spec/measured and bool ok.',
+                        );
+                    }
                 }
             }
             foreach ($entry['trainingSessions'] ?? [] as $session) {

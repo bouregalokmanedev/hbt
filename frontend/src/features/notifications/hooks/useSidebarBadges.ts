@@ -16,9 +16,39 @@ const pathToCategory: Record<string, string> = {
   "/messages": "messages",
   "/support": "support",
   "/announcements": "announcements",
+  "/support-desk/messages": "messages",
+  "/support-desk/announcements": "announcements",
   "/favourite": "favourite",
   "/subscription": "subscription",
 };
+
+/**
+ * Per-role routes that the flat map above cannot express. Checked in order, so
+ * the more specific prefix must come first. Every value must be one of the
+ * backend's CATEGORIES — `markCategoryRead` rejects anything else with a 422.
+ */
+const prefixToCategory: [string, string][] = [
+  ["/admin/staff-hub/news", "announcements"],
+  ["/admin/staff-hub/room", "messages"],
+  ["/support-desk/staff-hub/news", "announcements"],
+  ["/support-desk/staff-hub/room", "messages"],
+  ["/instructor/staff-hub/news", "announcements"],
+  ["/instructor/staff-hub/room", "messages"],
+  ["/admin/messages/announcements", "announcements"],
+  ["/admin/messages", "messages"],
+  ["/instructor/announcements", "announcements"],
+  ["/instructor/messages", "messages"],
+];
+
+/**
+ * Categories whose count is derived from conversation read state rather than
+ * from notification rows. `markCategoryRead` can only clear rows, so calling it
+ * here would leave the count untouched while the optimistic delete below makes
+ * this effect believe it changed — an 800 ms/30 s request loop for as long as
+ * the reader stays on `/messages` or `/announcements`. These badges clear when
+ * the conversations themselves are read.
+ */
+const conversationDerived = new Set(["messages", "announcements"]);
 
 export function useSidebarBadges() {
   const [badges, setBadges] = useState<Record<string, number>>({});
@@ -47,8 +77,8 @@ export function useSidebarBadges() {
   }, [load]);
 
   useEffect(() => {
-    const category = pathToCategory[location.pathname];
-    if (!category) return;
+    const category = getCategoryForPath(location.pathname);
+    if (!category || conversationDerived.has(category)) return;
     const count = badges[category];
     if (!count || count === 0) return;
 
@@ -75,5 +105,9 @@ export function useSidebarBadges() {
 }
 
 export function getCategoryForPath(pathname: string): string | null {
-  return pathToCategory[pathname] ?? null;
+  const exact = pathToCategory[pathname];
+  if (exact) return exact;
+
+  const prefix = prefixToCategory.find(([candidate]) => pathname === candidate || pathname.startsWith(`${candidate}/`));
+  return prefix?.[1] ?? null;
 }

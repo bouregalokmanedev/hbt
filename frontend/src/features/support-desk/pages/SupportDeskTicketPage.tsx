@@ -1,10 +1,23 @@
-import { ArrowLeft, Loader2, Send, StickyNote } from "lucide-react";
+import { ArrowLeft, Loader2, Send, Star, StickyNote } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { supportDeskApi, type DeskTicketDetails } from "../api/supportDesk.api";
+import { supportDeskApi, type DeskTicketDetails, type DeskTicketReply } from "../api/supportDesk.api";
+
+/**
+ * Assign/resolve/close/escalate return a ticket payload that may omit
+ * `replies`. Always hand the renderer a real array so `replies.length` and
+ * `replies.map` can never run against `undefined`.
+ */
+function withReplies(
+    ticket: DeskTicketDetails | null | undefined,
+    fallback: DeskTicketReply[] = [],
+): DeskTicketDetails | null {
+    if (!ticket) return null;
+    return { ...ticket, replies: Array.isArray(ticket.replies) ? ticket.replies : fallback };
+}
 
 export function SupportDeskTicketPage() {
     const { t } = useTranslation();
@@ -19,7 +32,7 @@ export function SupportDeskTicketPage() {
     const load = useCallback(async () => {
         if (!ticketId) return;
         try {
-            setTicket(await supportDeskApi.get(ticketId));
+            setTicket(withReplies(await supportDeskApi.get(ticketId)));
         } catch (cause) {
             setError(cause instanceof Error ? cause.message : t("supportDesk.ticket.loadFail"));
         }
@@ -36,7 +49,8 @@ export function SupportDeskTicketPage() {
         try {
             const result = await task();
             if (result && typeof result === "object" && "id" in (result as Record<string, unknown>)) {
-                setTicket(result as DeskTicketDetails);
+                const next = result as DeskTicketDetails;
+                setTicket((current) => withReplies(next, current?.replies ?? []));
             } else {
                 await load();
             }
@@ -78,7 +92,12 @@ export function SupportDeskTicketPage() {
     }
 
     const closed = ticket.status === "closed" || ticket.status === "resolved";
-    const isMine = user && ticket.assignee && ticket.user !== ticket.assignee;
+    const replies = ticket.replies ?? [];
+    const me = user ? `${user.first_name} ${user.last_name}`.trim() : "";
+    const isMine = Boolean(me && ticket.assignee && ticket.assignee === me);
+    const level = ticket.level ?? "support";
+    const canEscalate = level !== "super_admin";
+    const escalateTo: "admin" | "super_admin" = level === "support" ? "admin" : "super_admin";
 
     return (
         <main className="mx-auto max-w-4xl space-y-5 px-4 py-6 sm:px-6">
@@ -95,7 +114,30 @@ export function SupportDeskTicketPage() {
                             {ticket.user}{ticket.email ? ` · ${ticket.email}` : ""} · {ticket.assignee ? t("supportDesk.ticket.assignedTo", { name: ticket.assignee }) : t("supportDesk.ticket.unassigned")}
                         </p>
                     </div>
-                    <span className="rounded-full bg-[#F7F7F7] px-3 py-1.5 text-xs font-bold capitalize">{ticket.status}</span>
+                    <div className="flex flex-col items-end gap-2">
+                        <span className="rounded-full bg-[#F7F7F7] px-3 py-1.5 text-xs font-bold capitalize">{ticket.status}</span>
+                        {Boolean(ticket.rating) && (
+                            <span
+                                className="inline-flex items-center gap-1.5 rounded-full bg-[#F47822]/10 px-3 py-1.5 text-[11px] font-bold text-[#F47822]"
+                                title={ticket.rating_comment ?? undefined}
+                            >
+                                <span className="flex items-center gap-0.5">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <Star
+                                            key={star}
+                                            aria-hidden
+                                            className={`h-3.5 w-3.5 ${
+                                                star <= (ticket.rating ?? 0)
+                                                    ? "fill-[#F47822] text-[#F47822]"
+                                                    : "text-[#3A3A3A]/25"
+                                            }`}
+                                        />
+                                    ))}
+                                </span>
+                                {t("supportDesk.ticket.studentRating", { score: ticket.rating })}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {error && <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-2.5 text-xs text-red-600">{error}</p>}
@@ -129,14 +171,18 @@ export function SupportDeskTicketPage() {
                             >
                                 {busy === "close" ? t("supportDesk.ticket.closing") : t("supportDesk.ticket.close")}
                             </button>
-                            <button
-                                type="button"
-                                disabled={!!busy}
-                                onClick={() => void run("escalate", () => supportDeskApi.escalate(ticket.id, { level: "admin" }))}
-                                className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100 disabled:opacity-50"
-                            >
-                                {busy === "escalate" ? t("supportDesk.ticket.escalating") : t("supportDesk.ticket.escalate")}
-                            </button>
+                            {canEscalate && (
+                                <button
+                                    type="button"
+                                    disabled={!!busy}
+                                    onClick={() => void run("escalate", () => supportDeskApi.escalate(ticket.id, { level: escalateTo }))}
+                                    className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-bold text-amber-700 hover:bg-amber-100 disabled:opacity-50"
+                                >
+                                    {busy === "escalate"
+                                        ? t("supportDesk.ticket.escalating")
+                                        : t(escalateTo === "super_admin" ? "supportDesk.ticket.escalateToSuper" : "supportDesk.ticket.escalate")}
+                                </button>
+                            )}
                         </>
                     )}
                 </div>
@@ -145,8 +191,8 @@ export function SupportDeskTicketPage() {
             <section className="rounded-3xl border border-[#3A3A3A]/8 bg-white p-5 shadow-sm sm:p-6">
                 <h2 className="text-sm font-bold text-[#3A3A3A]">{t("supportDesk.ticket.conversation")}</h2>
                 <div className="mt-4 space-y-3">
-                    {ticket.replies.length === 0 && <p className="text-xs text-[#3A3A3A]/45">{t("supportDesk.ticket.noReplies")}</p>}
-                    {ticket.replies.map((reply) => (
+                    {replies.length === 0 && <p className="text-xs text-[#3A3A3A]/45">{t("supportDesk.ticket.noReplies")}</p>}
+                    {replies.map((reply) => (
                         <div key={reply.id} className={`rounded-2xl px-4 py-3 ${reply.internal ? "border border-dashed border-amber-300 bg-amber-50/60" : "bg-[#F7F7F7]"}`}>
                             <p className="flex items-center gap-2 text-[11px] font-bold text-[#3A3A3A]/60">
                                 {reply.internal && <StickyNote className="h-3 w-3 text-amber-600" />}

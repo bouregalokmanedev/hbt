@@ -206,6 +206,11 @@ export function InstructorSimulatorPage() {
         }
     };
 
+    const toolName = (key: string): string =>
+        key === "Pack"
+            ? t("instructor.simulator.builder.packCount")
+            : t(`instructor.simulator.activity.tools.${key}`, { defaultValue: key });
+
     const statusLabel = (status: string): string => {
         switch (status) {
             case "draft":
@@ -830,19 +835,19 @@ export function InstructorSimulatorPage() {
                                                     <p className="truncate font-mono text-sm font-black text-[#3A3A3A]" dir="ltr">
                                                         {pack.code} · v{pack.version}{" "}
                                                         <span className="ms-2 rounded-full border border-[#3A3A3A]/10 bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#3A3A3A]/60">
-                                                            {toolLabel}
+                                                            {toolName(toolLabel)}
                                                         </span>
                                                     </p>
                                                     <p className="mt-0.5 font-mono text-[11px] text-[#3A3A3A]/45" dir="ltr">
                                                         {itemCount}{" "}
                                                         {toolLabel === "Multimeter"
-                                                            ? "procedures"
+                                                            ? t("instructor.simulator.builder.countProcedures")
                                                             : toolLabel === "Oscilloscope"
-                                                              ? "exercises"
+                                                              ? t("instructor.simulator.builder.countExercises")
                                                               : toolLabel === "Location"
-                                                                ? "components"
+                                                                ? t("instructor.simulator.builder.countComponents")
                                                                 : toolLabel === "Schematic"
-                                                                  ? "items"
+                                                                  ? t("instructor.simulator.builder.countItems")
                                                                   : t("instructor.simulator.variants.faultEntries", { count: Array.isArray(pack.manifest) ? pack.manifest.length : 0 })}
                                                     </p>
                                                 </div>
@@ -857,7 +862,7 @@ export function InstructorSimulatorPage() {
                                                         onClick={() => setViewingPack(pack)}
                                                         className="rounded-lg border border-[#3A3A3A]/12 bg-white px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 transition hover:border-[#3A3A3A]/25 hover:text-[#3A3A3A]"
                                                     >
-                                                        View
+                                                        {t("instructor.simulator.builder.edit")}
                                                     </button>
                                                     {(pack.status === "draft" || pack.status === "rejected" || pack.status === "published") && (
                                                         <button
@@ -945,7 +950,7 @@ export function InstructorSimulatorPage() {
                                                         {viewingPack.code} · v{viewingPack.version}
                                                     </p>
                                                     <p className="mt-0.5 text-xs text-[#3A3A3A]/50">
-                                                        {statusLabel(viewingPack.status)} · {Array.isArray(viewingPack.manifest) ? viewingPack.manifest.length : 0} entries
+                                                        {statusLabel(viewingPack.status)} · {t("instructor.simulator.builder.entries", { n: Array.isArray(viewingPack.manifest) ? viewingPack.manifest.length : 0 })}
                                                     </p>
                                                 </div>
                                                 <div className="flex gap-2">
@@ -1225,6 +1230,28 @@ export interface FaultNodeDraft {
     dtc: string;
 }
 
+export interface FaultDtcCauseDraft {
+    label: string;
+    note: string;
+    pct: string;
+}
+
+export interface FaultDtcLiveDraft {
+    k: string;
+    spec: string;
+    measured: string;
+    ok: boolean;
+}
+
+export interface FaultDtcDetailDraft {
+    meaning: string;
+    causes: FaultDtcCauseDraft[];
+    live: FaultDtcLiveDraft[];
+    decision: string;
+    evidence: string;
+    doNotStop: string;
+}
+
 export interface FaultDtcDraft {
     code: string;
     desc: string;
@@ -1232,6 +1259,8 @@ export interface FaultDtcDraft {
     status: "Current" | "Stored" | "Pending" | "Intermittent";
     severity: "high" | "medium" | "low";
     count: string;
+    /** Student-facing dossier (fault overview / causes / live data / repair decision). */
+    detail?: FaultDtcDetailDraft;
 }
 
 export interface FaultPidDraft {
@@ -1264,6 +1293,80 @@ function blankFaultEntry(): FaultEntryDraft {
     return { key: nextFaultKey(), title: "", nodes: [], dtcs: [], pids: [], adasDone: [false, false, false, false, false, false], tree: [] };
 }
 
+function blankDtcDetail(): FaultDtcDetailDraft {
+    return { meaning: "", causes: [], live: [], decision: "", evidence: "", doNotStop: "" };
+}
+
+function detailFromManifest(v: unknown): FaultDtcDetailDraft | undefined {
+    if (!v || typeof v !== "object") return undefined;
+    const o = v as Record<string, unknown>;
+    const repair = o.repair && typeof o.repair === "object" ? (o.repair as Record<string, unknown>) : {};
+    const detail: FaultDtcDetailDraft = {
+        meaning: typeof o.meaning === "string" ? o.meaning : "",
+        causes: Array.isArray(o.causes)
+            ? o.causes
+                  .filter((c): c is Record<string, unknown> => !!c && typeof c === "object")
+                  .map((c) => ({
+                      label: String(c.label ?? ""),
+                      note: String(c.note ?? ""),
+                      pct: String(Number(c.pct ?? 0) || 0),
+                  }))
+            : [],
+        live: Array.isArray(o.live)
+            ? o.live
+                  .filter((r): r is Record<string, unknown> => !!r && typeof r === "object")
+                  .map((r) => ({
+                      k: String(r.k ?? ""),
+                      spec: String(r.spec ?? ""),
+                      measured: String(r.measured ?? ""),
+                      ok: r.ok !== false,
+                  }))
+            : [],
+        decision: typeof repair.decision === "string" ? repair.decision : "",
+        evidence: typeof repair.evidence === "string" ? repair.evidence : "",
+        doNotStop: typeof repair.doNotStop === "string" ? repair.doNotStop : "",
+    };
+    const empty =
+        !detail.meaning &&
+        detail.causes.length === 0 &&
+        detail.live.length === 0 &&
+        !detail.decision &&
+        !detail.evidence &&
+        !detail.doNotStop;
+    return empty ? undefined : detail;
+}
+
+function dtcDetailsForFault(f: FaultEntryDraft): Record<string, unknown> {
+    const details: Record<string, unknown> = {};
+    for (const d of f.dtcs) {
+        const code = d.code.trim().toUpperCase();
+        const det = d.detail;
+        if (!code || !det) continue;
+        const out: Record<string, unknown> = {};
+        const meaning = det.meaning.trim();
+        if (meaning) out.meaning = meaning;
+        const causes = det.causes
+            .filter((c) => c.label.trim())
+            .map((c) => ({
+                label: c.label.trim(),
+                note: c.note.trim(),
+                pct: Math.max(0, Math.min(100, Number(c.pct) || 0)),
+            }));
+        if (causes.length) out.causes = causes;
+        const live = det.live
+            .filter((r) => r.k.trim())
+            .map((r) => ({ k: r.k.trim(), spec: r.spec.trim(), measured: r.measured.trim(), ok: r.ok }));
+        if (live.length) out.live = live;
+        const repair: Record<string, unknown> = {};
+        if (det.decision.trim()) repair.decision = det.decision.trim();
+        if (det.evidence.trim()) repair.evidence = det.evidence.trim();
+        if (det.doNotStop.trim()) repair.doNotStop = det.doNotStop.trim();
+        if (Object.keys(repair).length > 0) out.repair = repair;
+        if (Object.keys(out).length > 0) details[code] = out;
+    }
+    return details;
+}
+
 function entryFromLibrary(entry: FaultLibraryEntry): FaultEntryDraft {
     return {
         key: nextFaultKey(),
@@ -1282,6 +1385,10 @@ function faultsFromManifest(manifest: unknown): FaultEntryDraft[] {
         .filter((e): e is Record<string, unknown> => !!e && typeof e === "object")
         .map((e, i) => {
             const asArr = (v: unknown): Record<string, unknown>[] => (Array.isArray(v) ? v.filter((x): x is Record<string, unknown> => !!x && typeof x === "object") : []);
+            const details =
+                e.dtcDetails && typeof e.dtcDetails === "object" && !Array.isArray(e.dtcDetails)
+                    ? (e.dtcDetails as Record<string, unknown>)
+                    : {};
             return {
                 key: `fault-${i}`,
                 title: typeof e.title === "string" && e.title ? e.title : "",
@@ -1297,6 +1404,7 @@ function faultsFromManifest(manifest: unknown): FaultEntryDraft[] {
                     status: (DTC_STATUSES as readonly string[]).includes(String(d.status)) ? (d.status as FaultDtcDraft["status"]) : "Stored",
                     severity: (SEVERITIES as readonly string[]).includes(String(d.severity)) ? (d.severity as FaultDtcDraft["severity"]) : "medium",
                     count: String(d.count ?? 1),
+                    detail: detailFromManifest(details[String(d.code ?? "").trim().toUpperCase()]),
                 })),
                 pids: asArr(e.pids).map((p) => ({
                     id: String(p.id ?? "RPM"),
@@ -1347,6 +1455,10 @@ function faultsToManifest(faults: FaultEntryDraft[]): { entries: Record<string, 
             dtcs,
             pids,
             adasDone: [...f.adasDone],
+            ...(() => {
+                const details = dtcDetailsForFault(f);
+                return Object.keys(details).length > 0 ? { dtcDetails: details } : {};
+            })(),
             ...(fi === 0 && f.tree.length > 0
                 ? {
                       tree: f.tree.map((s) => ({
@@ -1377,6 +1489,151 @@ function inferToolFromManifest(manifest: unknown): string {
     if (entry.wires || entry.traces) return "schematic";
     if (entry.nodes || entry.dtcs) return "scanner";
     return "scanner";
+}
+
+function DtcDossierEditor({ detail, onChange }: { detail: FaultDtcDetailDraft; onChange: (next: FaultDtcDetailDraft) => void }) {
+    const { t } = useTranslation();
+    const set = (patch: Partial<FaultDtcDetailDraft>) => onChange({ ...detail, ...patch });
+    const setCause = (i: number, patch: Partial<FaultDtcCauseDraft>) =>
+        set({ causes: detail.causes.map((c, j) => (j === i ? { ...c, ...patch } : c)) });
+    const setLive = (i: number, patch: Partial<FaultDtcLiveDraft>) =>
+        set({ live: detail.live.map((r, j) => (j === i ? { ...r, ...patch } : r)) });
+
+    return (
+        <div className="grid gap-3">
+            <label className="block text-xs font-bold text-[#3A3A3A]">
+                {t("instructor.simulator.packForm.dossierOverview")}
+                <textarea
+                    value={detail.meaning}
+                    onChange={(e) => set({ meaning: e.target.value })}
+                    rows={3}
+                    placeholder={t("instructor.simulator.packForm.dossierOverviewPh")}
+                    className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-xs font-normal"
+                />
+            </label>
+
+            <div>
+                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dossierCauses")}</p>
+                <div className="mt-1.5 grid gap-2">
+                    {detail.causes.map((c, i) => (
+                        <div key={i} className="grid gap-2 rounded-lg bg-[#3A3A3A]/[.03] p-2 sm:grid-cols-[1fr_1fr_80px_auto]">
+                            <input
+                                value={c.label}
+                                onChange={(e) => setCause(i, { label: e.target.value })}
+                                placeholder={t("instructor.simulator.packForm.causeLabel")}
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                            />
+                            <input
+                                value={c.note}
+                                onChange={(e) => setCause(i, { note: e.target.value })}
+                                placeholder={t("instructor.simulator.packForm.causeNote")}
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                            />
+                            <input
+                                value={c.pct}
+                                onChange={(e) => setCause(i, { pct: e.target.value })}
+                                inputMode="numeric"
+                                dir="ltr"
+                                title={t("instructor.simulator.packForm.causePct")}
+                                placeholder="%"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => set({ causes: detail.causes.filter((_, j) => j !== i) })}
+                                className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+                </div>
+                <button
+                    type="button"
+                    onClick={() => set({ causes: [...detail.causes, { label: "", note: "", pct: "0" }] })}
+                    className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                >
+                    {t("instructor.simulator.packForm.addCause")}
+                </button>
+            </div>
+
+            <div>
+                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dossierLive")}</p>
+                <div className="mt-1.5 grid gap-2">
+                    {detail.live.map((r, i) => (
+                        <div key={i} className="grid gap-2 rounded-lg bg-[#3A3A3A]/[.03] p-2 sm:grid-cols-[1fr_1fr_1fr_130px_auto]">
+                            <input
+                                value={r.k}
+                                onChange={(e) => setLive(i, { k: e.target.value })}
+                                placeholder={t("instructor.simulator.packForm.liveMeasurement")}
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                            />
+                            <input
+                                value={r.spec}
+                                onChange={(e) => setLive(i, { spec: e.target.value })}
+                                placeholder={t("instructor.simulator.packForm.liveSpec")}
+                                dir="ltr"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                            />
+                            <input
+                                value={r.measured}
+                                onChange={(e) => setLive(i, { measured: e.target.value })}
+                                placeholder={t("instructor.simulator.packForm.liveMeasured")}
+                                dir="ltr"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                            />
+                            <select
+                                value={r.ok ? "in" : "out"}
+                                onChange={(e) => setLive(i, { ok: e.target.value === "in" })}
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
+                            >
+                                <option value="in">{t("instructor.simulator.packForm.liveInSpec")}</option>
+                                <option value="out">{t("instructor.simulator.packForm.liveOutSpec")}</option>
+                            </select>
+                            <button
+                                type="button"
+                                onClick={() => set({ live: detail.live.filter((_, j) => j !== i) })}
+                                className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+                </div>
+                <button
+                    type="button"
+                    onClick={() => set({ live: [...detail.live, { k: "", spec: "", measured: "", ok: true }] })}
+                    className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                >
+                    {t("instructor.simulator.packForm.addLiveRow")}
+                </button>
+            </div>
+
+            <div className="grid gap-2">
+                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dossierRepair")}</p>
+                <input
+                    value={detail.decision}
+                    onChange={(e) => set({ decision: e.target.value })}
+                    placeholder={t("instructor.simulator.packForm.repairDecision")}
+                    className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs"
+                />
+                <textarea
+                    value={detail.evidence}
+                    onChange={(e) => set({ evidence: e.target.value })}
+                    rows={2}
+                    placeholder={t("instructor.simulator.packForm.repairEvidence")}
+                    className="w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-xs"
+                />
+                <textarea
+                    value={detail.doNotStop}
+                    onChange={(e) => set({ doNotStop: e.target.value })}
+                    rows={2}
+                    placeholder={t("instructor.simulator.packForm.repairDoNotStop")}
+                    className="w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-xs"
+                />
+            </div>
+        </div>
+    );
 }
 
 export function PackForm({
@@ -1566,7 +1823,7 @@ export function PackForm({
         } else if (tool === "schematic") {
             manifest = [{ components: schComponents.length ? schComponents : SCH_COMPONENTS.slice(0, 3), wires: schWires.length ? schWires : SCH_WIRES.slice(0, 5), traces: SCH_TRACES.slice(0, 2) }];
         } else {
-            setManifestError("Unknown tool");
+            setManifestError(t("instructor.simulator.builder.unknownTool"));
             return;
         }
         setManifestError(null);
@@ -1595,13 +1852,13 @@ export function PackForm({
                     <input value={version} onChange={(e) => setVersion(e.target.value)} placeholder={t("instructor.simulator.packForm.versionPh")} dir="ltr" className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 font-mono text-sm font-normal" />
                 </label>
                 <label className="block text-xs font-bold text-[#3A3A3A]">
-                    Lab
+                    {t("instructor.simulator.builder.lab")}
                     <select value={tool} onChange={(e) => setTool(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-sm font-bold">
-                        <option value="scanner">Scanner</option>
-                        <option value="multimeter">Multimeter</option>
-                        <option value="oscilloscope">Oscilloscope</option>
-                        <option value="location">Location</option>
-                        <option value="schematic">Schematic</option>
+                        <option value="scanner">{t("instructor.simulator.activity.tools.scanner")}</option>
+                        <option value="multimeter">{t("instructor.simulator.activity.tools.multimeter")}</option>
+                        <option value="oscilloscope">{t("instructor.simulator.activity.tools.oscilloscope")}</option>
+                        <option value="location">{t("instructor.simulator.activity.tools.location")}</option>
+                        <option value="schematic">{t("instructor.simulator.activity.tools.schematic")}</option>
                     </select>
                 </label>
             </div>
@@ -1721,7 +1978,7 @@ export function PackForm({
                                                             className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
                                                         >
                                                             {NODE_STATUSES.map((s) => (
-                                                                <option key={s} value={s}>{s}</option>
+                                                                <option key={s} value={s}>{t(`instructor.simulator.builder.nodeStatus.${s}`)}</option>
                                                             ))}
                                                         </select>
                                                         <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#3A3A3A]/60">
@@ -1786,7 +2043,7 @@ export function PackForm({
                                                             className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
                                                         >
                                                             {DTC_STATUSES.map((s) => (
-                                                                <option key={s} value={s}>{s}</option>
+                                                                <option key={s} value={s}>{t(`instructor.simulator.builder.dtcStatus.${s.toLowerCase()}`)}</option>
                                                             ))}
                                                         </select>
                                                         <select
@@ -1795,7 +2052,7 @@ export function PackForm({
                                                             className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
                                                         >
                                                             {SEVERITIES.map((s) => (
-                                                                <option key={s} value={s}>{s}</option>
+                                                                <option key={s} value={s}>{t(`instructor.simulator.builder.severity.${s}`)}</option>
                                                             ))}
                                                         </select>
                                                         <input
@@ -1823,6 +2080,45 @@ export function PackForm({
                                             >
                                                 {t("instructor.simulator.packForm.addDtc")}
                                             </button>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dtcDossier")}</p>
+                                            <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">{t("instructor.simulator.packForm.dtcDossierHint")}</p>
+                                            {fault.dtcs.filter((d) => d.code.trim()).length === 0 ? (
+                                                <p className="mt-2 text-[11px] text-[#3A3A3A]/50">
+                                                    {t("instructor.simulator.packForm.dtcDossierEmpty")}
+                                                </p>
+                                            ) : (
+                                                <div className="mt-2 grid gap-2">
+                                                    {fault.dtcs.map((dtc, di) =>
+                                                        dtc.code.trim() ? (
+                                                            <details
+                                                                key={`dossier-${di}`}
+                                                                className="overflow-hidden rounded-xl border border-[#3A3A3A]/10 bg-white"
+                                                            >
+                                                                <summary className="flex cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-xs font-black text-[#3A3A3A] hover:bg-[#3A3A3A]/[.03]">
+                                                                    <span dir="ltr" className="font-mono">
+                                                                        {dtc.code.trim().toUpperCase()}
+                                                                    </span>
+                                                                    {dtc.desc && (
+                                                                        <span className="truncate font-normal text-[#3A3A3A]/60">{dtc.desc}</span>
+                                                                    )}
+                                                                </summary>
+                                                                <div className="border-t border-[#3A3A3A]/10 p-3">
+                                                                    <DtcDossierEditor
+                                                                        detail={dtc.detail ?? blankDtcDetail()}
+                                                                        onChange={(next) =>
+                                                                            patchFault(fi, {
+                                                                                dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, detail: next } : d)),
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                            </details>
+                                                        ) : null,
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.liveValues")}</p>
@@ -1989,9 +2285,9 @@ export function PackForm({
             ) : tool === "multimeter" ? (
                 <div className="mt-4 space-y-3">
                     <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-4">
-                        <h4 className="text-sm font-black">Multimeter Procedures — {mmProcedures.length} in pack</h4>
+                        <h4 className="text-sm font-black">{t("instructor.simulator.builder.mmTitle", { n: mmProcedures.length })}</h4>
                         <p className="mt-1 text-xs text-[#3A3A3A]/60">
-                            Each procedure defines a component (pins, pin functions, ECU links) and measurement steps (mode, probes, spec, good/bad).
+                            {t("instructor.simulator.builder.mmHint")}
                         </p>
                         <div className="mt-3 max-h-48 space-y-2 overflow-auto">
                             {(mmProcedures as Record<string, unknown>[]).map((proc, idx) => (
@@ -1999,7 +2295,7 @@ export function PackForm({
                                     <span className="font-mono text-xs font-black">{String(proc.ref)}</span>
                                     <span className="flex-1 truncate text-sm font-bold">{String(proc.name)}</span>
                                     <span className="rounded-full bg-[#3A3A3A]/10 px-2 py-0.5 font-mono text-[10px] text-[#3A3A3A]/60">
-                                        {Array.isArray(proc.steps) ? (proc.steps as unknown[]).length : 0} steps
+                                        {t("instructor.simulator.builder.stepsUnit", { n: Array.isArray(proc.steps) ? (proc.steps as unknown[]).length : 0 })}
                                     </span>
                                     <button
                                         type="button"
@@ -2009,26 +2305,26 @@ export function PackForm({
                                         }}
                                         className="text-xs font-bold text-[#1F6AE1]"
                                     >
-                                        Edit
+                                        {t("instructor.simulator.builder.edit")}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setMmProcedures((l) => l.filter((_, i) => i !== idx))}
                                         className="text-xs font-bold text-red-600"
                                     >
-                                        Remove
+                                        {t("instructor.simulator.builder.remove")}
                                     </button>
                                 </div>
                             ))}
                             {mmProcedures.length === 0 && (
-                                <p className="rounded-xl border-2 border-dashed p-4 text-center text-sm text-[#3A3A3A]/40">No procedures yet.</p>
+                                <p className="rounded-xl border-2 border-dashed p-4 text-center text-sm text-[#3A3A3A]/40">{t("instructor.simulator.builder.noProcedures")}</p>
                             )}
                         </div>
 
                         {/* Procedure draft editor */}
                         <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] p-3 sm:grid-cols-3">
                             <label className="block text-xs font-bold">
-                                Ref{" "}
+                                {t("instructor.simulator.builder.ref")}{" "}
                                 <input
                                     value={mmDraft.ref}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, ref: e.target.value, code: e.target.value }))}
@@ -2038,16 +2334,16 @@ export function PackForm({
                                 />
                             </label>
                             <label className="block text-xs font-bold sm:col-span-2">
-                                Name{" "}
+                                {t("instructor.simulator.builder.name")}{" "}
                                 <input
                                     value={mmDraft.name}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, name: e.target.value }))}
-                                    placeholder="Injector 1"
+                                    placeholder={t("instructor.simulator.builder.namePh")}
                                     className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"
                                 />
                             </label>
                             <label className="block text-xs font-bold">
-                                Group{" "}
+                                {t("instructor.simulator.builder.group")}{" "}
                                 <input
                                     value={mmDraft.group}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, group: e.target.value }))}
@@ -2055,7 +2351,7 @@ export function PackForm({
                                 />
                             </label>
                             <label className="block text-xs font-bold">
-                                Art sym{" "}
+                                {t("instructor.simulator.builder.artSym")}{" "}
                                 <select
                                     value={mmDraft.sym}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, sym: e.target.value }))}
@@ -2069,7 +2365,7 @@ export function PackForm({
                                 </select>
                             </label>
                             <label className="block text-xs font-bold">
-                                Pins (comma){" "}
+                                {t("instructor.simulator.builder.pinsComma")}{" "}
                                 <input
                                     value={mmDraft.pins.join(",")}
                                     onChange={(e) =>
@@ -2091,8 +2387,8 @@ export function PackForm({
                         {/* Pin functions + ECU */}
                         <div className="mt-3 grid gap-3 sm:grid-cols-2">
                             <div className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
-                                <p className="text-xs font-black text-[#3A3A3A]">Pin functions</p>
-                                <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">One row per pin — function text shown on the wiring diagram.</p>
+                                <p className="text-xs font-black text-[#3A3A3A]">{t("instructor.simulator.builder.pinFunctions")}</p>
+                                <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">{t("instructor.simulator.builder.pinFunctionsHint")}</p>
                                 <div className="mt-2 space-y-1.5">
                                     {mmDraft.pins.map((pin) => (
                                         <div key={pin} className="flex gap-2">
@@ -2104,7 +2400,7 @@ export function PackForm({
                                                 onChange={(e) =>
                                                     setMmDraft((d) => ({ ...d, pinFn: { ...d.pinFn, [pin]: e.target.value } }))
                                                 }
-                                                placeholder="Signal / earth / supply…"
+                                                placeholder={t("instructor.simulator.builder.pinFnPh")}
                                                 className="h-8 flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs outline-none focus:border-[#F47822]"
                                             />
                                             <label className="flex items-center gap-1 text-[10px] font-bold text-[#3A3A3A]/60">
@@ -2121,18 +2417,18 @@ export function PackForm({
                                                     }
                                                     className="accent-[#B85708]"
                                                 />
-                                                SUP
+                                                {t("instructor.simulator.builder.supply")}
                                             </label>
                                         </div>
                                     ))}
-                                    {mmDraft.pins.length === 0 && <p className="text-[11px] text-[#3A3A3A]/40">Add pins above first.</p>}
+                                    {mmDraft.pins.length === 0 && <p className="text-[11px] text-[#3A3A3A]/40">{t("instructor.simulator.builder.addPinsFirst")}</p>}
                                 </div>
                             </div>
                             <div className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
-                                <p className="text-xs font-black text-[#3A3A3A]">ECU link</p>
+                                <p className="text-xs font-black text-[#3A3A3A]">{t("instructor.simulator.builder.ecuLink")}</p>
                                 <div className="mt-2 grid grid-cols-2 gap-2">
                                     <label className="block text-[11px] font-bold">
-                                        ECU code
+                                        {t("instructor.simulator.builder.ecuCode")}
                                         <input
                                             value={mmDraft.ecu.code}
                                             onChange={(e) => setMmDraft((d) => ({ ...d, ecu: { ...d.ecu, code: e.target.value } }))}
@@ -2141,7 +2437,7 @@ export function PackForm({
                                         />
                                     </label>
                                     <label className="block text-[11px] font-bold">
-                                        ECU pins (comma)
+                                        {t("instructor.simulator.builder.ecuPinsComma")}
                                         <input
                                             value={mmDraft.ecu.pins.join(",")}
                                             onChange={(e) =>
@@ -2162,7 +2458,7 @@ export function PackForm({
                                         />
                                     </label>
                                 </div>
-                                <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/50">Pin → ECU pin links</p>
+                                <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/50">{t("instructor.simulator.builder.pinEcuLinks")}</p>
                                 <div className="mt-1 max-h-32 space-y-1 overflow-auto">
                                     {mmDraft.pins.map((pin) => (
                                         <div key={pin} className="flex items-center gap-2">
@@ -2196,13 +2492,13 @@ export function PackForm({
                         {/* Measurement steps */}
                         <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
                             <div className="flex items-center justify-between">
-                                <p className="text-xs font-black text-[#3A3A3A]">Measurement steps · {mmDraft.steps.length}</p>
+                                <p className="text-xs font-black text-[#3A3A3A]">{t("instructor.simulator.builder.measurementSteps", { n: mmDraft.steps.length })}</p>
                                 <button
                                     type="button"
                                     onClick={() => setMmDraft((d) => ({ ...d, steps: [...d.steps, emptyMmStep()] }))}
                                     className="rounded-lg border border-[#3A3A3A]/15 px-2.5 py-1 text-[11px] font-bold text-[#3A3A3A]/70"
                                 >
-                                    + Step
+                                    {t("instructor.simulator.builder.addStep")}
                                 </button>
                             </div>
                             <div className="mt-2 space-y-2">
@@ -2236,7 +2532,7 @@ export function PackForm({
                                                         steps: d.steps.map((st, i) => (i === si ? { ...st, red: e.target.value } : st)),
                                                     }))
                                                 }
-                                                placeholder="red c1"
+                                                placeholder={t("instructor.simulator.builder.redPh")}
                                                 dir="ltr"
                                                 className="h-8 w-24 rounded-lg border border-red-200 bg-red-50/50 px-2 font-mono text-xs"
                                             />
@@ -2248,7 +2544,7 @@ export function PackForm({
                                                         steps: d.steps.map((st, i) => (i === si ? { ...st, black: e.target.value } : st)),
                                                     }))
                                                 }
-                                                placeholder="black gnd"
+                                                placeholder={t("instructor.simulator.builder.blackPh")}
                                                 dir="ltr"
                                                 className="h-8 w-24 rounded-lg border border-zinc-200 bg-zinc-50 px-2 font-mono text-xs"
                                             />
@@ -2262,7 +2558,7 @@ export function PackForm({
                                         </div>
                                         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
                                             <label className="block text-[10px] font-bold text-[#3A3A3A]/60 sm:col-span-2">
-                                                Spec
+                                                {t("instructor.simulator.builder.spec")}
                                                 <input
                                                     value={step.spec}
                                                     onChange={(e) =>
@@ -2276,7 +2572,7 @@ export function PackForm({
                                                 />
                                             </label>
                                             <label className="block text-[10px] font-bold text-[#3A3A3A]/60">
-                                                Good
+                                                {t("instructor.simulator.builder.good")}
                                                 <input
                                                     value={step.good}
                                                     onChange={(e) =>
@@ -2290,7 +2586,7 @@ export function PackForm({
                                                 />
                                             </label>
                                             <label className="block text-[10px] font-bold text-[#3A3A3A]/60">
-                                                Bad
+                                                {t("instructor.simulator.builder.bad")}
                                                 <input
                                                     value={step.bad}
                                                     onChange={(e) =>
@@ -2304,7 +2600,7 @@ export function PackForm({
                                                 />
                                             </label>
                                             <label className="block text-[10px] font-bold text-[#3A3A3A]/60">
-                                                Unit
+                                                {t("instructor.simulator.builder.unit")}
                                                 <input
                                                     value={step.unit}
                                                     onChange={(e) =>
@@ -2321,7 +2617,7 @@ export function PackForm({
                                     </div>
                                 ))}
                                 {mmDraft.steps.length === 0 && (
-                                    <p className="rounded-lg border border-dashed p-3 text-center text-xs text-[#3A3A3A]/40">Add at least one step.</p>
+                                    <p className="rounded-lg border border-dashed p-3 text-center text-xs text-[#3A3A3A]/40">{t("instructor.simulator.builder.addStepEmpty")}</p>
                                 )}
                             </div>
                         </div>
@@ -2353,7 +2649,7 @@ export function PackForm({
                                 disabled={!mmDraft.ref.trim() || !mmDraft.name.trim() || mmDraft.steps.length === 0}
                                 className="rounded-xl bg-[#B85708] px-4 py-2 text-xs font-black text-white disabled:opacity-50"
                             >
-                                {mmEditIdx === null ? "Add procedure" : "Update procedure"}
+                                {mmEditIdx === null ? t("instructor.simulator.builder.addProcedure") : t("instructor.simulator.builder.updateProcedure")}
                             </button>
                             {mmEditIdx !== null && (
                                 <button
@@ -2364,7 +2660,7 @@ export function PackForm({
                                     }}
                                     className="rounded-xl border border-[#3A3A3A]/15 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60"
                                 >
-                                    Cancel edit
+                                    {t("instructor.simulator.builder.cancelEdit")}
                                 </button>
                             )}
                         </div>
@@ -2377,10 +2673,10 @@ export function PackForm({
                                 }}
                                 className="flex-1 rounded-xl border px-3 py-2 text-xs font-bold"
                             >
-                                + Sample
+                                {t("instructor.simulator.builder.sample")}
                             </button>
                             <button type="button" onClick={() => setMmProcedures([])} className="rounded-xl border px-3 py-2 text-xs font-bold">
-                                Clear
+                                {t("instructor.simulator.builder.clear")}
                             </button>
                         </div>
                         {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
@@ -2389,32 +2685,32 @@ export function PackForm({
             ) : tool === "oscilloscope" ? (
                 <div className="mt-4 space-y-3">
                     <div className="rounded-xl border bg-white p-4">
-                        <h4 className="text-sm font-black">Oscilloscope Exercises — {scopeExercises.length} in pack</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">Each exercise defines a waveform and fault set.</p>
+                        <h4 className="text-sm font-black">{t("instructor.simulator.builder.scopeTitle", { n: scopeExercises.length })}</h4>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.simulator.builder.scopeHint")}</p>
                         <div className="mt-3 max-h-40 space-y-2 overflow-auto">
                             {(scopeExercises as Record<string, unknown>[]).map((ex, idx) => (
                                 <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] p-3">
                                     <span className="font-mono text-xs font-black">{String(ex.id)}</span>
                                     <span className="flex-1 truncate text-sm font-bold">{String(ex.name)}</span>
-                                    <button type="button" onClick={() => setScopeExercises((l) => l.filter((_, i) => i !== idx))} className="text-xs font-bold text-red-600">Remove</button>
+                                    <button type="button" onClick={() => setScopeExercises((l) => l.filter((_, i) => i !== idx))} className="text-xs font-bold text-red-600">{t("instructor.simulator.builder.remove")}</button>
                                 </div>
                             ))}
                         </div>
                         <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] p-3 sm:grid-cols-2">
-                            <label className="block text-xs font-bold">ID <input value={scopeDraft.id} onChange={(e) => setScopeDraft((d) => ({ ...d, id: e.target.value }))} placeholder="inj-custom" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">Code <input value={scopeDraft.code} onChange={(e) => setScopeDraft((d) => ({ ...d, code: e.target.value }))} placeholder="INJ-99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">Name <input value={scopeDraft.name} onChange={(e) => setScopeDraft((d) => ({ ...d, name: e.target.value }))} placeholder="Fuel Injector (custom)" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm" /></label>
-                            <label className="block text-xs font-bold">Template <select value={scopeDraft.template} onChange={(e) => setScopeDraft((d) => ({ ...d, template: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm">{SCOPE_EXERCISES.map((s) => <option key={s.id} value={s.id}>{s.id} — {s.name}</option>)}</select></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.id")} <input value={scopeDraft.id} onChange={(e) => setScopeDraft((d) => ({ ...d, id: e.target.value }))} placeholder="inj-custom" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.packForm.code")} <input value={scopeDraft.code} onChange={(e) => setScopeDraft((d) => ({ ...d, code: e.target.value }))} placeholder="INJ-99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.name")} <input value={scopeDraft.name} onChange={(e) => setScopeDraft((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.namePhScope")} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.template")} <select value={scopeDraft.template} onChange={(e) => setScopeDraft((d) => ({ ...d, template: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm">{SCOPE_EXERCISES.map((s) => <option key={s.id} value={s.id}>{s.id} — {s.name}</option>)}</select></label>
                         </div>
-                        <button type="button" onClick={() => { if (!scopeDraft.id.trim()) return; const tpl = SCOPE_EXERCISES.find((s) => s.id === scopeDraft.template) ?? SCOPE_EXERCISES[0]; const ex = { ...tpl, id: scopeDraft.id.trim(), code: scopeDraft.code.trim() || tpl.code, name: scopeDraft.name.trim() || tpl.name, faults: scopeDraft.faults.length ? scopeDraft.faults : tpl.faults }; setScopeExercises((l) => [...l, ex as unknown]); setScopeDraft({ id: "", code: "", name: "", template: "inj", period: "20", faults: ["open", "shortGnd"] }); }} className="mt-3 w-full rounded-xl bg-[#0E9F6E] px-4 py-2 text-xs font-black text-white">Add exercise</button>
+                        <button type="button" onClick={() => { if (!scopeDraft.id.trim()) return; const tpl = SCOPE_EXERCISES.find((s) => s.id === scopeDraft.template) ?? SCOPE_EXERCISES[0]; const ex = { ...tpl, id: scopeDraft.id.trim(), code: scopeDraft.code.trim() || tpl.code, name: scopeDraft.name.trim() || tpl.name, faults: scopeDraft.faults.length ? scopeDraft.faults : tpl.faults }; setScopeExercises((l) => [...l, ex as unknown]); setScopeDraft({ id: "", code: "", name: "", template: "inj", period: "20", faults: ["open", "shortGnd"] }); }} className="mt-3 w-full rounded-xl bg-[#0E9F6E] px-4 py-2 text-xs font-black text-white">{t("instructor.simulator.builder.addExercise")}</button>
                         {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
                     </div>
                 </div>
             ) : tool === "location" ? (
                 <div className="mt-4 space-y-3">
                     <div className="rounded-xl border bg-white p-4">
-                        <h4 className="text-sm font-black">Location Components — {locComponents.length} in pack</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">Define hotspots on the vehicle diagram.</p>
+                        <h4 className="text-sm font-black">{t("instructor.simulator.builder.locTitle", { n: locComponents.length })}</h4>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.simulator.builder.locHint")}</p>
                         <div className="mt-3 max-h-40 space-y-1 overflow-auto">
                             {(locComponents as Record<string, unknown>[]).map((c, idx) => (
                                 <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] p-2">
@@ -2425,23 +2721,23 @@ export function PackForm({
                             ))}
                         </div>
                         <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] p-3 sm:grid-cols-2">
-                            <label className="block text-xs font-bold">Key <input value={locDraft.key} onChange={(e) => setLocDraft((d) => ({ ...d, key: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">Ref <input value={locDraft.ref} onChange={(e) => setLocDraft((d) => ({ ...d, ref: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">Name <input value={locDraft.name} onChange={(e) => setLocDraft((d) => ({ ...d, name: e.target.value }))} placeholder="New Sensor" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm" /></label>
-                            <label className="block text-xs font-bold">Category <select value={locDraft.cat} onChange={(e) => setLocDraft((d) => ({ ...d, cat: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"><option>Sensors</option><option>Actuators</option><option>ECUs</option><option>Relays</option><option>Fuses</option><option>Ground points</option></select></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.key")} <input value={locDraft.key} onChange={(e) => setLocDraft((d) => ({ ...d, key: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.ref")} <input value={locDraft.ref} onChange={(e) => setLocDraft((d) => ({ ...d, ref: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.name")} <input value={locDraft.name} onChange={(e) => setLocDraft((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.newSensorPh")} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.category")} <select value={locDraft.cat} onChange={(e) => setLocDraft((d) => ({ ...d, cat: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"><option value="Sensors">{t("instructor.simulator.builder.catSensors")}</option><option value="Actuators">{t("instructor.simulator.builder.catActuators")}</option><option value="ECUs">{t("instructor.simulator.builder.catEcus")}</option><option value="Relays">{t("instructor.simulator.builder.catRelays")}</option><option value="Fuses">{t("instructor.simulator.builder.catFuses")}</option><option value="Ground points">{t("instructor.simulator.builder.catGround")}</option></select></label>
                         </div>
-                        <button type="button" onClick={() => { if (!locDraft.key.trim()) return; const comp = { key: locDraft.key.trim(), ref: locDraft.ref.trim() || locDraft.key.trim(), name: locDraft.name.trim() || locDraft.key.trim(), cat: locDraft.cat, kind: locDraft.kind, view: locDraft.view, oem: "", sys: "Engine", zone: "Bay", img: "", hot: { x: Number(locDraft.x) || 0, y: Number(locDraft.y) || 0, w: Number(locDraft.w) || 40, h: Number(locDraft.h) || 30, W: 1000, H: 636 } }; setLocComponents((l) => [...l, comp as unknown]); setLocDraft({ key: "", ref: "", name: "", cat: "Sensors", kind: "sensor", view: "sensors", x: "100", y: "100", w: "40", h: "30" }); }} className="mt-3 w-full rounded-xl bg-[#06B6D4] px-4 py-2 text-xs font-black text-white">Add component</button>
+                        <button type="button" onClick={() => { if (!locDraft.key.trim()) return; const comp = { key: locDraft.key.trim(), ref: locDraft.ref.trim() || locDraft.key.trim(), name: locDraft.name.trim() || locDraft.key.trim(), cat: locDraft.cat, kind: locDraft.kind, view: locDraft.view, oem: "", sys: "Engine", zone: "Bay", img: "", hot: { x: Number(locDraft.x) || 0, y: Number(locDraft.y) || 0, w: Number(locDraft.w) || 40, h: Number(locDraft.h) || 30, W: 1000, H: 636 } }; setLocComponents((l) => [...l, comp as unknown]); setLocDraft({ key: "", ref: "", name: "", cat: "Sensors", kind: "sensor", view: "sensors", x: "100", y: "100", w: "40", h: "30" }); }} className="mt-3 w-full rounded-xl bg-[#06B6D4] px-4 py-2 text-xs font-black text-white">{t("instructor.simulator.builder.addComponent")}</button>
                         {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
                     </div>
                 </div>
             ) : tool === "schematic" ? (
                 <div className="mt-4 space-y-3">
                     <div className="rounded-xl border bg-white p-4">
-                        <h4 className="text-sm font-black">Schematic — {schComponents.length} comps / {schWires.length} wires</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">Add E1-hub components and pin-table wires.</p>
+                        <h4 className="text-sm font-black">{t("instructor.simulator.builder.schTitle", { n: schComponents.length, m: schWires.length })}</h4>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.simulator.builder.schHint")}</p>
                         <div className="mt-3 grid gap-2 sm:grid-cols-2">
                             <div className="rounded-xl bg-[#F8F7F6] p-3">
-                                <p className="text-xs font-black">Components ({schComponents.length})</p>
+                                <p className="text-xs font-black">{t("instructor.simulator.builder.componentsCount", { n: schComponents.length })}</p>
                                 <div className="mt-2 max-h-32 space-y-1 overflow-auto">
                                     {(schComponents as Record<string, unknown>[]).map((c, idx) => (
                                         <div key={idx} className="flex items-center gap-2 rounded-lg bg-white p-2">
@@ -2455,11 +2751,11 @@ export function PackForm({
                                     <input value={schDraftComp.key} onChange={(e) => setSchDraftComp((d) => ({ ...d, key: e.target.value }))} placeholder="KEY" className="h-8 rounded-lg border px-2 font-mono text-xs" />
                                     <input value={schDraftComp.code} onChange={(e) => setSchDraftComp((d) => ({ ...d, code: e.target.value }))} placeholder="CODE" className="h-8 rounded-lg border px-2 font-mono text-xs" />
                                 </div>
-                                <input value={schDraftComp.name} onChange={(e) => setSchDraftComp((d) => ({ ...d, name: e.target.value }))} placeholder="Component name" className="mt-2 h-8 w-full rounded-lg border px-2 text-xs" />
-                                <button type="button" onClick={() => { if (!schDraftComp.key.trim()) return; setSchComponents((l) => [...l, { key: schDraftComp.key.trim(), code: schDraftComp.code.trim() || schDraftComp.key.trim(), name: schDraftComp.name.trim() || schDraftComp.key.trim(), type: schDraftComp.type, x: Number(schDraftComp.x) || 1000, y: Number(schDraftComp.y) || 700, w: Number(schDraftComp.w) || 80, h: Number(schDraftComp.h) || 40 } as unknown]); setSchDraftComp({ key: "", code: "", name: "", type: "sensor", x: "1000", y: "700", w: "80", h: "40" }); }} className="mt-2 w-full rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-black text-white">+ Add component</button>
+                                <input value={schDraftComp.name} onChange={(e) => setSchDraftComp((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.componentNamePh")} className="mt-2 h-8 w-full rounded-lg border px-2 text-xs" />
+                                <button type="button" onClick={() => { if (!schDraftComp.key.trim()) return; setSchComponents((l) => [...l, { key: schDraftComp.key.trim(), code: schDraftComp.code.trim() || schDraftComp.key.trim(), name: schDraftComp.name.trim() || schDraftComp.key.trim(), type: schDraftComp.type, x: Number(schDraftComp.x) || 1000, y: Number(schDraftComp.y) || 700, w: Number(schDraftComp.w) || 80, h: Number(schDraftComp.h) || 40 } as unknown]); setSchDraftComp({ key: "", code: "", name: "", type: "sensor", x: "1000", y: "700", w: "80", h: "40" }); }} className="mt-2 w-full rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-black text-white">{t("instructor.simulator.builder.addComponentBtn")}</button>
                             </div>
                             <div className="rounded-xl bg-[#F8F7F6] p-3">
-                                <p className="text-xs font-black">Wires ({schWires.length})</p>
+                                <p className="text-xs font-black">{t("instructor.simulator.builder.wiresCount", { n: schWires.length })}</p>
                                 <div className="mt-2 max-h-32 space-y-1 overflow-auto">
                                     {(schWires as Record<string, unknown>[]).map((w, idx) => (
                                         <div key={idx} className="flex items-center gap-2 rounded-lg bg-white p-2">
@@ -2473,7 +2769,7 @@ export function PackForm({
                                     <input value={schDraftWire.ecuPin} onChange={(e) => setSchDraftWire((d) => ({ ...d, ecuPin: e.target.value }))} placeholder="A 1" className="h-8 rounded-lg border px-2 font-mono text-xs" />
                                     <input value={schDraftWire.target} onChange={(e) => setSchDraftWire((d) => ({ ...d, target: e.target.value }))} placeholder="R16" className="h-8 rounded-lg border px-2 font-mono text-xs" />
                                 </div>
-                                <button type="button" onClick={() => { if (!schDraftWire.ecuPin.trim()) return; setSchWires((l) => [...l, { ecuPin: schDraftWire.ecuPin.trim(), ecuColour: schDraftWire.ecuColour, target: schDraftWire.target.trim(), targetPin: schDraftWire.targetPin, targetColour: schDraftWire.targetColour, connector: schDraftWire.connector, mismatch: schDraftWire.ecuColour !== schDraftWire.targetColour } as unknown]); }} className="mt-2 w-full rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-black text-white">+ Add wire</button>
+                                <button type="button" onClick={() => { if (!schDraftWire.ecuPin.trim()) return; setSchWires((l) => [...l, { ecuPin: schDraftWire.ecuPin.trim(), ecuColour: schDraftWire.ecuColour, target: schDraftWire.target.trim(), targetPin: schDraftWire.targetPin, targetColour: schDraftWire.targetColour, connector: schDraftWire.connector, mismatch: schDraftWire.ecuColour !== schDraftWire.targetColour } as unknown]); }} className="mt-2 w-full rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-black text-white">{t("instructor.simulator.builder.addWireBtn")}</button>
                             </div>
                         </div>
                         {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}

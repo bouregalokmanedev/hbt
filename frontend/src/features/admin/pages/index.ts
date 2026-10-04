@@ -4,6 +4,7 @@ export { AdminAnnouncementsPage } from "./AdminAnnouncementsPage";
 export { AdminAssessmentsPage } from "./AdminAssessmentsPage";
 export { AdminCommercePage } from "./AdminCommercePage";
 export { AdminCoursesPage } from "./AdminCoursesPage";
+export { AdminCrmStatsPage } from "./AdminCrmStatsPage";
 export { AdminDashboardPage } from "./AdminDashboardPage";
 export { AdminDiagnosticsPage } from "./AdminDiagnosticsPage";
 export { AdminEnrollmentsPage } from "./AdminEnrollmentsPage";

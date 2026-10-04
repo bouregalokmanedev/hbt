@@ -69,6 +69,17 @@ final class IntegrityEnforcementService
      */
     public function flaggedForCourse(string $courseId, int $limit = 50)
     {
+        return $this->flaggedForCourses([$courseId], $limit);
+    }
+
+    /**
+     * The same flags scoped to many courses at once — used by the instructor's
+     * cross-course attention view, which must not query per course.
+     *
+     * @param  iterable<string>  $courseIds
+     */
+    public function flaggedForCourses(iterable $courseIds, int $limit = 50)
+    {
         $limit = max(1, $limit);
         $blurLimit = max(1, (int) config('assessments.attempt.tab_switch_limit', 3));
         $blurTypes = [IntegrityEventType::TAB_BLUR->value, IntegrityEventType::WINDOW_BLUR->value];
@@ -82,7 +93,7 @@ final class IntegrityEnforcementService
             IntegrityEventType::SCREENSHOT_ATTEMPT->value,
         ];
 
-        $assessmentIds = \App\Domains\Assessments\Models\Assessment::where('course_id', $courseId)->pluck('id');
+        $assessmentIds = \App\Domains\Assessments\Models\Assessment::whereIn('course_id', collect($courseIds)->all())->pluck('id');
 
         return AssessmentAttempt::whereIn('assessment_id', $assessmentIds)
             ->where(function ($query) use ($blurTypes, $highSeverityTypes, $blurLimit) {

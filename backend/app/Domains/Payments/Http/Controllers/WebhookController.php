@@ -55,7 +55,7 @@ class WebhookController extends Controller
         } catch (\Throwable $exception) {
             $webhooks->markFailed($event, $exception->getMessage());
 
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], 422);
+            return response()->json(['success' => false, 'message' => 'Webhook processing failed.'], 422);
         }
 
         return response()->json(['success' => true, 'message' => 'Webhook processed.']);
@@ -97,7 +97,7 @@ class WebhookController extends Controller
         } catch (\Throwable $exception) {
             $webhooks->markFailed($event, $exception->getMessage());
 
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], 422);
+            return response()->json(['success' => false, 'message' => 'Webhook processing failed.'], 422);
         }
 
         return response()->json(['success' => true, 'message' => 'PayPal webhook recorded.']);

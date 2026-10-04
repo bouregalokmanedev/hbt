@@ -3,6 +3,8 @@ import {
     Outlet,
 } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 import {
     useAuth,
 } from "../hooks/useAuth";
@@ -17,6 +19,8 @@ export function GuestGuard() {
         isInitialized,
     } = useAuth();
 
+    const { t } = useTranslation();
+
     /*
      * Only gate the initial session check. Toggling the spinner on
      * `isLoading` unmounts LoginPage mid-submit, so the 423 MFA catch
@@ -30,7 +34,7 @@ export function GuestGuard() {
                     <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
 
                     <p className="mt-4 text-sm text-muted-foreground">
-                        Checking your session...
+                        {t("common.checkingSession")}
                     </p>
                 </div>
             </div>

@@ -87,7 +87,7 @@ export function Sidebar({ engine, state, t, tc }: { engine: SchematicWorkspaceEn
                     </div>
                     <div className="flex max-h-[320px] flex-col gap-1 overflow-y-auto rounded-2xl border border-[#3A3A3A]/10 bg-white p-1.5 dark:border-white/10 dark:bg-[#1b1b20]">
                         {comps.length === 0 ? (
-                            <div className="p-6 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">No components</div>
+                            <div className="p-6 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">{t("sidebar.noComponents")}</div>
                         ) : (
                             comps.map((c) => {
                                 const on = state.sel === c.key;

@@ -258,7 +258,7 @@ export function Navbar() {
               ? "h-[68px] px-4 sm:px-6"
               : "h-[88px] px-5 sm:px-8 lg:px-10",
           ].join(" ")}
-          aria-label="Main navigation"
+          aria-label={t("navigation.mainNav")}
         >
           {/* =====================================================
                         LOGO

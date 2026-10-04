@@ -18,6 +18,9 @@ interface HubFeedbackProps {
     onSubmitted?: () => void;
 }
 
+/** The review filters are per-lab only — there is no "all labs" scope. */
+const DEFAULT_FILTER: PlatformFeedbackLabFilter = "general";
+
 function Stars({ value, className = "" }: { value: number; className?: string }) {
     return (
         <span className={`inline-flex items-center gap-0.5 ${className}`} dir="ltr">
@@ -40,7 +43,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
     const [hovered, setHovered] = useState(0);
     const [comment, setComment] = useState("");
     const [lab, setLab] = useState<SimulatorLabId | "">("");
-    const [filter, setFilter] = useState<PlatformFeedbackLabFilter>("all");
+    const [filter, setFilter] = useState<PlatformFeedbackLabFilter>(DEFAULT_FILTER);
     const [page, setPage] = useState(1);
     const [meta, setMeta] = useState<PlatformFeedbackMeta>({
         page: 1,
@@ -78,7 +81,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
     };
 
     useEffect(() => {
-        void loadReviews("all", 1);
+        void loadReviews(DEFAULT_FILTER, 1);
     }, []);
 
     const selectFilter = (next: PlatformFeedbackLabFilter) => {
@@ -109,9 +112,10 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
             setRating(0);
             setComment("");
             setLab("");
-            // Keep the new review inside whatever scope is on screen.
+            // Keep the new review inside whatever scope is on screen — and if
+            // it belongs elsewhere, jump there so the student sees it appear.
             const submittedScope: PlatformFeedbackLabFilter = lab === "" ? "general" : lab;
-            const nextFilter = filter === "all" || filter === submittedScope ? filter : "all";
+            const nextFilter = filter === submittedScope ? filter : submittedScope;
             setFilter(nextFilter);
             setPage(1);
             await loadReviews(nextFilter, 1);
@@ -136,7 +140,6 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
             : t("simulator.hub.feedback.labGeneral");
 
     const filterOptions: { id: PlatformFeedbackLabFilter; label: string }[] = [
-        { id: "all", label: t("simulator.hub.feedback.labAll") },
         { id: "general", label: t("simulator.hub.feedback.labGeneral") },
         ...SIMULATOR_LABS.map((id) => ({ id, label: labLabel(id) })),
     ];
@@ -207,11 +210,9 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                     ) : reviews.length === 0 ? (
                         <div className="rounded-2xl border-2 border-dashed border-[#3A3A3A]/10 bg-[#F8F7F6] p-6 text-center dark:border-white/10 dark:bg-white/[0.03]">
                             <p className="text-sm font-bold text-[#3A3A3A] dark:text-white">
-                                {filter === "all"
-                                    ? t("simulator.hub.feedback.empty", { defaultValue: "No reviews yet" })
-                                    : t("simulator.hub.feedback.emptyFiltered", {
-                                        defaultValue: "No reviews in this scope yet",
-                                    })}
+                                {t("simulator.hub.feedback.emptyFiltered", {
+                                    defaultValue: "No reviews in this scope yet",
+                                })}
                             </p>
                             <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                 {t("simulator.hub.feedback.emptyDesc", {

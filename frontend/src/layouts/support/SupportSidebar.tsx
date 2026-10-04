@@ -4,11 +4,13 @@ import {
     Inbox,
     LayoutDashboard,
     LogOut,
+    Mail,
     Megaphone,
     MessageCircle,
     Settings,
     Ticket,
     UserRound,
+    Users,
     X,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -36,6 +38,8 @@ const navigationItems: NavigationItem[] = [
     { labelKey: "supportDesk.sidebar.dashboard", to: "/support-desk", icon: LayoutDashboard, end: true },
     { labelKey: "supportDesk.sidebar.queue", to: "/support-desk/tickets", icon: Inbox },
     { labelKey: "supportDesk.sidebar.myTickets", to: "/support-desk/my-tickets", icon: Ticket },
+    { labelKey: "supportDesk.sidebar.mailbox", to: "/support-desk/mail", icon: Mail },
+    { labelKey: "supportDesk.sidebar.staffHub", to: "/support-desk/staff-hub", icon: Users },
     { labelKey: "supportDesk.sidebar.messages", to: "/support-desk/messages", icon: MessageCircle },
     { labelKey: "supportDesk.sidebar.announcements", to: "/support-desk/announcements", icon: Megaphone },
 ];

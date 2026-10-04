@@ -1,6 +1,20 @@
 import {
+    Activity,
+    Award,
+    BadgeCheck,
+    Bot,
     BookOpen,
     Compass,
+    FileText,
+    Flag,
+    Gift,
+    Heart,
+    Hourglass,
+    ListChecks,
+    Share2,
+    Swords,
+    ScrollText,
+    Target,
     Crown,
     Crosshair,
     Flame,
@@ -8,8 +22,11 @@ import {
     GraduationCap,
     Map,
     Medal,
+    MessageSquare,
+    MessagesSquare,
     Puzzle,
     Rocket,
+    Sparkles,
     Star,
     Stethoscope,
     ThumbsUp,
@@ -47,6 +64,28 @@ const BADGE_ICONS: Record<string, IconComponent> = {
     "bench-starter": Wrench, // finish your first bench
     "sim-explorer": FlaskConical, // try all five labs
     "bench-ace": Medal, // score 90%+ in a bench
+    "ai-first-chat": MessageSquare, // first message to the AI mentor
+    "ai-conversationalist": MessagesSquare, // fifty messages to the AI mentor
+    "ai-confidant": Bot, // five separate mentor conversations
+    "ai-scholar": Sparkles, // ten helpful ratings on mentor replies
+    "on-fire": Flame, // 14-day learning streak
+    unstoppable: Rocket, // 30-day learning streak
+    "rising-level": TrendingUp, // reach level 5
+    veteran: Award, // reach the maximum level
+    graduate: GraduationCap, // five completed courses
+    marathoner: Hourglass, // fifty hours studied
+    thorough: ListChecks, // twenty-five sections completed
+    collector: Heart, // ten favourited courses
+    "quiz-ace": Target, // perfect quiz score
+    proven: BadgeCheck, // ten passed assessments
+    "diagnostic-master": Activity, // fifteen passed diagnostics
+    ambassador: Share2, // three referred signups
+    challenger: Swords, // ten daily challenges
+    rivalry: Flag, // five rivals sent
+    "good-samaritan": Gift, // five peer bonuses sent
+    curator: FileText, // notes on ten lessons
+    credentialed: ScrollText, // five certificates
+    "badge-hoarder": Trophy, // owns fifteen badges
     "rising-star": TrendingUp, // earn three badges
 };
 
@@ -63,6 +102,7 @@ const KEYWORD_ICONS: Array<[string[], IconComponent]> = [
     [["diagnostic", "scenario"], Stethoscope],
     [["bench", "sim", "lab"], Wrench],
     [["path", "explor"], Compass],
+    [["ai", "mentor", "chat"], Bot],
 ];
 
 /**
@@ -87,6 +127,28 @@ const BADGE_ACCENTS: Record<string, string> = {
     "bench-starter": "#64748B",
     "sim-explorer": "#14B8A6",
     "bench-ace": "#B45309",
+    "ai-first-chat": "#0EA5E9",
+    "ai-conversationalist": "#6366F1",
+    "ai-confidant": "#8B5CF6",
+    "ai-scholar": "#14B8A6",
+    "on-fire": "#EA580C",
+    unstoppable: "#BE123C",
+    "rising-level": "#1D4ED8",
+    veteran: "#78350F",
+    graduate: "#047857",
+    marathoner: "#0F766E",
+    thorough: "#5B21B6",
+    collector: "#E11D48",
+    "quiz-ace": "#0284C7",
+    proven: "#15803D",
+    "diagnostic-master": "#A21CAF",
+    ambassador: "#B91C1C",
+    challenger: "#C2410C",
+    rivalry: "#7C2D12",
+    "good-samaritan": "#166534",
+    curator: "#374151",
+    credentialed: "#3F6212",
+    "badge-hoarder": "#A16207",
     "rising-star": "#EAB308",
 };
 

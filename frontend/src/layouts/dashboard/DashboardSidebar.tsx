@@ -46,7 +46,7 @@ interface NavigationItem {
     icon: React.ElementType;
 }
 
-const overviewItems: NavigationItem[] = [
+const homeItems: NavigationItem[] = [
     {
         labelKey: "dashboard.sidebar.dashboard",
         to: "/dashboard",
@@ -70,15 +70,18 @@ const learningItems: NavigationItem[] = [
         to: "/assessments",
         icon: ClipboardCheck,
     },
-    {
-        labelKey: "dashboard.sidebar.diagnostics",
-        to: "/diagnostics",
-        icon: Stethoscope,
-    },
+];
+
+const labsItems: NavigationItem[] = [
     {
         labelKey: "dashboard.sidebar.simulator",
         to: "/simulator",
         icon: MonitorPlay,
+    },
+    {
+        labelKey: "dashboard.sidebar.diagnostics",
+        to: "/diagnostics",
+        icon: Stethoscope,
     },
     {
         labelKey: "dashboard.sidebar.mentor",
@@ -87,7 +90,7 @@ const learningItems: NavigationItem[] = [
     },
 ];
 
-const progressItems: NavigationItem[] = [
+const rewardsItems: NavigationItem[] = [
     {
         labelKey: "dashboard.sidebar.achievements",
         to: "/achievements",
@@ -98,9 +101,14 @@ const progressItems: NavigationItem[] = [
         to: "/certificates",
         icon: Award,
     },
+    {
+        labelKey: "dashboard.sidebar.favourite",
+        to: "/favourite",
+        icon: Heart,
+    },
 ];
 
-const toolsItems: NavigationItem[] = [
+const inboxItems: NavigationItem[] = [
     {
         labelKey: "dashboard.sidebar.messages",
         to: "/messages",
@@ -118,12 +126,7 @@ const toolsItems: NavigationItem[] = [
     },
 ];
 
-const personalItems: NavigationItem[] = [
-    {
-        labelKey: "dashboard.sidebar.favourite",
-        to: "/favourite",
-        icon: Heart,
-    },
+const accountItems: NavigationItem[] = [
     {
         labelKey: "dashboard.sidebar.subscription",
         to: "/subscription",
@@ -450,8 +453,8 @@ export function DashboardSidebar({
 
                 <nav className="flex-1 overflow-y-auto px-3 py-5 [scrollbar-width:thin]">
                     <NavigationSection
-                        title={t("dashboard.sidebar.overview")}
-                        items={overviewItems}
+                        title={t("dashboard.sidebar.home")}
+                        items={homeItems}
                         collapsed={collapsed}
                         onClose={onClose}
                         badges={badges}
@@ -466,24 +469,32 @@ export function DashboardSidebar({
                     />
 
                     <NavigationSection
-                        title={t("dashboard.sidebar.progress")}
-                        items={progressItems}
+                        title={t("dashboard.sidebar.labs")}
+                        items={labsItems}
                         collapsed={collapsed}
                         onClose={onClose}
                         badges={badges}
                     />
 
                     <NavigationSection
-                        title={t("dashboard.sidebar.tools")}
-                        items={toolsItems}
+                        title={t("dashboard.sidebar.rewards")}
+                        items={rewardsItems}
                         collapsed={collapsed}
                         onClose={onClose}
                         badges={badges}
                     />
 
                     <NavigationSection
-                        title={t("dashboard.sidebar.personal")}
-                        items={personalItems}
+                        title={t("dashboard.sidebar.inbox")}
+                        items={inboxItems}
+                        collapsed={collapsed}
+                        onClose={onClose}
+                        badges={badges}
+                    />
+
+                    <NavigationSection
+                        title={t("dashboard.sidebar.account")}
+                        items={accountItems}
                         collapsed={collapsed}
                         onClose={onClose}
                         badges={badges}

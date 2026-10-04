@@ -98,6 +98,7 @@ final readonly class AdminBroadcastService
         return match ($data['audience']) {
             'students' => $users->whereHas('roles', fn ($roles) => $roles->where('name', UserRole::STUDENT->value)),
             'instructors' => $users->whereHas('roles', fn ($roles) => $roles->where('name', UserRole::INSTRUCTOR->value)),
+            'staff' => $users->whereHas('roles', fn ($roles) => $roles->whereIn('name', UserRole::staff())),
             'selected' => $users->whereIn('uuid', $data['recipient_ids'] ?? []),
             default => $users,
         };

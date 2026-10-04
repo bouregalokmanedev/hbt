@@ -298,6 +298,7 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
   const [me, setMe] = useState<LeaderboardMe | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -319,6 +320,11 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
   }, [t]);
 
   const meUserId = me?.user_id ?? null;
+  const PAGE_SIZE = 10;
+  const pageCount = Math.ceil(top.length / PAGE_SIZE);
+  const safePage = Math.min(page, Math.max(pageCount - 1, 0));
+  const pageStart = safePage * PAGE_SIZE;
+  const pageRows = top.slice(pageStart, pageStart + PAGE_SIZE);
 
   return (
     <motion.section
@@ -431,8 +437,8 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
             </div>
 
             <ol className="space-y-2">
-              {top.map((entry, idx) => {
-                const rank = idx + 1;
+              {pageRows.map((entry, idx) => {
+                const rank = pageStart + idx + 1;
                 const isMe = Boolean(meUserId && entry.user_id === meUserId);
                 return (
                   <li
@@ -491,6 +497,49 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
                 );
               })}
             </ol>
+
+            {pageCount > 1 && (
+              <nav
+                className="mt-4 flex flex-wrap items-center justify-center gap-1.5"
+                aria-label={t("dashboard.leaderboard.title")}
+              >
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.max(p - 1, 0))}
+                  disabled={safePage === 0}
+                  className="rounded-xl border border-[#3A3A3A]/10 px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-[#3A3A3A]/10 disabled:hover:text-[#3A3A3A] dark:border-white/10 dark:text-white dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822] dark:disabled:hover:border-white/10 dark:disabled:hover:text-white"
+                >
+                  {t("dashboard.leaderboard.prevPage")}
+                </button>
+                {Array.from({ length: pageCount }, (_, i) => i).map((i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setPage(i)}
+                    aria-current={safePage === i ? "page" : undefined}
+                    aria-label={t("dashboard.leaderboard.pageOf", { page: i + 1, total: pageCount })}
+                    className={`min-w-8 rounded-xl px-2.5 py-1.5 text-xs font-black tabular-nums transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/30 ${
+                      safePage === i
+                        ? "bg-[#F47822] text-white shadow-[0_6px_14px_rgba(244,120,34,0.25)]"
+                        : "border border-[#3A3A3A]/10 text-[#3A3A3A]/70 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.min(p + 1, pageCount - 1))}
+                  disabled={safePage >= pageCount - 1}
+                  className="rounded-xl border border-[#3A3A3A]/10 px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-[#3A3A3A]/10 disabled:hover:text-[#3A3A3A] dark:border-white/10 dark:text-white dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822] dark:disabled:hover:border-white/10 dark:disabled:hover:text-white"
+                >
+                  {t("dashboard.leaderboard.nextPage")}
+                </button>
+                <span className="ms-2 hidden text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40 sm:inline">
+                  {t("dashboard.leaderboard.pageOf", { page: safePage + 1, total: pageCount })}
+                </span>
+              </nav>
+            )}
 
             {!meUserId || !top.some((e) => e.user_id === meUserId) ? (
               me && me.rank > top.length ? (
@@ -754,10 +803,17 @@ function BadgeSection({
           <h2 className="text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{title}</h2>
           <p className="mt-1 text-sm text-[#3A3A3A]/50 dark:text-white/50">{description}</p>
         </div>
-        <span className="text-sm font-bold text-[#F47822]">
-          {badges.length}
-        </span>
+        {badges.length > 0 ? (
+          <span className="text-sm font-bold text-[#F47822]">{badges.length}</span>
+        ) : null}
       </div>
+      {badges.length === 0 ? (
+        <p className="mt-4 rounded-2xl border border-dashed border-[#3A3A3A]/15 px-4 py-8 text-center text-sm text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55">
+          {earned
+            ? t("dashboard.achievementsPage.badgesEmptyEarned")
+            : t("dashboard.achievementsPage.badgesEmptyLocked")}
+        </p>
+      ) : (
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {badges.map((badge) => {
           const text = badgeText(badge, t);
@@ -808,6 +864,7 @@ function BadgeSection({
           );
         })}
       </div>
+      )}
     </section>
   );
 }

@@ -51,17 +51,21 @@ final class IssueCertificateAction
                 ],
             );
 
-            if ($certificate->wasRecentlyCreated) {
-                $courseTitle = (string) $result->assessment->course->title;
-                app(StudentNotificationService::class)->send(
-                    $result->user,
-                    'certificate_issued',
-                    'Certificate earned',
-                    "Your certificate for \"{$courseTitle}\" is ready. Well done — this one is yours to keep.",
-                    '/certificates',
-                    'certificate-issued:'.$certificate->id,
-                );
-            }
+            // Not gated on `wasRecentlyCreated`: in the live submit flow the
+            // AssessmentPassed listener mints this certificate first, so the
+            // row already exists by the time we get here and the guard used to
+            // swallow the notification (and its /certificates sidebar badge)
+            // every single time. `send()` dedupes on `certificate-issued:{id}`,
+            // so calling it unconditionally can never double-notify.
+            $courseTitle = (string) $result->assessment->course->title;
+            app(StudentNotificationService::class)->send(
+                $result->user,
+                'certificate_issued',
+                'Certificate earned',
+                "Your certificate for \"{$courseTitle}\" is ready. Well done — this one is yours to keep.",
+                '/certificates',
+                'certificate-issued:'.$certificate->id,
+            );
 
             return $certificate;
         });

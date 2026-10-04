@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { supportDeskApi, type DeskOverview } from "../api/supportDesk.api";
 
-function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
+function Stat({ label, value, tone }: { label: string; value: number | string; tone: string }) {
     return (
         <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-sm">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/40">{label}</p>
@@ -53,8 +53,8 @@ export function SupportDeskDashboardPage() {
         return (
             <main className="space-y-4 p-6">
                 <div className="h-28 animate-pulse rounded-3xl bg-white" />
-                <div className="grid gap-4 sm:grid-cols-4">
-                    {[0, 1, 2, 3].map((i) => (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                    {[0, 1, 2, 3, 4].map((i) => (
                         <div key={i} className="h-24 animate-pulse rounded-2xl bg-white" />
                     ))}
                 </div>
@@ -62,7 +62,7 @@ export function SupportDeskDashboardPage() {
         );
     }
 
-    const { summary, recent, my_queue } = overview;
+    const { summary, recent, my_queue, csat } = overview;
 
     return (
         <main className="mx-auto max-w-[1280px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -86,11 +86,16 @@ export function SupportDeskDashboardPage() {
                 </div>
             </header>
 
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 <Stat label={t("supportDesk.dashboard.stats.open")} value={summary.open} tone="text-[#F47822]" />
                 <Stat label={t("supportDesk.dashboard.stats.pending")} value={summary.pending} tone="text-amber-600" />
                 <Stat label={t("supportDesk.dashboard.stats.overdue")} value={summary.overdue} tone="text-red-600" />
                 <Stat label={t("supportDesk.dashboard.stats.unassigned")} value={summary.unassigned} tone="text-[#3A3A3A]" />
+                <Stat
+                    label={t("supportDesk.dashboard.stats.csat", { count: csat?.count ?? 0 })}
+                    value={csat && csat.count > 0 ? csat.average.toFixed(1) : "—"}
+                    tone="text-emerald-600"
+                />
             </div>
 
             <div className="grid gap-5 lg:grid-cols-2">

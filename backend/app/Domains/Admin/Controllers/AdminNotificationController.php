@@ -24,7 +24,7 @@ final class AdminNotificationController extends Controller
     public function broadcast(Request $request, AdminBroadcastService $broadcasts): AdminBroadcastResource
     {
         $data = $request->validate([
-            'audience' => ['required', Rule::in(['all', 'students', 'instructors', 'selected'])],
+            'audience' => ['required', Rule::in(['all', 'students', 'instructors', 'staff', 'selected'])],
             'recipient_ids' => ['required_if:audience,selected', 'array', 'max:1000'],
             'recipient_ids.*' => ['uuid'],
             'type' => ['nullable', 'string', 'max:80'],

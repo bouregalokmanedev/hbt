@@ -8,6 +8,7 @@ use App\Domains\Enrollments\Services\EnrollmentService;
 use App\Enums\EnrollmentStatus;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 final class CreateEnrollmentAction
@@ -47,6 +48,30 @@ final class CreateEnrollmentAction
     ]);
 
     event(new EnrollmentCreated($enrollment));
+
+    $student = User::query()->find($userId);
+    if ($student !== null) {
+        app(\App\Domains\Progression\Services\StudentProgressionService::class)->award(
+            $student,
+            'course_enrolled',
+            15,
+            25,
+            "enrollment:{$enrollment->id}",
+            ['course' => $course->title, 'label' => 'Course enrolled'],
+        );
+    }
+
+    $instructor = $course->instructor;
+    if ($instructor !== null) {
+        app(\App\Domains\Progression\Services\InstructorProgressionService::class)->award(
+            $instructor,
+            'student_enrolled',
+            10,
+            20,
+            "enrollment:{$enrollment->id}",
+            ['label' => 'Student enrolled', 'course' => $course->title],
+        );
+    }
 
     return $enrollment;
 });

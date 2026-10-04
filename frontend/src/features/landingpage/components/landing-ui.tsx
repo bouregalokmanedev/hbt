@@ -1,5 +1,7 @@
-import type { ReactNode, Ref } from "react";
+import { useCallback, type ReactNode, type Ref } from "react";
 import { Link } from "react-router-dom";
+
+import { useFitToViewport } from "../hooks/useFitToViewport";
 
 /*
 |--------------------------------------------------------------------------
@@ -7,6 +9,8 @@ import { Link } from "react-router-dom";
 |--------------------------------------------------------------------------
 | Single source of truth for section rhythm + type scale so every landing
 | section shares the same padding, container, and heading styles.
+| Sections are viewport-locked (md+) with scroll-snap: the fit hook scales
+| content down — never up — so a section always fits one screen.
 */
 
 export function LandingSection({
@@ -14,15 +18,40 @@ export function LandingSection({
   children,
   className = "",
   sectionRef,
+  fill = true,
 }: {
   id?: string;
   children: ReactNode;
   className?: string;
   sectionRef?: Ref<HTMLElement>;
+  /** true = locked to one viewport (fit-scaled if needed); false = sized to content (no dead space). */
+  fill?: boolean;
 }) {
+  const { sectionRef: fitRef, contentRef, scale } = useFitToViewport();
+
+  const setRefs = useCallback(
+    (node: HTMLElement | null) => {
+      fitRef.current = node;
+      if (typeof sectionRef === "function") sectionRef(node);
+      else if (sectionRef) (sectionRef as { current: HTMLElement | null }).current = node;
+    },
+    [sectionRef, fitRef],
+  );
+
+  const base = "relative isolate overflow-hidden md:snap-start";
+  const layout = fill
+    ? "py-12 sm:py-14 md:flex md:h-[calc(100svh-5rem)] md:flex-col md:items-center md:justify-center md:py-0"
+    : "py-16 sm:py-20";
+
   return (
-    <section id={id} ref={sectionRef} className={`relative isolate overflow-hidden py-20 sm:py-24 lg:py-28 ${className}`}>
-      {children}
+    <section id={id} ref={setRefs} className={`${base} ${layout} ${className}`}>
+      <div
+        ref={contentRef}
+        className="w-full"
+        style={scale < 1 ? { transform: `scale(${scale})`, transformOrigin: "center center" } : undefined}
+      >
+        {children}
+      </div>
     </section>
   );
 }
@@ -76,10 +105,10 @@ export function SectionTitle({
 }) {
   return (
     <h2
-      className={`mt-4 font-bold tracking-tight ${
+      className={`mt-3 font-bold tracking-tight ${
         size === "display"
-          ? "text-5xl leading-[0.95] sm:text-6xl lg:text-7xl"
-          : "text-3xl leading-[1.1] sm:text-4xl lg:text-[44px]"
+          ? "text-4xl leading-[0.95] sm:text-5xl lg:text-[3.5rem]"
+          : "text-2xl leading-[1.1] sm:text-3xl lg:text-[34px]"
       } ${
         tone === "white" ? "text-white" : "text-[#3A3A3A]"
       } ${className}`}
@@ -100,7 +129,7 @@ export function SectionLead({
 }) {
   return (
     <p
-      className={`mt-4 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8 ${
+      className={`mt-3 max-w-2xl text-sm leading-6 sm:text-base sm:leading-7 ${
         tone === "light" ? "text-white/60" : "text-[#3A3A3A]/60"
       } ${className}`}
     >

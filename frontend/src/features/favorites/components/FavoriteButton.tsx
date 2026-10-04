@@ -1,4 +1,4 @@
-import { Heart, Loader2 } from "lucide-react";
+import { Heart, Loader2, Star } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -65,6 +65,8 @@ export function FavoriteButton({
         void toggle(type, id, { title, ...meta });
     };
 
+    const Icon = type === "note" ? Star : Heart;
+
     return (
         <button
             type="button"
@@ -98,7 +100,7 @@ export function FavoriteButton({
             {pending ? (
                 <Loader2 className={cn(iconSizes[size], "animate-spin")} />
             ) : (
-                <Heart
+                <Icon
                     key={String(isFavorite)}
                     className={cn(
                         iconSizes[size],

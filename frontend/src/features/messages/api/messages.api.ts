@@ -3,7 +3,7 @@ import { ApiError } from "@/lib/api/errors";
 import { authStorage } from "@/lib/storage/auth-storage";
 import { env } from "@/config/env";
 
-export interface Contact { id: string; user_id?: number | null; name: string; email: string; role: string | null; last_read_at?: string | null; }
+export interface Contact { id: string; user_id?: number | null; name: string; email: string; role: string | null; last_read_at?: string | null; online?: boolean | null; }
 export interface MessageAttachment { name: string; mime: string; size: number; url: string; }
 export interface ReplyPreview { sender_name: string; body_excerpt: string; has_attachment: boolean; }
 export interface MessageItem {
@@ -12,13 +12,11 @@ export interface MessageItem {
     sender?: { id: string; name: string };
     message_type: string;
     body: string | null;
-    metadata?: {
-        reactions?: Record<string, number[]>;
-        attachment?: { name?: string; mime?: string; size?: number; path?: string };
-        deleted_for?: number[];
-        deleted_for_all?: boolean;
-    } & Record<string, unknown>;
+    edited?: boolean;
+    edited_at?: string | null;
     attachment?: MessageAttachment | null;
+    attachments?: MessageAttachment[] | null;
+    forwarded_from?: { message_id: string; conversation_id: string; sender_name: string | null; body_excerpt: string } | null;
     deleted?: null | "mine" | "all";
     reply_to?: string | null;
     reply_preview?: ReplyPreview | null;
@@ -28,9 +26,10 @@ export interface MessageItem {
     sendFailed?: boolean;
     created_at: string;
 }
+export interface ConversationMember { id: string; name: string; role?: string | null; last_read_at?: string | null; }
 export interface Conversation {
     id: string;
-    type: "direct" | "announcement" | "group";
+    type: "direct" | "announcement" | "group" | "staff_room";
     subject: string | null;
     status: "active" | "archived";
     broadcast_id?: string | null;
@@ -41,7 +40,13 @@ export interface Conversation {
     messages?: MessageItem[];
     unread_count: number;
     member_count: number;
-    participants?: { id: string; name: string }[] | null;
+    can_archive?: boolean;
+    muted?: boolean;
+    /** uuids of other participants typing right now — single-thread reads only */
+    typing_user_ids?: string[] | null;
+    /** ISO timestamp of the oldest unread message, or null once fully read */
+    first_unread_at?: string | null;
+    participants?: ConversationMember[] | null;
 }
 
 export const ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024;
@@ -52,8 +57,6 @@ const ATTACHMENT_EXTENSIONS = ["pdf", "doc", "docx", "png", "jpg", "jpeg"];
 
 export const MESSAGE_REACTIONS = ["❤️", "👍", "😂", "😮", "😢", "🙏"] as const;
 
-export type MessageReaction = (typeof MESSAGE_REACTIONS)[number];
-
 export type DeleteScope = "for_me" | "for_all";
 
 export interface MessagesWindow {
@@ -61,13 +64,42 @@ export interface MessagesWindow {
     meta: { has_more: boolean };
 }
 
-/** Reactions arrive inside `metadata.reactions` on the wire; accept a top-level copy too. */
 export function messageReactions(message: MessageItem): Record<string, number[]> {
-    return message.reactions ?? message.metadata?.reactions ?? {};
+    return message.reactions ?? {};
 }
 
-export function isGroupConversation(conversation: Pick<Conversation, "type" | "subject">): boolean {
-    return conversation.type === "group";
+/**
+ * The roster a receipt should be measured against.
+ *
+ * `participants` is what the server eager loads on every conversation read;
+ * the single `participant` field is only the counterpart, so it is a
+ * last-resort fallback for payloads that predate the roster.
+ */
+export function conversationMembers(conversation: Pick<Conversation, "participants" | "participant">): ConversationMember[] {
+    if (conversation.participants?.length) return conversation.participants;
+    return conversation.participant ? [conversation.participant] : [];
+}
+
+/**
+ * Read receipts for one of *my* messages: how many of the other members have
+ * a `last_read_at` at or after it, out of how many there are.
+ *
+ * Returns `null` when the message is not mine or when the payload carried no
+ * roster at all — callers fall back to the single-participant timestamp.
+ * `null` `last_read_at` means the member opted out of receipts, so they simply
+ * never count as having read it.
+ */
+export function readReceiptFor(
+    message: MessageItem | undefined,
+    members: ConversationMember[],
+    myUuid: string | null,
+): { read: number; total: number } | null {
+    if (!message || !myUuid || message.sender?.id !== myUuid) return null;
+    const sent = new Date(message.created_at).getTime();
+    if (!Number.isFinite(sent)) return null;
+    const others = members.filter((member) => member.id !== myUuid);
+    const read = others.filter((member) => member.last_read_at && new Date(member.last_read_at).getTime() >= sent).length;
+    return { read, total: others.length };
 }
 
 export function isRecentEnoughForDeleteForAll(createdAt: string, windowMinutes = 15): boolean {
@@ -106,20 +138,31 @@ async function postMultipart<T>(endpoint: string, form: FormData, fallbackError:
 }
 
 export const messagesApi = {
-    list: () => api<Conversation[]>("/v1/messages/conversations"),
+    list: async (page?: { limit?: number; offset?: number; type?: string }): Promise<Conversation[]> => {
+        const query = new URLSearchParams();
+        if (page?.limit) query.set("limit", String(page.limit));
+        if (page?.offset) query.set("offset", String(page.offset));
+        if (page?.type) query.set("type", page.type);
+        const suffix = query.toString() ? `?${query.toString()}` : "";
+        return api<Conversation[]>(`/v1/messages/conversations${suffix}`);
+    },
     contacts: () => api<Contact[]>("/v1/messages/contacts"),
     get: (id: string) => api<Conversation>(`/v1/messages/conversations/${id}`),
     create: (data: { recipient_id: string; subject?: string; message?: string }) => api<Conversation>("/v1/messages/conversations", { method: "POST", body: data }),
     createGroup: (data: { recipient_ids: string[]; subject: string; message?: string }) => api<Conversation>("/v1/messages/conversations", { method: "POST", body: data }),
-    send: (conversationId: string, body: string, messageType: "text" | "quick_reply" = "text", file?: File | null, replyToId?: string | null) => {
-        if (!file) return api<MessageItem>(`/v1/messages/conversations/${conversationId}/messages`, { method: "POST", body: { body, message_type: messageType, ...(replyToId ? { reply_to: replyToId } : {}) } });
+    send: (conversationId: string, body: string, messageType: "text" | "quick_reply" = "text", files: File[] = [], replyToId?: string | null) => {
+        if (!files.length) return api<MessageItem>(`/v1/messages/conversations/${conversationId}/messages`, { method: "POST", body: { body, message_type: messageType, ...(replyToId ? { reply_to: replyToId } : {}) } });
         const form = new FormData();
         form.append("body", body);
         form.append("message_type", messageType);
         if (replyToId) form.append("reply_to", replyToId);
-        form.append("file", file);
+        for (const file of files) form.append("files[]", file);
         return postMultipart<MessageItem>(`/v1/messages/conversations/${conversationId}/messages`, form, "Unable to send your message.");
     },
+    edit: (id: string, body: string) => api<MessageItem>(`/v1/messages/${id}`, { method: "PATCH", body: { body } }),
+    forward: (id: string, conversationId: string, comment?: string) => api<MessageItem>(`/v1/messages/${id}/forward`, { method: "POST", body: { conversation_id: conversationId, ...(comment ? { comment } : {}) } }),
+    typing: (conversationId: string) => api<void>(`/v1/messages/conversations/${conversationId}/typing`, { method: "POST" }),
+    mute: (conversationId: string, muted: boolean) => api<{ muted: boolean }>(`/v1/messages/conversations/${conversationId}/mute`, { method: "PATCH", body: { muted } }),
     fetchMessages: async (conversationId: string, params?: { before?: string; per_page?: number; search?: string }): Promise<MessagesWindow> => {
         const query = new URLSearchParams();
         if (params?.before) query.set("before", params.before);

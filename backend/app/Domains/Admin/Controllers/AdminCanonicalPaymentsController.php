@@ -173,7 +173,7 @@ class AdminCanonicalPaymentsController extends Controller
             $webhookEvent->markProcessed();
         } catch (\Throwable $e) {
             $webhookEvent->markFailed($e->getMessage());
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            return response()->json(['success' => false, 'message' => 'Webhook replay failed. See the stored error for details.'], 422);
         }
 
         return response()->json(['success' => true, 'message' => 'Webhook replayed.', 'data' => ['id' => $webhookEvent->id]]);

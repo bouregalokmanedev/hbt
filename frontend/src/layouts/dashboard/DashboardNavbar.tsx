@@ -254,7 +254,7 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
               <SlidersHorizontal className="h-4 w-4" />
             </button>
           )}
-          <NotificationMenu />
+          <NotificationMenu variant="raised" />
         </div>
       </div>
     </header>

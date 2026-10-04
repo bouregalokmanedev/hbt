@@ -3,6 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import { CheckCircle2, CreditCard, Loader2, ShieldCheck, Wallet } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { env } from "@/config/env";
 import { checkoutApi } from "./api";
@@ -34,6 +35,7 @@ function CheckoutForm({
 }) {
   const stripe = useStripe();
   const elements = useElements();
+  const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +49,7 @@ function CheckoutForm({
       redirect: "if_required",
     });
     if (confirmError) {
-      setError(confirmError.message ?? "Payment failed.");
+      setError(confirmError.message ?? t("checkout.payFailed"));
       setSubmitting(false);
       return;
     }
@@ -70,16 +72,17 @@ function CheckoutForm({
         className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#F47822] text-sm font-bold text-white shadow-[0_8px_20px_rgba(244,120,34,.22)] hover:bg-[#E96D18] disabled:opacity-60"
       >
         {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-        {submitting ? "Processing…" : "Pay securely"}
+        {submitting ? t("checkout.processing") : t("checkout.payNow")}
       </button>
       <p className="flex items-center justify-center gap-1.5 text-[11px] text-[#3A3A3A]/40">
-        <ShieldCheck className="h-3.5 w-3.5" /> Secure by Stripe — Apple Pay, cards, and wallets
+        <ShieldCheck className="h-3.5 w-3.5" /> {t("checkout.secureNote")}
       </p>
     </div>
   );
 }
 
 export function CheckoutPage() {
+  const { t } = useTranslation();
   const { orderId } = useParams<{ orderId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -167,7 +170,7 @@ export function CheckoutPage() {
       <main className="mx-auto max-w-3xl px-5 py-10">
         <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
         <Link to="/catalog" className="mt-4 inline-block text-sm font-bold text-[#F47822]">
-          Back to catalog
+          {t("checkout.backCatalog")}
         </Link>
       </main>
     );
@@ -178,8 +181,8 @@ export function CheckoutPage() {
       <main className="mx-auto max-w-3xl px-5 py-10">
         <div className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-8 text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#F47822]" />
-          <p className="mt-4 text-sm font-semibold text-[#3A3A3A]">Preparing secure checkout…</p>
-          <p className="mt-1 text-xs text-[#3A3A3A]/50">Apple Pay and cards via Stripe Payment Element</p>
+          <p className="mt-4 text-sm font-semibold text-[#3A3A3A]">{t("checkout.preparing")}</p>
+          <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("checkout.walletsNote")}</p>
         </div>
       </main>
     );
@@ -192,14 +195,14 @@ export function CheckoutPage() {
     <main className="mx-auto max-w-3xl px-5 py-10">
       <div className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_12px_40px_rgba(58,58,58,.06)] sm:p-8">
         <h1 className="flex items-center gap-2 text-xl font-bold text-[#3A3A3A]">
-          <Wallet className="h-5 w-5 text-[#F47822]" /> Secure checkout
+          <Wallet className="h-5 w-5 text-[#F47822]" /> {t("checkout.title")}
         </h1>
-        <p className="mt-1 text-sm text-[#3A3A3A]/55">Order {orderId.slice(0, 8)} — complete payment to unlock your course. Webhook confirms enrollment.</p>
+        <p className="mt-1 text-sm text-[#3A3A3A]/55">{t("checkout.orderHint", { id: orderId.slice(0, 8) })}</p>
 
         {!publishableKey || !clientSecret ? (
           <div className="mt-6">
             <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              Stripe is in stub mode (no publishable key configured). Your order is pending — an administrator will confirm it, or the webhook will mark it paid.
+              {t("checkout.stubNote")}
             </p>
             <button
               type="button"
@@ -208,10 +211,10 @@ export function CheckoutPage() {
               className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#3A3A3A] text-sm font-bold text-white hover:bg-black disabled:opacity-60"
             >
               {polling ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-              {polling ? "Waiting for confirmation…" : "I’ve paid — check status"}
+              {polling ? t("checkout.waiting") : t("checkout.paidCheck")}
             </button>
             <Link to={`/courses/${courseId ?? ""}`} className="mt-3 block text-center text-xs font-bold text-[#F47822]">
-              Back to course
+              {t("checkout.backCourse")}
             </Link>
           </div>
         ) : (
@@ -227,19 +230,20 @@ export function CheckoutPage() {
 }
 
 export function CheckoutSuccessPage() {
+  const { t } = useTranslation();
   const { orderId } = useParams<{ orderId: string }>();
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
       <div className="rounded-3xl bg-[#3A3A3A] p-8 text-center text-white">
         <CheckCircle2 className="mx-auto h-12 w-12 text-[#F47822]" />
-        <h1 className="mt-4 text-2xl font-bold">Payment confirmed</h1>
-        <p className="mt-2 text-sm text-white/60">Order {orderId?.slice(0, 8)} — your enrollment is being activated via webhook.</p>
+        <h1 className="mt-4 text-2xl font-bold">{t("checkout.successTitle")}</h1>
+        <p className="mt-2 text-sm text-white/60">{t("checkout.successHint", { id: orderId?.slice(0, 8) ?? "" })}</p>
         <div className="mt-6 flex justify-center gap-3">
           <Link to="/my-courses" className="rounded-xl bg-[#F47822] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#E96D18]">
-            Go to my courses
+            {t("checkout.goMyCourses")}
           </Link>
           <Link to="/catalog" className="rounded-xl border border-white/20 px-5 py-2.5 text-sm font-bold text-white hover:bg-white/10">
-            Explore more
+            {t("checkout.exploreMore")}
           </Link>
         </div>
       </div>

@@ -14,6 +14,7 @@ use App\Domains\Taxonomy\Requests\UpdateCategoryRequest;
 use App\Domains\Taxonomy\Services\TreeService;
 use App\Domains\Taxonomy\Resources\CategoryTreeResource;
 use App\Domains\Taxonomy\Resources\BreadcrumbResource;
+use Illuminate\Support\Facades\Cache;
 use App\Domains\Taxonomy\Actions\DeleteCategoryAction;
 use App\Domains\Taxonomy\Requests\AttachCategoryRequest;
 use App\Domains\Taxonomy\Actions\AttachCategoryToCourseAction;
@@ -68,6 +69,8 @@ public function store(
         $request->toDto()
     );
 
+    $this->forgetCategoryCaches();
+
     return response()->json([
         'data' => new CategoryResource($category),
     ], 201);
@@ -84,7 +87,7 @@ public function store(
 {
     $this->authorize('update', $category);
 
-    return new CategoryResource(
+    $resource = new CategoryResource(
 
         $action->execute(
 
@@ -97,6 +100,10 @@ public function store(
         )
 
     );
+
+    $this->forgetCategoryCaches();
+
+    return $resource;
 }
 public function roots(
     CategoryRepositoryInterface $repository
@@ -109,31 +116,44 @@ public function roots(
 public function active()
 {
     return CategoryResource::collection(
-        Category::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get()
+        $this->cachedList('categories.active', true)
     );
 }
 
 public function inactive()
 {
     return CategoryResource::collection(
-        Category::query()
-            ->where('is_active', false)
-            ->orderBy('name')
-            ->get()
+        $this->cachedList('categories.inactive', false)
     );
 }
 
 public function leaves()
 {
     return CategoryResource::collection(
-        Category::query()
+        Cache::remember('categories.leaves', now()->addMinutes(30), fn () => Category::query()
             ->whereDoesntHave('children')
             ->orderBy('name')
-            ->get()
+            ->get())
     );
+}
+
+/**
+ * Filter dropdowns are read on every catalog interaction: memoize them for
+ * 30 minutes and drop the keys whenever the taxonomy changes.
+ */
+private function cachedList(string $key, bool $isActive)
+{
+    return Cache::remember($key, now()->addMinutes(30), fn () => Category::query()
+        ->where('is_active', $isActive)
+        ->orderBy('name')
+        ->get());
+}
+
+private function forgetCategoryCaches(): void
+{
+    Cache::forget('categories.active');
+    Cache::forget('categories.inactive');
+    Cache::forget('categories.leaves');
 }
   public function tree(
     TreeService $tree
@@ -199,6 +219,8 @@ public function destroy(
     $action->execute(
         $category->id
     );
+
+    $this->forgetCategoryCaches();
 
     return response()->json([
         'message' => 'Category deleted.',

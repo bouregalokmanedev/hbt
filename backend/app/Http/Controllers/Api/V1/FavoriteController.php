@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Favorite;
 use App\Models\Lesson;
+use App\Models\LessonNote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class FavoriteController extends Controller
 {
@@ -19,7 +21,7 @@ class FavoriteController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid favorite type.',
-                'errors' => ['type' => ['Type must be course or lesson.']],
+                'errors' => ['type' => ['Type must be course, lesson or note.']],
             ], 422);
         }
 
@@ -31,12 +33,16 @@ class FavoriteController extends Controller
 
         $courseIds = $favorites->where('favoritable_type', Favorite::TYPE_COURSE)->pluck('favoritable_id')->unique()->values();
         $lessonIds = $favorites->where('favoritable_type', Favorite::TYPE_LESSON)->pluck('favoritable_id')->unique()->values();
+        $noteIds = $favorites->where('favoritable_type', Favorite::TYPE_NOTE)->pluck('favoritable_id')->unique()->values();
 
         $courses = $courseIds->isNotEmpty()
             ? Course::whereIn('id', $courseIds)->get()->keyBy('id')
             : collect();
         $lessons = $lessonIds->isNotEmpty()
             ? Lesson::with('section.course:id,title')->whereIn('id', $lessonIds)->get()->keyBy('id')
+            : collect();
+        $notes = $noteIds->isNotEmpty()
+            ? LessonNote::with('lesson.section.course:id,title')->whereIn('id', $noteIds)->get()->keyBy('id')
             : collect();
 
         $items = [];
@@ -61,7 +67,7 @@ class FavoriteController extends Controller
                     'is_free' => (bool) $course->is_free,
                     'favorited_at' => $favorite->created_at?->toISOString(),
                 ];
-            } else {
+            } elseif ($favorite->favoritable_type === Favorite::TYPE_LESSON) {
                 $lesson = $lessons->get($favorite->favoritable_id);
                 if (! $lesson) {
                     $orphanIds[] = $favorite->id;
@@ -77,6 +83,25 @@ class FavoriteController extends Controller
                     'course_title' => $lesson->section?->course?->title,
                     'duration_minutes' => $lesson->duration_minutes,
                     'is_preview' => (bool) $lesson->is_preview,
+                    'favorited_at' => $favorite->created_at?->toISOString(),
+                ];
+            } else {
+                $note = $notes->get($favorite->favoritable_id);
+                if (! $note) {
+                    $orphanIds[] = $favorite->id;
+                    continue;
+                }
+                $excerpt = $note->content !== null ? trim($note->content) : '';
+                $items[] = [
+                    'favorite_id' => $favorite->id,
+                    'type' => Favorite::TYPE_NOTE,
+                    'id' => $note->id,
+                    'title' => $note->title,
+                    'subtitle' => $excerpt !== '' ? Str::limit($excerpt, 140) : null,
+                    'lesson_id' => $note->lesson_id,
+                    'lesson_title' => $note->lesson?->title,
+                    'course_id' => $note->lesson?->section?->course_id,
+                    'course_title' => $note->lesson?->section?->course?->title,
                     'favorited_at' => $favorite->created_at?->toISOString(),
                 ];
             }
@@ -96,14 +121,18 @@ class FavoriteController extends Controller
     public function toggle(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'type' => ['required', 'string', 'in:course,lesson'],
+            'type' => ['required', 'string', 'in:course,lesson,note'],
             'id' => ['required', 'uuid'],
         ]);
 
         if ($data['type'] === Favorite::TYPE_COURSE) {
             $exists = Course::whereKey($data['id'])->exists();
-        } else {
+        } elseif ($data['type'] === Favorite::TYPE_LESSON) {
             $exists = Lesson::whereKey($data['id'])->exists();
+        } else {
+            $exists = LessonNote::whereKey($data['id'])
+                ->where('user_id', $request->user()->id)
+                ->exists();
         }
 
         if (! $exists) {
@@ -147,7 +176,7 @@ class FavoriteController extends Controller
     {
         $data = $request->validate([
             'items' => ['required', 'array', 'max:100'],
-            'items.*.type' => ['required', 'string', 'in:course,lesson'],
+            'items.*.type' => ['required', 'string', 'in:course,lesson,note'],
             'items.*.id' => ['required', 'uuid'],
         ]);
 

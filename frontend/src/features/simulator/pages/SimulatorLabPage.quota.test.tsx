@@ -52,12 +52,14 @@ describe("SimulatorLabPage monthly quota", () => {
     vi.clearAllMocks();
     vi.mocked(simulatorApi.start).mockResolvedValue({ id: "ses-1" } as never);
     window.localStorage.setItem("hbt:lab-intro-dismissed:multimeter", "1");
+    // Session start waits for the gate's vehicle choice (scanner-style selection).
+    window.localStorage.setItem("hbt:meter-vehicle", "corolla");
   });
 
   it("locks the lab once the free monthly allowance is exhausted", async () => {
     vi.mocked(api).mockResolvedValue({
-      used: 5,
-      limit: 5,
+      used: 10,
+      limit: 10,
       remaining: 0,
       unlimited: false,
     });
@@ -76,8 +78,8 @@ describe("SimulatorLabPage monthly quota", () => {
 
   it("starts the bench normally while quota remains", async () => {
     vi.mocked(api).mockResolvedValue({
-      used: 3,
-      limit: 5,
+      used: 8,
+      limit: 10,
       remaining: 2,
       unlimited: false,
     });
@@ -100,5 +102,32 @@ describe("SimulatorLabPage monthly quota", () => {
 
     await waitFor(() => expect(simulatorApi.start).toHaveBeenCalled());
     expect(screen.queryByTestId("simulator-limit-block")).toBeNull();
+  });
+
+  it("starts exactly one session no matter how often the page re-renders", async () => {
+    vi.mocked(api).mockResolvedValue({
+      used: 8,
+      limit: 10,
+      remaining: 2,
+      unlimited: false,
+    });
+
+    const view = renderLab();
+    await waitFor(() => expect(simulatorApi.start).toHaveBeenCalledTimes(1));
+
+    // Re-render the page several times: the session effect must not re-fire
+    // (regression: an unstable `lab` dep used to drain the whole monthly quota
+    // in a single page open).
+    for (let i = 0; i < 5; i += 1) view.rerender(
+      <I18nextProvider i18n={i18n}>
+        <MemoryRouter initialEntries={["/simulator/multimeter"]}>
+          <Routes>
+            <Route path="/simulator/:tool" element={<SimulatorLabPage />} />
+          </Routes>
+        </MemoryRouter>
+      </I18nextProvider>,
+    );
+    await new Promise((r) => setTimeout(r, 50));
+    expect(simulatorApi.start).toHaveBeenCalledTimes(1);
   });
 });

@@ -40,6 +40,18 @@ final class PublishLessonAction
 
             event(new LessonPublished($lesson));
 
+            $instructor = $lesson->section?->course?->instructor;
+            if ($instructor !== null) {
+                app(\App\Domains\Progression\Services\InstructorProgressionService::class)->award(
+                    $instructor,
+                    'lesson_published',
+                    20,
+                    35,
+                    "lesson-published:{$lesson->id}",
+                    ['label' => 'Lesson published', 'lesson' => $lesson->title],
+                );
+            }
+
             return $lesson;
         });
     }

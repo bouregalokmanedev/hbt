@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import type {
     CurriculumLesson as CurriculumLessonType,
@@ -30,6 +32,8 @@ function formatDuration(
 export function CurriculumLesson({
     lesson,
 }: CurriculumLessonProps) {
+    const { t } = useTranslation();
+
     const locked =
         !lesson.is_preview &&
         lesson.status !== "published";
@@ -57,11 +61,11 @@ export function CurriculumLesson({
             <div className="flex items-center gap-2">
                 {lesson.is_preview ? (
                     <span className="text-xs font-medium">
-                        Preview
+                        {t("courseDetails.curriculum.preview")}
                     </span>
                 ) : locked ? (
                     <span className="text-xs text-muted-foreground">
-                        Locked
+                        {t("courseDetails.curriculum.locked")}
                     </span>
                 ) : null}
                 <FavoriteButton type="lesson" id={lesson.id} title={lesson.title} size="sm" variant="ghost" />

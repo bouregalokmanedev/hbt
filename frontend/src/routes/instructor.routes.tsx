@@ -1,6 +1,7 @@
 import type {
     RouteObject,
 } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import {
     AuthGuard,
@@ -11,6 +12,7 @@ import {
     InstructorLayout,
 } from "@/layouts/instructor/InstructorLayout";
 import { MessagesPage } from "@/features/messages/pages/MessagesPage";
+import { staffHubRoutes } from "@/features/staff-hub/routes";
 
 export const instructorRoutes: RouteObject[] = [
     {
@@ -76,9 +78,12 @@ export const instructorRoutes: RouteObject[] = [
                             { path: "/instructor/messages", element: <MessagesPage basePath="/instructor" getProfilePath={(participant) => participant.role === "Student" && participant.user_id ? `/instructor/students/${participant.user_id}` : null} /> },
                             { path: "/instructor/announcements", element: <MessagesPage mode="announcements" basePath="/instructor" announceHref="/instructor/announcements/new" /> },
                             { path: "/instructor/announcements/new", lazy: () => import("@/features/instructor/pages/InstructorAnnouncementsPage").then((m) => ({ Component: m.InstructorAnnouncementsPage })) },
+                            ...staffHubRoutes("/instructor/staff-hub"),
                             { path: "/instructor/diagnostics", lazy: () => import("@/features/instructor/pages/InstructorDiagnosticsPage").then((m) => ({ Component: m.InstructorDiagnosticsPage })) },
                             { path: "/instructor/simulator", lazy: () => import("@/features/instructor/pages/InstructorSimulatorPage").then((m) => ({ Component: m.InstructorSimulatorPage })) },
-                            { path: "/instructor/lounge", lazy: () => import("@/features/instructor/pages/InstructorLoungePage").then((m) => ({ Component: m.InstructorLoungePage })) },
+                            // The old localStorage "lounge" feed was retired in
+                            // favour of the real Staff Room — keep the URL alive.
+                            { path: "/instructor/lounge", element: <Navigate to="/instructor/staff-hub/room" replace /> },
                             { path: "/instructor/revenue", lazy: () => import("@/features/instructor/pages/InstructorRevenuePage").then((m) => ({ Component: m.InstructorRevenuePage })) },
                             { path: "/instructor/profile", lazy: () => import("@/features/instructor/pages/InstructorProfilePage").then((m) => ({ Component: m.InstructorProfilePage })) },
                             { path: "/instructor/settings", lazy: () => import("@/features/instructor/pages/InstructorSettingsPage").then((m) => ({ Component: m.InstructorSettingsPage })) },

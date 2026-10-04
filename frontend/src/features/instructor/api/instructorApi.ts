@@ -12,11 +12,13 @@ import type {
     AvailableCompetency,
     FlaggedAttempt,
     InstructorAssessment,
+    InstructorAttention,
     InstructorCourseAnalytics,
     InstructorCourseCertificates,
     InstructorCourseFeedback,
     InstructorCourseStudent,
     InstructorDashboard,
+    InstructorProgression,
     InstructorCourseListResponse,
     InstructorCurriculum,
     InstructorQuiz,
@@ -24,6 +26,7 @@ import type {
     InstructorStudentListItem,
     InstructorStudentProfile,
     InstructorLessonMedia,
+    InstructorTrends,
     PendingReview,
     SimulatorAnalytics,
     SimulatorSessionsPage,
@@ -77,6 +80,20 @@ export async function getInstructorDashboard(): Promise<InstructorDashboard> {
     return api<InstructorDashboard>(
         "/v1/instructor/dashboard",
     );
+}
+
+export async function getInstructorAttention(): Promise<InstructorAttention> {
+    return api<InstructorAttention>("/v1/instructor/attention");
+}
+
+export async function getInstructorTrends(
+    days = 30,
+): Promise<InstructorTrends> {
+    return api<InstructorTrends>(`/v1/instructor/trends?days=${days}`);
+}
+
+export async function getInstructorProgression(): Promise<InstructorProgression> {
+    return api<InstructorProgression>("/v1/instructor/progression");
 }
 
 export async function sendInstructorAnnouncement(payload: { course_id?: string; title: string; message: string; action_url?: string; replies_enabled?: boolean; quick_replies?: string[] }) {

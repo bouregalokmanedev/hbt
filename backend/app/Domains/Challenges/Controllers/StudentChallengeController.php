@@ -63,7 +63,7 @@ class StudentChallengeController
         try {
             $rival = $this->service->challenge($user, $data['user_id']);
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json(['message' => $this->messageFor($e)], 422);
         }
         return response()->json(['data' => ['rival' => $rival]]);
     }
@@ -75,7 +75,7 @@ class StudentChallengeController
         try {
             $rival = $this->service->accept($user, $id);
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $this->messageFor($e)], 404);
         }
         return response()->json(['data' => ['rival' => $rival]]);
     }
@@ -87,7 +87,7 @@ class StudentChallengeController
         try {
             $result = $this->service->shareResult($user, $id);
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $this->messageFor($e)], 404);
         }
         return response()->json(['data' => $result]);
     }
@@ -99,13 +99,33 @@ class StudentChallengeController
         try {
             $challenge = $this->service->claim($user, $id);
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            return response()->json(['message' => $this->messageFor($e)], 422);
         }
 
         if ($challenge === null) {
-            return response()->json(['message' => 'Not found.'], 404);
+            return response()->json(['message' => 'That challenge is no longer available.'], 404);
         }
 
         return response()->json(['data' => ['challenge' => $challenge]]);
+    }
+
+    /**
+     * The service throws plain RuntimeExceptions that carry fixed, user
+     * facing copy. Storage failures also arrive as RuntimeException
+     * subclasses (QueryException extends PDOException extends
+     * RuntimeException), so anything that smells of SQL or a connection
+     * string is reported to the log and replaced with a safe sentence.
+     */
+    private function messageFor(\RuntimeException $e): string
+    {
+        $message = $e->getMessage();
+
+        if ($e instanceof \PDOException || str_contains($message, 'SQL') || str_contains($message, 'Connection:')) {
+            report($e);
+
+            return 'Unable to complete that action right now. Please try again.';
+        }
+
+        return $message;
     }
 }

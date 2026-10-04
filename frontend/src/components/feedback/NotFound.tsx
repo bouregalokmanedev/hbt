@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui";
 
 export function NotFound() {
+    const { t } = useTranslation();
+
     return (
         <main className="grid min-h-screen place-items-center px-6">
             <div className="text-center">
@@ -11,16 +15,16 @@ export function NotFound() {
                 </p>
 
                 <h1 className="mt-4 text-2xl font-semibold">
-                    Page not found
+                    {t("errors.notFoundTitle")}
                 </h1>
 
                 <p className="mt-2 text-[var(--muted)]">
-                    The page you're looking for doesn't exist.
+                    {t("errors.notFoundBody")}
                 </p>
 
                 <Button className="mt-6">
                     <Link to="/">
-                        Back home
+                        {t("errors.backHome")}
                     </Link>
                 </Button>
             </div>

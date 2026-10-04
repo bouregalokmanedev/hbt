@@ -11,9 +11,12 @@ class Favorite extends Model
 
     public const TYPE_LESSON = 'lesson';
 
+    public const TYPE_NOTE = 'note';
+
     public const TYPES = [
         self::TYPE_COURSE,
         self::TYPE_LESSON,
+        self::TYPE_NOTE,
     ];
 
     protected $fillable = [

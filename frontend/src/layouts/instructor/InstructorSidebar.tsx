@@ -4,7 +4,6 @@ import {
     ChevronLeft,
     ChevronRight,
     Cpu,
-    GraduationCap,
     LayoutDashboard,
     LogOut,
     MessageCircle,
@@ -67,14 +66,14 @@ const navigationItems: NavigationItem[] = [
         icon: Cpu,
     },
     {
-        labelKey: "instructor.sidebar.lounge",
-        to: "/instructor/lounge",
-        icon: GraduationCap,
-    },
-    {
         labelKey: "instructor.sidebar.revenue",
         to: "/instructor/revenue",
         icon: BarChart3,
+    },
+    {
+        labelKey: "instructor.sidebar.staffHub",
+        to: "/instructor/staff-hub",
+        icon: Users,
     },
     {
         labelKey: "instructor.sidebar.messages",

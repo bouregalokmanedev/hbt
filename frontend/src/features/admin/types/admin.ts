@@ -98,6 +98,19 @@ export interface AnalyticsResponse {
     by_course?: Array<{ course_id: string; course_title: string; learners_count: number; average_progress: number; completions_count: number }>;
 }
 
+export type CrmRange = "week" | "month" | "6months" | "year" | "2years";
+
+export type CrmMetricKey = "signups" | "enrollments" | "orders" | "revenue" | "messages";
+
+export interface CrmStats {
+    range: CrmRange;
+    bucket: "day" | "month";
+    period: { from: string; to: string };
+    labels: string[];
+    totals: Record<CrmMetricKey, number>;
+    series: Record<CrmMetricKey, number[]>;
+}
+
 export interface SystemHealth {
     status: string;
     application: Record<string, string>;

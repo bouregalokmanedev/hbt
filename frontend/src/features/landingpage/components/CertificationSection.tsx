@@ -155,6 +155,7 @@ export function CertificationSection() {
   return (
     <LandingSection
       id="certification"
+      fill={false}
       sectionRef={sectionRef}
       className="bg-[#E8E4DE]"
     >
@@ -250,7 +251,7 @@ export function CertificationSection() {
 
           <p
             className="
-              mt-7
+              mt-5
               max-w-2xl
               text-base
               leading-7
@@ -266,7 +267,7 @@ export function CertificationSection() {
             MAIN CERTIFICATE AREA
         ============================================================ */}
 
-        <div className="mt-20 grid gap-14 lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] lg:items-center">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] lg:items-center">
 
           {/* ==========================================================
               CERTIFICATE
@@ -318,19 +319,19 @@ export function CertificationSection() {
               <div
                 className="
                   relative
-                  min-h-[590px]
+                  min-h-[440px]
                   overflow-hidden
                   rounded-[24px]
                   border
                   border-black/[0.07]
                   bg-[#F7F5F0]
                   px-7
-                  py-8
+                  py-7
                   sm:px-12
-                  sm:py-11
-                  lg:min-h-[630px]
+                  sm:py-9
+                  lg:min-h-[470px]
                   lg:px-14
-                  lg:py-12
+                  lg:py-10
                 "
               >
                 {/* certificate technical border */}
@@ -367,7 +368,7 @@ export function CertificationSection() {
 
                 <div className="absolute bottom-0 left-0 top-0 w-[4px] bg-[#F47822] rtl:left-auto rtl:right-0" />
 
-                <div className="relative z-10 flex min-h-[530px] flex-col lg:min-h-[570px]">
+                <div className="relative z-10 flex min-h-[410px] flex-col lg:min-h-[450px]">
 
                   {/* ==================================================
                       CERTIFICATE HEADER
@@ -407,18 +408,18 @@ export function CertificationSection() {
                       CERTIFICATE TITLE
                   ================================================== */}
 
-                  <div className="mt-16 text-center sm:mt-20">
+                  <div className="mt-7 text-center sm:mt-8">
                     <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.25em] text-[#F47822]">
                       {t("landingPage.certification.certificateTitle")}
                     </p>
 
-                    <h3 className="mt-5 text-[clamp(2rem,4vw,4rem)] font-semibold leading-none tracking-[-0.045em] text-[#181818]">
+                    <h3 className="mt-4 text-[clamp(1.75rem,3vw,3.25rem)] font-semibold leading-none tracking-[-0.045em] text-[#181818]">
                       {t("landingPage.certification.certificateNameA")}
                       <br />
                       {t("landingPage.certification.certificateNameB")}
                     </h3>
 
-                    <p className="mx-auto mt-6 max-w-md text-[10px] leading-5 text-black/45 sm:text-xs sm:leading-6">
+                    <p className="mx-auto mt-4 max-w-md text-[10px] leading-5 text-black/45 sm:text-xs sm:leading-6">
                       {t("landingPage.certification.certificateDesc")}
                     </p>
                   </div>
@@ -427,7 +428,7 @@ export function CertificationSection() {
                       CREDENTIAL DATA
                   ================================================== */}
 
-                  <div className="mx-auto mt-12 grid w-full max-w-2xl grid-cols-2 gap-x-8 gap-y-7 sm:mt-14 sm:grid-cols-4">
+                  <div className="mx-auto mt-6 grid w-full max-w-2xl grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-4">
                     <div>
                       <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
                         {t("landingPage.certification.candidateLabel")}
@@ -473,8 +474,8 @@ export function CertificationSection() {
                       CERTIFICATE FOOTER
                   ================================================== */}
 
-                  <div className="mt-auto border-t border-black/8 pt-7">
-                    <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="mt-auto border-t border-black/8 pt-5">
+                    <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
 
                       {/* signature */}
 
@@ -611,13 +612,13 @@ export function CertificationSection() {
             ======================================================== */}
 
             <div>
-              <div className="mb-8 flex items-center justify-between">
+              <div className="mb-5 flex items-center justify-between">
                 <div>
                   <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35">
                     {t("landingPage.certification.pathwayLabel")}
                   </span>
 
-                  <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#181818] sm:text-3xl">
+                  <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-[#181818] sm:text-2xl">
                     {t("landingPage.certification.pathwayTitle")}
                   </h3>
                 </div>
@@ -734,10 +735,6 @@ export function CertificationSection() {
                               `}
                             />
                           </div>
-
-                          <p className="mt-2 max-w-md text-xs leading-5 text-[#181818]/50">
-                            {step.description}
-                          </p>
                         </div>
                       </button>
                     );
@@ -750,7 +747,7 @@ export function CertificationSection() {
                 VERIFICATION CARD
             ======================================================== */}
 
-            <div className="mt-10 rounded-[24px] border border-black/10 bg-[#F7F5F0] p-6 shadow-[0_18px_50px_rgba(24,24,24,0.06)] sm:p-7">
+            <div className="mt-6 rounded-[24px] border border-black/10 bg-[#F7F5F0] p-5 shadow-[0_18px_50px_rgba(24,24,24,0.06)] sm:p-6">
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <div className="flex items-center gap-2">
@@ -761,7 +758,7 @@ export function CertificationSection() {
                     </span>
                   </div>
 
-                  <h4 className="mt-4 text-xl font-semibold tracking-[-0.025em] text-[#181818]">
+                  <h4 className="mt-3 text-lg font-semibold tracking-[-0.025em] text-[#181818]">
                     {t("landingPage.certification.verifyHeading")}
                   </h4>
 
@@ -779,7 +776,7 @@ export function CertificationSection() {
                   IMPROVED BUTTONS
               ====================================================== */}
 
-              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
 
                 {/* PRIMARY */}
 
@@ -789,7 +786,7 @@ export function CertificationSection() {
                     group
                     relative
                     flex
-                    min-h-[58px]
+                    min-h-[50px]
                     items-center
                     justify-between
                     overflow-hidden
@@ -864,7 +861,7 @@ export function CertificationSection() {
                     group
                     relative
                     flex
-                    min-h-[58px]
+                    min-h-[50px]
                     items-center
                     justify-between
                     overflow-hidden
@@ -948,10 +945,10 @@ export function CertificationSection() {
 
         <div
           className={`
-            mt-28
+            mt-12
             border-t
             border-black/10
-            pt-12
+            pt-10
             transition-all
             delay-500
             duration-1000
@@ -973,7 +970,7 @@ export function CertificationSection() {
                 {t("landingPage.certification.structureTitle")}
               </h3>
 
-              <p className="mt-5 max-w-md text-sm leading-6 text-[#181818]/50">
+              <p className="mt-4 max-w-md text-sm leading-6 text-[#181818]/50">
                 {t("landingPage.certification.structureDesc")}
               </p>
             </div>
@@ -1008,15 +1005,15 @@ export function CertificationSection() {
                     </span>
                   </div>
 
-                  <h4 className="mt-7 text-sm font-semibold text-[#181818]">
+                  <h4 className="mt-5 text-sm font-semibold text-[#181818]">
                     {level.title}
                   </h4>
 
-                  <p className="mt-3 text-xs leading-5 text-[#181818]/45">
+                  <p className="mt-2 text-xs leading-5 text-[#181818]/45">
                     {level.description}
                   </p>
 
-                  <div className="mt-7 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/35 transition-colors group-hover:text-[#F47822]">
+                  <div className="mt-5 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/35 transition-colors group-hover:text-[#F47822]">
                     {t("landingPage.certification.pathwayCta")}
 
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" />
@@ -1035,23 +1032,23 @@ export function CertificationSection() {
 
         <div
           className={`
-            mt-20
+            mt-8
             flex
             flex-col
-            gap-6
+            gap-5
             rounded-[28px]
             bg-[#181818]
-            p-7
+            p-6
             text-white
             shadow-[0_30px_70px_rgba(24,24,24,0.15)]
             transition-all
             delay-700
             duration-1000
-            sm:p-9
+            sm:p-7
             lg:flex-row
             lg:items-center
             lg:justify-between
-            lg:px-11
+            lg:px-9
             ${
               isVisible
                 ? "translate-y-0 opacity-100"

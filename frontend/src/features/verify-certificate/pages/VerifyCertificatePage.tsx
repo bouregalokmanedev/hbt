@@ -53,9 +53,10 @@ function loadRecent(): string[] {
 }
 
 function Stepper({ phase, steps }: { phase: Phase; steps: string[] }) {
+    const { t } = useTranslation();
     const activeIndex = phase === "idle" ? 0 : phase === "verifying" ? 1 : 2;
     return (
-        <ol className="flex items-center gap-2" aria-label="Verification steps">
+        <ol className="flex items-center gap-2" aria-label={t("verifyPage.stepsAria")}>
             {steps.map((label, index) => {
                 const done = phase === "success" ? true : index < activeIndex;
                 const active = phase !== "success" && index === activeIndex;

@@ -10,6 +10,7 @@ import {
     PlayCircle,
     Search,
     Sparkles,
+    StickyNote,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -35,6 +36,12 @@ function lessonHref(item: FavoriteItem): string {
     return "/catalog";
 }
 
+function noteHref(item: FavoriteItem): string | null {
+    if (item.course_id && item.lesson_id) return `/courses/${item.course_id}/lessons/${item.lesson_id}`;
+    if (item.lesson_id) return `/lessons/${item.lesson_id}`;
+    return null;
+}
+
 export function FavouritesPage() {
     const { t, i18n } = useTranslation();
     const favorites = useFavoritesStore((state) => state.favorites);
@@ -54,6 +61,7 @@ export function FavouritesPage() {
     const items = useMemo(() => Object.values(favorites), [favorites]);
     const courseCount = items.filter((item) => item.type === "course").length;
     const lessonCount = items.filter((item) => item.type === "lesson").length;
+    const noteCount = items.filter((item) => item.type === "note").length;
 
     const visible = useMemo(() => {
         const needle = query.trim().toLowerCase();
@@ -69,11 +77,13 @@ export function FavouritesPage() {
 
     const courses = visible.filter((item) => item.type === "course");
     const lessons = visible.filter((item) => item.type === "lesson");
+    const notes = visible.filter((item) => item.type === "note");
 
     const tabs: Array<{ id: Tab; label: string; count: number }> = [
         { id: "all", label: t("favourites.tabs.all"), count: items.length },
         { id: "course", label: t("favourites.tabs.courses"), count: courseCount },
         { id: "lesson", label: t("favourites.tabs.lessons"), count: lessonCount },
+        { id: "note", label: t("favourites.tabs.notes"), count: noteCount },
     ];
 
     return (
@@ -134,6 +144,7 @@ export function FavouritesPage() {
                                 {entry.id === "all" && <LayoutGrid className="h-3.5 w-3.5" />}
                                 {entry.id === "course" && <BookOpen className="h-3.5 w-3.5" />}
                                 {entry.id === "lesson" && <PlayCircle className="h-3.5 w-3.5" />}
+                                {entry.id === "note" && <StickyNote className="h-3.5 w-3.5" />}
                                 {entry.label}
                                 <span
                                     className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
@@ -224,6 +235,21 @@ export function FavouritesPage() {
                                             item={item}
                                             busy={pendingKeys.includes(`lesson:${item.id}`)}
                                             onRemove={() => void remove("lesson", item.id)}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                        {notes.length > 0 && (
+                            <section aria-label={t("favourites.favNotesAria")}>
+                                <SectionHeading icon={StickyNote} title={t("favourites.savedNotes")} count={notes.length} />
+                                <div className="mt-4 grid gap-3">
+                                    {notes.map((item) => (
+                                        <FavouriteNoteRow
+                                            key={`note:${item.id}`}
+                                            item={item}
+                                            busy={pendingKeys.includes(`note:${item.id}`)}
+                                            onRemove={() => void remove("note", item.id)}
                                         />
                                     ))}
                                 </div>
@@ -341,6 +367,55 @@ function FavouriteLessonRow({ item, busy, onRemove }: { item: FavoriteItem; busy
                 <Award className="h-3.5 w-3.5" />
                 {t("favourites.saved")}
             </span>
+            <button
+                type="button"
+                onClick={onRemove}
+                disabled={busy}
+                aria-label={t("favourites.removeCourseAria", { title: item.title })}
+                title={t("favourites.removeTitle")}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/40 dark:text-white/40 transition hover:border-red-200 dark:hover:border-red-500/20 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 disabled:cursor-wait disabled:opacity-60"
+            >
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-4 w-4 fill-[#F47822] text-[#F47822]" />}
+            </button>
+        </article>
+    );
+}
+
+function FavouriteNoteRow({ item, busy, onRemove }: { item: FavoriteItem; busy: boolean; onRemove: () => void }) {
+    const { t } = useTranslation();
+    const href = noteHref(item);
+    const inner = (
+        <>
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F47822]/10 text-[#F47822] transition group-hover:bg-[#F47822] group-hover:text-white">
+                <StickyNote className="h-6 w-6" />
+            </span>
+            <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.15em] text-[#F47822]">
+                    {t("favourites.savedNote")}
+                    {item.lesson_title ? ` · ${item.lesson_title}` : ""}
+                </span>
+                <span className="mt-0.5 block truncate text-sm font-bold text-[#3A3A3A] dark:text-[#ececef] transition group-hover:text-[#F47822] sm:text-base">
+                    {item.title}
+                </span>
+                {item.subtitle && (
+                    <span className="mt-1 block truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">{item.subtitle}</span>
+                )}
+            </span>
+        </>
+    );
+    return (
+        <article className="group flex items-center gap-4 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 shadow-[0_6px_20px_rgba(58,58,58,0.04)] transition hover:border-[#F47822]/30 sm:gap-5 sm:p-5">
+            {href ? (
+                <Link
+                    to={href}
+                    className="flex min-w-0 flex-1 items-center gap-4 sm:gap-5"
+                    aria-label={t("favourites.openNoteAria", { title: item.title })}
+                >
+                    {inner}
+                </Link>
+            ) : (
+                <span className="flex min-w-0 flex-1 items-center gap-4 sm:gap-5">{inner}</span>
+            )}
             <button
                 type="button"
                 onClick={onRemove}

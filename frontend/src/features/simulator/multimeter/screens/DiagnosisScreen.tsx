@@ -10,6 +10,8 @@ import { ComponentArt, refPhotoFallback } from "../components/ComponentArt";
 import { WiringView } from "../components/WiringView";
 import { useProbeDrag } from "../hooks/useProbeDrag";
 import { sfx } from "../lib/sfx";
+import { ProbeWireOverlay } from "../probe/ProbeWireOverlay";
+import { jackViewportPoint } from "../probe/probeGeometry";
 
 function fmtClock(total: number): string {
     return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
@@ -24,6 +26,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
     const complaint = t(`simulator.dmmLab.bench.complaint.${comp.ref}`, { defaultValue: comp.name });
     const dragApi = useProbeDrag(engine);
     const leadRefs = useRef<Record<Lead, HTMLElement | null>>({ red: null, black: null });
+    const gridRef = useRef<HTMLDivElement>(null);
     const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
     const [photoOpen, setPhotoOpen] = useState(false);
     const [muted, setMuted] = useState(() => sfx.isMuted());
@@ -37,11 +40,19 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
             setOrigin(null);
             return;
         }
+        // The drag cable leaves the meter front jack (screenshot design);
+        // fall back to the lead token in the probes panel.
+        const jack = dragApi.drag.lead === "red" ? state.redJack : state.blackJack;
+        const fromJack = jackViewportPoint(jack, gridRef.current ?? document);
+        if (fromJack) {
+            setOrigin(fromJack);
+            return;
+        }
         const el = leadRefs.current[dragApi.drag.lead];
         if (!el) return;
         const r = el.getBoundingClientRect();
         setOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-    }, [dragApi.drag]);
+    }, [dragApi.drag, state.redJack, state.blackJack]);
 
     useEffect(() => {
         if (state.feedback?.tone === "bad") sfx.play("bad");
@@ -134,7 +145,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                 </div>
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_300px]">
+            <div ref={gridRef} className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_300px]">
                 {/* Procedure */}
                 <section className="min-w-0 space-y-3">
                     <GuideCard engine={engine} />
@@ -329,6 +340,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                 </p>
             )}
 
+            <ProbeWireOverlay engine={engine} scopeRef={gridRef} hideLead={dragApi.drag?.lead ?? null} />
             <ProbeCableOverlay drag={dragApi.drag} origin={origin} />
         </div>
     );

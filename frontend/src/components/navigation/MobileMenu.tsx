@@ -1,6 +1,8 @@
 import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/cn";
 
 interface MobileMenuProps {
@@ -12,12 +14,14 @@ export function MobileMenu({
     open,
     onClose,
 }: MobileMenuProps) {
+    const { t } = useTranslation();
+
     return (
         <>
             {open && (
                 <button
                     type="button"
-                    aria-label="Close menu"
+                    aria-label={t("navigation.closeMenu")}
                     onClick={onClose}
                     className="fixed inset-0 z-40 bg-black/40"
                 />
@@ -37,14 +41,14 @@ export function MobileMenu({
             >
                 <div className="flex items-center justify-between">
                     <span className="font-semibold">
-                        Menu
+                        {t("navigation.menu")}
                     </span>
 
                     <button
                         type="button"
                         onClick={onClose}
                         className="rounded-md p-2 hover:bg-[var(--surface)]"
-                        aria-label="Close menu"
+                        aria-label={t("navigation.closeMenu")}
                     >
                         <X className="size-5" />
                     </button>
@@ -56,7 +60,7 @@ export function MobileMenu({
                         onClick={onClose}
                         className="rounded-md px-3 py-3 text-sm font-medium hover:bg-[var(--surface)]"
                     >
-                        Courses
+                        {t("navigation.courses")}
                     </Link>
 
                     <Link
@@ -64,7 +68,7 @@ export function MobileMenu({
                         onClick={onClose}
                         className="rounded-md px-3 py-3 text-sm font-medium hover:bg-[var(--surface)]"
                     >
-                        About
+                        {t("navigation.about")}
                     </Link>
 
                     <Link
@@ -72,7 +76,7 @@ export function MobileMenu({
                         onClick={onClose}
                         className="rounded-md px-3 py-3 text-sm font-medium hover:bg-[var(--surface)]"
                     >
-                        Contact
+                        {t("navigation.contact")}
                     </Link>
                 </nav>
             </div>

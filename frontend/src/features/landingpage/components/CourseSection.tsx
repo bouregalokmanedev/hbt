@@ -132,6 +132,7 @@ export function CoursesSection() {
 
     return (
         <LandingSection
+            id="courses"
             sectionRef={sectionRef}
             className="bg-[#F4F3F0] text-[#181818]"
         >
@@ -261,8 +262,8 @@ export function CoursesSection() {
 
                     {/* Heading */}
 
-                    <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:items-end">
-                        <div className="lg:col-span-8">
+                    <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
+                        <div className="lg:col-span-7">
                             <div className="flex items-center gap-3">
                                 <span className="h-px w-10 bg-[#F47822]" />
 
@@ -283,7 +284,7 @@ export function CoursesSection() {
                             </SectionTitle>
                         </div>
 
-                        <div className="lg:col-span-3 lg:col-start-10">
+                        <div className="lg:col-span-4 lg:col-start-9">
                             <div
                                 className="
                                     border-l-2
@@ -317,13 +318,13 @@ export function CoursesSection() {
 
                 <div
                     className={`
-                        mt-16
+                        mt-6
                         grid
                         gap-6
                         transition-all
                         delay-150
                         duration-1000
-                        lg:mt-24
+                        lg:mt-8
                         lg:grid-cols-[220px_minmax(0,1fr)]
                         ${
                             isVisible
@@ -337,8 +338,8 @@ export function CoursesSection() {
                     ================================================== */}
 
                     <div className="relative">
-                        <div className="lg:sticky lg:top-24">
-                            <div className="mb-5 flex items-center justify-between lg:block">
+                        <div>
+                            <div className="mb-4 flex items-center justify-between lg:block">
                                 <div>
                                     <span className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#181818]/30">
                                         {t("landingPage.courses.navLabel")}
@@ -349,7 +350,7 @@ export function CoursesSection() {
                                     </p>
                                 </div>
 
-                                <div className="font-mono text-[8px] text-[#181818]/25 lg:mt-5">
+                                <div className="font-mono text-[8px] text-[#181818]/25 lg:mt-4">
                                     {String(activeCourse + 1).padStart(
                                         2,
                                         "0",
@@ -362,7 +363,7 @@ export function CoursesSection() {
                                 </div>
                             </div>
 
-                            <div className="flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-2 lg:overflow-visible">
+                            <div className="flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-1.5 lg:overflow-visible">
                                 {courses.map((course, index) => {
                                     const isActive =
                                         activeCourse === index;
@@ -498,7 +499,7 @@ export function CoursesSection() {
 
                             {/* navigation */}
 
-                            <div className="mt-5 hidden gap-2 lg:flex">
+                            <div className="mt-4 hidden gap-2 lg:flex">
                                 <button
                                     type="button"
                                     onClick={previousCourse}
@@ -581,7 +582,7 @@ export function CoursesSection() {
                                 IMAGE
                             ================================================== */}
 
-                            <div className="p-3 sm:p-4">
+                            <div className="p-2.5 sm:p-3">
                                 <div className="relative aspect-[16/7] overflow-hidden rounded-[23px] bg-[#181818]">
                                     <img
                                         key={active.id}
@@ -650,7 +651,7 @@ export function CoursesSection() {
                                                     {active.category}
                                                 </p>
 
-                                                <h3 className="mt-2 max-w-3xl text-3xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
+                                                <h3 className="mt-2 max-w-3xl text-2xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-4xl lg:text-5xl">
                                                     {active.title}
                                                 </h3>
                                             </div>
@@ -724,7 +725,7 @@ export function CoursesSection() {
 
                                 {/* CTA */}
 
-                                <div className="flex items-center border-t border-[#181818]/[0.07] p-4 md:w-[210px] md:border-l md:border-t-0 md:rtl:border-l-0 md:rtl:border-r">
+                                <div className="flex items-center border-t border-[#181818]/[0.07] p-3 md:w-[210px] md:border-l md:border-t-0 md:rtl:border-l-0 md:rtl:border-r">
                                     <Link
                                         to="/catalog"
                                         className="
@@ -869,15 +870,15 @@ export function CoursesSection() {
 
                 <div
                     className="
-                        mt-16
+                        mt-6
                         grid
                         gap-6
                         border-t
                         border-[#181818]/10
-                        pt-8
+                        pt-6
                         sm:grid-cols-[1fr_auto]
                         sm:items-center
-                        lg:mt-20
+                        lg:mt-8
                     "
                 >
                     <div>

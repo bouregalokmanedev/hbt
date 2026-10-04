@@ -2,6 +2,7 @@
 
 namespace App\Domains\Admin\Controllers;
 
+use App\Domains\Notifications\Services\StudentNotificationService;
 use App\Domains\Support\Enums\TicketLevel;
 use App\Domains\Support\Enums\TicketStatus;
 use App\Domains\Support\Models\SupportTicket;
@@ -111,12 +112,21 @@ class AdminSupportController extends Controller
             $ticket->update(['status' => TicketStatus::PENDING->value]);
         }
 
+        if (! $reply->internal) {
+            $this->notifyTicketOwner(
+                $ticket,
+                'Support replied to your ticket',
+                \Illuminate\Support\Str::limit(trim($data['message']), 160),
+                'ticket:'.$ticket->id.':reply:'.$reply->id,
+            );
+        }
+
         $audit->log('ticket.replied', $ticket, [], [], ['internal' => $reply->internal]);
 
         return response()->json([
             'success' => true,
             'message' => $reply->internal ? 'Internal note saved.' : 'Reply sent to the student.',
-            'data' => $this->serialize($ticket->fresh()->load(['user:id,first_name,last_name,email', 'assignee:id,first_name,last_name', 'replies.user:id,uuid,first_name,last_name']), true),
+            'data' => $this->serialize($this->reload($ticket), true),
         ]);
     }
 
@@ -140,10 +150,17 @@ class AdminSupportController extends Controller
 
         $audit->log('ticket.assigned', $ticket, ['assignee' => $old], ['assignee' => $assignee->email]);
 
+        $this->notifyTicketOwner(
+            $ticket,
+            'Your ticket was assigned',
+            "{$assignee->full_name} picked up your ticket and is looking into it now.",
+            "ticket-assigned:{$ticket->id}:{$assignee->id}",
+        );
+
         return response()->json([
             'success' => true,
             'message' => "Ticket assigned to {$assignee->full_name}.",
-            'data' => $this->serialize($ticket->fresh()),
+            'data' => $this->serialize($this->reload($ticket), true),
         ]);
     }
 
@@ -180,10 +197,17 @@ class AdminSupportController extends Controller
 
         $audit->log('ticket.escalated', $ticket, ['level' => $old], ['level' => $data['level']]);
 
+        $this->notifyTicketOwner(
+            $ticket,
+            'Your ticket was escalated',
+            "Your ticket was escalated to the {$data['level']} team for a closer look. We will come back to you with an update.",
+            "ticket-escalated:{$ticket->id}:{$data['level']}",
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Ticket escalated.',
-            'data' => $this->serialize($ticket->fresh()),
+            'data' => $this->serialize($this->reload($ticket), true),
         ]);
     }
 
@@ -197,12 +221,19 @@ class AdminSupportController extends Controller
             'resolved_at' => now(),
         ]);
 
+        $this->notifyTicketOwner(
+            $ticket,
+            'Your ticket has been resolved',
+            'Ticket "'.$ticket->subject.'" was marked as resolved. Rate the support you received.',
+            'ticket:'.$ticket->id.':resolved',
+        );
+
         $audit->log('ticket.resolved', $ticket);
 
         return response()->json([
             'success' => true,
             'message' => 'Ticket marked as resolved.',
-            'data' => $this->serialize($ticket->fresh()),
+            'data' => $this->serialize($this->reload($ticket), true),
         ]);
     }
 
@@ -215,13 +246,57 @@ class AdminSupportController extends Controller
             'closed_at' => now(),
         ]);
 
+        $this->notifyTicketOwner(
+            $ticket,
+            'Your ticket has been closed',
+            'Ticket "'.$ticket->subject.'" was closed. If you still need help, open a new ticket from the Support page.',
+            'ticket:'.$ticket->id.':closed',
+        );
+
         $audit->log('ticket.closed', $ticket);
 
         return response()->json([
             'success' => true,
             'message' => 'Ticket closed.',
-            'data' => $this->serialize($ticket->fresh()),
+            'data' => $this->serialize($this->reload($ticket), true),
         ]);
+    }
+
+    private function reload(SupportTicket $ticket): SupportTicket
+    {
+        return $ticket->fresh()->load([
+            'user:id,first_name,last_name,email',
+            'assignee:id,first_name,last_name',
+            'replies.user:id,uuid,first_name,last_name',
+        ]);
+    }
+
+    /**
+     * In-app + email nudge to the student who filed the ticket. Failures are
+     * logged only: a broken notification must never fail the agent's action.
+     */
+    private function notifyTicketOwner(SupportTicket $ticket, string $title, string $message, string $dedupeKey): void
+    {
+        $owner = $ticket->user ?? $ticket->load('user')->user;
+
+        if ($owner === null) {
+            return;
+        }
+
+        try {
+            app(StudentNotificationService::class)->send(
+                $owner,
+                'support',
+                $title,
+                $message,
+                '/support?ticket='.$ticket->id,
+                $dedupeKey,
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Support ticket notification failed: '.$e->getMessage(), [
+                'ticket_id' => $ticket->id,
+            ]);
+        }
     }
 
     private function serialize(SupportTicket $ticket, bool $verbose = false): array
@@ -238,6 +313,9 @@ class AdminSupportController extends Controller
             'assignee' => $ticket->assignee?->full_name,
             'due_at' => $ticket->due_at?->toISOString(),
             'overdue' => $ticket->isOverdue(),
+            'rating' => $ticket->rating !== null ? (int) $ticket->rating : null,
+            'rating_comment' => $ticket->rating_comment,
+            'rated_at' => $ticket->rated_at?->toISOString(),
             'created_at' => $ticket->created_at?->toISOString(),
         ];
 

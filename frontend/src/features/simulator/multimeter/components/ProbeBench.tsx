@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import type { Lead, MeterProcedureEngine } from "../engine/meter.engine";
 import { sfx } from "../lib/sfx";
+import { probeTargetLabel } from "../probe/probeGeometry";
 
 export function ProbeBench({
     engine,
@@ -27,7 +28,7 @@ export function ProbeBench({
         <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
             <div className="flex items-center justify-between gap-2">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-[#1F6AE1]">
-                    {t("simulator.dmmLab.bench.probeBench")}
+                    {t("simulator.dmmLab.bench.probePanelTitle")}
                 </p>
                 <button
                     type="button"
@@ -41,19 +42,21 @@ export function ProbeBench({
                     {t("simulator.dmmLab.bench.clearProbesBtn")}
                 </button>
             </div>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <div className="mt-2 grid gap-2">
                 {rows.map(({ lead, seated }) => {
                     const armed = armedLead === lead;
+                    const label = lead === "red" ? t("simulator.dmmLab.bench.redProbe") : t("simulator.dmmLab.bench.blackProbe");
                     return (
                         <div
                             key={lead}
+                            data-probe-token={lead}
                             ref={(el) => registerRef?.(lead, el)}
                             onPointerDown={(e) => onPointerDownLead(lead, e)}
                             onClick={() => onArm(armed ? null : lead)}
                             role="button"
                             tabIndex={0}
                             aria-pressed={armed}
-                            aria-label={lead === "red" ? t("simulator.dmmLab.bench.leadRed") : t("simulator.dmmLab.bench.leadBlack")}
+                            aria-label={label}
                             onKeyDown={(e) => {
                                 if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
@@ -66,13 +69,16 @@ export function ProbeBench({
                                     : "border-[#3A3A3A]/10 bg-[#FCFCFC] hover:border-[#1F6AE1]/40 dark:border-white/10 dark:bg-white/[0.04]"
                             }`}
                         >
-                            <span className={`h-3 w-3 shrink-0 rounded-full ${lead === "red" ? "bg-[#D92D20]" : "bg-[#14181C] dark:bg-white"}`} />
+                            <span
+                                className={`h-7 w-1.5 shrink-0 rounded-full ${lead === "red" ? "bg-[#D92D20]" : "bg-[#14181C] dark:bg-white"}`}
+                            />
                             <span className="min-w-0 flex-1">
-                                <span className="block text-xs font-black text-[#3A3A3A] dark:text-white">
-                                    {lead === "red" ? t("simulator.dmmLab.bench.leadRed") : t("simulator.dmmLab.bench.leadBlack")}
-                                </span>
-                                <span dir="ltr" className="block truncate font-mono text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
-                                    {seated ?? t("simulator.dmmLab.bench.notPlaced")}
+                                <span className="block text-xs font-black text-[#3A3A3A] dark:text-white">{label}</span>
+                                <span
+                                    dir="ltr"
+                                    className="block truncate font-mono text-[11px] text-[#3A3A3A]/50 dark:text-white/50"
+                                >
+                                    {seated ? probeTargetLabel(t, seated) : t("simulator.dmmLab.bench.notPlaced")}
                                 </span>
                             </span>
                             {seated && (

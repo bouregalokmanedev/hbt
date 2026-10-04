@@ -2,6 +2,8 @@ import { BookMarked, Plus, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
+
 import {
   createLessonNote,
   deleteLessonNote,
@@ -116,22 +118,33 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
               </p>
             </div>
           </div>
-          {active && (
-            <button
-              type="button"
-              onClick={() => void remove()}
-              className="rounded-xl p-2 text-gray-400 transition hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
-              aria-label={t("lessonPlayer.notes.delete")}
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {active && (
+              <>
+                <FavoriteButton
+                  type="note"
+                  id={active.id}
+                  title={title}
+                  variant="solid"
+                  size="md"
+                />
+                <button
+                  type="button"
+                  onClick={() => void remove()}
+                  className="rounded-xl p-2 text-gray-400 transition hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
+                  aria-label={t("lessonPlayer.notes.delete")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </>
+            )}
+          </div>
         </div>
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder={t("lessonPlayer.notes.titlePh")}
-          className="mt-6 w-full border-0 border-b border-gray-200 dark:border-white/10 bg-transparent pb-3 text-lg font-bold text-[#3A3A3A] dark:text-[#ececef] outline-none transition focus:border-[#F47822]"
+          className="mt-6 w-full rounded-b-lg border-0 border-b border-gray-200 dark:border-white/10 bg-transparent px-1 pb-3 text-lg font-bold text-[#3A3A3A] dark:text-[#ececef] outline-none transition focus:border-[#F47822] focus:bg-[#F47822]/[0.04] focus:ring-2 focus:ring-[#F47822]/25"
         />
         <textarea
           value={content}

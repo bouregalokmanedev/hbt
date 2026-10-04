@@ -35,6 +35,11 @@ final class SupportDashboardController extends Controller
             ->where('status', TicketStatus::RESOLVED->value)
             ->count();
 
+        $csat = SupportTicket::query()
+            ->whereNotNull('rating')
+            ->selectRaw('COALESCE(AVG(rating), 0) AS average, COUNT(*) AS count')
+            ->first();
+
         $recent = SupportTicket::query()
             ->with(['user:id,first_name,last_name,email', 'assignee:id,first_name,last_name'])
             ->latest()
@@ -73,6 +78,10 @@ final class SupportDashboardController extends Controller
             'message' => 'Support overview retrieved.',
             'data' => [
                 'summary' => compact('open', 'pending', 'resolved', 'overdue', 'unassigned', 'mine', 'resolvedByMe'),
+                'csat' => [
+                    'average' => round((float) ($csat->average ?? 0), 2),
+                    'count' => (int) ($csat->count ?? 0),
+                ],
                 'recent' => $recent,
                 'my_queue' => $myQueue,
             ],

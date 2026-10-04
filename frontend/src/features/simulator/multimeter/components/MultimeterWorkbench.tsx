@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { LabProgressStrip } from "@/features/simulator/components/LabProgressStrip";
+import { MM_PROCEDURES } from "../data/multimeter.data";
 import { useMeterProcedure } from "../hooks/useMeterProcedure";
 import { ComponentSidebar } from "./ComponentSidebar";
 import { DiagnosisScreen } from "../screens/DiagnosisScreen";
@@ -33,6 +35,10 @@ export function MultimeterWorkbench({
             </div>
         );
     }
+
+    const totalSteps = MM_PROCEDURES.reduce((n, c) => n + c.steps.length, 0);
+    const clearedSteps = Object.values(state.done).reduce((n, d) => n + d.steps, 0);
+    const progressPct = totalSteps === 0 ? 0 : Math.round((clearedSteps / totalSteps) * 100);
 
     return (
         <div className="overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
@@ -72,6 +78,7 @@ export function MultimeterWorkbench({
                     </div>
                 </div>
             </div>
+            <LabProgressStrip tool="multimeter" progress={progressPct} />
             <div className="flex items-stretch">
                 <ComponentSidebar
                     done={state.done}

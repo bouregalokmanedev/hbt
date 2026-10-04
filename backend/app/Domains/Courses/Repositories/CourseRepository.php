@@ -30,17 +30,6 @@ class CourseRepository implements CourseRepositoryInterface
         return $course->refresh();
     }
 
-    public function publish(
-        Course $course
-    ): Course {
-        $course->update([
-            'status' => CourseStatus::PUBLISHED,
-            'published_at' => now(),
-        ]);
-
-        return $course->refresh();
-    }
-
     public function delete(
         Course $course
     ): void {

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 interface EnrollmentButtonProps {
     isEnrolled: boolean;
     isEnrolling: boolean;
@@ -11,6 +13,8 @@ export function EnrollmentButton({
     onEnroll,
     onStart,
 }: EnrollmentButtonProps) {
+    const { t } = useTranslation();
+
     if (isEnrolled) {
         return (
             <button
@@ -18,7 +22,10 @@ export function EnrollmentButton({
                 onClick={onStart}
                 className="w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
             >
-                Start learning →
+                {t("common.startLearning")}{" "}
+                <span aria-hidden="true" className="rtl:-scale-x-100">
+                    →
+                </span>
             </button>
         );
     }
@@ -31,8 +38,8 @@ export function EnrollmentButton({
             className="w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
         >
             {isEnrolling
-                ? "Enrolling..."
-                : "Enroll now"}
+                ? t("courseDetails.page.cta.enrolling")
+                : t("common.enrollNow")}
         </button>
     );
 }

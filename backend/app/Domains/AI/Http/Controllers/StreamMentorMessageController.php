@@ -17,7 +17,7 @@ final class StreamMentorMessageController
     public function __invoke(
         Request $request,
         MentorConversation $conversation,
-    ): StreamedResponse {
+    ): StreamedResponse|\Illuminate\Http\JsonResponse {
         $validated = $request->validate([
             'message' => [
                 'required',
@@ -26,10 +26,27 @@ final class StreamMentorMessageController
             ],
         ]);
 
-        $stream = $this->action->execute(
-            $conversation,
-            $validated['message'],
-        );
+        try {
+            $stream = $this->action->execute(
+                $conversation,
+                $validated['message'],
+            );
+        } catch (\RuntimeException $e) {
+            // abort() also throws a RuntimeException subclass — those carry a
+            // status and copy we already want the client to see.
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                throw $e;
+            }
+
+            // Provider outages, rate limits and bad upstream payloads all
+            // arrive here; the detail belongs in the log, not in the chat.
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'The AI mentor is unavailable right now. Please try again in a moment.',
+            ], 503);
+        }
 
         return response()->stream(
             function () use ($stream): void {

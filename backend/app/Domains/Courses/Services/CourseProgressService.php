@@ -86,6 +86,18 @@ final class CourseProgressService
 
     if (! $wasCompleted && $result->completed_at !== null) {
         event(new CourseCompleted($result));
+
+        $instructor = $course->instructor;
+        if ($instructor !== null) {
+            app(\App\Domains\Progression\Services\InstructorProgressionService::class)->award(
+                $instructor,
+                'student_completed_course',
+                40,
+                70,
+                "course-complete:{$course->id}:{$user->id}",
+                ['label' => 'Student completed a course', 'course' => $course->title],
+            );
+        }
     }
 
     return $result;

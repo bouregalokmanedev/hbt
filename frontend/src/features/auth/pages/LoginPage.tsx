@@ -118,6 +118,9 @@ export function LoginPage() {
   const [verificationResending, setVerificationResending] = useState(false);
   const [verificationResent, setVerificationResent] = useState(false);
   const [verificationResendFailed, setVerificationResendFailed] = useState(false);
+  // The resend endpoint is throttled server side — mirror the window in the UI
+  // instead of letting people tap into a 429.
+  const [verificationCooldown, setVerificationCooldown] = useState(0);
   const challengeEmail =
     mfaEmail ||
     (lastLoginEmail && error?.toLowerCase().includes("two-factor")
@@ -173,15 +176,24 @@ export function LoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldErrors]);
 
+  useEffect(() => {
+    if (verificationCooldown <= 0) return;
+    const timer = window.setInterval(() => {
+      setVerificationCooldown((seconds) => (seconds <= 1 ? 0 : seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [verificationCooldown]);
+
   const resendVerificationEmail = async () => {
     const email = lastLoginEmail.trim();
-    if (!email || verificationResending) return;
+    if (!email || verificationResending || verificationCooldown > 0) return;
     setVerificationResending(true);
     setVerificationResent(false);
     setVerificationResendFailed(false);
     try {
       await authApi.resendVerificationEmail(email);
       setVerificationResent(true);
+      setVerificationCooldown(60);
     } catch {
       setVerificationResendFailed(true);
     } finally {
@@ -441,12 +453,14 @@ export function LoginPage() {
                     <button
                       type="button"
                       onClick={() => void resendVerificationEmail()}
-                      disabled={verificationResending}
+                      disabled={verificationResending || verificationCooldown > 0}
                       className="block w-full rounded-lg border border-[#F47822]/30 bg-white px-3 py-2 text-xs font-semibold text-[#F47822] transition hover:bg-[#FFF8F4] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {verificationResending
-                        ? t.errors.resendVerificationSending
-                        : t.errors.resendVerification}
+                      {verificationCooldown > 0
+                        ? `${t.errors.resendVerificationWait} ${verificationCooldown}s`
+                        : verificationResending
+                          ? t.errors.resendVerificationSending
+                          : t.errors.resendVerification}
                     </button>
 
                     {verificationResent && (

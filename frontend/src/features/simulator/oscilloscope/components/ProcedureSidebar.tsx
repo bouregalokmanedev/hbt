@@ -42,7 +42,7 @@ export function ProcedureSidebar({
           {comp.name}
         </h2>
         <p className="mt-0.5 text-sm text-[#3A3A3A]/60 dark:text-white/60">
-          {t(`oscilloscope.ex.${comp.id}.sub`, { defaultValue: comp.name }) as string}
+          {t(`content.oscilloscope.ex.${comp.id}.sub`, { defaultValue: comp.name }) as string}
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export function ProcedureSidebar({
                 {done[i] ? "✓" : i + 1}
               </span>
               <span className="text-sm text-[#3A3A3A] dark:text-white">
-                {t(`oscilloscope.step.${key}`, { defaultValue: STEP_DEFAULTS[key] }) as string}
+                {t(`content.oscilloscope.step.${key}`, { defaultValue: STEP_DEFAULTS[key] }) as string}
               </span>
             </li>
           ))}
@@ -87,7 +87,7 @@ export function ProcedureSidebar({
           {t("oscilloscope.proc.measurement", { defaultValue: "Measurement" }) as string}
         </div>
         <p className="mt-1.5 text-sm text-[#3A3A3A]/60 dark:text-white/60">
-          {t(`oscilloscope.ex.${comp.id}.instruction`, { defaultValue: "Observe the waveform and compare to reference values." }) as string}
+          {t(`content.oscilloscope.ex.${comp.id}.instruction`, { defaultValue: "Observe the waveform and compare to reference values." }) as string}
         </p>
       </div>
 
@@ -133,7 +133,7 @@ export function ProcedureSidebar({
                   : "border-[#3A3A3A]/10 text-[#3A3A3A] hover:border-[#0E9F6E]/40 dark:border-white/10 dark:text-white",
               )}
             >
-              {t(`oscilloscope.fault.${f}.label`, { defaultValue: f }) as string}
+              {t(`content.oscilloscope.fault.${f}.label`, { defaultValue: f }) as string}
             </button>
           ))}
         </div>

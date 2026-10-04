@@ -31,11 +31,28 @@ final class SendMentorMessageController
 
     $validated = $request->validated();
     
-    $message = $this->sendMessage->execute(
-        conversation: $conversation,
-        user: $request->user(),
-        message: $validated['message'],
-    );
+    try {
+        $message = $this->sendMessage->execute(
+            conversation: $conversation,
+            user: $request->user(),
+            message: $validated['message'],
+        );
+    } catch (\RuntimeException $e) {
+        // abort() also throws a RuntimeException subclass — those carry a
+        // status and copy we already want the client to see.
+        if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+            throw $e;
+        }
+
+        // Provider outages, rate limits and bad upstream payloads all arrive
+        // here; the detail belongs in the log, not in the student's chat.
+        report($e);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'The AI mentor is unavailable right now. Please try again in a moment.',
+        ], 503);
+    }
 
     return response()->json([
         'data' => new MentorMessageResource($message),

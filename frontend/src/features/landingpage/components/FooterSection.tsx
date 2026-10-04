@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 
 import { openCookieConsent } from "@/features/cookies/consent";
 
+import { useFitToViewport } from "../hooks/useFitToViewport";
+
 
 /* =============================================================
    FOOTER
@@ -18,9 +20,13 @@ import { openCookieConsent } from "@/features/cookies/consent";
 export function Footer() {
     const { t } = useTranslation();
     const year = new Date().getFullYear();
+    const { sectionRef, contentRef, scale } = useFitToViewport();
 
     return (
-        <footer className="site-footer-ar relative overflow-hidden bg-[#181818] text-white">
+        <footer
+            ref={sectionRef}
+            className="site-footer-ar relative overflow-hidden bg-[#181818] text-white md:snap-start"
+        >
 
             {/* =====================================================
                 BACKGROUND GRID
@@ -61,6 +67,7 @@ export function Footer() {
 
 
             <div
+                ref={contentRef}
                 className="
                     relative
                     mx-auto
@@ -70,6 +77,14 @@ export function Footer() {
                     sm:px-8
                     lg:px-12
                 "
+                style={
+                    scale < 1
+                        ? {
+                              transform: `scale(${scale})`,
+                              transformOrigin: "center center",
+                          }
+                        : undefined
+                }
             >
 
                 {/* =================================================
@@ -79,11 +94,11 @@ export function Footer() {
                 <div
                     className="
                         grid
-                        gap-14
+                        gap-10
                         border-b
                         border-white/10
-                        py-16
-                        sm:py-20
+                        py-12
+                        sm:py-14
                         lg:grid-cols-[1.4fr_1fr_1fr_1fr]
                         lg:gap-12
                     "

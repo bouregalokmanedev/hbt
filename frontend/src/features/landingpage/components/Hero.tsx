@@ -9,8 +9,11 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { useFitToViewport } from "../hooks/useFitToViewport";
+
 const HeroSection = () => {
     const { t } = useTranslation();
+    const { sectionRef, contentRef, scale } = useFitToViewport();
 
     const slideWords = t("landingPage.hero.slideWords", {
         returnObjects: true,
@@ -69,6 +72,7 @@ const HeroSection = () => {
 
     return (
         <section
+            ref={sectionRef}
             className="
                 relative
                 isolate
@@ -76,6 +80,13 @@ const HeroSection = () => {
                 overflow-hidden
                 bg-[#111111]
                 text-white
+                md:flex
+                md:h-[calc(100svh-5rem)]
+                md:min-h-0
+                md:flex-col
+                md:items-center
+                md:justify-center
+                md:snap-start
             "
         >
             {/* =====================================================
@@ -219,6 +230,18 @@ const HeroSection = () => {
             ====================================================== */}
 
             <div
+                ref={contentRef}
+                className="w-full"
+                style={
+                    scale < 1
+                        ? {
+                              transform: `scale(${scale})`,
+                              transformOrigin: "center center",
+                          }
+                        : undefined
+                }
+            >
+            <div
                 className="
                     mx-auto
                     flex
@@ -228,10 +251,11 @@ const HeroSection = () => {
                     flex-col
                     justify-center
                     px-5
-                    pb-24
-                    pt-16
+                    pb-16
+                    pt-14
                     sm:px-8
                     lg:px-12
+                    md:min-h-0
                 "
             >
                 <div
@@ -318,15 +342,15 @@ const HeroSection = () => {
                     <h1
                         className="
                             max-w-5xl
-                            text-[3.5rem]
+                            text-[2.75rem]
                             font-black
                             leading-[0.92]
                             tracking-[-0.045em]
                             [text-shadow:0_2px_34px_rgba(0,0,0,0.55)]
-                            sm:text-6xl
-                            md:text-7xl
-                            lg:text-[5.8rem]
-                            xl:text-[6.5rem]
+                            sm:text-5xl
+                            md:text-5xl
+                            lg:text-[4.5rem]
+                            xl:text-[5rem]
                         "
                     >
                         <span className="block">
@@ -523,7 +547,7 @@ const HeroSection = () => {
 
                 <div
                     className="
-                        mt-14
+                        mt-8
                         flex
                         w-fit
                         max-w-full
@@ -537,7 +561,7 @@ const HeroSection = () => {
                         py-5
                         backdrop-blur-xl
                         shadow-[0_24px_60px_rgba(0,0,0,0.35)]
-                        sm:mt-16
+                        sm:mt-10
                         sm:flex-row
                         sm:items-center
                         sm:gap-0
@@ -737,7 +761,7 @@ const HeroSection = () => {
                     </div>
                 </div>
             </div>
-
+            </div>
 
             {/* =====================================================
                 ORANGE SCROLL PROGRESS

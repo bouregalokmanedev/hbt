@@ -2,13 +2,10 @@
 
 namespace App\Domains\Notifications\Controllers;
 
-use App\Domains\Messaging\Models\Message;
 use App\Domains\Messaging\Models\MessageConversation;
-use App\Domains\Messaging\Models\MessageParticipant;
 use App\Domains\Notifications\Models\StudentNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class StudentNotificationController
 {
@@ -81,35 +78,14 @@ class StudentNotificationController
 
         // Conversation truth: unread messages per type
         // (direct/group -> messages, announcement -> announcements).
-        $user = $request->user();
-        $participations = MessageParticipant::query()
-            ->where('message_participants.user_id', $user->id)
-            ->get(['message_participants.conversation_id', 'message_participants.last_read_at']);
-
-        if ($participations->isNotEmpty()) {
-            $convIds = $participations->pluck('conversation_id')->all();
-            $types = MessageConversation::query()
-                ->whereIn('message_conversations.id', $convIds)
-                ->pluck('message_conversations.type', 'message_conversations.id');
-            $readAtByConv = [];
-            foreach ($participations as $row) {
-                $readAtByConv[$row->conversation_id] = $row->last_read_at;
-            }
-
-            Message::query()
-                ->whereIn('messages.conversation_id', $convIds)
-                ->where('messages.sender_id', '!=', $user->id)
-                ->cursor()
-                ->each(function (Message $message) use (&$badges, $types, $readAtByConv): void {
-                    if ($message->isDeletedForAll()) {
-                        return;
-                    }
-                    $readAt = $readAtByConv[$message->conversation_id] ?? null;
-                    if ($readAt !== null && $readAt !== '' && ! $message->created_at->isAfter(Carbon::parse($readAt))) {
-                        return;
-                    }
-                    $badges[($types[$message->conversation_id] ?? 'direct') === 'announcement' ? 'announcements' : 'messages']++;
-                });
+        //
+        // Counted in SQL and grouped by type: the previous implementation
+        // streamed every unread message through a cursor on each poll, which
+        // scales with the user's whole history rather than with their inbox.
+        // The predicates live next to `unreadCountFor()` so the badge and the
+        // inbox pill can never disagree.
+        foreach (MessageConversation::unreadTotalsFor($request->user()) as $type => $total) {
+            $badges[$type === 'announcement' ? 'announcements' : 'messages'] += $total;
         }
 
         return response()->json(['data' => $badges]);

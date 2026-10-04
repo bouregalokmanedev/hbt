@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { ScopeEngine, ScopeEngineState } from "../engine/scope.engine";
 
 const COLORS: Record<string, string> = { A: "#3FBF7F", B: "#5B9BFF", C: "#F4A24A" };
@@ -18,6 +19,8 @@ export function WaveformCanvas({
   state: ScopeEngineState;
   height?: number;
 }) {
+  const { t } = useTranslation();
+
   const ref = useRef<HTMLCanvasElement | null>(null);
   const persistBuf = useRef<number[][]>([]); // prior Ch A y-traces (afterglow)
 
@@ -192,5 +195,5 @@ export function WaveformCanvas({
     }
   }, [engine, state, height]);
 
-  return <canvas ref={ref} className="block w-full rounded-xl" style={{ height }} aria-label="Waveform display" role="img" />;
+  return <canvas ref={ref} className="block w-full rounded-xl" style={{ height }} aria-label={t("simulator.waveformAria")} role="img" />;
 }

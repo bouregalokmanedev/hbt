@@ -10,6 +10,7 @@ import {
     vehicleFacts,
 } from "@/features/simulator/scanner/data/catalog";
 import { ADAS_ITEMS } from "@/features/simulator/scanner/data/scanner.data";
+import { readClearedCodes } from "@/features/simulator/scanner/lib/clearedDtcs";
 
 const ADAS_LABELS = ["Front camera", "Front radar", "BSM left", "BSM right", "PDC", "Surround view"] as const;
 
@@ -54,6 +55,8 @@ export function ReportScreen({
 }) {
     const { t, i18n } = useTranslation();
     const dateLocale = i18n.language === "ar" ? "ar" : undefined;
+    const contentText = (raw: string | null | undefined) =>
+        raw ? (raw.startsWith("content:") ? t(`content.${raw.slice(8)}`) : raw) : "";
     const [latest, setLatest] = useState<SimulatorResult | null>(null);
 
     useEffect(() => {
@@ -77,10 +80,32 @@ export function ReportScreen({
     const facts = useMemo(() => (vehicleKey ? vehicleFacts(vehicleKey) : null), [vehicleKey]);
     const displayName = vehicleKey ? vehicleDisplayName(vehicleKey) : null;
 
-    const faultDtcs = profile?.dtcs ?? [];
-    const faultNodes = profile?.nodes.filter((n) => n.status !== "normal" && n.status !== "none") ?? [];
+    // Cleared codes must not resurface in the report either: same persisted
+    // set the DTC tab writes (per student + vehicle).
+    const clearedCodes = useMemo(
+        () => new Set(vehicleKey ? readClearedCodes(vehicleKey) : []),
+        [vehicleKey, refreshKey],
+    );
+    const faultDtcs = useMemo(
+        () => (profile?.dtcs ?? []).filter((d) => !clearedCodes.has(d.code)),
+        [profile, clearedCodes],
+    );
+    // Per-ECU counters shrink with the cleared set so the ECU table never
+    // shows "3 DTC" beside an empty DTC table after a clear.
+    const clearedByEcu = useMemo(() => {
+        const map = new Map<string, number>();
+        for (const d of profile?.dtcs ?? []) {
+            if (clearedCodes.has(d.code)) map.set(d.ecu, (map.get(d.ecu) ?? 0) + 1);
+        }
+        return map;
+    }, [profile, clearedCodes]);
+    const countFor = (n: { id: string; dtc: number }) => Math.max(0, n.dtc - (clearedByEcu.get(n.id) ?? 0));
+    // Membership stays status-based (a cleared code doesn't heal the ECU);
+    // only the displayed count shrinks with the cleared set.
+    const faultNodes = (profile?.nodes.filter((n) => n.status !== "normal" && n.status !== "none") ?? [])
+        .map((n) => ({ ...n, dtc: countFor(n) }));
     const faultPids = profile?.pids.filter((p) => p.fault) ?? [];
-    const ecuRows = profile?.nodes ?? [];
+    const ecuRows = (profile?.nodes ?? []).map((n) => ({ ...n, dtc: countFor(n) }));
 
     // Live session data first (backend result → current engine → static profile),
     // so ADAS/score/hints never fall back to a stale profile after a scan starts.
@@ -152,7 +177,7 @@ export function ReportScreen({
             vehicleFacts: facts,
             faultProfile: profile
                 ? {
-                      dtcs: profile.dtcs,
+                      dtcs: faultDtcs,
                       nodes: profile.nodes.filter((n) => n.status !== "normal" && n.status !== "none"),
                       pids: profile.pids.filter((p) => p.fault),
                       ecus: profile.nodes,
@@ -239,7 +264,7 @@ export function ReportScreen({
             line("STEP BREAKDOWN", 12, "bold");
             gap(2);
             for (const s of steps.slice(0, 25)) {
-                line(`${s.ok ? "[PASS]" : "[FAIL]"} ${s.label}`, 8);
+                line(`${s.ok ? "[PASS]" : "[FAIL]"} ${contentText(s.label)}`, 8);
             }
         }
 
@@ -378,7 +403,7 @@ export function ReportScreen({
                         },
                         {
                             label: t("simulator.scannerLab.reportScreen.verdict", { defaultValue: "Verdict" }),
-                            value: verdict ? verdict.replace(/^content:/, "") : "—",
+                            value: verdict ? contentText(verdict) || "—" : "—",
                             mono: true,
                         },
                     ].map((row) => (
@@ -402,7 +427,7 @@ export function ReportScreen({
                             {steps.map((entry, i) => (
                                 <li key={`${entry.label}-${i}`} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 bg-[#FCFCFC] px-3 py-2 text-sm dark:border-white/8 dark:bg-white/[0.03]">
                                     <span className={`h-2 w-2 shrink-0 rounded-full ${entry.ok ? "bg-emerald-500" : "bg-red-500"}`} />
-                                    <span className="min-w-0 flex-1 truncate font-semibold text-[#3A3A3A] dark:text-white">{entry.label}</span>
+                                    <span className="min-w-0 flex-1 truncate font-semibold text-[#3A3A3A] dark:text-white">{contentText(entry.label)}</span>
                                     <span className={`shrink-0 font-mono text-[10px] font-black uppercase ${entry.ok ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>
                                         {entry.ok ? t("simulator.scannerLab.reportScreen.passed") : t("simulator.scannerLab.reportScreen.failed")}
                                     </span>

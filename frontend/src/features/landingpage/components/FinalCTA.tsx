@@ -1,733 +1,395 @@
+
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import {
-    ArrowUpRight,
-    Crosshair,
-    Sparkles,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  ChevronRight,
+  CircuitBoard,
+  GraduationCap,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
-
-import { useTranslation } from "react-i18next";
-
-import {
-    LandingSection,
-} from "./landing-ui";
-
-export function FinalCTA() {
-    const { t } = useTranslation();
-
-    return (
-        <LandingSection
-            className="group min-h-[720px] bg-[#F3F3F1] text-hbt-dark"
-        >
-            {/* =====================================================
-                TECHNICAL GRID
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    inset-0
-                    opacity-[0.045]
-                    [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)]
-                    [background-size:64px_64px]
-                "
-            />
-
-            {/* Larger secondary grid */}
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    inset-0
-                    opacity-[0.025]
-                    [background-image:linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)]
-                    [background-size:320px_320px]
-                "
-            />
-
-            {/* =====================================================
-                CENTER RADAR / CROSSHAIR
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-1/2
-                    top-1/2
-                    h-[520px]
-                    w-[520px]
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    rounded-full
-                    border
-                    border-black/[0.055]
-                    transition-transform
-                    duration-[1800ms]
-                    ease-out
-                    group-hover:scale-[1.08]
-                    sm:h-[620px]
-                    sm:w-[620px]
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-1/2
-                    top-1/2
-                    h-[380px]
-                    w-[380px]
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    rounded-full
-                    border
-                    border-black/[0.07]
-                    transition-transform
-                    duration-[1800ms]
-                    ease-out
-                    group-hover:scale-[0.9]
-                    sm:h-[460px]
-                    sm:w-[460px]
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-1/2
-                    top-1/2
-                    h-[280px]
-                    w-[280px]
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    rounded-full
-                    border
-                    border-dashed
-                    border-hbt-orange/20
-                    animate-[spin_35s_linear_infinite]
-                    sm:h-[340px]
-                    sm:w-[340px]
-                "
-            />
-
-            {/* =====================================================
-                ORANGE RADIAL GLOW
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-1/2
-                    top-1/2
-                    h-[280px]
-                    w-[280px]
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    rounded-full
-                    bg-hbt-orange/[0.06]
-                    blur-[100px]
-                    transition-all
-                    duration-1000
-                    group-hover:bg-hbt-orange/[0.1]
-                    group-hover:blur-[120px]
-                    sm:h-[420px]
-                    sm:w-[420px]
-                "
-            />
-
-            {/* =====================================================
-                HORIZONTAL TECHNICAL AXIS
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-0
-                    right-0
-                    top-1/2
-                    h-px
-                    bg-black/[0.08]
-                "
-            />
-
-            {/* Moving orange signal */}
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-[-25%]
-                    top-1/2
-                    h-[2px]
-                    w-[25%]
-                    bg-hbt-orange
-                    shadow-[0_0_25px_rgba(244,120,34,0.5)]
-                    animate-[signal_5s_ease-in-out_infinite]
-                "
-            />
-
-            {/* =====================================================
-                VERTICAL AXIS
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    bottom-0
-                    left-1/2
-                    top-0
-                    w-px
-                    bg-black/[0.055]
-                "
-            />
-
-            {/* =====================================================
-                TECHNICAL NODES
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    left-[12%]
-                    top-[27%]
-                    h-2
-                    w-2
-                    rounded-full
-                    bg-hbt-orange
-                    shadow-[0_0_0_7px_rgba(244,120,34,0.08)]
-                    animate-[pulse_3s_ease-in-out_infinite]
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    right-[14%]
-                    top-[31%]
-                    h-1.5
-                    w-1.5
-                    rounded-full
-                    bg-black/25
-                    animate-[pulse_4s_ease-in-out_infinite]
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    bottom-[24%]
-                    left-[20%]
-                    h-1.5
-                    w-1.5
-                    rounded-full
-                    bg-black/20
-                    animate-[pulse_5s_ease-in-out_infinite]
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    pointer-events-none
-                    absolute
-                    bottom-[20%]
-                    right-[23%]
-                    h-2
-                    w-2
-                    rounded-full
-                    border
-                    border-hbt-orange/60
-                    animate-[pulse_4s_ease-in-out_infinite]
-                "
-            />
-
-            {/* =====================================================
-                MAIN CONTENT
-            ====================================================== */}
-
-            <div
-                className="
-                    relative
-                    z-10
-                    mx-auto
-                    flex
-                    min-h-[720px]
-                    w-full
-                    max-w-[1440px]
-                    flex-col
-                    items-center
-                    justify-center
-                    px-5
-                    text-center
-                    sm:px-8
-                    lg:px-12
-                "
-            >
-                {/* =================================================
-                    TOP STATUS
-                ================================================== */}
-
-                <div
-                    className="
-                        mb-9
-                        flex
-                        items-center
-                        gap-3
-                        opacity-0
-                        animate-[fadeUp_0.8s_0.1s_ease-out_forwards]
-                    "
-                >
-                    <span
-                        className="
-                            relative
-                            flex
-                            h-2
-                            w-2
-                            items-center
-                            justify-center
-                        "
-                    >
-                        <span className="absolute h-2 w-2 rounded-full bg-hbt-orange/30 animate-ping" />
-
-                        <span className="relative h-1.5 w-1.5 rounded-full bg-hbt-orange" />
-                    </span>
-
-                    <span
-                        className="
-                            text-[9px]
-                            font-bold
-                            uppercase
-                            tracking-[0.32em]
-                            text-slate-400
-                            sm:text-[10px]
-                        "
-                    >
-                        {t("landingPage.finalCta.status")}
-                    </span>
-                </div>
-
-                {/* =================================================
-                    MAIN HEADING
-                ================================================== */}
-
-                <h2
-                    className="
-                        max-w-[1200px]
-                        text-[clamp(4rem,9.5vw,10rem)]
-                        font-black
-                        uppercase
-                        leading-[0.79]
-                        tracking-[-0.07em]
-                        text-hbt-dark
-                        opacity-0
-                        animate-[fadeUp_0.9s_0.2s_ease-out_forwards]
-                    "
-                >
-                    {t("landingPage.finalCta.titleA")}
-
-                    <br />
-
-                    <span className="relative inline-block text-hbt-orange">
-                        {t("landingPage.finalCta.titleHighlight")}
-                    </span>
-
-                    <br />
-
-                    <span className="relative">
-                        {t("landingPage.finalCta.titleB")}
-                        <span className="text-hbt-orange">?</span>
-                    </span>
-                </h2>
-
-                {/* =================================================
-                    DESCRIPTION
-                ================================================== */}
-
-                <p
-                    className="
-                        mt-9
-                        max-w-xl
-                        text-sm
-                        leading-7
-                        text-slate-500
-                        opacity-0
-                        animate-[fadeUp_0.9s_0.35s_ease-out_forwards]
-                        sm:text-base
-                        sm:leading-8
-                    "
-                >
-                    {t("landingPage.finalCta.description")}
-                </p>
-
-                {/* =================================================
-                    ACTIONS
-                ================================================== */}
-
-                <div
-                    className="
-                        mt-10
-                        flex
-                        flex-col
-                        items-center
-                        gap-3
-                        opacity-0
-                        animate-[fadeUp_0.9s_0.5s_ease-out_forwards]
-                        sm:flex-row
-                    "
-                >
-                    {/* Primary CTA */}
-
-                    <Link
-                        to="/catalog"
-                        className="
-                            group/cta
-                            relative
-                            inline-flex
-                            items-center
-                            gap-4
-                            overflow-hidden
-                            rounded-full
-                            bg-hbt-orange
-                            px-7
-                            py-4
-                            text-sm
-                            font-bold
-                            text-white
-                            shadow-[0_15px_40px_rgba(244,120,34,0.22)]
-                            transition-all
-                            duration-300
-                            hover:-translate-y-1
-                            hover:shadow-[0_20px_55px_rgba(244,120,34,0.35)]
-                            active:translate-y-0
-                        "
-                    >
-                        {/* Shine */}
-
-                        <span
-                            aria-hidden="true"
-                            className="
-                                absolute
-                                inset-y-0
-                                -left-full
-                                w-1/2
-                                skew-x-[-20deg]
-                                bg-white/20
-                                transition-all
-                                duration-700
-                                group-hover/cta:left-[120%]
-                            "
-                        />
-
-                        <span className="relative">
-                            {t("landingPage.finalCta.startLearning")}
-                        </span>
-
-                        <span
-                            className="
-                                relative
-                                flex
-                                h-8
-                                w-8
-                                items-center
-                                justify-center
-                                rounded-full
-                                bg-white/15
-                                transition-transform
-                                duration-300
-                                group-hover/cta:translate-x-1
-                                rtl:group-hover/cta:-translate-x-1
-                            "
-                        >
-                            <ArrowUpRight className="h-4 w-4 rtl:-scale-x-100" />
-                        </span>
-                    </Link>
-
-                    {/* Secondary CTA */}
-
-                    <Link
-                        to="/courses"
-                        className="
-                            group/explore
-                            inline-flex
-                            items-center
-                            gap-2
-                            rounded-full
-                            border
-                            border-black/10
-                            bg-white/40
-                            px-6
-                            py-4
-                            text-sm
-                            font-semibold
-                            text-hbt-dark
-                            backdrop-blur-sm
-                            transition-all
-                            duration-300
-                            hover:-translate-y-1
-                            hover:border-hbt-orange/30
-                            hover:bg-white/70
-                        "
-                    >
-                        {t("landingPage.finalCta.explorePlatform")}
-
-                        <ArrowUpRight
-                            className="
-                                h-4
-                                w-4
-                                transition-transform
-                                duration-300
-                                group-hover/explore:translate-x-0.5
-                                group-hover/explore:-translate-y-0.5
-                                rtl:-scale-x-100
-                                rtl:group-hover/explore:-translate-x-0.5
-                                rtl:group-hover/explore:translate-x-0
-                            "
-                        />
-                    </Link>
-                </div>
-
-                {/* =================================================
-                    CENTER CROSSHAIR
-                ================================================== */}
-
-                <div
-                    aria-hidden="true"
-                    className="
-                        pointer-events-none
-                        absolute
-                        left-1/2
-                        top-1/2
-                        z-[-1]
-                        flex
-                        h-14
-                        w-14
-                        -translate-x-1/2
-                        -translate-y-1/2
-                        items-center
-                        justify-center
-                        text-black/[0.08]
-                        transition-transform
-                        duration-[1500ms]
-                        group-hover:scale-125
-                    "
-                >
-                    <Crosshair className="h-10 w-10" />
-                </div>
-
-                {/* =================================================
-                    SMALL CENTER MARK
-                ================================================== */}
-
-                <div
-                    aria-hidden="true"
-                    className="
-                        pointer-events-none
-                        absolute
-                        left-1/2
-                        top-1/2
-                        h-1.5
-                        w-1.5
-                        -translate-x-1/2
-                        -translate-y-1/2
-                        rounded-full
-                        bg-hbt-orange
-                        shadow-[0_0_0_8px_rgba(244,120,34,0.06)]
-                    "
-                />
-            </div>
-
-            {/* =====================================================
-                BOTTOM TECHNICAL STATUS BAR
-            ====================================================== */}
-
-            <div
-                className="
-                    absolute
-                    bottom-7
-                    left-5
-                    right-5
-                    z-20
-                    flex
-                    items-center
-                    justify-between
-                    border-t
-                    border-black/[0.07]
-                    pt-4
-                    font-mono
-                    text-[7px]
-                    uppercase
-                    tracking-[0.18em]
-                    text-slate-300
-                    sm:left-8
-                    sm:right-8
-                    sm:text-[8px]
-                    lg:left-12
-                    lg:right-12
-                "
-            >
-                <span>
-                    HBT / LEARNING
-                </span>
-
-                <span className="hidden sm:block">
-                    {t("landingPage.finalCta.stripMiddle")}
-                </span>
-
-                <span className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-hbt-orange" />
-
-                    {t("landingPage.finalCta.systemReady")}
-                </span>
-            </div>
-
-            {/* =====================================================
-                CORNER MARKERS
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    left-5
-                    top-5
-                    h-9
-                    w-9
-                    border-l
-                    border-t
-                    border-black/10
-                    sm:left-8
-                    sm:top-8
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    right-5
-                    top-5
-                    h-9
-                    w-9
-                    border-r
-                    border-t
-                    border-black/10
-                    sm:right-8
-                    sm:top-8
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    bottom-5
-                    left-5
-                    h-9
-                    w-9
-                    border-b
-                    border-l
-                    border-black/10
-                    sm:bottom-8
-                    sm:left-8
-                "
-            />
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    bottom-5
-                    right-5
-                    h-9
-                    w-9
-                    border-b
-                    border-r
-                    border-black/10
-                    sm:bottom-8
-                    sm:right-8
-                "
-            />
-
-            {/* =====================================================
-                TOP CORNER LABELS
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    left-8
-                    top-8
-                    hidden
-                    items-center
-                    gap-2
-                    font-mono
-                    text-[7px]
-                    uppercase
-                    tracking-[0.2em]
-                    text-slate-300
-                    lg:flex
-                "
-            >
-                <Sparkles className="h-3 w-3 text-hbt-orange" />
-
-                HBT / 05
-            </div>
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    right-8
-                    top-8
-                    hidden
-                    font-mono
-                    text-[7px]
-                    uppercase
-                    tracking-[0.2em]
-                    text-slate-300
-                    lg:block
-                "
-            >
-                {t("landingPage.finalCta.finalLabel")}
-            </div>
-
-            {/* =====================================================
-                ORANGE BOTTOM ACCENT
-            ====================================================== */}
-
-            <div
-                aria-hidden="true"
-                className="
-                    absolute
-                    bottom-0
-                    left-0
-                    h-1
-                    w-full
-                    bg-hbt-orange
-                "
-            />
-        </LandingSection>
+const benefits = [
+  "Structured automotive learning paths",
+  "Hands-on diagnostic practice",
+  "Progress you can track",
+];
+
+const capabilities = [
+  {
+    number: "01",
+    label: "Learn",
+    detail: "Build your technical foundation",
+    icon: GraduationCap,
+  },
+  {
+    number: "02",
+    label: "Practice",
+    detail: "Apply knowledge to real scenarios",
+    icon: Wrench,
+  },
+  {
+    number: "03",
+    label: "Progress",
+    detail: "Move forward with confidence",
+    icon: ShieldCheck,
+  },
+];
+
+export default function CTASection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = sectionRef.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 },
     );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-labelledby="cta-heading"
+      className="relative overflow-hidden bg-[#F7F7F7] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-32"
+    >
+      {/* Background technical grid */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.42]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(24,24,24,0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(24,24,24,0.035) 1px, transparent 1px)
+          `,
+          backgroundSize: "44px 44px",
+        }}
+      />
+
+      {/* Ambient accents */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-40 top-10 h-[420px] w-[420px] rounded-full bg-[#F47822]/[0.07] blur-[100px]"
+      />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-48 -left-32 h-[420px] w-[420px] rounded-full bg-black/[0.035] blur-[100px]"
+      />
+
+      <div className="relative z-10 mx-auto max-w-[1440px]">
+        {/* Main CTA panel */}
+        <div
+          className={`
+            relative overflow-hidden rounded-[28px] bg-[#181818]
+            shadow-[0_30px_90px_rgba(24,24,24,0.16)]
+            transition-all duration-1000
+            sm:rounded-[36px]
+            ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-8 opacity-0"
+            }
+          `}
+        >
+          {/* Panel grid */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-[0.12]"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)
+              `,
+              backgroundSize: "42px 42px",
+            }}
+          />
+
+          {/* Orange glow */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-24 -top-40 h-[480px] w-[480px] rounded-full bg-[#F47822]/20 blur-[110px]"
+          />
+
+          {/* Decorative circuit trace */}
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute right-0 top-0 hidden h-full w-[48%] opacity-[0.22] lg:block"
+            viewBox="0 0 620 600"
+            fill="none"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <path
+              d="M620 90H470V165H390V245H290V325H190V410H80"
+              stroke="#F47822"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M620 155H520V225H430V300H350V390H240V470H150"
+              stroke="white"
+              strokeWidth="1"
+            />
+            <path
+              d="M620 360H540V420H450V490H360V550H260"
+              stroke="#F47822"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M430 0V80H350V145H275V215H195"
+              stroke="white"
+              strokeWidth="1"
+            />
+            <circle cx="470" cy="165" r="4" fill="#F47822" />
+            <circle cx="390" cy="245" r="4" fill="#F47822" />
+            <circle cx="290" cy="325" r="4" fill="#F47822" />
+            <circle cx="190" cy="410" r="4" fill="#F47822" />
+            <circle cx="520" cy="225" r="3" fill="white" />
+            <circle cx="430" cy="300" r="3" fill="white" />
+            <circle cx="350" cy="390" r="3" fill="white" />
+            <circle cx="450" cy="490" r="3" fill="#F47822" />
+            <circle cx="360" cy="550" r="3" fill="#F47822" />
+          </svg>
+
+          <div className="relative grid gap-14 px-7 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-12 lg:px-16 lg:py-20">
+            {/* Left: message and actions */}
+            <div className="relative z-10 max-w-3xl">
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.045] px-3.5 py-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F47822] opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#F47822]" />
+                </span>
+
+                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-white/60">
+                  Your next step starts here
+                </span>
+              </div>
+
+              <h2
+                id="cta-heading"
+                className="max-w-3xl text-[clamp(2.5rem,5.2vw,5.4rem)] font-semibold leading-[0.96] tracking-[-0.055em] text-white"
+              >
+                Turn what you
+                <br className="hidden sm:block" />{" "}
+                <span className="text-[#F47822]">know into</span>
+                <br className="hidden sm:block" /> what you can do.
+              </h2>
+
+              <p className="mt-7 max-w-xl text-sm leading-7 text-white/55 sm:text-base sm:leading-8">
+                Develop your automotive diagnostic skills through structured
+                learning, practical scenarios and a platform built to help you
+                understand how systems work—not just memorize answers.
+              </p>
+
+              {/* Benefits */}
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-3">
+                {benefits.map((benefit) => (
+                  <div key={benefit} className="flex items-center gap-2">
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#F47822]/15 text-[#F47822]">
+                      <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                    </span>
+
+                    <span className="text-xs text-white/55">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Actions */}
+              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/courses"
+                  className="
+                    group inline-flex min-h-12 items-center justify-center gap-3
+                    rounded-xl bg-[#F47822] px-6 py-3.5
+                    text-sm font-semibold text-white
+                    shadow-[0_10px_30px_rgba(244,120,34,0.18)]
+                    transition-all duration-300
+                    hover:-translate-y-0.5 hover:bg-[#ff8738]
+                    hover:shadow-[0_14px_35px_rgba(244,120,34,0.28)]
+                    focus-visible:outline-none focus-visible:ring-2
+                    focus-visible:ring-[#F47822] focus-visible:ring-offset-2
+                    focus-visible:ring-offset-[#181818]
+                  "
+                >
+                  Explore courses
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+
+                <Link
+                  to="/simulator"
+                  className="
+                    group inline-flex min-h-12 items-center justify-center gap-3
+                    rounded-xl border border-white/20 bg-white/[0.04]
+                    px-6 py-3.5 text-sm font-semibold text-white
+                    transition-all duration-300
+                    hover:-translate-y-0.5 hover:border-white/35
+                    hover:bg-white/[0.09]
+                    focus-visible:outline-none focus-visible:ring-2
+                    focus-visible:ring-white focus-visible:ring-offset-2
+                    focus-visible:ring-offset-[#181818]
+                  "
+                >
+                  Try the simulator
+                  <ArrowUpRight className="h-4 w-4 text-white/55 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
+                </Link>
+              </div>
+
+              <p className="mt-5 text-[10px] leading-5 text-white/30">
+                Learn at your pace. Practice with purpose. Build real
+                diagnostic confidence.
+              </p>
+            </div>
+
+            {/* Right: learning process */}
+            <div className="relative z-10">
+              <div className="relative mx-auto max-w-[480px]">
+                {/* Top label */}
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CircuitBoard className="h-4 w-4 text-[#F47822]" />
+                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-white/40">
+                      The HBTronics approach
+                    </span>
+                  </div>
+
+                  <span className="font-mono text-[9px] text-white/25">
+                    01 — 03
+                  </span>
+                </div>
+
+                {/* Process card */}
+                <div className="rounded-2xl border border-white/10 bg-[#222222]/90 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.22)] backdrop-blur-sm sm:p-7">
+                  <div className="mb-6 flex items-center justify-between border-b border-white/10 pb-5">
+                    <div>
+                      <p className="text-xs font-semibold text-white">
+                        From knowledge to capability
+                      </p>
+                      <p className="mt-1 text-[10px] text-white/35">
+                        A practical learning journey
+                      </p>
+                    </div>
+
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
+                      <Sparkles className="h-4 w-4" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {capabilities.map((item, index) => {
+                      const Icon = item.icon;
+
+                      return (
+                        <div
+                          key={item.number}
+                          className="
+                            group flex items-center gap-4 rounded-xl
+                            border border-white/[0.07] bg-white/[0.025]
+                            p-4 transition-all duration-300
+                            hover:border-[#F47822]/30 hover:bg-[#F47822]/[0.055]
+                          "
+                        >
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[#F47822] transition-colors group-hover:border-[#F47822]/30 group-hover:bg-[#F47822]/10">
+                            <Icon className="h-5 w-5" strokeWidth={1.7} />
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-[8px] text-[#F47822]/70">
+                                {item.number}
+                              </span>
+                              <h3 className="text-sm font-semibold text-white">
+                                {item.label}
+                              </h3>
+                            </div>
+
+                            <p className="mt-1 text-[10px] leading-5 text-white/40 sm:text-xs">
+                              {item.detail}
+                            </p>
+                          </div>
+
+                          <ChevronRight className="h-4 w-4 shrink-0 text-white/20 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#F47822]" />
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Bottom status */}
+                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
+                    <div className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/35">
+                        Built for practical learning
+                      </span>
+                    </div>
+
+                    <span className="font-mono text-[8px] text-white/25">
+                      HBT / LEARN
+                    </span>
+                  </div>
+                </div>
+
+                {/* Small accent */}
+                <div className="absolute -bottom-3 -right-3 -z-10 h-24 w-24 rounded-2xl border border-[#F47822]/30" />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom identity strip */}
+          <div className="relative flex flex-col gap-3 border-t border-white/10 px-7 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10 lg:px-16">
+            <p className="text-[10px] text-white/35">
+              HBTronics — Automotive diagnostics, made practical.
+            </p>
+
+            <div className="flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.16em] text-white/30">
+              <span>Learn</span>
+              <span className="text-[#F47822]">/</span>
+              <span>Practice</span>
+              <span className="text-[#F47822]">/</span>
+              <span>Progress</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Small footer note */}
+        <div
+          className={`
+            mt-7 flex flex-col gap-2 text-center transition-all delay-300
+            duration-700 sm:flex-row sm:items-center sm:justify-center sm:gap-3
+            ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-3 opacity-0"
+            }
+          `}
+        >
+          <span className="text-xs text-[#181818]/40">
+            Ready to take the next step?
+          </span>
+          <Link
+            to="/courses"
+            className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-[#181818] transition-colors hover:text-[#F47822]"
+          >
+            Find your learning path
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 }

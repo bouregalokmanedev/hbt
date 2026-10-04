@@ -14,6 +14,8 @@ import {
   Zap,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { Link } from "react-router-dom";
 
 type Circuit404Props = {
@@ -22,22 +24,22 @@ type Circuit404Props = {
 
 const recoveryLinks = [
   {
-    label: "Dashboard",
+    labelKey: "notFoundPage.navDashboard",
     href: "/",
     icon: Home,
   },
   {
-    label: "Simulator",
+    labelKey: "notFoundPage.navSimulator",
     href: "/simulator",
     icon: CarFront,
   },
   {
-    label: "Courses",
+    labelKey: "notFoundPage.navCourses",
     href: "/catalog",
     icon: BookOpen,
   },
   {
-    label: "Certificate",
+    labelKey: "notFoundPage.navCertificate",
     href: "/verify-certificate",
     icon: ShieldCheck,
   },
@@ -114,6 +116,8 @@ function Pin({
 }
 
 function ECUBox() {
+  const { t } = useTranslation();
+
   return (
     <div className="relative mx-auto w-full max-w-[390px]">
       {/* outer glow */}
@@ -130,11 +134,11 @@ function ECUBox() {
 
             <div>
               <p className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-white/30">
-                Electronic control
+                {t("notFoundPage.electronicControl")}
               </p>
 
               <p className="text-[11px] font-black text-white">
-                HBTronics ECU
+                {t("notFoundPage.ecuTitle")}
               </p>
             </div>
           </div>
@@ -143,7 +147,7 @@ function ECUBox() {
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#F47822]" />
 
             <span className="font-mono text-[8px] uppercase tracking-widest text-[#F47822]">
-              Diagnostic
+              {t("notFoundPage.diagnostic")}
             </span>
           </div>
         </div>
@@ -179,7 +183,7 @@ function ECUBox() {
                 </div>
 
                 <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.25em] text-[#F47822]">
-                  ROUTE NOT FOUND
+                  {t("notFoundPage.routeNotFound")}
                 </div>
               </div>
 
@@ -228,17 +232,17 @@ function ECUBox() {
         <div className="grid grid-cols-3 border-t border-white/8">
           <div className="border-r border-white/8 p-4">
             <p className="font-mono text-[7px] uppercase tracking-widest text-white/25">
-              Signal
+              {t("notFoundPage.signal")}
             </p>
 
             <p className="mt-1 font-mono text-[10px] font-bold text-red-400">
-              LOST
+              {t("notFoundPage.lost")}
             </p>
           </div>
 
           <div className="border-r border-white/8 p-4">
             <p className="font-mono text-[7px] uppercase tracking-widest text-white/25">
-              Response
+              {t("notFoundPage.response")}
             </p>
 
             <p className="mt-1 font-mono text-[10px] font-bold text-[#F47822]">
@@ -248,11 +252,11 @@ function ECUBox() {
 
           <div className="p-4">
             <p className="font-mono text-[7px] uppercase tracking-widest text-white/25">
-              Recovery
+              {t("notFoundPage.recoveryStatus")}
             </p>
 
             <p className="mt-1 font-mono text-[10px] font-bold text-emerald-400">
-              READY
+              {t("notFoundPage.ready")}
             </p>
           </div>
         </div>
@@ -264,6 +268,7 @@ function ECUBox() {
 export default function Circuit404({
   onBack,
 }: Circuit404Props) {
+  const { t } = useTranslation();
   const [recovering, setRecovering] = useState(false);
 
   useEffect(() => {
@@ -326,21 +331,21 @@ export default function Circuit404({
               </p>
 
               <p className="font-mono text-[7px] uppercase tracking-[0.25em] text-white/30">
-                Automotive Learning System
+                {t("notFoundPage.tagline")}
               </p>
             </div>
           </Link>
 
           <div className="hidden items-center gap-3 sm:flex">
             <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/25">
-              Network
+              {t("notFoundPage.network")}
             </span>
 
             <span className="flex items-center gap-2 rounded-full border border-emerald-500/15 bg-emerald-500/5 px-3 py-1.5">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
 
               <span className="font-mono text-[8px] font-bold uppercase tracking-widest text-emerald-400">
-                Online
+                {t("notFoundPage.online")}
               </span>
             </span>
           </div>
@@ -358,11 +363,11 @@ export default function Circuit404({
 
                 <div>
                   <p className="font-mono text-[8px] font-bold uppercase tracking-[0.25em] text-[#F47822]">
-                    Diagnostic fault
+                    {t("notFoundPage.fault")}
                   </p>
 
                   <p className="mt-0.5 font-mono text-[8px] uppercase tracking-widest text-white/25">
-                    Route controller
+                    {t("notFoundPage.routeController")}
                   </p>
                 </div>
               </div>
@@ -382,14 +387,12 @@ export default function Circuit404({
 
               <div className="mt-10 max-w-xl">
                 <h2 className="text-3xl font-black leading-tight tracking-[-0.04em] text-white sm:text-4xl">
-                  The signal disappeared
-                  <span className="text-[#F47822]"> somewhere.</span>
+                  {t("notFoundPage.headline")}
+                  <span className="text-[#F47822]">{t("notFoundPage.headlineAccent")}</span>
                 </h2>
 
                 <p className="mt-5 text-sm leading-7 text-white/45 sm:text-base">
-                  This route isn't responding anymore. Don't worry — your
-                  HBTronics system is still online. Choose a recovery route
-                  and continue your journey.
+                  {t("notFoundPage.body")}
                 </p>
               </div>
 
@@ -399,7 +402,7 @@ export default function Circuit404({
                   <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
 
                   <span className="font-mono text-[8px] uppercase tracking-widest text-white/30">
-                    Route unavailable
+                    {t("notFoundPage.routeUnavailable")}
                   </span>
                 </div>
 
@@ -407,7 +410,7 @@ export default function Circuit404({
                   <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 
                   <span className="font-mono text-[8px] uppercase tracking-widest text-white/30">
-                    Signal searching
+                    {t("notFoundPage.signalSearching")}
                   </span>
                 </div>
 
@@ -415,7 +418,7 @@ export default function Circuit404({
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
 
                   <span className="font-mono text-[8px] uppercase tracking-widest text-white/30">
-                    Platform online
+                    {t("notFoundPage.platformOnline")}
                   </span>
                 </div>
               </div>
@@ -431,12 +434,12 @@ export default function Circuit404({
                   {recovering ? (
                     <>
                       <RotateCcw className="h-4 w-4 animate-spin" />
-                      Restoring connection...
+                      {t("notFoundPage.restoring")}
                     </>
                   ) : (
                     <>
                       <Home className="h-4 w-4" />
-                      Restore connection
+                      {t("notFoundPage.restore")}
                       <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
                     </>
                   )}
@@ -454,7 +457,7 @@ export default function Circuit404({
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-6 text-xs font-bold text-white/70 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Go back
+                  {t("notFoundPage.goBack")}
                 </button>
               </div>
             </div>
@@ -479,7 +482,7 @@ export default function Circuit404({
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#F47822]" />
 
                     <span className="font-mono text-[8px] font-bold uppercase tracking-widest text-white/35">
-                      Signal trace active
+                      {t("notFoundPage.traceActive")}
                     </span>
                   </div>
                 </div>
@@ -493,11 +496,11 @@ export default function Circuit404({
 
                     <div>
                       <p className="font-mono text-[7px] uppercase tracking-widest text-white/25">
-                        Recovery status
+                        {t("notFoundPage.recoveryStatus")}
                       </p>
 
                       <p className="mt-0.5 text-[10px] font-bold text-white">
-                        Ready to reconnect
+                        {t("notFoundPage.recoveryReady")}
                       </p>
                     </div>
                   </div>
@@ -515,11 +518,11 @@ export default function Circuit404({
 
               <div>
                 <p className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-white/25">
-                  Recovery routes
+                  {t("notFoundPage.recoveryRoutes")}
                 </p>
 
                 <p className="mt-0.5 text-[10px] text-white/35">
-                  Select a known HBTronics system
+                  {t("notFoundPage.selectSystem")}
                 </p>
               </div>
             </div>
@@ -530,14 +533,14 @@ export default function Circuit404({
 
                 return (
                   <Link
-                    key={item.label}
+                    key={item.labelKey}
                     to={item.href}
                     className="group flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 transition duration-300 hover:border-[#F47822]/30 hover:bg-[#F47822]/5"
                   >
                     <Icon className="h-3.5 w-3.5 text-white/35 transition group-hover:text-[#F47822]" />
 
                     <span className="text-[10px] font-bold text-white/45 transition group-hover:text-white">
-                      {item.label}
+                      {t(item.labelKey)}
                     </span>
 
                     <ChevronRight className="h-3 w-3 text-white/15 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />

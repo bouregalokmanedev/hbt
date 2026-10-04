@@ -1,4 +1,5 @@
 import { env } from "@/config/env";
+import { errorMessage } from "@/lib/api/safe-error";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { authStorage } from "@/lib/storage/auth-storage";
@@ -49,9 +50,9 @@ async function rawApi<T>(endpoint: string, init?: RequestInit, body?: unknown): 
         const message =
             typeof payload === "object" && payload !== null && "message" in payload && typeof payload.message === "string"
                 ? payload.message
-                : "Something went wrong.";
+                : undefined;
 
-        throw new ApiError(message, response.status);
+        throw new ApiError(errorMessage(message), response.status);
     }
 
     return payload as T;

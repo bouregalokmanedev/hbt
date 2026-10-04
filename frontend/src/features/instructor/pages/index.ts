@@ -47,10 +47,6 @@ export {
 } from "./InstructorAssessmentWorkspacePage";
 
 export {
-    InstructorLoungePage,
-} from "./InstructorLoungePage";
-
-export {
     InstructorProfilePage,
 } from "./InstructorProfilePage";
 

@@ -138,6 +138,30 @@ final class RegradeAssessmentService
             $scenarioEvidence = $this->scenarioService->buildEvidence($attempt, $studentResult->fresh());
             $recommendations = $this->recommendationService->generate($attempt, $studentResult->fresh(), $competencyResults);
 
+            app(\App\Domains\Progression\Services\InstructorProgressionService::class)->award(
+                $instructor,
+                'assessment_graded',
+                15,
+                25,
+                "attempt-graded:{$attempt->id}",
+                ['label' => 'Assessment graded', 'course' => $attempt->assessment->course->title],
+            );
+
+            // The student's only signal that a human regraded them: without
+            // this the score silently changes and the Assessments badge never
+            // lights, so nobody comes back to look.
+            $student = User::query()->find($attempt->user_id);
+            if ($student !== null) {
+                app(\App\Domains\Notifications\Services\StudentNotificationService::class)->send(
+                    $student,
+                    $passed ? 'assessment_passed' : 'assessment_submitted',
+                    $passed ? 'Assessment regraded — you passed' : 'Assessment regraded',
+                    "Your attempt at \"{$attempt->assessment->title}\" was reviewed by your instructor and the result is now final: {$percentage}%. Open Assessments to see the breakdown.",
+                    '/assessments',
+                    "assessment-regrade:{$attempt->id}",
+                );
+            }
+
             return [
                 'assessment_result' => $attempt->result->fresh(),
                 'student_result' => $studentResult->fresh(),
@@ -155,7 +179,18 @@ final class RegradeAssessmentService
      */
     public function pendingReviews(string $courseId, int $limit = 50)
     {
-        $assessmentIds = \App\Domains\Assessments\Models\Assessment::where('course_id', $courseId)->pluck('id');
+        return $this->pendingReviewsForCourses([$courseId], $limit);
+    }
+
+    /**
+     * The same queue scoped to many courses at once, so the instructor's
+     * cross-course attention view costs two queries instead of two per course.
+     *
+     * @param  iterable<string>  $courseIds
+     */
+    public function pendingReviewsForCourses(iterable $courseIds, int $limit = 50)
+    {
+        $assessmentIds = \App\Domains\Assessments\Models\Assessment::whereIn('course_id', collect($courseIds)->all())->pluck('id');
 
         return \App\Domains\Assessments\Models\AssessmentAttemptAnswer::whereHas('attempt', fn ($q) => $q->whereIn('assessment_id', $assessmentIds))
             ->where('evaluation_status', 'pending_review')

@@ -1,9 +1,11 @@
-import { BookOpen, CheckCircle2, Heart, PlayCircle, X } from "lucide-react";
+import { BookOpen, CheckCircle2, Heart, PlayCircle, Star, StickyNote, X } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useFavoritesStore } from "../store/favorites.store";
 
 export function FavoritesPopup() {
+    const { t } = useTranslation();
     const notice = useFavoritesStore((state) => state.notice);
     const dismissNotice = useFavoritesStore((state) => state.dismissNotice);
 
@@ -15,7 +17,8 @@ export function FavoritesPopup() {
 
     if (!notice) return null;
 
-    const KindIcon = notice.kind === "course" ? BookOpen : PlayCircle;
+    const KindIcon = notice.kind === "note" ? StickyNote : notice.kind === "course" ? BookOpen : PlayCircle;
+    const AddedIcon = notice.kind === "note" ? Star : Heart;
 
     return (
         <div
@@ -31,23 +34,27 @@ export function FavoritesPopup() {
                             : "bg-white/10 text-white/70"
                     }`}
                 >
-                    {notice.added ? <Heart className="h-5 w-5 fill-current" /> : <CheckCircle2 className="h-5 w-5" />}
+                    {notice.added ? <AddedIcon className="h-5 w-5 fill-current" /> : <CheckCircle2 className="h-5 w-5" />}
                 </span>
 
                 <div className="min-w-0 flex-1">
                     <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">
                         <KindIcon className="h-3 w-3" />
-                        {notice.kind === "course" ? "Course" : "Lesson"} {notice.added ? "saved" : "removed"}
+                        {notice.kind === "course"
+                            ? (notice.added ? t("favourites.notice.courseSaved") : t("favourites.notice.courseRemoved"))
+                            : notice.kind === "note"
+                                ? (notice.added ? t("favourites.notice.noteSaved") : t("favourites.notice.noteRemoved"))
+                                : (notice.added ? t("favourites.notice.lessonSaved") : t("favourites.notice.lessonRemoved"))}
                     </p>
                     <p className="mt-0.5 truncate text-sm font-semibold text-white">
-                        {notice.added ? `“${notice.title}” added to favourites` : `“${notice.title}” removed from favourites`}
+                        {notice.added ? t("favourites.notice.added", { title: notice.title }) : t("favourites.notice.removed", { title: notice.title })}
                     </p>
                 </div>
 
                 <button
                     type="button"
                     onClick={dismissNotice}
-                    aria-label="Dismiss notification"
+                    aria-label={t("favourites.notice.dismissAria")}
                     className="rounded-lg p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white"
                 >
                     <X className="h-4 w-4" />

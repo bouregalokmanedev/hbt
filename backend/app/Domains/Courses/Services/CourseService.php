@@ -16,6 +16,7 @@ use App\Domains\Courses\Events\CourseUnpublished;
 use App\Domains\Courses\Exceptions\CourseAlreadyPublishedException;
 use App\Domains\Courses\Exceptions\CourseArchivedException;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
+use App\Domains\Progression\Services\InstructorProgressionService;
 use App\Enums\Courses\CourseStatus;
 use App\Models\Course;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -90,6 +91,18 @@ final class CourseService
             );
 
             event(new CoursePublished($course));
+
+            $instructor = $course->instructor;
+            if ($instructor !== null) {
+                app(InstructorProgressionService::class)->award(
+                    $instructor,
+                    'course_published',
+                    100,
+                    140,
+                    "course-published:{$course->id}",
+                    ['label' => 'Course published', 'course' => $course->title],
+                );
+            }
 
             return $course;
         });

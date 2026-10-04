@@ -40,7 +40,7 @@ it('sends a personalized lesson completed notification when a lesson is complete
         ->and($notification->title)->toBe('Lesson completed')
         ->and($notification->message)->toContain('Kirchhoff Laws')
         ->and($notification->message)->toContain('Circuit Analysis')
-        ->and($notification->action_url)->toBe('/my-courses/'.$course->id);
+        ->and($notification->action_url)->toBe('/my-courses');
 
     Mail::assertQueued(StudentNotificationMail::class, function (StudentNotificationMail $mail) use ($user) {
         return $mail->firstName === 'Karim'

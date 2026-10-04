@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Gauge, Activity, MapPin, GitBranch, ScanSearch, X, Info, Lock } from "lucide-react";
 
@@ -9,6 +9,8 @@ import { OscilloscopeLabFull } from "../oscilloscope/components/OscilloscopeLabF
 import { LocationLabFull } from "../components/labs/LocationLabFull";
 import { SchematicLabFull } from "../components/labs/SchematicLabFull";
 import { simulatorApi, SIMULATOR_LIMIT_EVENT } from "../api/simulator.api";
+import { readVehicleItem, VEHICLE_CHANGED_EVENT } from "../lib/vehicleStorage";
+import { practiceCarName } from "../scanner/data/catalog";
 import { api } from "@/lib/api/client";
 import { track } from "@/lib/track";
 
@@ -18,6 +20,8 @@ interface SimulatorUsage {
     limit: number | null;
     remaining: number | null;
     unlimited: boolean;
+    /** Extra sessions granted by unlocked simulator badges (+1/+2/+3). */
+    bonus?: number;
 }
 
 const LABS: Record<string, { name: string; desc: string; bench: string }> = {
@@ -28,13 +32,34 @@ const LABS: Record<string, { name: string; desc: string; bench: string }> = {
     schematic: { name: "Schematic Workspace", desc: "E1-hub 57/133/111 · 3 traces inj6/ign7/can5 · Study/Trace/Training/Practice/Exam · pin table · layers.", bench: "R16 · 4016×1479 · netlist" },
 };
 
+/** Per-lab localStorage slot holding the student's chosen vehicle. */
+const TOOL_VEHICLE_KEYS: Record<string, string> = {
+    scanner: "hbt:scanner-vehicle",
+    multimeter: "hbt:meter-vehicle",
+    oscilloscope: "hbt:scope-vehicle",
+    location: "hbt:location-vehicle",
+    schematic: "hbt:schematic-vehicle",
+};
+const DEFAULT_VEHICLE = "corolla";
+
+interface LabAbout {
+    liveBench: string;
+    liveDesc: string;
+    tryLine: string;
+    try: string;
+    parity: string;
+}
+
 export function SimulatorLabPage() {
     const { t } = useTranslation();
     const { tool } = useParams<{ tool: string }>();
     const staticLab = tool ? LABS[tool] : undefined;
     const labName = tool ? t(`simulator.lab.labs.${tool}.name`, { defaultValue: "" }) : "";
     const labDesc = tool ? t(`simulator.lab.labs.${tool}.desc`, { defaultValue: "" }) : "";
-    const lab = staticLab ? { ...staticLab, name: labName || staticLab.name, desc: labDesc || staticLab.desc } : undefined;
+    const lab = useMemo(
+        () => (staticLab ? { ...staticLab, name: labName || staticLab.name, desc: labDesc || staticLab.desc } : undefined),
+        [staticLab, labName, labDesc],
+    );
 
     // Persist a backend session so bench work is no longer local-only.
     // Labs themselves stay engine-driven; this only records start for reports/history.
@@ -70,15 +95,53 @@ export function SimulatorLabPage() {
         window.addEventListener(SIMULATOR_LIMIT_EVENT, onLimit);
         return () => window.removeEventListener(SIMULATOR_LIMIT_EVENT, onLimit);
     }, []);
+
+    // Practice-car slot: mirrors whichever vehicle the student picked in the lab's
+    // gate. Stays null until that choice, so the session opens on the chosen car
+    // instead of a hard-coded default (mirrors the scanner bench).
+    const vehicleSlot = tool ? TOOL_VEHICLE_KEYS[tool] : undefined;
+    const [vehicleKey, setVehicleKey] = useState<string | null>(() => (vehicleSlot ? readVehicleItem(vehicleSlot) : null));
+    useEffect(() => {
+        if (!vehicleSlot) return;
+        const refresh = () => setVehicleKey(readVehicleItem(vehicleSlot));
+        refresh();
+        window.addEventListener(VEHICLE_CHANGED_EVENT, refresh);
+        return () => window.removeEventListener(VEHICLE_CHANGED_EVENT, refresh);
+    }, [vehicleSlot]);
+
+    // Start at most ONE session per (tool, vehicle) pair. The effect used to
+    // depend on an unstable `lab` object (rebuilt every render), which re-fired
+    // POST /simulator/sessions in a loop until the monthly quota was drained
+    // the moment a learner opened the bench. Memoized lab + this keyed promise
+    // make a fresh entry cost exactly one session (and StrictMode's remount
+    // re-adopts the in-flight start instead of burning a second one).
+    const startPromiseRef = useRef<{ key: string; promise: Promise<string | null> } | null>(null);
     useEffect(() => {
         // Wait for the quota lookup so a spent month never opens a session.
-        if (!tool || !lab || tool === "scanner" || !usageLoaded || quotaBlocked) return;
-        setSessionId(null);
-        void simulatorApi
-            .start({ vehicle_key: "corolla-1zr-fe", tool })
-            .then((session) => setSessionId(session.id))
-            .catch(() => undefined);
-    }, [tool, lab, usageLoaded, quotaBlocked]);
+        if (!tool || !lab || tool === "scanner" || !usageLoaded || quotaBlocked || !vehicleKey) return;
+        const startKey = `${tool}:${vehicleKey}`;
+        if (startPromiseRef.current?.key !== startKey) {
+            setSessionId(null);
+            startPromiseRef.current = {
+                key: startKey,
+                promise: simulatorApi
+                    .start({ vehicle_key: vehicleKey, tool })
+                    .then((session) => session.id)
+                    .catch(() => null),
+            };
+            const failing = startPromiseRef.current;
+            void failing.promise.then((id) => {
+                if (id === null && startPromiseRef.current === failing) startPromiseRef.current = null;
+            });
+        }
+        let cancelled = false;
+        void startPromiseRef.current.promise.then((id) => {
+            if (!cancelled && id) setSessionId(id);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [tool, lab, usageLoaded, quotaBlocked, vehicleKey]);
     const introKey = `hbt:lab-intro-dismissed:${tool ?? "unknown"}`;
     const [introOpen, setIntroOpen] = useState<boolean>(() => {
         try {
@@ -87,6 +150,23 @@ export function SimulatorLabPage() {
             return true;
         }
     });
+    useEffect(() => {
+        try {
+            setIntroOpen(window.localStorage.getItem(introKey) !== "1");
+        } catch {
+            setIntroOpen(true);
+        }
+    }, [introKey]);
+
+    // Per-lab About copy: every bench ships its own workbench blurb, drill line
+    // and progress note instead of one shared static block.
+    const about = ((): LabAbout | null => {
+        if (!tool) return null;
+        const raw = t(`simulator.lab.about.${tool}`, { returnObjects: true });
+        if (!raw || typeof raw !== "object") return null;
+        const entry = raw as Partial<LabAbout>;
+        return entry.liveBench ? (entry as LabAbout) : null;
+    })();
     if (!lab) return <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013] p-8"><div className="rounded-2xl bg-white dark:bg-[#1b1b20] p-8 text-center">{t("simulator.lab.unknown")}</div><Link to="/simulator" className="mt-4 inline-block text-sm font-bold text-[#F47822]">← {t("simulator.lab.backLabs")}</Link></main>;
     const dismissIntro = () => {
         try {
@@ -104,13 +184,6 @@ export function SimulatorLabPage() {
         }
         setIntroOpen(true);
     };
-    useEffect(() => {
-        try {
-            setIntroOpen(window.localStorage.getItem(introKey) !== "1");
-        } catch {
-            setIntroOpen(true);
-        }
-    }, [introKey]);
 
     if (quotaBlocked) {
         return (
@@ -223,16 +296,16 @@ export function SimulatorLabPage() {
                     </div>
                     <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">{lab.desc}</p>
                     <div className="mt-4 rounded-2xl bg-[#0f1115] p-4 text-white">
-                        <p className="text-xs font-bold uppercase tracking-wide text-white/40">{t("simulator.lab.liveBench")}</p>
-                        <p className="mt-1 text-sm text-white/60">{t("simulator.lab.liveDesc")}</p>
-                        <p className="mt-2 text-sm text-white/60">{t("simulator.lab.tryLine")} <Link to="/reports" className="underline text-white">{t("simulator.lab.reports")}</Link>.</p>
+                        <p className="text-xs font-bold uppercase tracking-wide text-white/40">{about?.liveBench ?? lab.name}</p>
+                        <p className="mt-1 text-sm text-white/60">{about?.liveDesc ?? lab.desc}</p>
+                        <p className="mt-2 text-sm text-white/60">{about?.tryLine ?? t("simulator.lab.about.scanner.tryLine")} <Link to="/reports" className="underline text-white">{t("simulator.lab.reports")}</Link>.</p>
                         <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">{t("simulator.lab.vehicle")}</span>
-                            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">{t("simulator.lab.tool")} {tool}</span>
-                            <span className="rounded-full bg-[#F47822] px-3 py-1.5 text-xs font-bold">{t("simulator.lab.try")}</span>
+                            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">{t("simulator.lab.vehicleWith", { car: practiceCarName(vehicleKey ?? DEFAULT_VEHICLE) })}</span>
+                            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">{t("simulator.lab.tool")} {t(`simulator.toolNames.${tool ?? "scanner"}`)}</span>
+                            <span className="rounded-full bg-[#F47822] px-3 py-1.5 text-xs font-bold">{about?.try ?? t("simulator.lab.about.scanner.try")}</span>
                         </div>
                     </div>
-                    <p className="mt-3 text-xs text-[#3A3A3A]/40 dark:text-white/40">{t("simulator.lab.parityPrefix")} {t("simulator.lab.parity")}</p>
+                    <p className="mt-3 text-xs text-[#3A3A3A]/40 dark:text-white/40">{t("simulator.lab.parityPrefix")} {about?.parity ?? t("simulator.lab.about.scanner.parity")}</p>
                 </div>
                 ) : (
                 <div className="mt-4 flex justify-end">

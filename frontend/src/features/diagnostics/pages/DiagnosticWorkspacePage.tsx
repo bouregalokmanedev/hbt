@@ -2,8 +2,9 @@ import { AlertTriangle, ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight,
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
+import { errorMessage } from "@/lib/api/safe-error";
 import { useDiagnosticAttempt } from "../hooks/useDiagnosticAttempt";
 import { useDiagnosticTimer } from "../hooks/useDiagnosticTimer";
 import { DiagnosticMentorPanel } from "../components/DiagnosticMentorPanel";
@@ -74,6 +75,7 @@ export function DiagnosticWorkspacePage() {
     const navigate = useNavigate();
     const { attempt, hints, isLoading, isSaving, error, answerStep, revealHint, submit } = useDiagnosticAttempt(attemptId);
     const ws = useDiagnosticWorkspaceStore();
+    const [actionError, setActionError] = useState<string | null>(null);
     const { selectedStepId, tool, finding, measurement, scannerDtc, scannerLive, scannerInterp, mmMode, mmRed, mmBlack, mmReading, scopeChannel, scopeTime, scopeVolt, scopeObs, locComponent, locView, locNote, schFrom, schTo, schWire, schVerdict, feedback } = ws;
     const timer = useDiagnosticTimer((attempt as unknown as { started_at?: string | null } | null)?.started_at ?? null, (attempt as unknown as { time_limit?: number | null } | null)?.time_limit ?? null);
 
@@ -106,7 +108,7 @@ export function DiagnosticWorkspacePage() {
     }, [lockedTool, tool, ws]);
 
     if (isLoading) return <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013] grid place-items-center p-8"><div className="flex items-center gap-3 rounded-full bg-white dark:bg-[#1b1b20] px-4 py-2 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef] shadow-sm border border-[#3A3A3A]/5 dark:border-white/5"><span className="h-2 w-2 animate-pulse rounded-full bg-[#F47822]" /> {t("diagnostics.workspace.preparing")}</div></main>;
-    if (error || !attempt) return <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013] p-8"><div className="mx-auto max-w-[960px] rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 text-red-700 dark:text-red-400">{error ?? t("diagnostics.workspace.notFound")}</div><Link to="/diagnostics" className="mx-auto mt-4 block max-w-[960px] text-sm font-bold text-[#F47822]">← {t("diagnostics.workspace.back")}</Link></main>;
+    if (error || !attempt) return <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013] p-8"><div className="mx-auto max-w-[960px] rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 text-red-700 dark:text-red-400">{errorMessage(error, t("diagnostics.workspace.notFound"))}</div><Link to="/diagnostics" className="mx-auto mt-4 block max-w-[960px] text-sm font-bold text-[#F47822]">← {t("diagnostics.workspace.back")}</Link></main>;
 
     const steps = attempt.steps ?? [];
     const current = steps.find((s) => s.id === selectedStepId) ?? steps.find((s) => !s.answered) ?? steps[0] ?? null;
@@ -124,6 +126,7 @@ export function DiagnosticWorkspacePage() {
     const submitStep = async () => {
         if (!current || isSaving) return;
         ws.setFeedback(null);
+        setActionError(null);
         const payload: Record<string, unknown> = { action: current.action_type, tool: activeTool, finding: finding.trim() };
         if (measurement.trim() !== "") { const n = Number(measurement); payload.measurement = Number.isNaN(n) ? measurement.trim() : n; }
         if (activeTool === "scanner") { if (scannerDtc.trim()) payload.dtc = scannerDtc.trim(); if (scannerLive.trim()) payload.liveData = scannerLive.trim(); if (scannerInterp.trim()) payload.interpretation = scannerInterp.trim(); payload.payload = finding.trim(); }
@@ -135,12 +138,13 @@ export function DiagnosticWorkspacePage() {
             const outcome = await answerStep(current.id, payload, activeTool);
             ws.clearStepInputs();
             if (outcome) { ws.setFeedback(outcome.points_earned > 0 ? t("diagnostics.workspace.stepRecorded", { pts: outcome.points_earned }) : t("diagnostics.workspace.stepRecordedPlain")); if (outcome.next_step) ws.setSelectedStepId(outcome.next_step.id); }
-        } catch (e) { ws.setFeedback(e instanceof Error ? e.message : t("diagnostics.workspace.stepFail")); }
+        } catch (e) { setActionError(errorMessage(e, t("diagnostics.workspace.stepFail"))); }
     };
     const submitAttempt = async () => {
         if (isSaving) return;
         ws.setFeedback(null);
-        try { const r = await submit(); if (r) void navigate(`/diagnostics/attempts/${attempt.id}/result`); } catch (e) { ws.setFeedback(e instanceof Error ? e.message : t("diagnostics.workspace.submitFail")); }
+        setActionError(null);
+        try { const r = await submit(); if (r) void navigate(`/diagnostics/attempts/${attempt.id}/result`); } catch (e) { setActionError(errorMessage(e, t("diagnostics.workspace.submitFail"))); }
     };
 
     return (
@@ -271,7 +275,7 @@ export function DiagnosticWorkspacePage() {
 
                 {/* Center — bench */}
                 <div className="space-y-4">
-                    {feedback ? <div className="rounded-2xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-900 flex items-center gap-2"><Check className="h-4 w-4" />{feedback}</div> : null}
+                    {actionError ? <div role="alert" className="rounded-2xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm font-medium text-red-800 dark:text-red-300 flex items-center gap-2"><AlertTriangle className="h-4 w-4 shrink-0" />{actionError}</div> : feedback ? <div className="rounded-2xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-900 flex items-center gap-2"><Check className="h-4 w-4" />{feedback}</div> : null}
 
                     <div className="rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
                         <div className="flex items-center justify-between px-2 pb-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/30 dark:text-white/30"><span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> {activeTool.toUpperCase()} · HBTronics Bench</span><span className="flex items-center gap-1"><Clock3 className="h-3 w-3" /> {timer.formatted ?? "--:--"} · {t("diagnostics.workspace.stepLabel")} {current ? idx + 1 : 0}/{steps.length}</span></div>
@@ -350,7 +354,7 @@ export function DiagnosticWorkspacePage() {
                         <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#3A3A3A]/10 dark:bg-white/10"><div className="h-full rounded-full bg-[#3A3A3A] transition-all" style={{ width: `${progress}%` }} /></div>
                     </div>
                     <HintsPanel hints={hints?.hints ?? []} remaining={hints?.hints_remaining ?? 0} penaltyTotal={hints?.penalty_total ?? 0} disabled={isSaving} onUse={(id) => void revealHint(id).catch(() => undefined)} />
-                    <div className="hidden lg:block rounded-2xl border border-dashed border-[#3A3A3A]/10 dark:border-white/10 bg-[#FFFBF7] dark:bg-[#F47822]/[0.08] p-3 text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">{t("diagnostics.workspace.proTip")} <b className="text-[#3A3A3A] dark:text-[#ececef]">Red on B20, black on ground</b> → <b className="text-[#3A3A3A] dark:text-[#ececef]">OHM</b>. {t("diagnostics.workspace.proTipEnd")}</div>
+                    <div className="hidden lg:block rounded-2xl border border-dashed border-[#3A3A3A]/10 dark:border-white/10 bg-[#FFFBF7] dark:bg-[#F47822]/[0.08] p-3 text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">{t("diagnostics.workspace.proTip")} <b className="text-[#3A3A3A] dark:text-[#ececef]">{t("diagnostics.workspace.proTipCore")}</b> → <b className="text-[#3A3A3A] dark:text-[#ececef]">OHM</b>. {t("diagnostics.workspace.proTipEnd")}</div>
                 </div>
             </div>
             <DiagnosticMentorPanel courseId={(attempt as unknown as { course_id?: string | null })?.course_id ?? null} stepTitle={current?.title ?? null} tool={tool} />

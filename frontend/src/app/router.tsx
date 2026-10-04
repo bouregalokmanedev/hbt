@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import { NotFound } from "@/components/feedback";
+import { NotFound, RouteError } from "@/components/feedback";
 
 import { adminRoutes } from "@/routes/admin.routes";
 import { authRoutes } from "@/routes/auth.routes";
@@ -10,15 +10,22 @@ import { publicRoutes } from "@/routes/public.routes";
 import { supportRoutes } from "@/routes/support.routes";
 
 export const router = createBrowserRouter([
-    ...publicRoutes,
-    ...authRoutes,
-    ...dashboardRoutes,
-    ...instructorRoutes,
-    ...supportRoutes,
-    ...adminRoutes,
-
+    // One error boundary for every route module: a failed lazy import or a
+    // throwing loader renders a recoverable screen instead of a blank page.
     {
-        path: "*",
-        element: <NotFound />,
+        errorElement: <RouteError />,
+        children: [
+            ...publicRoutes,
+            ...authRoutes,
+            ...dashboardRoutes,
+            ...instructorRoutes,
+            ...supportRoutes,
+            ...adminRoutes,
+
+            {
+                path: "*",
+                element: <NotFound />,
+            },
+        ],
     },
 ]);

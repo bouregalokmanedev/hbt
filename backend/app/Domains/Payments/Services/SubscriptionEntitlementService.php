@@ -2,6 +2,7 @@
 
 namespace App\Domains\Payments\Services;
 
+use App\Domains\Achievements\Services\AchievementService;
 use App\Domains\Payments\Enums\SubscriptionStatus;
 use App\Domains\Payments\Models\Subscription;
 use App\Domains\Payments\Models\SubscriptionFeature;
@@ -13,8 +14,10 @@ class SubscriptionEntitlementService
      * Sessions per calendar month for learners without an active
      * subscription (the "free" tier). Paid plans are unlimited unless
      * their max_simulator_sessions_monthly feature overrides it.
+     *
+     * Unlocked simulator badges then add up to +3 on top of this base.
      */
-    public const FREE_SIMULATOR_SESSIONS_MONTHLY = 5;
+    public const FREE_SIMULATOR_SESSIONS_MONTHLY = 10;
 
 
     /**
@@ -65,9 +68,23 @@ class SubscriptionEntitlementService
      * Simulator sessions the user may start this calendar month.
      *
      * null  = unlimited (paid plan, or a plan that does not cap them)
-     * int   = hard monthly cap (free tier defaults to 5)
+     * int   = hard monthly cap (free tier defaults to 10), plus the badge bonus
      */
     public function simulatorSessionMonthlyLimit(User $user): ?int
+    {
+        $limit = $this->baseSimulatorSessionLimit($user);
+
+        if ($limit === null) {
+            return null;
+        }
+
+        return $limit + $this->simulatorSessionBadgeBonus($user);
+    }
+
+    /**
+     * Sessions per calendar month before any simulator badge bonus is applied.
+     */
+    private function baseSimulatorSessionLimit(User $user): ?int
     {
         if (! $this->activeSubscription($user)) {
             return self::FREE_SIMULATOR_SESSIONS_MONTHLY;
@@ -80,6 +97,19 @@ class SubscriptionEntitlementService
         }
 
         return max(0, (int) $value);
+    }
+
+    /**
+     * Extra sessions earned by unlocking simulator badges: +1 / +2 / +3.
+     * Always 0 for unlimited plans, where extra sessions are meaningless.
+     */
+    public function simulatorSessionBadgeBonus(User $user): int
+    {
+        if ($this->baseSimulatorSessionLimit($user) === null) {
+            return 0;
+        }
+
+        return app(AchievementService::class)->simulatorSessionBonus($user);
     }
 
     public function hasActiveSubscription(User $user): bool

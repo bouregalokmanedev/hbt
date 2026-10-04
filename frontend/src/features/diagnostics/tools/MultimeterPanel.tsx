@@ -11,6 +11,8 @@ import { ComponentArt, refPhotoFallback } from "@/features/simulator/multimeter/
 import { WiringView } from "@/features/simulator/multimeter/components/WiringView";
 import { useProbeDrag } from "@/features/simulator/multimeter/hooks/useProbeDrag";
 import { sfx } from "@/features/simulator/multimeter/lib/sfx";
+import { ProbeWireOverlay } from "@/features/simulator/multimeter/probe/ProbeWireOverlay";
+import { jackViewportPoint } from "@/features/simulator/multimeter/probe/probeGeometry";
 
 type Props = {
     mode: string;
@@ -62,6 +64,7 @@ export function MultimeterPanel({
     const live = engine.reading();
     const dragApi = useProbeDrag(engine);
     const leadRefs = useRef<Record<Lead, HTMLElement | null>>({ red: null, black: null });
+    const gridRef = useRef<HTMLDivElement>(null);
     const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
     const [photoOpen, setPhotoOpen] = useState(false);
     const [muted, setMuted] = useState(() => sfx.isMuted());
@@ -100,11 +103,18 @@ export function MultimeterPanel({
             setOrigin(null);
             return;
         }
+        // Cable leaves the meter front jack; fall back to the lead token.
+        const jack = dragApi.drag.lead === "red" ? state.redJack : state.blackJack;
+        const fromJack = jackViewportPoint(jack, gridRef.current ?? document);
+        if (fromJack) {
+            setOrigin(fromJack);
+            return;
+        }
         const el = leadRefs.current[dragApi.drag.lead];
         if (!el) return;
         const r = el.getBoundingClientRect();
         setOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-    }, [dragApi.drag]);
+    }, [dragApi.drag, state.redJack, state.blackJack]);
 
     const statusChip =
         live.status === "ok"
@@ -158,7 +168,7 @@ export function MultimeterPanel({
                 </div>
             </div>
 
-            <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_280px]">
+            <div ref={gridRef} className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_280px]">
                 <section className="min-w-0 space-y-3">
                     <GuideCard engine={engine} />
                     <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
@@ -241,6 +251,7 @@ export function MultimeterPanel({
                 {t("diagnostics.tools.multimeter.submitHint")}
             </p>
 
+            <ProbeWireOverlay engine={engine} scopeRef={gridRef} hideLead={dragApi.drag?.lead ?? null} />
             <ProbeCableOverlay drag={dragApi.drag} origin={origin} />
         </div>
     );

@@ -6,6 +6,7 @@ use App\Domains\Challenges\Models\DailyChallengeAssignment;
 use App\Domains\Challenges\Models\DailyChallengeDef;
 use App\Domains\Challenges\Models\DailyChallengeRival;
 use App\Domains\Progression\Services\StudentProgressionService;
+use App\Enums\UserRole;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 
@@ -125,6 +126,17 @@ class DailyChallengeService
             $row->status = 'claimed';
             $row->xp_awarded = (int) $row->def->xp;
             $row->save();
+
+            // Claiming is the payoff moment of the challenge board; the
+            // Achievements badge is what brings the student back to it.
+            app(\App\Domains\Notifications\Services\StudentNotificationService::class)->send(
+                $user,
+                'achievement',
+                'Daily challenge claimed',
+                "You banked {$row->xp_awarded} XP for \"{$row->def->title}\". Progress like this is what moves you up the board.",
+                '/achievements',
+                "challenge-claimed:{$row->id}",
+            );
         }
 
         return $this->presentChallenge($row->def, $row);
@@ -165,6 +177,12 @@ class DailyChallengeService
 
         $rows = DailyChallengeAssignment::query()
             ->with(['user:id,first_name,last_name,username', 'def'])
+            // The race is students-only: staff completions never rank here,
+            // so a staff viewer simply gets no "me" row either.
+            ->whereHas('user', fn ($users) => $users->whereHas(
+                'roles',
+                fn ($roles) => $roles->where('name', UserRole::STUDENT->value),
+            ))
             ->whereDate('date', $date)
             ->whereIn('status', ['completed', 'claimed'])
             ->get();

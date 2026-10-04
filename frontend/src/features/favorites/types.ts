@@ -1,4 +1,4 @@
-export type FavoriteType = "course" | "lesson";
+export type FavoriteType = "course" | "lesson" | "note";
 
 export interface FavoriteItem {
     favorite_id?: number;
@@ -12,6 +12,8 @@ export interface FavoriteItem {
     is_free?: boolean;
     course_id?: string | null;
     course_title?: string | null;
+    lesson_id?: string | null;
+    lesson_title?: string | null;
     is_preview?: boolean;
     favorited_at?: string | null;
 }

@@ -11,7 +11,6 @@ use App\Domains\Courses\Events\CourseCompleted;
 use App\Domains\DiagnosticScenarios\Events\DiagnosticFailed;
 use App\Domains\DiagnosticScenarios\Events\DiagnosticPassed;
 use App\Domains\DiagnosticScenarios\Listeners\UpdateDiagnosticProgress;
-use App\Domains\Enrollments\Listeners\CompleteEnrollmentOnCourseCompleted;
 use App\Domains\Enrollments\Listeners\CompleteEnrollmentWhenCourseCompleted;
 use App\Domains\Payments\Events\PaymentFailed;
 use App\Domains\Payments\Events\PaymentRefunded;
@@ -94,11 +93,13 @@ use App\Domains\Courses\Listeners\RecordCoursePublishedAudit;
 use App\Domains\Courses\Listeners\RecordCourseRestoredAudit;
 use App\Domains\Courses\Listeners\RecordCourseSubmittedForReviewAudit;
 use App\Domains\Courses\Listeners\RecordCourseUpdatedAudit;
+use App\Domains\Courses\Listeners\SendSectionPublishedNotification;
 
 use App\Domains\Lessons\Listeners\RecordLessonCreatedAudit;
 use App\Domains\Lessons\Listeners\RecordLessonUpdatedAudit;
 use App\Domains\Lessons\Listeners\RecordLessonPublishedAudit;
 use App\Domains\Lessons\Listeners\RecordLessonUnpublishedAudit;
+use App\Domains\Lessons\Listeners\SendLessonPublishedNotification;
 use App\Domains\Lessons\Listeners\RecordLessonReorderedAudit;
 use App\Domains\Lessons\Listeners\RecordLessonDeletedAudit;
 
@@ -116,11 +117,14 @@ use App\Domains\Courses\Listeners\SyncSectionProgress;
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCreatedAudit;
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCompletedAudit;
 use App\Domains\Enrollments\Listeners\RecordEnrollmentCancelledAudit;
+use App\Domains\Enrollments\Listeners\SendEnrollmentCancelledNotification;
+use App\Domains\Enrollments\Listeners\SendEnrollmentCreatedNotification;
 
 use App\Domains\Lessons\Repositories\LessonProgressRepositoryInterface;
 use App\Domains\Lessons\Repositories\EloquentLessonProgressRepository;
 
 use App\Domains\Courses\Events\SectionProgressUpdated;
+use App\Domains\Courses\Events\SectionPublished;
 use App\Domains\Courses\Listeners\SyncCourseProgress;
 
 use App\Domains\Assessments\Events\AssessmentPassed;
@@ -133,8 +137,10 @@ use App\Domains\AI\RAG\Services\DatabaseMentorContentRetriever;
 
 use App\Domains\AI\Models\MentorConversation;
 use App\Policies\MentorConversationPolicy;
+use App\Domains\Messaging\Models\Message;
 use App\Domains\Messaging\Models\MessageConversation;
-use App\Policies\MessageConversationPolicy;
+use App\Domains\Messaging\Policies\MessageConversationPolicy;
+use App\Domains\Messaging\Policies\MessagePolicy;
 
 
 
@@ -291,6 +297,7 @@ $this->app->bind(
 );
 
     Gate::policy(MessageConversation::class, MessageConversationPolicy::class);
+    Gate::policy(Message::class, MessagePolicy::class);
 
    Gate::policy(
     Enrollment::class,
@@ -382,12 +389,12 @@ Event::listen(
     RecordLessonUpdatedAudit::class,
 );
 Event::listen(
-    
-    CompleteEnrollmentOnCourseCompleted::class,
+    LessonPublished::class,
+    RecordLessonPublishedAudit::class,
 );
 Event::listen(
     LessonPublished::class,
-    RecordLessonPublishedAudit::class,
+    SendLessonPublishedNotification::class,
 );
 
 Event::listen(
@@ -408,6 +415,10 @@ Event::listen(
 Event::listen(
     EnrollmentCreated::class,
     RecordEnrollmentCreatedAudit::class,
+);
+Event::listen(
+    EnrollmentCreated::class,
+    SendEnrollmentCreatedNotification::class,
 );
 
 Event::listen(
@@ -433,6 +444,14 @@ Event::listen(
 Event::listen(
     EnrollmentCancelled::class,
     RecordEnrollmentCancelledAudit::class,
+);
+Event::listen(
+    EnrollmentCancelled::class,
+    SendEnrollmentCancelledNotification::class,
+);
+Event::listen(
+    SectionPublished::class,
+    SendSectionPublishedNotification::class,
 );
 // Commerce: course unlocks after a successful payment, plus the payment
 // audit trail. These live in PaymentServiceProvider-less deployments, so

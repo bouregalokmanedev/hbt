@@ -41,6 +41,7 @@ use App\Domains\Admin\Controllers\AdminDashboardController;
 use App\Domains\Admin\Controllers\AdminCourseController;
 use App\Domains\Admin\Controllers\AdminEnrollmentController;
 use App\Domains\Admin\Controllers\AdminAnalyticsController;
+use App\Domains\Admin\Controllers\AdminCrmController;
 use App\Domains\Admin\Controllers\AdminActivityController;
 use App\Domains\Admin\Controllers\AdminSystemController;
 use App\Domains\Admin\Controllers\AdminNotificationController;
@@ -63,6 +64,7 @@ use App\Http\Controllers\Api\V1\StudentScenarioController;
 use App\Domains\Instructor\Controllers\InstructorAnnouncementController;
 use App\Domains\Messaging\Controllers\ConversationController as MessagingConversationController;
 use App\Domains\Messaging\Controllers\MessageController as MessagingMessageController;
+use App\Domains\Messaging\Controllers\StaffHubController;
 use App\Http\Controllers\Api\V1\LocaleController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ConfigController;
@@ -82,6 +84,9 @@ Route::prefix('v1')->group(function () {
 
     // Public contact form + public config/plans so landing pages work without login.
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:10,1');
+    // Public ticket status lookup (ticket UUID + the address it was filed with).
+    Route::get('/support/tickets/{ticket}/status', [\App\Domains\Support\Controllers\TicketController::class, 'status'])
+        ->middleware('throttle:10,1');
     // Conversion funnel events (pricing view, plan CTA, simulator limit hit).
     Route::post('/analytics/events', \App\Domains\Analytics\Http\Controllers\StoreAnalyticsEventController::class)
         ->middleware('throttle:60,1');
@@ -207,6 +212,8 @@ Route::post('/phone/otp/verify', [PhoneVerificationController::class, 'verify'])
                 Route::get('enrollments', [AdminAnalyticsController::class, 'enrollments']);
                 Route::get('learning', [AdminAnalyticsController::class, 'learning']);
             });
+
+            Route::get('crm/stats', [AdminCrmController::class, 'stats']);
 
             Route::get('activity', [AdminActivityController::class, 'index']);
             Route::get('activity/{activity}', [AdminActivityController::class, 'show']);
@@ -361,6 +368,7 @@ Route::get('/certificates', [CertificateController::class, 'index']);
     Route::get('/support/tickets/{ticket}', [\App\Domains\Support\Controllers\TicketController::class, 'show']);
     Route::post('/support/tickets/{ticket}/reply', [\App\Domains\Support\Controllers\TicketController::class, 'reply']);
     Route::post('/support/tickets/{ticket}/close', [\App\Domains\Support\Controllers\TicketController::class, 'close']);
+    Route::post('/support/tickets/{ticket}/rating', [\App\Domains\Support\Controllers\TicketController::class, 'rating']);
 
     Route::prefix('messages')->group(function () {
         Route::get('/conversations', [MessagingConversationController::class, 'index']);
@@ -372,8 +380,25 @@ Route::get('/certificates', [CertificateController::class, 'index']);
         Route::get('/conversations/{conversation}/messages', [MessagingMessageController::class, 'index']);
         Route::delete('/{message}', [MessagingMessageController::class, 'destroy']);
         Route::post('/{message}/reactions', [MessagingMessageController::class, 'react']);
+        Route::patch('/{message}', [MessagingMessageController::class, 'update']);
+        Route::post('/{message}/forward', [MessagingMessageController::class, 'forward']);
         Route::patch('/conversations/{conversation}/read', [MessagingMessageController::class, 'read']);
+        Route::patch('/conversations/{conversation}/mute', [MessagingConversationController::class, 'mute']);
+        // Typing is fire-and-forget from the composer, so it needs its own
+        // budget — it must never eat into the 30/min send throttle.
+        Route::post('/conversations/{conversation}/typing', [MessagingMessageController::class, 'typing'])
+            ->middleware('throttle:60,1');
     });
+
+    // Staff Hub: the shared space where Admin, Super Admin, Support and
+    // Instructor meet. Guarded by role rather than by `admin:` so Support and
+    // Instructors are not locked out of the platform-wide staff audience.
+    Route::middleware('role:Admin|Super Admin|Support|Instructor')
+        ->prefix('staff-hub')
+        ->group(function () {
+            Route::get('/room', [StaffHubController::class, 'room']);
+            Route::post('/news', [StaffHubController::class, 'storeNews']);
+        });
 
     Route::prefix('student')->group(function () {
         Route::get('/scenarios', [StudentScenarioController::class, 'index']);
@@ -543,6 +568,30 @@ Route::middleware([
                 'show',
             ]
         )->name('instructor.dashboard');
+
+        Route::get(
+            '/attention',
+            [
+                \App\Http\Controllers\Api\V1\Instructor\AttentionController::class,
+                'index',
+            ]
+        )->name('instructor.attention');
+
+        Route::get(
+            '/trends',
+            [
+                \App\Http\Controllers\Api\V1\Instructor\TrendController::class,
+                'index',
+            ]
+        )->name('instructor.trends');
+
+        Route::get(
+            '/progression',
+            [
+                \App\Http\Controllers\Api\V1\Instructor\ProgressionController::class,
+                'index',
+            ]
+        )->name('instructor.progression');
 
         Route::get(
             '/courses',
@@ -1365,4 +1414,14 @@ Route::middleware([
         Route::post('/tickets/{ticket}/escalate', [AdminSupportController::class, 'escalate']);
         Route::post('/tickets/{ticket}/resolve', [AdminSupportController::class, 'resolve']);
         Route::post('/tickets/{ticket}/close', [AdminSupportController::class, 'close']);
+
+        // Mailbox: contact-form submissions land in the inbox, agents answer
+        // and compose from the same table (roots = one row per conversation).
+        Route::get('/mail', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'index']);
+        Route::get('/mail/recipients', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'recipients']);
+        Route::get('/mail/{mail}', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'show']);
+        Route::post('/mail', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'store']);
+        Route::post('/mail/{mail}/reply', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'reply']);
+        Route::patch('/mail/{mail}/read', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'read']);
+        Route::patch('/mail/{mail}/archive', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'archive']);
     });

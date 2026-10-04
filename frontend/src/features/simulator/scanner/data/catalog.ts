@@ -11,6 +11,7 @@ import {
     type TreeStep,
     type VehicleProfile,
 } from "./scanner.data";
+import type { DtcDetail } from "./dtc.details";
 import type { MeterProcedureComponent } from "@/features/simulator/multimeter/data/multimeter.data";
 import { MM_PROCEDURES } from "@/features/simulator/multimeter/data/multimeter.data";
 import type { ScopeExercise } from "@/features/simulator/oscilloscope/data/oscilloscope.data";
@@ -121,12 +122,15 @@ function applyManifest(base: VehicleProfile, manifest: unknown): VehicleProfile 
         dtcs?: (Partial<Dtc> & { code: string; ecu: string; status: Dtc["status"] })[];
         pids?: { id: string; base: number; fault?: boolean }[];
         adasDone?: boolean[];
+        /** Instructor-authored DTC dossiers (overview/causes/live/repair). */
+        dtcDetails?: Record<string, Partial<DtcDetail>>;
     };
 
     const nodeMap = new Map(base.nodes.map((n) => [n.id, { ...n }]));
     const pidMap = new Map(base.pids.map((p) => [p.id, { ...p }]));
     let packDtcs: Dtc[] | null = null;
     let adasDone: boolean[] | undefined;
+    const detailMap: Record<string, DtcDetail> = { ...(base.dtcDetails ?? {}) };
 
     for (const raw of entries) {
         const e = raw as ScanEntry;
@@ -161,6 +165,13 @@ function applyManifest(base: VehicleProfile, manifest: unknown): VehicleProfile 
             }
         }
         if (Array.isArray(e.adasDone)) adasDone = e.adasDone;
+        if (e.dtcDetails && typeof e.dtcDetails === "object") {
+            for (const [code, detail] of Object.entries(e.dtcDetails)) {
+                if (detail && typeof detail === "object") {
+                    detailMap[code] = { ...(detailMap[code] ?? ({} as DtcDetail)), ...(detail as DtcDetail) };
+                }
+            }
+        }
     }
 
     return {
@@ -169,6 +180,7 @@ function applyManifest(base: VehicleProfile, manifest: unknown): VehicleProfile 
         dtcs: packDtcs ?? [...base.dtcs],
         pids: Array.from(pidMap.values()),
         adasDone: adasDone ?? [...base.adasDone],
+        ...(Object.keys(detailMap).length > 0 ? { dtcDetails: detailMap } : {}),
     };
 }
 
@@ -539,6 +551,20 @@ export function vehicleDisplayName(key: string): string {
         if (variant) return variant.name;
     }
     return key;
+}
+
+/** Short human label for the lab chrome, e.g. "Toyota Corolla 1ZR-FE". */
+export function practiceCarName(key: string): string {
+    if (key.startsWith("backend:")) {
+        const variant = findVariant(key.slice("backend:".length));
+        if (variant) return variant.engine_code ? `${variant.name} · ${variant.engine_code}` : variant.name;
+        return key;
+    }
+    const vehicle = VEH.find((v) => v.id === key);
+    if (!vehicle) return key;
+    const words = vehicle.name.split(" ");
+    const model = words.length >= 2 ? `${words[0]} ${words[1]}` : vehicle.name;
+    return vehicle.engine ? `${model} ${vehicle.engine}` : model;
 }
 
 export interface LabVehicleFacts {

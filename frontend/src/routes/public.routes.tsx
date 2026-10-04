@@ -46,6 +46,18 @@ export const publicRoutes: RouteObject[] = [
                 lazy: () => import("@/features/contact/ContactPage").then((m) => ({ Component: m.ContactPage }))
             },
             {
+                path: "/help",
+                lazy: () => import("@/features/help/pages/HelpCenterPage").then((m) => ({ Component: m.HelpCenterPage })),
+            },
+            {
+                path: "/help/track",
+                lazy: () => import("@/features/help/pages/TicketTrackPage").then((m) => ({ Component: m.TicketTrackPage })),
+            },
+            {
+                path: "/help/:slug",
+                lazy: () => import("@/features/help/pages/HelpArticlePage").then((m) => ({ Component: m.HelpArticlePage })),
+            },
+            {
                 path:"/pricing",
                 lazy: () => import("@/features/pricing/PricingPage").then((m) => ({ Component: m.PricingPage }))
             },

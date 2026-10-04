@@ -245,14 +245,14 @@ it('toggles reactions and rejects unknown emoji', function () {
     $on = $this->actingAs($recipient)
         ->postJson("/api/v1/messages/{$message->id}/reactions", ['emoji' => '👍'])
         ->assertOk()
-        ->json('data.metadata.reactions');
+        ->json('data.reactions');
 
     expect($on['👍'])->toBe([$recipient->id]);
 
     $off = $this->actingAs($recipient)
         ->postJson("/api/v1/messages/{$message->id}/reactions", ['emoji' => '👍'])
         ->assertOk()
-        ->json('data.metadata.reactions');
+        ->json('data.reactions');
 
     expect($off ?? [])->toBe([]);
 

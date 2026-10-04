@@ -1,26 +1,148 @@
 import {
+  AlertTriangle,
   ArrowRight,
   BarChart3,
   BookOpen,
+  Check,
   CheckCircle2,
+  ChevronRight,
   ClipboardCheck,
   Clock3,
   Cpu,
   Plus,
   RefreshCw,
+  RotateCcw,
+  SlidersHorizontal,
   Sparkles,
+  Trophy,
   UserPlus,
   Users,
 } from "lucide-react";
+import { Reorder } from "framer-motion";
+import { useCallback, useEffect, useMemo, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import { useAuthStore } from "../../auth";
+import {
+  DashboardSectionGhost,
+  DashboardSectionSlot,
+} from "../../dashboard/components/personalize/DashboardCardSlot";
+import { useDashboardLayout } from "../../dashboard/hooks/useDashboardLayout";
+import {
+  SECTION_CARDS,
+  canHideCard,
+  canResizeCard,
+  getCardWidth,
+  isSectionHalfWidth,
+  type DashboardCardId,
+  type DashboardSectionId,
+} from "../../dashboard/layout/layout";
+import { useDashboardUiStore } from "../../dashboard/stores/dashboard-ui.store";
+
 import { InstructorStats } from "../components/InstructorStats";
+import { ProgressionCard } from "../components/ProgressionCard";
+import { TrendChart } from "../components/TrendChart";
+import { useInstructorAttention } from "../hooks/useInstructorAttention";
 import { useInstructorDashboard } from "../hooks/useInstructorDashboard";
+import { useInstructorProgression } from "../hooks/useInstructorProgression";
+import { useInstructorTrends } from "../hooks/useInstructorTrends";
+import type { InstructorAttention, InstructorTrends } from "../types/instructor";
 
 export function InstructorDashboardPage() {
   const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useInstructorDashboard();
+  const attention = useInstructorAttention();
+  const trends = useInstructorTrends();
+  const progression = useInstructorProgression();
+
+  const customizing = useDashboardUiStore((state) => state.customizing);
+  const setCustomizing = useDashboardUiStore(
+    (state) => state.setCustomizing,
+  );
+  const toggleCustomizing = useDashboardUiStore(
+    (state) => state.toggleCustomizing,
+  );
+  // Never carry a customize session from the student dashboard into this one.
+  useEffect(() => {
+    setCustomizing(false);
+    return () => setCustomizing(false);
+  }, [setCustomizing]);
+
+  const userId = useAuthStore((state) => state.user?.id ?? null);
+
+  const topCourses = useMemo(
+    () => (data?.top_courses ?? []).slice(0, 5),
+    [data],
+  );
+  const topLearners = Math.max(
+    1,
+    ...topCourses.map((course) => course.students_count ?? 0),
+  );
+
+  const isAvailable = useCallback(
+    (id: DashboardCardId): boolean => {
+      switch (id) {
+        case "progression":
+          return Boolean(progression.data);
+        case "attention":
+          return (attention.data?.counts.total ?? 0) > 0;
+        case "topCourses":
+          return topCourses.length > 0;
+        case "momentum":
+          return Boolean(trends.data);
+        default:
+          return true;
+      }
+    },
+    [attention.data, progression.data, topCourses, trends.data],
+  );
+
+  const {
+    layout,
+    visibleSections,
+    hide,
+    show,
+    reorder,
+    toggleWidth,
+    reset,
+  } = useDashboardLayout(isAvailable, userId, "instructor");
+
+  const closeEditing = useCallback(
+    () => setCustomizing(false),
+    [setCustomizing],
+  );
+
+  const handleHide = useCallback((id: DashboardCardId) => hide(id), [hide]);
+  const handleToggleWidth = useCallback(
+    (id: DashboardCardId) => toggleWidth(id),
+    [toggleWidth],
+  );
+
+  /**
+   * Full-width sections span both columns. Half-width resizable sections take
+   * one column so two adjacent halves share a row (lg+); stacked on mobile.
+   */
+  const sectionSpanClass = useCallback(
+    (sectionId: DashboardSectionId): string => {
+      if (isSectionHalfWidth(layout, sectionId)) {
+        return "col-span-full lg:col-span-1";
+      }
+      return "col-span-full";
+    },
+    [layout],
+  );
+
+  const ghostSections = useMemo(() => {
+    if (!customizing) return [];
+    return layout.order.filter((sectionId) => {
+      if (visibleSections.includes(sectionId)) return false;
+      return SECTION_CARDS[sectionId].some(
+        (cardId) => canHideCard(cardId) && isAvailable(cardId),
+      );
+    });
+  }, [customizing, layout.order, visibleSections, isAvailable]);
+
 
   if (isLoading) return <DashboardSkeleton />;
 
@@ -96,96 +218,81 @@ export function InstructorDashboardPage() {
   ];
   const checklistDone = checklist.filter((item) => item.complete).length;
 
-  return (
-    <div className="mx-auto max-w-7xl space-y-6 lg:space-y-7">
-      <section
-        className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#2E2E2E] via-[#3A3A3A] to-[#2A2A2A] px-5 py-7 text-white shadow-[0_20px_50px_rgba(58,58,58,.18)] sm:px-8 sm:py-9"
-        data-testid="instructor-hero"
-      >
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#F47822]/25 blur-3xl rtl:-left-20 rtl:right-auto" />
-          <div className="absolute -bottom-24 left-1/3 h-52 w-52 rounded-full bg-[#8B5CF6]/12 blur-3xl" />
-          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:48px_48px]" />
-        </div>
-
-        <div className="relative flex flex-col justify-between gap-8 xl:flex-row xl:items-start">
-          <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#F47822]/30 bg-[#F47822]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[.18em] text-[#F9A16C]">
-              <Sparkles className="h-3 w-3" />
-              {t("instructor.dashboard.hero.eyebrow")}
-            </p>
-
-            <h1 className="mt-4 text-[1.7rem] font-black leading-[1.15] tracking-tight sm:text-4xl lg:text-[2.65rem]">
-              {t("instructor.dashboard.hero.title")}
-            </h1>
-
-            <p className="mt-3 max-w-xl text-sm leading-6 text-white/55 sm:text-[0.95rem]">
-              {t("instructor.dashboard.hero.description")}
-            </p>
-          </div>
-
-          <div
-            className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:shrink-0"
-            data-testid="instructor-hero-actions"
-          >
+  /**
+   * One entry per dashboard section. Elements are created eagerly, but React
+   * only reconciles sections listed in `visibleSections`, so a hidden card's
+   * component never mounts.
+   */
+  const sectionRenderers: Partial<Record<DashboardSectionId, ReactNode>> = {
+    instructorStats: <InstructorStats data={data} />,
+    progression: <ProgressionCard data={progression.data} />,
+    attention: <AttentionQueue data={attention.data} />,
+    topCourses: (
+      <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+        <SectionHeading
+          icon={Trophy}
+          title={t("instructor.dashboard.topCourses.title")}
+          subtitle={t("instructor.dashboard.topCourses.subtitle")}
+          action={
             <Link
-              to="/instructor/courses/new"
-              data-testid="instructor-hero-create"
-              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F47822] to-[#ff8f45] px-5 text-sm font-black tracking-wide text-white shadow-[0_12px_28px_rgba(244,120,34,.35)] transition duration-200 hover:brightness-[1.06] hover:shadow-[0_16px_36px_rgba(244,120,34,.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#3A3A3A] active:scale-[0.98]"
+              to="/instructor/courses"
+              className="inline-flex items-center gap-1 text-xs font-bold text-[#F47822]"
             >
-              <span className="grid h-7 w-7 place-items-center rounded-xl bg-white/20 transition group-hover:bg-white/30">
-                <Plus className="h-4 w-4" />
-              </span>
-              {t("instructor.dashboard.hero.create")}
+              {t("instructor.dashboard.topCourses.manage")}{" "}
+              <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
             </Link>
+          }
+        />
+        <div className="mt-5 space-y-2.5">
+          {topCourses.map((course, index) => {
+            const learners = course.students_count ?? 0;
+            return (
+              <Link
+                key={course.id}
+                to={`/instructor/courses/${course.id}/analytics`}
+                className="group flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-3 py-3 ring-1 ring-transparent transition hover:bg-[#FFF8F4] hover:ring-[#F47822]/25 focus-visible:outline-none focus-visible:ring-[#F47822]/50"
+              >
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F47822]/10 text-xs font-black text-[#F47822]">
+                  {index + 1}
+                </span>
 
-            <Link
-              to="/instructor/students"
-              data-testid="instructor-hero-learners"
-              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/18 bg-white/[0.08] px-5 text-sm font-bold tracking-wide text-white backdrop-blur-md transition duration-200 hover:border-white/35 hover:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 active:scale-[0.98]"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded-xl bg-white/10 text-white/85 transition group-hover:bg-white/20 group-hover:text-white">
-                <Users className="h-4 w-4" />
-              </span>
-              {t("instructor.dashboard.hero.learners")}
-            </Link>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-[#3A3A3A]">
+                    {course.title}
+                  </span>
+                  <span className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-[#3A3A3A]/8">
+                    <span
+                      className="block h-full rounded-full bg-[#F47822]"
+                      style={{
+                        width: `${Math.round((learners / topLearners) * 100)}%`,
+                      }}
+                    />
+                  </span>
+                </span>
 
-            <Link
-              to="/instructor/simulator"
-              data-testid="instructor-hero-simulator"
-              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/[0.1] px-5 text-sm font-bold tracking-wide text-white backdrop-blur-md transition duration-200 hover:border-white/40 hover:bg-white/[0.18] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 active:scale-[0.98]"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded-xl bg-[#F47822] text-white transition group-hover:brightness-110">
-                <Cpu className="h-4 w-4" />
-              </span>
-              {t("instructor.dashboard.hero.simulator", {
-                defaultValue: "Simulator labs",
-              })}
-            </Link>
-          </div>
-        </div>
+                <span className="shrink-0 text-right">
+                  <span className="block text-sm font-bold text-[#3A3A3A]">
+                    {learners}
+                  </span>
+                  <span className="block text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40">
+                    {t(
+                      learners === 0
+                        ? "instructor.dashboard.topCourses.noLearners"
+                        : "instructor.dashboard.topCourses.learners",
+                      { count: learners },
+                    )}
+                  </span>
+                </span>
 
-        <div className="relative mt-8 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
-          <HeroMetric
-            label={t("instructor.dashboard.hero.courses")}
-            value={data.statistics.total}
-            detail={t("instructor.dashboard.hero.coursesDetail", { count: data.statistics.published })}
-          />
-          <HeroMetric
-            label={t("instructor.dashboard.hero.reached")}
-            value={data.students.total}
-            detail={t("instructor.dashboard.hero.reachedDetail", { count: data.students.active })}
-          />
-          <HeroMetric
-            label={t("instructor.dashboard.hero.quality")}
-            value={`${data.learning.average_quiz_score}%`}
-            detail={t("instructor.dashboard.hero.qualityDetail")}
-          />
+                <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/30 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
+              </Link>
+            );
+          })}
         </div>
       </section>
-
-      <InstructorStats data={data} />
-
+    ),
+    momentum: <MomentumSection data={trends.data} />,
+    simulatorLab: (
       <section className="rounded-2xl border border-[#3A3A3A]/10 bg-[#3A3A3A] p-5 shadow-[0_10px_30px_rgba(58,58,58,.12)] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
@@ -219,7 +326,8 @@ export function InstructorDashboardPage() {
           </Link>
         </div>
       </section>
-
+    ),
+    pipelineRow: (
       <div className="grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
         <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
           <SectionHeading
@@ -312,7 +420,8 @@ export function InstructorDashboardPage() {
           </Link>
         </section>
       </div>
-
+    ),
+    instructorActivityRow: (
       <div className="grid gap-6 xl:grid-cols-[1.2fr_.8fr]">
         <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
           <SectionHeading
@@ -383,7 +492,337 @@ export function InstructorDashboardPage() {
           </Link>
         </section>
       </div>
+    ),
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-6 lg:space-y-7">
+      <section
+        className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#2E2E2E] via-[#3A3A3A] to-[#2A2A2A] px-5 py-7 text-white shadow-[0_20px_50px_rgba(58,58,58,.18)] sm:px-8 sm:py-9"
+        data-testid="instructor-hero"
+      >
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#F47822]/25 blur-3xl rtl:-left-20 rtl:right-auto" />
+          <div className="absolute -bottom-24 left-1/3 h-52 w-52 rounded-full bg-[#8B5CF6]/12 blur-3xl" />
+          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:48px_48px]" />
+        </div>
+
+        <div className="relative flex flex-col justify-between gap-8 xl:flex-row xl:items-start">
+          <div className="max-w-2xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[#F47822]/30 bg-[#F47822]/12 px-3 py-1 text-[10px] font-black uppercase tracking-[.18em] text-[#F9A16C]">
+              <Sparkles className="h-3 w-3" />
+              {t("instructor.dashboard.hero.eyebrow")}
+            </p>
+
+            <h1 className="mt-4 text-[1.7rem] font-black leading-[1.15] tracking-tight sm:text-4xl lg:text-[2.65rem]">
+              {t("instructor.dashboard.hero.title")}
+            </h1>
+
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/55 sm:text-[0.95rem]">
+              {t("instructor.dashboard.hero.description")}
+            </p>
+          </div>
+
+          <div
+            className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:shrink-0"
+            data-testid="instructor-hero-actions"
+          >
+            <Link
+              to="/instructor/courses/new"
+              data-testid="instructor-hero-create"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F47822] to-[#ff8f45] px-5 text-sm font-black tracking-wide text-white shadow-[0_12px_28px_rgba(244,120,34,.35)] transition duration-200 hover:brightness-[1.06] hover:shadow-[0_16px_36px_rgba(244,120,34,.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#3A3A3A] active:scale-[0.98]"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-white/20 transition group-hover:bg-white/30">
+                <Plus className="h-4 w-4" />
+              </span>
+              {t("instructor.dashboard.hero.create")}
+            </Link>
+
+            <Link
+              to="/instructor/students"
+              data-testid="instructor-hero-learners"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/18 bg-white/[0.08] px-5 text-sm font-bold tracking-wide text-white backdrop-blur-md transition duration-200 hover:border-white/35 hover:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 active:scale-[0.98]"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-white/10 text-white/85 transition group-hover:bg-white/20 group-hover:text-white">
+                <Users className="h-4 w-4" />
+              </span>
+              {t("instructor.dashboard.hero.learners")}
+            </Link>
+
+            <Link
+              to="/instructor/simulator"
+              data-testid="instructor-hero-simulator"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/[0.1] px-5 text-sm font-bold tracking-wide text-white backdrop-blur-md transition duration-200 hover:border-white/40 hover:bg-white/[0.18] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 active:scale-[0.98]"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-[#F47822] text-white transition group-hover:brightness-110">
+                <Cpu className="h-4 w-4" />
+              </span>
+              {t("instructor.dashboard.hero.simulator", {
+                defaultValue: "Simulator labs",
+              })}
+            </Link>
+          </div>
+        </div>
+
+        <div className="relative mt-8 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
+          <HeroMetric
+            label={t("instructor.dashboard.hero.courses")}
+            value={data.statistics.total}
+            detail={t("instructor.dashboard.hero.coursesDetail", { count: data.statistics.published })}
+          />
+          <HeroMetric
+            label={t("instructor.dashboard.hero.reached")}
+            value={data.students.total}
+            detail={t("instructor.dashboard.hero.reachedDetail", { count: data.students.active })}
+          />
+          <HeroMetric
+            label={t("instructor.dashboard.hero.quality")}
+            value={`${data.learning.average_quiz_score}%`}
+            detail={t("instructor.dashboard.hero.qualityDetail")}
+          />
+        </div>
+      </section>
+
+      {!customizing && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            data-testid="customize-enter"
+            onClick={toggleCustomizing}
+            className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/12 px-3.5 py-2 text-xs font-bold text-[#3A3A3A]/65 transition hover:border-[#F47822]/40 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:border-white/12 dark:text-white/65 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {t("dashboard.personalize.customize")}
+          </button>
+        </div>
+      )}
+
+      <Reorder.Group
+        axis="y"
+        values={visibleSections}
+        onReorder={reorder}
+        className="grid grid-cols-1 gap-6 lg:grid-cols-2"
+        as="div"
+      >
+        {visibleSections.map((sectionId) => {
+          const cards = SECTION_CARDS[sectionId];
+          const resizeCardId =
+            cards.length === 1 && canResizeCard(cards[0]) ? cards[0] : null;
+
+          return (
+            <DashboardSectionSlot
+              key={sectionId}
+              id={sectionId}
+              editing={customizing}
+              onHide={handleHide}
+              width={resizeCardId ? getCardWidth(layout, resizeCardId) : "full"}
+              onToggleWidth={handleToggleWidth}
+              spanClassName={sectionSpanClass(sectionId)}
+            >
+              {sectionRenderers[sectionId]}
+            </DashboardSectionSlot>
+          );
+        })}
+      </Reorder.Group>
+
+      {customizing && ghostSections.length > 0 && (
+        <div className="space-y-3" data-testid="dashboard-ghosts">
+          {ghostSections.map((sectionId) => (
+            <DashboardSectionGhost
+              key={sectionId}
+              id={sectionId}
+              onShow={show}
+            />
+          ))}
+        </div>
+      )}
+
+      {customizing && (
+        <div
+          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[#3A3A3A]/12 bg-white/95 p-1.5 shadow-[0_18px_50px_rgba(58,58,58,0.18)] backdrop-blur-md dark:border-white/12 dark:bg-[#1b1b20]/95"
+          data-testid="customize-toolbar"
+          role="toolbar"
+          aria-label={t("dashboard.personalize.title")}
+        >
+          <button
+            type="button"
+            data-testid="customize-reset"
+            onClick={reset}
+            className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#3A3A3A]/65 transition hover:bg-[#3A3A3A]/6 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:text-white/65 dark:hover:bg-white/8 dark:hover:text-[#F47822]"
+          >
+            <RotateCcw className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-180" />
+            {t("dashboard.personalize.reset")}
+          </button>
+
+          <span
+            aria-hidden="true"
+            className="h-6 w-px bg-[#3A3A3A]/10 dark:bg-white/10"
+          />
+
+          <button
+            type="button"
+            data-testid="customize-done"
+            onClick={closeEditing}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#F47822] to-[#ff8f45] px-5 py-2.5 text-xs font-bold text-white shadow-[0_8px_22px_rgba(244,120,34,0.35)] transition hover:brightness-[1.06] hover:shadow-[0_10px_28px_rgba(244,120,34,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/50 focus-visible:ring-offset-2 active:scale-[0.98]"
+          >
+            <Check className="h-4 w-4" />
+            {t("dashboard.personalize.done")}
+          </button>
+        </div>
+      )}
     </div>
+  );
+}
+
+/**
+ * Work waiting on this instructor across every course at once.
+ *
+ * Renders nothing when there is no work, and nothing when the query fails —
+ * this panel is additive, so it must never take the dashboard down with it.
+ */
+function AttentionQueue({ data }: { data?: InstructorAttention }) {
+  const { t } = useTranslation();
+
+  if (!data || data.counts.total === 0) return null;
+
+  const assessmentsPath = (courseId?: string | null) =>
+    courseId ? `/instructor/courses/${courseId}/assessments` : null;
+
+  const groups = [
+    {
+      key: "reviews",
+      icon: ClipboardCheck,
+      title: t("instructor.dashboard.attention.reviews"),
+      items: data.pending_reviews.map((item) => ({
+        id: `review-${item.answer_id ?? item.attempt_id}`,
+        title: item.question ?? t("instructor.dashboard.attention.questionFallback"),
+        subtitle: item.course_title ?? t("instructor.dashboard.attention.unknownCourse"),
+        href: assessmentsPath(item.course_id),
+        badge: null as string | null,
+      })),
+    },
+    {
+      key: "flagged",
+      icon: AlertTriangle,
+      title: t("instructor.dashboard.attention.flagged"),
+      items: data.flagged_attempts.map((item) => ({
+        id: `flagged-${item.attempt_id}`,
+        title: `${item.student?.name ?? t("instructor.dashboard.attention.studentFallback")} · ${item.assessment?.title ?? t("instructor.dashboard.attention.assessmentFallback")}`,
+        subtitle: item.course_title ?? t("instructor.dashboard.attention.unknownCourse"),
+        href: assessmentsPath(item.course_id),
+        badge: item.risk_level ? String(item.risk_level) : null,
+      })),
+    },
+  ].filter((group) => group.items.length > 0);
+
+  return (
+    <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex gap-3">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="font-semibold text-[#3A3A3A]">
+              {t("instructor.dashboard.attention.title")}
+            </h2>
+            <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50">
+              {t("instructor.dashboard.attention.subtitle")}
+            </p>
+          </div>
+        </div>
+        <span className="rounded-full bg-amber-500 px-2.5 py-1 text-[11px] font-black text-white">
+          {data.counts.total}
+        </span>
+      </div>
+
+      <div className="mt-5 space-y-5">
+        {groups.map((group) => {
+          const Icon = group.icon;
+          return (
+            <div key={group.key}>
+              <div className="flex items-center gap-2">
+                <Icon className="h-3.5 w-3.5 text-amber-700" />
+                <p className="text-[11px] font-black uppercase tracking-[.12em] text-amber-800/70">
+                  {group.title}
+                </p>
+                <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                  {group.items.length}
+                </span>
+              </div>
+
+              <div className="mt-2 space-y-2">
+                {group.items.slice(0, 5).map((item) => {
+                  const content = (
+                    <>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold text-[#3A3A3A]">
+                          {item.title}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/50">
+                          {item.subtitle}
+                        </span>
+                      </span>
+                      {item.badge && (
+                        <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-red-700">
+                          {item.badge}
+                        </span>
+                      )}
+                      {item.href && (
+                        <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/30 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
+                      )}
+                    </>
+                  );
+
+                  return item.href ? (
+                    <Link
+                      key={item.id}
+                      to={item.href}
+                      className="group flex items-center gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-transparent transition hover:bg-[#FFFBF7] hover:ring-amber-300 focus-visible:outline-none focus-visible:ring-amber-400"
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <div key={item.id} className="flex items-center gap-3 rounded-xl bg-white px-4 py-3">
+                      {content}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Thirty days of momentum. Like the attention queue this is additive: it
+ * renders nothing while loading or on failure so the dashboard never waits
+ * on it.
+ */
+function MomentumSection({ data }: { data?: InstructorTrends }) {
+  const { t } = useTranslation();
+
+  if (!data) return null;
+
+  return (
+    <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+      <SectionHeading
+        icon={BarChart3}
+        title={t("instructor.dashboard.momentum.title")}
+        subtitle={t("instructor.dashboard.momentum.subtitle")}
+        action={
+          <span className="rounded-full bg-[#3A3A3A]/6 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/50">
+            {data.range.from} → {data.range.to}
+          </span>
+        }
+      />
+      <div className="mt-5">
+        <TrendChart series={data.series} />
+      </div>
+    </section>
   );
 }
 

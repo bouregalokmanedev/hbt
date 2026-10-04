@@ -5,6 +5,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { DashboardSidebar } from "../layouts/dashboard/DashboardSidebar";
 import { DashboardNavbar } from "../layouts/dashboard/DashboardNavbar";
 import { ScrollToTop } from "@/components/navigation";
+import { HelpWidget } from "@/components/help/HelpWidget";
 import { AnnouncementPopup } from "@/features/messages/components/AnnouncementPopup";
 import { settingsApi } from "@/features/settings/api/settings.api";
 import { setTheme, useTheme, type ThemeChoice } from "@/lib/theme";
@@ -86,6 +87,8 @@ export function DashboardLayout() {
                 <Outlet />
             </div>
             <AnnouncementPopup />
+            {/* The simulator and diagnostics workspaces own the full viewport — keep the launcher out of their way. */}
+            {!simLocked && <HelpWidget />}
         </div>
     );
 }

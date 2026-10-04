@@ -51,7 +51,7 @@ function LayersPanel({ engine, state, t }: { engine: SchematicWorkspaceEngine; s
                     <Layers className="h-4 w-4 text-[#B85708]" />
                     {t("layers.title")}
                 </span>
-                <button type="button" onClick={() => engine.toggleLayersPanel()} aria-label="Close" className="grid h-7 w-7 place-items-center rounded-xl bg-white text-[#3A3A3A]/60 shadow-sm ring-1 ring-[#3A3A3A]/10 transition hover:bg-[#3A3A3A] hover:text-white dark:bg-white/10 dark:text-white/60">
+                <button type="button" onClick={() => engine.toggleLayersPanel()} aria-label={t("close")} className="grid h-7 w-7 place-items-center rounded-xl bg-white text-[#3A3A3A]/60 shadow-sm ring-1 ring-[#3A3A3A]/10 transition hover:bg-[#3A3A3A] hover:text-white dark:bg-white/10 dark:text-white/60">
                     <X className="h-4 w-4" />
                 </button>
             </div>
@@ -110,11 +110,11 @@ function SearchPalette({ engine, state, t, tc }: { engine: SchematicWorkspaceEng
                             <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#3A3A3A]/5 dark:bg-white/5">
                                 <Search className="h-6 w-6 text-[#3A3A3A]/20 dark:text-white/20" />
                             </div>
-                            <p className="mt-3 text-sm font-bold text-[#3A3A3A] dark:text-white">No results</p>
+                            <p className="mt-3 text-sm font-bold text-[#3A3A3A] dark:text-white">{t("search.noResults")}</p>
                             <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{tc("schematic.na.search")}</p>
                         </div>
                     ) : results.length === 0 ? (
-                        <div className="p-6 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">Type a component code, pin, or colour…</div>
+                        <div className="p-6 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">{t("search.emptyHint")}</div>
                     ) : (
                         results.map((r, i) => {
                             const c = schByKey(r.key)!;
@@ -178,7 +178,7 @@ function ConnectorModal({ engine, state, t }: { engine: SchematicWorkspaceEngine
                             </button>
                         ))}
                     </div>
-                    <button type="button" onClick={() => engine.closeConnector()} aria-label="Close" className="grid h-8 w-8 place-items-center rounded-xl border border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A] hover:text-white dark:border-white/10 dark:bg-white/10">
+                    <button type="button" onClick={() => engine.closeConnector()} aria-label={t("close")} className="grid h-8 w-8 place-items-center rounded-xl border border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A] hover:text-white dark:border-white/10 dark:bg-white/10">
                         <X className="h-4 w-4" />
                     </button>
                 </div>

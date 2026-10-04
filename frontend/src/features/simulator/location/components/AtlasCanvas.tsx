@@ -71,7 +71,7 @@ export function AtlasCanvas({
         className="mx-auto"
         style={{ maxWidth: 900, transform: `scale(${state.zoom})`, transformOrigin: "top center" }}
       >
-        <div className="relative overflow-hidden rounded-xl border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="relative overflow-hidden rounded-2xl border border-[#3A3A3A]/10 bg-white shadow-[0_14px_36px_rgba(58,58,58,0.12)] ring-1 ring-[#3A3A3A]/5 dark:border-white/10 dark:bg-[#1b1b20] dark:shadow-black/40 dark:ring-white/5">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={img} alt={cap} className="block h-auto w-full select-none" draggable={false} />
@@ -96,8 +96,8 @@ export function AtlasCanvas({
                 aria-current={isSel || (sysView && isMember) ? "true" : undefined}
                 title={`${c.ref} · ${c.name}`}
                 className={clsx(
-                  "absolute rounded-sm focus:outline-none focus:ring-2 focus:ring-[#F47822]/30",
-                  showBox ? "border-2" : "border-2 border-transparent hover:border-[#F47822]/60",
+                  "absolute rounded-md transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/40",
+                  showBox ? "border-2" : "border-2 border-transparent hover:border-[#F47822]/70 hover:bg-[#F47822]/15",
                   isSel
                     ? "border-[#F47822] bg-[#F47822]/25"
                     : sysView && isMember
@@ -115,7 +115,7 @@ export function AtlasCanvas({
                 }}
               >
                 {isSel ? (
-                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#F47822] px-1.5 py-0.5 font-mono text-[11px] font-bold text-white">
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#F47822] px-1.5 py-0.5 font-mono text-[11px] font-bold text-white shadow-[0_4px_10px_rgba(244,120,34,0.4)]">
                     {c.ref}
                   </span>
                 ) : null}
@@ -130,9 +130,9 @@ export function AtlasCanvas({
           {/* stage caption */}
           <div
             dir="ltr"
-            className="pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/55 to-transparent px-3 py-1.5"
+            className="pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent px-3 pb-2 pt-6"
           >
-            <span className="font-mono text-[11px] uppercase tracking-wide text-white/90">{cap}</span>
+            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-white/95">{cap}</span>
           </div>
         </div>
       </div>

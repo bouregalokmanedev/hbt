@@ -571,7 +571,7 @@ function SwitchGroup({
         <SectionHeader title={title} description={description} />
         <div className="p-5 sm:p-7" data-testid={testId ? `${testId}-loading` : undefined}>
           <p className="text-sm text-[#3A3A3A]/55 dark:text-white/55">
-            {t("settingsPage.notices.loadFail")}
+            {t("settingsPage.notices.groupEmpty")}
           </p>
         </div>
       </>
@@ -1389,7 +1389,7 @@ function DeleteModal({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-600 dark:text-red-400">
-              Account deletion
+              {t("settingsPage.deleteModal.tag")}
             </p>
             <h2 className="mt-1 text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">
               {t("settingsPage.deleteModal.title")}

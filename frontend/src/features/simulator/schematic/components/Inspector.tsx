@@ -364,10 +364,10 @@ function NoSelection({ engine, t, tc }: { engine: SchematicWorkspaceEngine; t: a
                         className="group rounded-2xl border border-[#3A3A3A]/10 bg-white p-4 text-start transition hover:border-[#B85708]/30 hover:shadow-sm dark:border-white/10 dark:bg-[#1b1b20]"
                     >
                         <div dir="ltr" className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#B85708] font-mono text-sm font-black text-white shadow-sm">{code}</div>
-                        <div className="mt-2 text-sm font-bold text-[#3A3A3A] dark:text-white">Connector {code}</div>
+                        <div className="mt-2 text-sm font-bold text-[#3A3A3A] dark:text-white">{t("inspector.connector", { code })}</div>
                         <div className="text-xs font-medium text-[#3A3A3A]/60 dark:text-white/60">{t("connector.pinsInTable", { code, n: code === "A" ? 34 : 77 })}</div>
                         <div className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#B85708] group-hover:gap-1.5">
-                            View pins <ChevronRight className="h-3 w-3" />
+                            {t("inspector.viewPins")} <ChevronRight className="h-3 w-3" />
                         </div>
                     </button>
                 ))}

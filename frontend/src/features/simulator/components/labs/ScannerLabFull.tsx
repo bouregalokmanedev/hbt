@@ -29,6 +29,7 @@ import {
 import { getDiagnosticHistory } from "@/features/diagnostics/api/diagnostics.api";
 import { notifySimulatorResults, rememberLocalResult, simulatorApi, type SimulatorResult } from "@/features/simulator/api/simulator.api";
 import { readVehicleItem, removeVehicleItem, writeVehicleItem } from "@/features/simulator/lib/vehicleStorage";
+import { resetClearedCodes } from "@/features/simulator/scanner/lib/clearedDtcs";
 import type { DiagnosticAttempt } from "@/features/diagnostics/types/diagnostic.types";
 import { getVehicleProfile, vehicleById, type VehicleProfile } from "@/features/simulator/scanner/data/scanner.data";
 import { DEFAULT_TRAINING_CORRECT, DEFAULT_TRAINING_OPTIONS, vehicleDisplayName, vehicleFacts, type TrainingSession } from "@/features/simulator/scanner/data/catalog";
@@ -365,6 +366,9 @@ function ScannerLab({
     const runFullScan = () => {
         openWorkspace("network");
         void ensureScanSession();
+        // A fresh scan re-detects whatever is still faulty, so it also lifts
+        // the remembered "cleared" set (as the clear-codes modal promises).
+        resetClearedCodes(vehicleId);
         engine?.startScan();
     };
     const confirmVehicle = (id: string) => {
@@ -641,6 +645,7 @@ function ScannerLab({
                                 setPlotted={setPlotted}
                                 vehicleTitle={vehicleFacts(vehicleId).title}
                                 vehicleMeta={vehicleFacts(vehicleId).meta}
+                                vehicleKey={vehicleId}
                                 trainingSession={trainingSession}
                                 onBack={() => setScreen("workstation")}
                             />
@@ -813,20 +818,20 @@ function DashboardView({
             </section>
 
             <section className="grid gap-5 lg:grid-cols-3">
-                <button
-                    type="button"
-                    onClick={() => onOpenWorkspace("tree")}
-                    className="group rounded-[20px] bg-[#0f1115] p-6 text-start text-white shadow-[0_12px_30px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5"
+                <div
+                    aria-disabled="true"
+                    data-testid="intelligent-diagnostics-disabled"
+                    className="rounded-[20px] border border-dashed border-[#3A3A3A]/15 bg-[#0f1115]/60 p-6 text-start text-white/50 shadow-none dark:border-white/10"
                 >
                     <div className="flex items-start justify-between">
-                        <Cloud className="h-7 w-7 text-[#F47822]" />
-                        <span className="rounded-md border border-emerald-400/40 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-400">
-                            {t("simulator.scannerLab.dash.cloudOnline")}
+                        <Cloud className="h-7 w-7 text-white/30" />
+                        <span className="rounded-md border border-white/15 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">
+                            {t("simulator.scannerLab.dash.disabled")}
                         </span>
                     </div>
                     <h3 className="mt-8 text-xl font-black">{t("simulator.scannerLab.dash.intelligent")}</h3>
-                    <p className="mt-2 text-sm leading-6 text-white/55">{t("simulator.scannerLab.dash.intelligentDesc")}</p>
-                </button>
+                    <p className="mt-2 text-sm leading-6 text-white/40">{t("simulator.scannerLab.dash.intelligentDesc")}</p>
+                </div>
                 <button
                     type="button"
                     onClick={() => onOpenWorkspace("network")}
@@ -1101,13 +1106,14 @@ function WorkspaceView(props: {
     setPlotted: (ids: string[]) => void;
     vehicleTitle: string;
     vehicleMeta: string;
+    vehicleKey: string;
     trainingSession: TrainingSession | null;
     onBack: () => void;
 }) {
     const {
         t, tab, setTab, engine, profile, treeSteps, focusEcu, setFocusEcu,
         plotted, setPlotted,
-        vehicleTitle, vehicleMeta,
+        vehicleTitle, vehicleMeta, vehicleKey,
         trainingSession,
         onBack,
     } = props;
@@ -1135,8 +1141,9 @@ function WorkspaceView(props: {
     const allAnswered = answeredCount >= trainingTotal;
     const trainingDesc = trainingSession?.description ?? (
         <>
-            Guided steps jump into DTCs/livedata/graph/tree — single-attempt diagnosis. Correct:{" "}
-            <b className="text-[#3A3A3A] dark:text-white">restricted fuel filter starving the HP pump</b> · Hints cost 5 pts.
+            {t("simulator.scannerLab.trainingDescPrefix")}{" "}
+            <b className="text-[#3A3A3A] dark:text-white">{t("simulator.scannerLab.trainingDescAnswer")}</b>{" "}
+            {t("simulator.scannerLab.trainingDescSuffix")}
         </>
     );
     return (
@@ -1158,7 +1165,7 @@ function WorkspaceView(props: {
                     <span className={`h-2.5 w-2.5 rounded-full ${engineState.livePlay ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-[#3A3A3A]/20"}`} /> <span dir="ltr" className="tabular-nums">VBAT {engineState.live.VBAT?.value.toFixed(2) ?? "—"}V</span>
                     <button onClick={() => engine.toggleLive()} className="rounded-full bg-[#F47822] px-3 py-1.5 text-white text-xs font-bold hover:bg-[#df6817]">{engineState.livePlay ? t("simulator.scannerLab.live") : t("simulator.scannerLab.paused")}</button>
                 </span>
-                <button onClick={() => engine.startScan()} disabled={engineState.scanning} className="rounded-full bg-[#3A3A3A] px-4 py-2 text-sm font-black text-white disabled:opacity-40 hover:bg-black">{engineState.scanning ? `${t("simulator.scannerLab.scanning")} ${engineState.scanIdx}/21` : t("simulator.scannerLab.fullScan")}</button>
+                <button onClick={() => { resetClearedCodes(vehicleKey); engine.startScan(); }} disabled={engineState.scanning} className="rounded-full bg-[#3A3A3A] px-4 py-2 text-sm font-black text-white disabled:opacity-40 hover:bg-black">{engineState.scanning ? `${t("simulator.scannerLab.scanning")} ${engineState.scanIdx}/21` : t("simulator.scannerLab.fullScan")}</button>
             </div>
             {tab === "network" && (
                 <div className="space-y-4">
@@ -1194,7 +1201,7 @@ function WorkspaceView(props: {
                         <div className="mt-4 flex flex-wrap items-center gap-3">
                             <button
                                 type="button"
-                                onClick={() => engine.startScan()}
+                                onClick={() => { resetClearedCodes(vehicleKey); engine.startScan(); }}
                                 disabled={engineState.scanning}
                                 className="rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-black text-white transition hover:bg-[#E96D18] disabled:opacity-50"
                             >
@@ -1247,7 +1254,15 @@ function WorkspaceView(props: {
                     onOpenDtcs={() => setTab("dtc")}
                 />
             )}
-            {tab === "dtc" && <DtcPanel dtcs={profile.dtcs} onOpenTree={() => setTab("tree")} />}
+            {tab === "dtc" && (
+                <DtcPanel
+                    dtcs={profile.dtcs}
+                    details={profile.dtcDetails}
+                    tree={treeSteps}
+                    onOpenTree={() => setTab("tree")}
+                    vehicleKey={vehicleKey}
+                />
+            )}
             {tab === "live" && (
                 <LiveDataGrid
                     engine={engine}

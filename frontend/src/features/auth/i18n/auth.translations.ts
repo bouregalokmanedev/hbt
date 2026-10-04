@@ -131,6 +131,7 @@ backToLogin:
                 "If this email needs verification, a new link has been sent.",
             resendVerificationFailed:
                 "Could not resend the verification email. Please try again.",
+            resendVerificationWait: "Resend available in",
             unknown: "Something went wrong. Please try again.",
         },
 
@@ -353,6 +354,7 @@ backToLogin:
                 "إذا كان هذا البريد بحاجة إلى تحقق، فقد تم إرسال رابط جديد.",
             resendVerificationFailed:
                 "تعذّرت إعادة إرسال رابط التحقق. حاول مجدداً.",
+            resendVerificationWait: "إعادة الإرسال بعد",
             unknown: "حدث خطأ ما. حاول مجدداً.",
         },
 

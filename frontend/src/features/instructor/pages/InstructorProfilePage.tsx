@@ -193,7 +193,7 @@ export function InstructorProfilePage() {
                 <div className="mt-3 grid gap-2">
                   <a href="/instructor/courses" className="rounded-xl bg-[#3A3A3A] px-4 py-3 text-xs font-semibold text-white hover:bg-[#F47822] transition">{t("instructor.profile.links.courses")}</a>
                   <a href="/instructor/revenue" className="rounded-xl border border-[#3A3A3A]/8 bg-[#FAFAFA] px-4 py-3 text-xs font-semibold text-[#3A3A3A] hover:border-[#F47822]/20">{t("instructor.profile.links.revenue")}</a>
-                  <a href="/instructor/lounge" className="rounded-xl border border-[#F47822]/15 bg-[#FFF8F4] px-4 py-3 text-xs font-semibold text-[#F47822] hover:bg-[#F47822]/10 transition">{t("instructor.profile.links.lounge")}</a>
+                  <a href="/instructor/staff-hub/room" className="rounded-xl border border-[#F47822]/15 bg-[#FFF8F4] px-4 py-3 text-xs font-semibold text-[#F47822] hover:bg-[#F47822]/10 transition">{t("instructor.profile.links.staffRoom")}</a>
                 </div>
               </section>
             </div>

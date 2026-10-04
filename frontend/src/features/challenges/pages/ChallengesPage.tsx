@@ -234,6 +234,11 @@ export function ChallengesPage() {
                             </span>
                         </div>
 
+                        {(today?.challenges ?? []).length === 0 ? (
+                            <p className="mt-5 rounded-2xl border border-dashed border-[#3A3A3A]/15 px-4 py-8 text-center text-sm text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55">
+                                {t("challenges.notRanked")}
+                            </p>
+                        ) : (
                         <ul className="mt-5 space-y-3">
                             {(today?.challenges ?? []).map((challenge) => (
                                 <li
@@ -287,6 +292,7 @@ export function ChallengesPage() {
                                 </li>
                             ))}
                         </ul>
+                        )}
                     </section>
 
                     {/* Today's race leaderboard */}

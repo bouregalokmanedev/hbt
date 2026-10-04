@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 
+import { LabProgressStrip } from "@/features/simulator/components/LabProgressStrip";
 import { useSchematicWorkspace } from "../hooks/useSchematicWorkspace";
 import { TopBar, SubBar } from "./Bars";
 import { Sidebar } from "./Sidebar";
@@ -41,11 +42,13 @@ export function SchematicView({
     }
 
     const inspector = <Inspector engine={engine} state={state} t={t as any} tc={tc as any} />;
+    const progressPct = engine.accuracyPct();
 
     return (
         <div className="flex min-h-[620px] flex-col overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
             <TopBar engine={engine} state={state} t={t as any} />
             <SubBar engine={engine} state={state} t={t as any} tc={tc as any} layout={layout} setLayout={setLayout} />
+            <LabProgressStrip tool="schematic" progress={progressPct} />
 
             <div className="relative flex min-h-[520px] flex-1 bg-[#F8F7F6] dark:bg-[#101013]">
                 {/* Sidebar */}

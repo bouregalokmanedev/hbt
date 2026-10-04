@@ -1,5 +1,7 @@
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui";
 
 interface ErrorStateProps {
@@ -9,10 +11,12 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-    title = "Something went wrong",
-    description = "We couldn't load this content. Please try again.",
+    title,
+    description,
     onRetry,
 }: ErrorStateProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="flex min-h-64 flex-col items-center justify-center rounded-[var(--radius-xl)] border border-[var(--border)] p-8 text-center">
             <div className="mb-4 grid size-12 place-items-center rounded-full bg-[var(--danger-background)]">
@@ -20,11 +24,11 @@ export function ErrorState({
             </div>
 
             <h3 className="font-semibold">
-                {title}
+                {title ?? t("errors.somethingWentWrong")}
             </h3>
 
             <p className="mt-2 max-w-md text-sm text-[var(--muted)]">
-                {description}
+                {description ?? t("errors.tryAgainBody")}
             </p>
 
             {onRetry && (
@@ -36,7 +40,7 @@ export function ErrorState({
                         <RefreshCw className="size-4" />
                     }
                 >
-                    Try again
+                    {t("common.tryAgain")}
                 </Button>
             )}
         </div>

@@ -4,6 +4,8 @@ import {
     Search,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import {
     useAuth,
 } from "@/features/auth";
@@ -23,6 +25,8 @@ export function Topbar({
         user,
     } = useAuth();
 
+    const { t } = useTranslation();
+
     return (
         <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
             <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -31,7 +35,7 @@ export function Topbar({
                 <button
                     type="button"
                     onClick={onMenuClick}
-                    aria-label="Open navigation"
+                    aria-label={t("navigation.openNav")}
                     className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground lg:hidden"
                 >
                     <Menu
@@ -48,7 +52,7 @@ export function Topbar({
 
                     <input
                         type="search"
-                        placeholder="Search courses, lessons..."
+                        placeholder={t("navigation.searchPh")}
                         className="h-10 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none transition focus:border-primary"
                     />
                 </div>
@@ -60,7 +64,7 @@ export function Topbar({
                     <button
                         type="button"
                         className="relative flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                        aria-label="Notifications"
+                        aria-label={t("navigation.notifications")}
                     >
                         <Bell
                             size={19}
@@ -89,7 +93,7 @@ export function Topbar({
                             </div>
 
                             <div className="text-xs text-muted-foreground">
-                                Student
+                                {t("common.roles.student")}
                             </div>
                         </div>
                     </button>

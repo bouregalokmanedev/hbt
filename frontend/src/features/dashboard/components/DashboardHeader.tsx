@@ -100,7 +100,7 @@ export function DashboardHeader({
 
                         <span
                             className="inline-flex items-center gap-1.5 rounded-full bg-[#F47822]/10 px-3 py-1 text-[11px] font-bold text-[#F47822]"
-                            title="Consecutive learning days"
+                            title={t("dashboard.header.streak")}
                         >
                             <Flame className="h-3.5 w-3.5" />
                             {progression.current_streak === 1

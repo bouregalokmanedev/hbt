@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { authStorage } from "@/lib/storage/auth-storage";
 import { ApiError } from "./errors";
+import { errorMessage } from "./safe-error";
 import type { ApiResponse } from "./types";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
@@ -30,11 +31,21 @@ export async function api<T>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${env.apiUrl}${endpoint}`, {
-    ...options,
-    headers,
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${env.apiUrl}${endpoint}`, {
+      ...options,
+      headers,
+      body:
+        options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    });
+  } catch (cause) {
+    // A rejected fetch throws a bare TypeError ("Failed to fetch") that has
+    // nothing useful to say to a learner, and status 0 marks it as offline
+    // rather than an API rejection.
+    throw new ApiError(errorMessage(cause), 0);
+  }
 
   let payload: unknown = null;
 
@@ -48,7 +59,7 @@ export async function api<T>(
     const errorPayload = payload as ApiResponse<T> | null;
 
     throw new ApiError(
-      errorPayload?.message ?? "Something went wrong.",
+      errorMessage(errorPayload?.message),
       response.status,
       errorPayload && "errors" in errorPayload
         ? errorPayload.errors

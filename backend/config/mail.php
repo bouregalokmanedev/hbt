@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support Mailbox
+    |--------------------------------------------------------------------------
+    |
+    | Where public contact-form submissions are delivered, and the address
+    | the support mailbox mirrors them to.
+    |
+    */
+
+    'contact_to' => env('MAIL_CONTACT_TO', 'support@hbtronics.dz'),
+
 ];

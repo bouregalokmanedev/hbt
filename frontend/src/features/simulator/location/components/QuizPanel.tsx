@@ -35,12 +35,14 @@ export function QuizPanel({
 
   return (
     <aside className="flex w-80 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
-      <div className="flex items-center justify-between border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
-        <span dir="ltr" className="font-mono text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60">
-          {tr("location.quiz.time", "TIME")} <span className="font-mono font-black text-[#3A3A3A] dark:text-white">{mm}:{ss}</span>
+      <div className="flex items-center justify-between gap-2 border-b border-[#3A3A3A]/8 p-4 dark:border-white/8">
+        <span dir="ltr" className="inline-flex items-center gap-2 rounded-xl bg-[#3A3A3A]/[0.05] px-3 py-2 font-mono text-xs font-bold text-[#3A3A3A]/60 dark:bg-white/[0.06] dark:text-white/60">
+          {tr("location.quiz.time", "TIME")}
+          <span className="font-mono text-sm font-black tabular-nums text-[#3A3A3A] dark:text-white">{mm}:{ss}</span>
         </span>
-        <span dir="ltr" className="font-mono text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60">
-          {tr("location.quiz.score", "SCORE")} <span className="font-mono font-black text-[#3A3A3A] dark:text-white">{state.qScore}</span>
+        <span dir="ltr" className="inline-flex items-center gap-2 rounded-xl bg-[#F47822]/10 px-3 py-2 font-mono text-xs font-bold text-[#F47822]">
+          {tr("location.quiz.score", "SCORE")}
+          <span className="font-mono text-sm font-black tabular-nums">{state.qScore}</span>
         </span>
       </div>
 
@@ -49,14 +51,14 @@ export function QuizPanel({
           <div className="text-sm font-black text-[#3A3A3A] dark:text-white">{tr("location.quiz.results", "Results")}</div>
           <div
             dir="ltr"
-            className="mt-3 rounded-xl bg-[#3A3A3A]/5 p-4 text-center font-mono text-2xl font-black text-[#3A3A3A] dark:bg-white/5 dark:text-white"
+            className="mt-3 rounded-2xl bg-gradient-to-br from-[#F47822] to-[#E96D18] p-5 text-center font-mono text-3xl font-black text-white shadow-[0_10px_24px_rgba(244,120,34,0.3)]"
           >
             {state.qScore} / {state.qList.length * 10}
           </div>
           <button
             type="button"
             onClick={() => engine.setMode("quiz")}
-            className="mt-3 w-full rounded-xl bg-[#F47822] px-3 py-2 text-sm font-black text-white transition hover:bg-[#E96D18] focus:outline-none focus:ring-2 focus:ring-[#F47822]/30"
+            className="mt-3 w-full rounded-xl bg-[#3A3A3A] px-3 py-2 text-sm font-black text-white transition hover:-translate-y-px hover:bg-[#252525] focus:outline-none focus:ring-2 focus:ring-[#F47822]/30"
           >
             {tr("location.quiz.restart", "Restart quiz")}
           </button>
@@ -66,7 +68,11 @@ export function QuizPanel({
           <div className="text-[11px] font-black uppercase tracking-[0.14em] text-[#F47822]">
             {tr("location.quiz.question", "Question {n}", { n: state.qIdx + 1 })}
           </div>
-          {target ? <h2 className="mt-1 text-lg font-black text-[#3A3A3A] dark:text-white">{trc("location.quiz.prompt", "Where is: {name}?", { name: target.name })}</h2> : null}
+          {target ? (
+            <h2 className="mt-2 rounded-xl border border-[#F47822]/15 bg-[#F47822]/[0.07] px-3 py-2.5 text-base font-black leading-snug text-[#3A3A3A] ring-1 ring-[#F47822]/10 dark:text-white">
+              {trc("location.quiz.prompt", "Where is: {name}?", { name: target.name })}
+            </h2>
+          ) : null}
           <p className="mt-1 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">
             {trc("location.quiz.instruction", "Pick the correct hotspot.")}
           </p>

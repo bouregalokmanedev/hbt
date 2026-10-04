@@ -30,9 +30,13 @@ class UserFactory extends Factory
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
 
-            'username' => fake()
-                ->unique()
-                ->userName(),
+            // alpha_dash safe (dots from Faker's userName() are rejected by
+            // the profile update rule, which made profile tests flaky).
+            'username' => Str::lower(Str::substr(
+                preg_replace('/[^A-Za-z0-9]+/', '-', fake()->unique()->userName()),
+                0,
+                26
+            ).'-'.Str::random(3)),
 
             'email' => fake()
                 ->unique()

@@ -12,8 +12,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { I18nextProvider } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import { router } from "@/app/router";
+
+import { AppErrorBoundary } from "@/components/feedback/AppErrorBoundary";
 
 import { AuthInitializer } from "@/features/auth/AuthInitializer";
 
@@ -38,12 +41,15 @@ void initialLocaleReady.then(() => {
     <React.StrictMode>
       <I18nextProvider i18n={i18n}>
         <AuthLanguageProvider>
-          <AuthInitializer>
-            <QueryProvider>
-              <RouterProvider router={router} />
-              <CookieConsentBanner />
-            </QueryProvider>
-          </AuthInitializer>
+          <AppErrorBoundary>
+            <AuthInitializer>
+              <QueryProvider>
+                <RouterProvider router={router} />
+                <CookieConsentBanner />
+                <Toaster position="bottom-center" richColors closeButton />
+              </QueryProvider>
+            </AuthInitializer>
+          </AppErrorBoundary>
         </AuthLanguageProvider>
       </I18nextProvider>
     </React.StrictMode>,

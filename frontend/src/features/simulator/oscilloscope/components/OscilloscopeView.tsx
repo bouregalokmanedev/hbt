@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { SCOPE_EXERCISES } from "../data/oscilloscope.data";
+import { LabProgressStrip } from "@/features/simulator/components/LabProgressStrip";
 import { useScope } from "../hooks/useScope";
 import { WaveformCanvas } from "./WaveformCanvas";
 import { ScopeControls } from "./ScopeControls";
@@ -51,6 +52,9 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
   }
 
   const comp = engine.comp();
+  const checks = engine.stepChecks();
+  const passed = [checks.probeOk, checks.vOk, checks.tOk, checks.trigOk, checks.capOk, checks.measOk, checks.diagOk].filter(Boolean).length;
+  const progressPct = Math.round((passed / 7) * 100);
 
   const tr = (key: string, fallback: string) => t(key, { defaultValue: fallback }) as string;
 
@@ -86,6 +90,8 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
           ))}
         </div>
       </div>
+
+      <LabProgressStrip tool="oscilloscope" progress={progressPct} />
 
       <div className="flex min-h-0 flex-1 bg-[#F8F7F6] dark:bg-[#101013]">
         {state.screen === "scope" ? (
@@ -125,7 +131,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
                 </span>
                 <div className="mt-2 text-sm font-bold text-[#3A3A3A] dark:text-white">{c.name}</div>
                 <div className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
-                  {tr(`oscilloscope.ex.${c.id}.sub`, c.name)}
+                  {tr(`content.oscilloscope.ex.${c.id}.sub`, c.name)}
                 </div>
               </button>
             ))}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Domains\Support\Models\SupportMail;
 use App\Mail\ContactMessageMail;
 use App\Models\ContactMessage;
 use Illuminate\Http\JsonResponse;
@@ -29,6 +30,25 @@ class ContactController extends Controller
             'ip' => $request->ip(),
             'user_agent' => substr((string) $request->userAgent(), 0, 512),
         ]);
+
+        // Mirror the submission into the support mailbox (inbox root). The
+        // public contact endpoint must never fail because of the mailbox.
+        try {
+            SupportMail::create([
+                'direction' => SupportMail::DIRECTION_INBOUND,
+                'subject' => $contactMessage->subject,
+                'body' => $contactMessage->message,
+                'from_name' => $contactMessage->full_name,
+                'from_email' => $contactMessage->email,
+                'to_email' => (string) config('mail.contact_to', 'support@hbtronics.dz'),
+                'contact_message_id' => $contactMessage->id,
+            ]);
+        } catch (\Throwable $exception) {
+            Log::warning('Support mailbox mirror failed.', [
+                'contact_message_id' => $contactMessage->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
         try {
             Mail::to(config('mail.contact_to', 'support@hbtronics.dz'))

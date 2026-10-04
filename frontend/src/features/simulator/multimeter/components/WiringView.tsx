@@ -39,25 +39,6 @@ export function WiringView({
     const step = engine.step();
     const placement = engine.placement();
 
-    const RED_PORT = { x: 242, y: 28 };
-    const BLACK_PORT = { x: 298, y: 28 };
-
-    const pinPos = (target: ProbeTarget): { x: number; y: number } | null => {
-        if (target === "gnd") return { x: 270, y: earthY - 22 };
-        if (target.startsWith("c")) {
-            const i = compPins.indexOf(target.slice(1));
-            return i === -1 ? null : { x: 150, y: compY(i) };
-        }
-        if (target.startsWith("e")) {
-            const j = ecuPins.indexOf(target.slice(1));
-            return j === -1 ? null : { x: 410, y: ecuY(j) };
-        }
-        return null;
-    };
-
-    const wirePath = (from: { x: number; y: number }, to: { x: number; y: number }): string =>
-        `M ${from.x} ${from.y} C ${from.x} ${from.y + 70}, ${to.x} ${to.y - 80}, ${to.x} ${to.y}`;
-
     const needsLead = (target: ProbeTarget): boolean =>
         (target === step.red && !placement.redOk) || (target === step.black && !placement.blackOk);
 
@@ -118,24 +99,6 @@ export function WiringView({
             />
         </g>
     );
-
-    const leadWire = (lead: "red" | "black") => {
-        const target = lead === "red" ? state.red : state.black;
-        if (!target) return null;
-        const to = pinPos(target);
-        if (!to) return null;
-        const from = lead === "red" ? RED_PORT : BLACK_PORT;
-        const color = lead === "red" ? "#D92D20" : "#23272B";
-        return (
-            <g key={`wire-${lead}`}>
-                <path d={wirePath(from, to)} fill="none" stroke="#000" strokeOpacity={0.15} strokeWidth={6} strokeLinecap="round" />
-                <path d={wirePath(from, to)} fill="none" stroke={color} strokeWidth={4.5} strokeLinecap="round" opacity={0.95} />
-                <path d={wirePath(from, to)} fill="none" stroke="#fff" strokeWidth={1.2} strokeLinecap="round" opacity={0.3} />
-                <circle cx={to.x} cy={to.y} r={9} fill={color} stroke="#fff" strokeWidth={2} />
-                <circle cx={to.x} cy={to.y} r={2.5} fill="#E8EBEE" />
-            </g>
-        );
-    };
 
     return (
         <div className="flex h-full min-h-0 flex-col rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
@@ -254,24 +217,20 @@ export function WiringView({
                             GND
                         </text>
                     </g>
-                    {leadWire("red")}
-                    {leadWire("black")}
-                    <g>
-                        <circle cx={RED_PORT.x} cy={RED_PORT.y} r={9} fill="#14171A" stroke="#D92D20" strokeWidth={2.5} />
-                        <circle cx={RED_PORT.x} cy={RED_PORT.y} r={3.5} fill="#000" />
-                        <circle cx={BLACK_PORT.x} cy={BLACK_PORT.y} r={9} fill="#14171A" stroke="#23272B" strokeWidth={2.5} />
-                        <circle cx={BLACK_PORT.x} cy={BLACK_PORT.y} r={3.5} fill="#000" />
-                    </g>
                 </svg>
             </div>
-            <div className="mt-2 flex items-center gap-4 text-[10px] font-bold text-[#3A3A3A]/50 dark:text-white/50">
+            <div className="mt-2 flex flex-wrap items-center justify-end gap-4 text-[10px] font-bold text-[#3A3A3A]/50 dark:text-white/50">
                 <span className="flex items-center gap-1.5">
-                    <span className="inline-block h-0 w-4 border-t-2 border-dashed border-[#D92D20]" />
-                    {t("simulator.dmmLab.bench.componentPin", { pin: comp.ref })}
+                    <span className="inline-block h-3 w-4 rounded-[3px] border border-dashed border-[#D92D20]" />
+                    {t("simulator.dmmLab.bench.legendComponent")}
                 </span>
                 <span className="flex items-center gap-1.5">
-                    <span className="inline-block h-0 w-4 border-t-2 border-[#0E7C66]" />
+                    <span className="inline-block h-3 w-4 rounded-[3px] border border-[#0E7C66]" />
                     {t("simulator.dmmLab.bench.ecuTitle")}
+                </span>
+                <span className="flex items-center gap-1.5">
+                    <span className="inline-block h-0 w-4 border-t-2 border-[#3A3A3A] dark:border-white/70" />
+                    {t("simulator.dmmLab.bench.legendWire")}
                 </span>
             </div>
         </div>

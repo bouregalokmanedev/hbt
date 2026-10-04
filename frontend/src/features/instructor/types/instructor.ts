@@ -11,6 +11,16 @@ export interface InstructorLessonMedia {
     url: string;
 }
 
+/**
+ * Course rows the dashboard returns for ranking. They arrive as raw Course
+ * models plus an eager `students_count` (from `withCount`), so only the
+ * columns the dashboard actually reads are declared here.
+ */
+export type InstructorDashboardCourse = Pick<
+    Course,
+    "id" | "title" | "slug" | "status" | "difficulty" | "thumbnail" | "duration_minutes"
+> & { students_count?: number };
+
 export interface InstructorDashboard {
     statistics: {
         total: number;
@@ -50,6 +60,12 @@ export interface InstructorDashboard {
     };
 
     recent_activity: InstructorActivity[];
+
+    /** Ordered by non-cancelled enrollment count, descending (server caps at 5). */
+    top_courses: InstructorDashboardCourse[];
+
+    /** The instructor's five most recently created courses. */
+    recent_courses: InstructorDashboardCourse[];
 }
 
 export interface InstructorActivity {
@@ -393,6 +409,65 @@ export interface FlaggedAttempt {
     attempt_id: string;
     issues: any[];
     [key: string]: any;
+}
+
+/** A pending review as returned by the cross-course attention endpoint. */
+export type InstructorAttentionReview = PendingReview & {
+    course_id?: string | null;
+    course_title?: string | null;
+};
+
+/** A flagged attempt as returned by the cross-course attention endpoint. */
+export type InstructorAttentionFlagged = FlaggedAttempt & {
+    course_id?: string | null;
+    course_title?: string | null;
+};
+
+export interface InstructorAttention {
+    counts: {
+        pending_reviews: number;
+        flagged_attempts: number;
+        total: number;
+    };
+    pending_reviews: InstructorAttentionReview[];
+    flagged_attempts: InstructorAttentionFlagged[];
+}
+
+/** One day of activity in the instructor's courses. */
+export interface TrendPoint {
+    date: string;
+    enrollments: number;
+    completions: number;
+}
+
+export interface InstructorTrends {
+    range: { from: string; to: string; days: number };
+    series: TrendPoint[];
+    totals: { enrollments: number; completions: number };
+}
+
+/** One XP award in the instructor's teaching ledger. */
+export interface InstructorProgressionAward {
+    id: string;
+    event: string;
+    xp: number;
+    metadata: { label?: string; course?: string; lesson?: string } | null;
+    created_at: string;
+}
+
+/** The instructor's own teaching progression — never mixed with student XP. */
+export interface InstructorProgression {
+    total_xp: number;
+    level: number;
+    title: string;
+    next_level_xp: number;
+    next_level_title: string;
+    progress_percent: number;
+    current_streak: number;
+    longest_streak: number;
+    last_activity_date: string | null;
+    teaching_days: Array<{ date: string; active: boolean }>;
+    recent_awards: InstructorProgressionAward[];
 }
 
 export interface SimulatorSessionResult {

@@ -49,7 +49,7 @@ export interface AtlasState {
 }
 
 const HINT_MAX = 3;
-const TASK_SET = 8; // tasks per training/quiz run
+export const TASK_SET = 8; // tasks per training/quiz run
 
 export class LocationAtlasEngine extends Engine<AtlasState> {
   private state: AtlasState;

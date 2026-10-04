@@ -3,10 +3,17 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { readVehicleItem, writeVehicleItem } from "@/features/simulator/lib/vehicleStorage";
 
-import { VEH, type Coverage } from "../data/scanner.data";
+import { VEH, type Coverage, type ToolId } from "../data/scanner.data";
 import { backendVehicleCards, fetchCatalog, type BackendVehicleCard } from "../data/catalog";
 
-const DOWNLOADED_KEY = "hbt:scanner-downloaded";
+/** One shared gate serves every bench — download state stays per tool. */
+const DOWNLOADED_KEYS: Record<ToolId, string> = {
+    scanner: "hbt:scanner-downloaded",
+    multimeter: "hbt:meter-downloaded",
+    oscilloscope: "hbt:scope-downloaded",
+    location: "hbt:location-downloaded",
+    schematic: "hbt:schematic-downloaded",
+};
 const COMING_SOON_KEY = "hbt:gate-coming-soon-target";
 const COMING_SOON_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -21,9 +28,9 @@ interface GateVehicle {
     coverage: Coverage;
 }
 
-function readDownloaded(): Set<string> {
+function readDownloaded(key: string): Set<string> {
     try {
-        const raw = readVehicleItem(DOWNLOADED_KEY);
+        const raw = readVehicleItem(key);
         if (!raw) return new Set();
         const parsed: unknown = JSON.parse(raw);
         return new Set(Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === "string") : []);
@@ -32,9 +39,9 @@ function readDownloaded(): Set<string> {
     }
 }
 
-function writeDownloaded(ids: Set<string>): void {
+function writeDownloaded(key: string, ids: Set<string>): void {
     try {
-        writeVehicleItem(DOWNLOADED_KEY, JSON.stringify([...ids]));
+        writeVehicleItem(key, JSON.stringify([...ids]));
     } catch {
         // Storage unavailable — session-only downloads.
     }
@@ -82,12 +89,14 @@ function formatRemaining(ms: number): string {
 function VehicleCard({
     vehicle,
     kind,
+    toolLabel,
     downloading,
     onSelect,
     onDownload,
 }: {
     vehicle: GateVehicle;
     kind: GateKind;
+    toolLabel: string;
     downloading: boolean;
     onSelect: (vehicleId: string) => void;
     onDownload: (vehicleId: string) => void;
@@ -114,7 +123,7 @@ function VehicleCard({
                     type="button"
                     disabled
                     aria-disabled
-                    title={t("simulator.scannerLab.gate.blocked")}
+                    title={t("simulator.scannerLab.gate.blockedTool", { tool: toolLabel })}
                     className="mt-3 inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#3A3A3A]/20 bg-[#3A3A3A]/[.04] px-4 py-2.5 text-xs font-black text-[#3A3A3A]/45 dark:border-white/15 dark:bg-white/[0.04] dark:text-white/45"
                 >
                     <Lock className="h-4 w-4" />
@@ -223,14 +232,14 @@ function ComingSoonCard() {
     );
 }
 
-function toGateVehicleFromStatic(v: (typeof VEH)[number]): GateVehicle {
+function toGateVehicleFromStatic(v: (typeof VEH)[number], tool: ToolId): GateVehicle {
     return {
         id: v.id,
         name: v.name,
         sub: `${v.engine} · ${v.transmission}`,
         vin: v.vin,
         km: v.odometerKm,
-        coverage: v.coverage.scanner,
+        coverage: v.coverage[tool],
     };
 }
 
@@ -248,22 +257,27 @@ function toGateVehicleFromBackend(v: BackendVehicleCard): GateVehicle {
 export function VehicleGate({
     onSelect,
     demo = false,
+    tool = "scanner",
 }: {
     onSelect: (vehicleId: string) => void;
     demo?: boolean;
+    /** Bench this gate serves — picks the coverage slice, download slot and copy. */
+    tool?: ToolId;
 }) {
     const { t } = useTranslation();
     const [extra, setExtra] = useState<BackendVehicleCard[]>([]);
-    const [downloaded, setDownloaded] = useState<Set<string>>(() => readDownloaded());
+    const downloadedKey = DOWNLOADED_KEYS[tool];
+    const toolLabel = t(`simulator.toolNames.${tool}`);
+    const [downloaded, setDownloaded] = useState<Set<string>>(() => readDownloaded(downloadedKey));
     const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (demo) return;
-        void fetchCatalog().then(() => setExtra(backendVehicleCards()));
-    }, [demo]);
+        void fetchCatalog().then(() => setExtra(backendVehicleCards(tool)));
+    }, [demo, tool]);
 
     const all: GateVehicle[] = useMemo(() => {
-        const staticOnes = VEH.map(toGateVehicleFromStatic);
+        const staticOnes = VEH.map((v) => toGateVehicleFromStatic(v, tool));
         if (demo) {
             // Free demo pack: Corolla ready, every other vehicle hard-locked.
             return staticOnes.map((v) => ({
@@ -275,7 +289,7 @@ export function VehicleGate({
         // Prefer static garage entries when the same id appears in both.
         const seen = new Set(staticOnes.map((v) => v.id));
         return [...staticOnes, ...backendOnes.filter((v) => !seen.has(v.id))];
-    }, [extra, demo]);
+    }, [extra, demo, tool]);
 
     const buckets = useMemo(() => {
         const ready: GateVehicle[] = [];
@@ -298,7 +312,7 @@ export function VehicleGate({
             setDownloaded((prev) => {
                 const next = new Set(prev);
                 next.add(id);
-                writeDownloaded(next);
+                writeDownloaded(downloadedKey, next);
                 return next;
             });
             setDownloadingId(null);
@@ -322,7 +336,7 @@ export function VehicleGate({
                     {t("simulator.scannerLab.gate.title")}
                 </h3>
                 <p className="mx-auto mt-1 max-w-md text-sm text-[#3A3A3A]/55 dark:text-white/55">
-                    {t("simulator.scannerLab.gate.desc")}
+                    {t("simulator.scannerLab.gate.descTool", { tool: toolLabel })}
                 </p>
             </div>
 
@@ -338,6 +352,7 @@ export function VehicleGate({
                                 key={v.id}
                                 vehicle={v}
                                 kind="ready"
+                                toolLabel={toolLabel}
                                 downloading={false}
                                 onSelect={onSelect}
                                 onDownload={handleDownload}
@@ -357,6 +372,7 @@ export function VehicleGate({
                                 key={v.id}
                                 vehicle={v}
                                 kind="download"
+                                toolLabel={toolLabel}
                                 downloading={downloadingId === v.id}
                                 onSelect={onSelect}
                                 onDownload={handleDownload}
@@ -376,6 +392,7 @@ export function VehicleGate({
                                 key={v.id}
                                 vehicle={v}
                                 kind="none"
+                                toolLabel={toolLabel}
                                 downloading={false}
                                 onSelect={onSelect}
                                 onDownload={handleDownload}

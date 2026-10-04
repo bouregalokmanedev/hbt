@@ -251,7 +251,7 @@ export default function StudentProof() {
     }) as string[];
 
     return (
-        <LandingSection className="bg-[#F7F7F7]">
+        <LandingSection id="stories" className="bg-[#F7F7F7]">
             {/* ====================================================
                 SUBTLE BACKGROUND
             ===================================================== */}
@@ -333,7 +333,7 @@ export default function StudentProof() {
                     BOTTOM LINE
                 ================================================== */}
 
-                <div className="mt-10 flex flex-col gap-5 border-t border-[#3A3A3A]/10 pt-7 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-8 flex flex-col gap-5 border-t border-[#3A3A3A]/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-3">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 

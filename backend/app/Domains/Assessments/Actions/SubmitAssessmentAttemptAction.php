@@ -107,6 +107,10 @@ final class SubmitAssessmentAttemptAction
                     ->execute($result);
             }
 
+            // Always land on the assessment itself: the result belongs to the
+            // Assessments badge. Certificates now announce themselves through
+            // IssueCertificateAction (the /certificates badge), so pointing the
+            // result there used to starve Assessments of every passing grade.
             app(StudentNotificationService::class)->send(
                 $user,
                 $passed ? 'assessment_passed' : 'assessment_submitted',
@@ -114,7 +118,7 @@ final class SubmitAssessmentAttemptAction
                 $passed
                     ? 'Great work — you passed. Your result is in, and your certificate is being prepared when this was a final assessment. We are proud of the effort you put in.'
                     : 'Your assessment has been submitted. Review the result when you are ready and keep building your skills — every attempt moves you forward.',
-                $passed ? '/certificates' : '/assessments',
+                '/assessments',
                 "assessment-result:{$result->id}",
             );
 

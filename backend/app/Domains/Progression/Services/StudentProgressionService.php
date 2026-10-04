@@ -157,5 +157,51 @@ class StudentProgressionService
         return collect(self::LEVELS)->filter(fn ($level) => $xp >= $level['threshold'])->keys()->max() ?? 1;
     }
 
-    public static function badgeXp(string $badge): int { return match ($badge) { 'learner' => 70, 'elite' => 55, 'striker' => 40, 'owner' => 35, 'pro' => 50, 'member' => 10, 'diagnostic-starter' => 30, 'diagnostic-solver' => 60, 'bench-starter' => 35, 'sim-explorer' => 70, 'bench-ace' => 55, default => 25 }; }
+    public static function badgeXp(string $badge): int
+    {
+        return match ($badge) {
+            'member' => 10,
+            'pro' => 50,
+            'striker' => 40,
+            'elite' => 55,
+            'learner' => 70,
+            'owner' => 35,
+            'pathfinder' => 25,
+            'scholar' => 25,
+            'consistent' => 25,
+            'trailblazer' => 25,
+            'mentor' => 25,
+            'precision' => 25,
+            'explorer' => 25,
+            'diagnostic-starter' => 30,
+            'diagnostic-solver' => 60,
+            'bench-starter' => 35,
+            'sim-explorer' => 70,
+            'bench-ace' => 55,
+            'ai-first-chat' => 30,
+            'ai-conversationalist' => 75,
+            'ai-confidant' => 50,
+            'ai-scholar' => 65,
+            'on-fire' => 45,
+            'unstoppable' => 90,
+            'rising-level' => 60,
+            'veteran' => 100,
+            'graduate' => 80,
+            'marathoner' => 65,
+            'thorough' => 55,
+            'collector' => 20,
+            'quiz-ace' => 45,
+            'proven' => 75,
+            'diagnostic-master' => 90,
+            'ambassador' => 85,
+            'challenger' => 50,
+            'rivalry' => 30,
+            'good-samaritan' => 40,
+            'curator' => 35,
+            'credentialed' => 80,
+            'badge-hoarder' => 100,
+            'rising-star' => 25,
+            default => 25,
+        };
+    }
 }

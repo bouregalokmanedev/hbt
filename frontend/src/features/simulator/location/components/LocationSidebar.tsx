@@ -43,7 +43,7 @@ export function LocationSidebar({
           onChange={(e) => engine.setSearch(e.target.value)}
           placeholder={tr("location.sidebar.search", "Search components, refs, circuits")}
           aria-label={tr("location.sidebar.search", "Search components, refs, circuits")}
-          className="w-full rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 py-2 text-sm placeholder:text-[#3A3A3A]/40 focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
+          className="w-full rounded-2xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 py-2 text-sm placeholder:text-[#3A3A3A]/40 focus:border-[#F47822]/50 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
         />
         <div className="mt-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
           {tr("location.sidebar.inDataSet", "{n} components in data set", { n: LOC_COMPONENTS.length })}
@@ -62,20 +62,22 @@ export function LocationSidebar({
             onClick={() => engine.setCategory(c.id)}
             aria-current={state.cat === c.id && !state.sys ? "true" : undefined}
             className={clsx(
-              "flex w-full items-center gap-2 px-4 py-1.5 text-start transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/20",
-              state.cat === c.id && !state.sys ? "bg-[#F47822]/10" : "hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5",
+              "flex w-full items-center gap-2 border-l-2 px-4 py-2 text-start transition focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#F47822]/25",
+              state.cat === c.id && !state.sys
+                ? "border-l-[#F47822] bg-[#F47822]/[0.07]"
+                : "border-l-transparent hover:bg-[#3A3A3A]/[0.04] dark:hover:bg-white/5",
             )}
           >
-            <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: CAT_DOT[c.id] || "#9AA0A6" }} />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white/60" style={{ background: CAT_DOT[c.id] || "#9AA0A6" }} />
             <span
               className={clsx(
                 "flex-1 text-sm",
-                state.cat === c.id && !state.sys ? "font-bold text-[#F47822]" : "text-[#3A3A3A] dark:text-white",
+                state.cat === c.id && !state.sys ? "font-bold text-[#F47822]" : "font-medium text-[#3A3A3A] dark:text-white",
               )}
             >
               {tr(`location.cat.${c.id}`, c.id)}
             </span>
-            <span dir="ltr" className="font-mono text-xs text-[#3A3A3A]/40 dark:text-white/40">
+            <span dir="ltr" className="rounded-full bg-[#3A3A3A]/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50">
               {c.count}
             </span>
           </button>
@@ -94,17 +96,24 @@ export function LocationSidebar({
               onClick={() => engine.select(c.key)}
               aria-current={state.selected === c.key ? "true" : undefined}
               className={clsx(
-                "flex w-full items-center gap-2 px-4 py-1.5 text-start transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/20",
-                state.selected === c.key ? "bg-[#F47822]/10" : "hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5",
+                "flex w-full items-center gap-2 border-l-2 px-4 py-1.5 text-start transition focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#F47822]/25",
+                state.selected === c.key
+                  ? "border-l-[#F47822] bg-[#F47822]/[0.07]"
+                  : "border-l-transparent hover:bg-[#3A3A3A]/[0.04] dark:hover:bg-white/5",
               )}
             >
               <span
                 dir="ltr"
-                className="w-9 shrink-0 rounded bg-[#3A3A3A]/5 px-1 py-0.5 text-center font-mono text-xs font-bold text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60"
+                className={clsx(
+                  "w-9 shrink-0 rounded-md px-1 py-0.5 text-center font-mono text-xs font-bold",
+                  state.selected === c.key
+                    ? "bg-[#F47822] text-white"
+                    : "bg-[#3A3A3A]/5 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60",
+                )}
               >
                 {c.ref}
               </span>
-              <span className="min-w-0 flex-1 truncate text-sm text-[#3A3A3A] dark:text-white">{c.name}</span>
+              <span className={clsx("min-w-0 flex-1 truncate text-sm", state.selected === c.key ? "font-bold text-[#F47822]" : "text-[#3A3A3A] dark:text-white")}>{c.name}</span>
             </button>
           ))
         )}
@@ -123,14 +132,16 @@ export function LocationSidebar({
               onClick={() => engine.setSystem(g.key)}
               aria-current={state.sys === g.key ? "true" : undefined}
               className={clsx(
-                "flex w-full items-center gap-2 px-4 py-1 text-start transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/20",
-                state.sys === g.key ? "bg-[#F47822]/10" : "hover:bg-[#3A3A3A]/5 dark:hover:bg-white/5",
+                "flex w-full items-center gap-2 border-l-2 px-4 py-1.5 text-start transition focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#F47822]/25",
+                state.sys === g.key
+                  ? "border-l-[#F47822] bg-[#F47822]/[0.07]"
+                  : "border-l-transparent hover:bg-[#3A3A3A]/[0.04] dark:hover:bg-white/5",
               )}
             >
-              <span dir="ltr" className="min-w-0 flex-1 truncate text-sm text-[#3A3A3A] dark:text-white">
+              <span dir="ltr" className={clsx("min-w-0 flex-1 truncate text-sm", state.sys === g.key ? "font-bold text-[#F47822]" : "font-medium text-[#3A3A3A] dark:text-white")}>
                 {g.label}
               </span>
-              <span dir="ltr" className="font-mono text-xs text-[#3A3A3A]/40 dark:text-white/40">
+              <span dir="ltr" className="rounded-full bg-[#3A3A3A]/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50">
                 {g.total}
               </span>
             </button>
@@ -149,7 +160,7 @@ export function LocationSidebar({
               key={c!.key}
               type="button"
               onClick={() => engine.select(c!.key)}
-              className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-start transition hover:bg-[#3A3A3A]/5 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 dark:hover:bg-white/5"
+              className="flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-start transition hover:bg-[#F47822]/[0.07] focus:outline-none focus:ring-2 focus:ring-[#F47822]/25 dark:hover:bg-white/5"
             >
               <span dir="ltr" className="rounded bg-[#F47822]/10 px-1 py-0.5 font-mono text-xs font-bold text-[#F47822]">
                 {c!.ref}

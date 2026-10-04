@@ -1,7 +1,8 @@
-import { ArrowRight, Award, CheckCircle2, ClipboardCheck, Clock3, LockKeyhole, PlayCircle, ShieldCheck, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertTriangle, ArrowRight, Award, CheckCircle2, ClipboardCheck, Clock3, LockKeyhole, PlayCircle, RefreshCw, ShieldCheck, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { errorMessage } from "@/lib/api/safe-error";
 import { getAssessments, type Assessment } from "../api/assessments.api";
 
 export function AssessmentsPage() {
@@ -11,16 +12,25 @@ export function AssessmentsPage() {
     const [error, setError] = useState<string | null>(null);
     const [selected, setSelected] = useState<Assessment | null>(null);
 
+    const load = useCallback(() => {
+        setLoading(true);
+        setError(null);
+        void getAssessments()
+            .then((data) => setItems(data))
+            .catch((reason: unknown) => setError(errorMessage(reason, t("assessments.loadFail"))))
+            .finally(() => setLoading(false));
+    }, [t]);
+
     useEffect(() => {
-        void getAssessments().then(setItems).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : t("assessments.loadFail"))).finally(() => setLoading(false));
-    }, []);
+        load();
+    }, [load]);
 
     if (loading) return <main className="min-h-full bg-background p-8 text-sm text-muted-foreground">{t("assessments.loading")}</main>;
-    if (error) return <main className="min-h-full bg-background p-8"><div className="rounded-2xl bg-red-50 dark:bg-red-500/10 p-5 text-red-700 dark:text-red-400">{error}</div></main>;
+    if (error) return <main className="min-h-full bg-background p-8"><div role="alert" className="mx-auto flex max-w-xl flex-col items-start gap-1 rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-500/20 dark:bg-red-500/10"><AlertTriangle className="h-5 w-5 text-red-700 dark:text-red-400" /><p className="text-sm text-red-700 dark:text-red-400">{error}</p><button type="button" onClick={load} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/20"><RefreshCw className="h-4 w-4" />{t("common.tryAgain")}</button></div></main>;
 
     return <main className="min-h-full bg-background"><div className="mx-auto max-w-[1440px] px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
         <section className="rounded-3xl bg-[#3A3A3A] p-7 text-white"><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#F47822]">{t("assessments.hero.eyebrow")}</p><div className="mt-2 flex items-end justify-between gap-5"><div><h1 className="text-2xl font-bold">{t("assessments.hero.title")}</h1><p className="mt-1 text-sm text-white/60">{t("assessments.hero.description")}</p></div><div className="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3"><Award className="h-5 w-5 text-[#F47822]"/><b>{items.filter(item => item.eligibility.eligible).length}</b></div></div></section>
-        <section className="mt-6 grid gap-5 lg:grid-cols-2">{items.map(item => <article key={item.id} className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-sm"><div className="flex justify-between"><ClipboardCheck className="h-5 w-5 text-[#F47822]"/>{item.eligibility.eligible ? <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400"/> : <LockKeyhole className="h-5 w-5 text-[#3A3A3A]/35 dark:text-white/35"/>}</div><p className="mt-5 text-[10px] font-bold uppercase tracking-[.15em] text-[#F47822]">{item.course_title}</p><h2 className="mt-2 text-xl font-bold">{item.title}</h2><p className="mt-2 text-sm text-muted-foreground">{item.description}</p><div className="mt-5 grid grid-cols-3 gap-3 text-xs"><Requirement label={t("assessments.reqLessons")} value={`${item.eligibility.lessons.completed}/${item.eligibility.lessons.required}`}/><Requirement label={t("assessments.reqQuizzes")} value={`${item.eligibility.quizzes.completed}/${item.eligibility.quizzes.required}`}/><Requirement label={t("assessments.reqScenarios")} value={`${item.eligibility.scenarios.completed}/${item.eligibility.scenarios.required}`}/></div>{item.eligibility.eligible ? <button onClick={() => setSelected(item)} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#F47822] px-4 py-3 text-sm font-semibold text-white hover:bg-[#df6817]"><PlayCircle className="h-4 w-4"/>{t("assessments.startBtn")}</button> : <button disabled className="mt-5 w-full rounded-xl bg-[#3A3A3A]/10 dark:bg-white/10 px-4 py-3 text-sm text-[#3A3A3A]/40 dark:text-white/40">{t("assessments.lockedBtn")}</button>}</article>)}</section>
+        {items.length === 0 ? <section className="mt-6 rounded-3xl border border-dashed border-[#3A3A3A]/15 bg-white p-10 text-center dark:border-white/15 dark:bg-[#1b1b20]"><ClipboardCheck className="mx-auto h-9 w-9 text-[#F47822]"/><h2 className="mt-4 text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("assessments.emptyTitle")}</h2><p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{t("assessments.emptyDesc")}</p><Link to="/catalog" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#F47822] px-5 py-3 text-sm font-semibold text-white hover:bg-[#df6817]">{t("assessments.emptyCta")}<ArrowRight className="h-4 w-4 rtl:-scale-x-100"/></Link></section> : <section className="mt-6 grid gap-5 lg:grid-cols-2">{items.map(item => <article key={item.id} className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-sm"><div className="flex justify-between"><ClipboardCheck className="h-5 w-5 text-[#F47822]"/>{item.eligibility.eligible ? <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400"/> : <LockKeyhole className="h-5 w-5 text-[#3A3A3A]/35 dark:text-white/35"/>}</div><p className="mt-5 text-[10px] font-bold uppercase tracking-[.15em] text-[#F47822]">{item.course_title}</p><h2 className="mt-2 text-xl font-bold">{item.title}</h2><p className="mt-2 text-sm text-muted-foreground">{item.description}</p><div className="mt-5 grid grid-cols-3 gap-3 text-xs"><Requirement label={t("assessments.reqLessons")} value={`${item.eligibility.lessons.completed}/${item.eligibility.lessons.required}`}/><Requirement label={t("assessments.reqQuizzes")} value={`${item.eligibility.quizzes.completed}/${item.eligibility.quizzes.required}`}/><Requirement label={t("assessments.reqScenarios")} value={`${item.eligibility.scenarios.completed}/${item.eligibility.scenarios.required}`}/></div>{item.eligibility.eligible ? <button onClick={() => setSelected(item)} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#F47822] px-4 py-3 text-sm font-semibold text-white hover:bg-[#df6817]"><PlayCircle className="h-4 w-4"/>{t("assessments.startBtn")}</button> : <button disabled className="mt-5 w-full rounded-xl bg-[#3A3A3A]/10 dark:bg-white/10 px-4 py-3 text-sm text-[#3A3A3A]/40 dark:text-white/40">{t("assessments.lockedBtn")}</button>}</article>)}</section>}
     </div>{selected && <ExamInstructions assessment={selected} onClose={() => setSelected(null)} />}</main>;
 }
 

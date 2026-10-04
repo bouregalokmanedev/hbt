@@ -80,12 +80,15 @@ class SimulatorSessionController
         $user = $request->user();
 
         $limit = $entitlements->simulatorSessionMonthlyLimit($user);
+        $bonus = $limit === null ? 0 : $entitlements->simulatorSessionBadgeBonus($user);
         $used = $this->service->monthlyUsage($user->id);
 
         return response()->json([
             'data' => [
                 'used' => $used,
                 'limit' => $limit,
+                'base_limit' => $limit === null ? null : $limit - $bonus,
+                'bonus' => $bonus,
                 'remaining' => $limit === null ? null : max(0, $limit - $used),
                 'unlimited' => $limit === null,
                 'resets_at' => now()->startOfMonth()->addMonth()->startOfDay()->toIso8601String(),

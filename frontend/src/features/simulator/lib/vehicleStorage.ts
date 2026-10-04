@@ -11,9 +11,23 @@ export const VEHICLE_STORAGE_PREFIXES = [
     "hbt:meter-vehicle",
     "hbt:meter-downloaded",
     "hbt:location-vehicle",
+    "hbt:location-downloaded",
     "hbt:schematic-vehicle",
+    "hbt:schematic-downloaded",
     "hbt:scope-vehicle",
+    "hbt:scope-downloaded",
 ] as const;
+
+/** Fired on every vehicle write/remove so page chrome (practice-car chip) re-reads. */
+export const VEHICLE_CHANGED_EVENT = "hbt:vehicle-changed";
+
+function notifyChanged(prefix: string): void {
+    try {
+        window.dispatchEvent(new CustomEvent(VEHICLE_CHANGED_EVENT, { detail: { prefix } }));
+    } catch {
+        // Storage/event unavailable — chrome simply keeps its last read.
+    }
+}
 
 function scopedKey(prefix: string): string {
     const id = useAuthStore.getState().user?.id;
@@ -48,6 +62,7 @@ export function writeVehicleItem(prefix: string, value: string): void {
     } catch {
         // Storage unavailable — keep the choice in memory only.
     }
+    notifyChanged(prefix);
 }
 
 export function removeVehicleItem(prefix: string): void {
@@ -56,4 +71,5 @@ export function removeVehicleItem(prefix: string): void {
     } catch {
         // Ignore storage failures.
     }
+    notifyChanged(prefix);
 }

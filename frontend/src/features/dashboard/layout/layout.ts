@@ -14,12 +14,20 @@ export function getLayoutOwner(): string | null {
   return layoutOwnerUserId;
 }
 
-/** Per-user storage key. Falls back to the shared key only when no user is known. */
-export function getLayoutStorageKey(userId?: string | null): string {
+/**
+ * Per-user, per-dashboard storage key. The student suffix is empty so existing
+ * saved layouts keep loading; falls back to the shared key when no user is
+ * known.
+ */
+export function getLayoutStorageKey(
+  userId?: string | null,
+  scope: DashboardLayoutScope = "student",
+): string {
   const owner = userId ?? layoutOwnerUserId;
+  const suffix = scope === "student" ? "" : `:${scope}`;
   return owner
-    ? `${DASHBOARD_LAYOUT_STORAGE_KEY}:${owner}`
-    : DASHBOARD_LAYOUT_STORAGE_KEY;
+    ? `${DASHBOARD_LAYOUT_STORAGE_KEY}:${owner}${suffix}`
+    : `${DASHBOARD_LAYOUT_STORAGE_KEY}${suffix}`;
 }
 
 export type DashboardCardId =
@@ -36,7 +44,18 @@ export type DashboardCardId =
   | "certificates"
   | "inviteFriends"
   | "notifications"
-  | "favorites";
+  | "favorites"
+  // Instructor dashboard
+  | "instructorStats"
+  | "progression"
+  | "attention"
+  | "topCourses"
+  | "momentum"
+  | "simulatorLab"
+  | "pipeline"
+  | "learningPulse"
+  | "instructorActivity"
+  | "checklist";
 
 /** Reorderable page blocks — pairs keep their original grid layouts. */
 export type DashboardSectionId =
@@ -51,11 +70,27 @@ export type DashboardSectionId =
   | "certificates"
   | "inviteFriends"
   | "notifications"
-  | "favorites";
+  | "favorites"
+  // Instructor dashboard
+  | "instructorStats"
+  | "progression"
+  | "attention"
+  | "topCourses"
+  | "momentum"
+  | "simulatorLab"
+  | "pipelineRow"
+  | "instructorActivityRow";
+
+/**
+ * A student and an instructor can be the same person. Their layouts are stored
+ * separately so opening one dashboard never rewrites the other's order.
+ */
+export type DashboardLayoutScope = "student" | "instructor";
 
 export type DashboardCardWidth = "full" | "half";
 
 export interface DashboardLayout {
+  scope: DashboardLayoutScope;
   order: DashboardSectionId[];
   hidden: DashboardCardId[];
   /** Only stores cards set to "half" — missing key means full width. */
@@ -77,22 +112,48 @@ export const MOVABLE_CARDS: DashboardCardId[] = [
   "inviteFriends",
   "notifications",
   "favorites",
+  "instructorStats",
+  "progression",
+  "attention",
+  "topCourses",
+  "momentum",
+  "simulatorLab",
+  "pipeline",
+  "learningPulse",
+  "instructorActivity",
+  "checklist",
 ];
 
-export const SECTION_ORDER: DashboardSectionId[] = [
-  "stats",
-  "learningRow",
-  "recentActivity",
-  "activityRow",
-  "skillGap",
-  "cohortOverview",
-  "leaderboard",
-  "aiMentor",
-  "certificates",
-  "inviteFriends",
-  "notifications",
-  "favorites",
-];
+/**
+ * Per-dashboard default order. Each scope only ever sees its own sections, so
+ * a student who also teaches can never get an instructor card in their layout.
+ */
+export const SECTION_ORDER: Record<DashboardLayoutScope, DashboardSectionId[]> = {
+  student: [
+    "stats",
+    "learningRow",
+    "recentActivity",
+    "activityRow",
+    "skillGap",
+    "cohortOverview",
+    "leaderboard",
+    "aiMentor",
+    "certificates",
+    "inviteFriends",
+    "notifications",
+    "favorites",
+  ],
+  instructor: [
+    "instructorStats",
+    "progression",
+    "attention",
+    "topCourses",
+    "momentum",
+    "simulatorLab",
+    "pipelineRow",
+    "instructorActivityRow",
+  ],
+};
 
 export const SECTION_CARDS: Record<DashboardSectionId, DashboardCardId[]> = {
   stats: ["stats"],
@@ -107,6 +168,14 @@ export const SECTION_CARDS: Record<DashboardSectionId, DashboardCardId[]> = {
   inviteFriends: ["inviteFriends"],
   notifications: ["notifications"],
   favorites: ["favorites"],
+  instructorStats: ["instructorStats"],
+  progression: ["progression"],
+  attention: ["attention"],
+  topCourses: ["topCourses"],
+  momentum: ["momentum"],
+  simulatorLab: ["simulatorLab"],
+  pipelineRow: ["pipeline", "learningPulse"],
+  instructorActivityRow: ["instructorActivity", "checklist"],
 };
 
 const CARD_TO_SECTION: Record<DashboardCardId, DashboardSectionId> = {
@@ -124,6 +193,16 @@ const CARD_TO_SECTION: Record<DashboardCardId, DashboardSectionId> = {
   inviteFriends: "inviteFriends",
   notifications: "notifications",
   favorites: "favorites",
+  instructorStats: "instructorStats",
+  progression: "progression",
+  attention: "attention",
+  topCourses: "topCourses",
+  momentum: "momentum",
+  simulatorLab: "simulatorLab",
+  pipeline: "pipelineRow",
+  learningPulse: "pipelineRow",
+  instructorActivity: "instructorActivityRow",
+  checklist: "instructorActivityRow",
 };
 
 /** Can be reordered but never hidden. */
@@ -131,6 +210,7 @@ export const ALWAYS_VISIBLE_CARDS: ReadonlySet<DashboardCardId> = new Set([
   "continueLearning",
   "upcomingAssessments",
   "aiMentor",
+  "instructorStats",
 ]);
 
 /** Hidden until the student restores them while customizing. */
@@ -139,6 +219,15 @@ export const DEFAULT_HIDDEN: DashboardCardId[] = [
   "notifications",
   "favorites",
 ];
+
+/**
+ * Hidden until the instructor restores them. Everything starts visible here —
+ * a brand-new instructor dashboard should look complete, not curated away.
+ */
+const DEFAULT_HIDDEN_BY_SCOPE: Record<DashboardLayoutScope, DashboardCardId[]> = {
+  student: DEFAULT_HIDDEN,
+  instructor: [],
+};
 
 /**
  * Single-card sections that can shrink to half width so two cards share a row.
@@ -150,12 +239,18 @@ export const RESIZABLE_CARDS: DashboardCardId[] = [
   "leaderboard",
   "certificates",
   "favorites",
+  "progression",
+  "attention",
+  "topCourses",
+  "momentum",
 ];
 
 const RESIZABLE_SET: ReadonlySet<DashboardCardId> = new Set(RESIZABLE_CARDS);
 
 const MOVABLE_SET: ReadonlySet<string> = new Set(MOVABLE_CARDS);
-const SECTION_SET: ReadonlySet<string> = new Set(SECTION_ORDER);
+const SECTION_SET: ReadonlySet<string> = new Set(
+  Object.values(SECTION_ORDER).flat(),
+);
 
 export function isMovableCard(id: string): id is DashboardCardId {
   return MOVABLE_SET.has(id);
@@ -190,12 +285,22 @@ export function isSectionHalfWidth(
   return getCardWidth(layout, cards[0]) === "half";
 }
 
-function defaultLayout(): DashboardLayout {
+function defaultLayout(scope: DashboardLayoutScope = "student"): DashboardLayout {
   return {
-    order: [...SECTION_ORDER],
-    hidden: [...DEFAULT_HIDDEN],
+    scope,
+    order: [...SECTION_ORDER[scope]],
+    hidden: [...DEFAULT_HIDDEN_BY_SCOPE[scope]],
     widths: {},
   };
+}
+
+/** Every card that belongs to the given dashboard. */
+function cardsOfScope(scope: DashboardLayoutScope): Set<DashboardCardId> {
+  const cards = new Set<DashboardCardId>();
+  for (const sectionId of SECTION_ORDER[scope]) {
+    for (const cardId of SECTION_CARDS[sectionId]) cards.add(cardId);
+  }
+  return cards;
 }
 
 function isStoredLayout(value: unknown): value is Partial<DashboardLayout> {
@@ -205,39 +310,50 @@ function isStoredLayout(value: unknown): value is Partial<DashboardLayout> {
 /**
  * Merge stored layout with the section registry. Accepts legacy card-id
  * orders (maps each card to its section) and forces always-visible cards on.
+ *
+ * Entries belonging to the other dashboard are dropped rather than kept, so a
+ * layout written by an older build can never leak across scopes.
  */
-export function normalizeLayout(raw: unknown): DashboardLayout {
-  const base = defaultLayout();
+export function normalizeLayout(
+  raw: unknown,
+  scope: DashboardLayoutScope = "student",
+): DashboardLayout {
+  const base = defaultLayout(scope);
   if (!isStoredLayout(raw)) return base;
+
+  const scopeSections = SECTION_ORDER[scope];
+  const scopeCards = cardsOfScope(scope);
 
   const seen = new Set<DashboardSectionId>();
   const order: DashboardSectionId[] = [];
 
   const pushSection = (id: string) => {
-    if (isSectionId(id) && !seen.has(id)) {
-      seen.add(id);
-      order.push(id);
+    if (scopeSections.includes(id as DashboardSectionId) && !seen.has(id as DashboardSectionId)) {
+      seen.add(id as DashboardSectionId);
+      order.push(id as DashboardSectionId);
     }
   };
 
   if (Array.isArray(raw.order)) {
     for (const entry of raw.order) {
       if (typeof entry !== "string") continue;
-      if (isSectionId(entry)) {
+      if (scopeSections.includes(entry as DashboardSectionId)) {
         pushSection(entry);
       } else if (isMovableCard(entry)) {
         pushSection(CARD_TO_SECTION[entry]);
       }
     }
   }
-  SECTION_ORDER.forEach(pushSection);
+  scopeSections.forEach(pushSection);
 
   const hidden = Array.isArray(raw.hidden)
     ? raw.hidden.filter(
         (id): id is DashboardCardId =>
-          isMovableCard(id) && canHideCard(id as DashboardCardId),
+          scopeCards.has(id) &&
+          isMovableCard(id) &&
+          canHideCard(id as DashboardCardId),
       )
-    : [...DEFAULT_HIDDEN];
+    : [...DEFAULT_HIDDEN_BY_SCOPE[scope]];
 
   const widths: Partial<Record<DashboardCardId, DashboardCardWidth>> = {};
   if (raw.widths && typeof raw.widths === "object") {
@@ -249,6 +365,7 @@ export function normalizeLayout(raw: unknown): DashboardLayout {
   }
 
   return {
+    scope,
     order,
     hidden: hidden.filter(
       (id, index) =>
@@ -258,20 +375,23 @@ export function normalizeLayout(raw: unknown): DashboardLayout {
   };
 }
 
-export function loadLayout(userId?: string | null): DashboardLayout {
+export function loadLayout(
+  userId?: string | null,
+  scope: DashboardLayoutScope = "student",
+): DashboardLayout {
   try {
-    const raw = window.localStorage.getItem(getLayoutStorageKey(userId));
-    if (!raw) return defaultLayout();
-    return normalizeLayout(JSON.parse(raw));
+    const raw = window.localStorage.getItem(getLayoutStorageKey(userId, scope));
+    if (!raw) return defaultLayout(scope);
+    return normalizeLayout(JSON.parse(raw), scope);
   } catch {
-    return defaultLayout();
+    return defaultLayout(scope);
   }
 }
 
 export function saveLayout(layout: DashboardLayout, userId?: string | null): void {
   try {
     window.localStorage.setItem(
-      getLayoutStorageKey(userId),
+      getLayoutStorageKey(userId, layout.scope),
       JSON.stringify(layout),
     );
   } catch {
@@ -279,9 +399,12 @@ export function saveLayout(layout: DashboardLayout, userId?: string | null): voi
   }
 }
 
-export function resetLayout(): DashboardLayout {
-  const next = defaultLayout();
-  saveLayout(next);
+export function resetLayout(
+  scope: DashboardLayoutScope = "student",
+  userId?: string | null,
+): DashboardLayout {
+  const next = defaultLayout(scope);
+  saveLayout(next, userId);
   return next;
 }
 
@@ -291,6 +414,7 @@ export function hideCard(
 ): DashboardLayout {
   if (!canHideCard(id) || layout.hidden.includes(id)) return layout;
   const next: DashboardLayout = {
+    scope: layout.scope,
     order: layout.order,
     hidden: [...layout.hidden, id],
     widths: layout.widths,
@@ -305,6 +429,7 @@ export function showCard(
 ): DashboardLayout {
   if (!isMovableCard(id) || !layout.hidden.includes(id)) return layout;
   const next: DashboardLayout = {
+    scope: layout.scope,
     order: layout.order,
     hidden: layout.hidden.filter((cardId) => cardId !== id),
     widths: layout.widths,
@@ -328,6 +453,7 @@ export function toggleCardWidth(
     widths[id] = "half";
   }
   const next: DashboardLayout = {
+    scope: layout.scope,
     order: layout.order,
     hidden: layout.hidden,
     widths,
@@ -352,6 +478,7 @@ export function applySectionReorder(
   nextVisible: DashboardSectionId[],
 ): DashboardLayout {
   const next: DashboardLayout = {
+    scope: layout.scope,
     order: [...nextVisible],
     hidden: layout.hidden,
     widths: layout.widths,

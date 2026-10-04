@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 
 import { Navbar, ScrollToTop } from "@/components/navigation";
+import { HelpWidget } from "@/components/help/HelpWidget";
 
 export function PublicLayout() {
     return (
@@ -11,6 +12,8 @@ export function PublicLayout() {
             <main className="min-h-screen pt-20">
                 <Outlet />
             </main>
+
+            <HelpWidget />
         </div>
     );
 }

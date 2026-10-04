@@ -247,5 +247,73 @@ $exceptions->render(function (
                 'message' => $e->getMessage(),
             ], 422);
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | App\Core\Domain\Exceptions\DomainException
+        |--------------------------------------------------------------------------
+        | The handler above only catches PHP's own \DomainException. Half the
+        | modules throw App\Core's base class instead, so without this they
+        | fall through to the 500 below.
+        */
+
+        $exceptions->render(function (
+            \App\Core\Domain\Exceptions\DomainException $e,
+            Request $request
+        ) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return null;
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | api/* safety net
+        |--------------------------------------------------------------------------
+        | Registered last on purpose: render callbacks run in registration
+        | order and the first non-null response wins, so every specific
+        | renderer above keeps priority.
+        |
+        | Nothing that reaches here may echo an exception message, SQL, a file
+        | path or a class name back to the client, whatever APP_DEBUG says.
+        | Exceptions Laravel resolves itself (validation, auth, redirects) are
+        | left untouched, and abort() keeps its hand-written message.
+        */
+
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            if ($e instanceof \Illuminate\Validation\ValidationException
+                || $e instanceof \Illuminate\Http\Exceptions\HttpResponseException
+                || $e instanceof AuthenticationException
+                || $e instanceof \Illuminate\Auth\Access\AuthorizationException
+            ) {
+                return null;
+            }
+
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                // Implicit route model binding names the internal class + ids.
+                if (str_contains((string) $e->getMessage(), 'No query results for model')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Resource not found.',
+                    ], 404);
+                }
+
+                return null;
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+            ], 500);
+        });
     })
     ->create();
