@@ -13,6 +13,7 @@ import {
     Eyebrow,
     LandingContainer,
     LandingSection,
+    Reveal,
     SectionLead,
     SectionTitle,
 } from "./landing-ui";
@@ -64,7 +65,7 @@ export default function VisionSection() {
                 OUR VISION — dark hero-style band
             ================================================== */}
 
-            <LandingSection id="our-vision" fill={false} className="bg-[#111111] text-white">
+            <LandingSection id="our-vision" className="bg-[#111111] text-white">
                 <div
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 -z-10 opacity-[0.10]"
@@ -85,7 +86,7 @@ export default function VisionSection() {
                 />
 
                 <LandingContainer>
-                    <div className="max-w-3xl">
+                    <Reveal className="max-w-3xl">
                         <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 backdrop-blur-xl">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 
@@ -109,29 +110,33 @@ export default function VisionSection() {
                         <SectionLead tone="light" className="mt-6">
                             {t("landingPage.vision.description")}
                         </SectionLead>
-                    </div>
+                    </Reveal>
 
                     <div className="mt-10 grid gap-5 sm:grid-cols-3">
                         {pillars.map((pillar, index) => {
                             const Icon = PILLAR_ICONS[index];
 
                             return (
-                                <div
+                                <Reveal
                                     key={pillar.title}
-                                    className="group rounded-3xl border border-white/12 bg-white/[0.06] p-7 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/45 hover:bg-white/[0.09]"
+                                    delay={index * 90}
                                 >
-                                    <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#F47822]/25 bg-[#F47822]/12 text-[#F47822] transition-colors duration-300 group-hover:bg-[#F47822] group-hover:text-white">
-                                        <Icon size={20} strokeWidth={2.1} />
+                                <div
+                                    className="group h-full rounded-3xl border border-white/12 bg-white/[0.06] p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/45 hover:bg-white/[0.09]"
+                                >
+                                    <span className="grid h-11 w-11 place-items-center rounded-2xl border border-[#F47822]/25 bg-[#F47822]/12 text-[#F47822] transition-colors duration-300 group-hover:bg-[#F47822] group-hover:text-white">
+                                        <Icon size={19} strokeWidth={2.1} />
                                     </span>
 
-                                    <h3 className="mt-6 text-lg font-black tracking-tight">
+                                    <h3 className="mt-5 text-lg font-black tracking-tight">
                                         {pillar.title}
                                     </h3>
 
-                                    <p className="mt-2.5 text-sm leading-6 text-white/55">
+                                    <p className="mt-2 text-sm leading-6 text-white/55">
                                         {pillar.text}
                                     </p>
                                 </div>
+                                </Reveal>
                             );
                         })}
                     </div>
@@ -144,7 +149,6 @@ export default function VisionSection() {
 
             <LandingSection
                 id="our-way"
-                fill={false}
                 className="bg-white text-[#3A3A3A]"
             >
                 <div
@@ -153,7 +157,7 @@ export default function VisionSection() {
                 />
 
                 <LandingContainer>
-                    <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+                    <Reveal className="grid gap-8 lg:grid-cols-12 lg:items-end">
                         <div className="lg:col-span-7">
                             <Eyebrow>
                                 {t("landingPage.way.badge")}
@@ -173,36 +177,39 @@ export default function VisionSection() {
                                 {t("landingPage.way.description")}
                             </SectionLead>
                         </div>
-                    </div>
+                    </Reveal>
 
-                    <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
                         {steps.map((step, index) => {
                             const Icon = STEP_ICONS[index];
 
                             return (
-                                <div
+                                <Reveal
                                     key={step.title}
-                                    className="group relative overflow-hidden rounded-3xl border border-[#3A3A3A]/10 bg-[#F7F6F4] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/40 hover:bg-white hover:shadow-[0_24px_50px_rgba(244,120,34,0.12)]"
+                                    delay={Math.min(index, 3) * 90}
+                                >
+                                <div
+                                    className="group relative h-full overflow-hidden rounded-3xl border border-[#3A3A3A]/10 bg-[#F7F6F4] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/40 hover:bg-white hover:shadow-[0_24px_50px_rgba(244,120,34,0.12)]"
                                 >
                                     <div className="flex items-center justify-between">
                                         <span
-                                            className="grid h-14 w-14 place-items-center rounded-2xl bg-[#F47822]/12 text-xl font-black text-[#F47822]"
+                                            className="grid h-11 w-11 place-items-center rounded-2xl bg-[#F47822]/12 font-black text-[#F47822]"
                                             dir="ltr"
                                         >
                                             {`0${index + 1}`}
                                         </span>
 
                                         <Icon
-                                            size={24}
+                                            size={20}
                                             className="text-[#3A3A3A]/25 transition-colors duration-300 group-hover:text-[#F47822]"
                                         />
                                     </div>
 
-                                    <h3 className="mt-7 text-xl font-black tracking-tight">
+                                    <h3 className="mt-6 text-lg font-black tracking-tight">
                                         {step.title}
                                     </h3>
 
-                                    <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60">
+                                    <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/60">
                                         {step.text}
                                     </p>
 
@@ -211,6 +218,7 @@ export default function VisionSection() {
                                         className="absolute bottom-0 left-0 h-1 w-0 bg-[#F47822] transition-all duration-300 group-hover:w-full rtl:left-auto rtl:right-0"
                                     />
                                 </div>
+                                </Reveal>
                             );
                         })}
                     </div>

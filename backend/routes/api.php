@@ -1144,6 +1144,14 @@ Route::prefix('v1')->group(function () {
     )->name('catalog.courses');
 
     Route::get(
+        '/catalog/instructors',
+        [
+            \App\Http\Controllers\Api\V1\CatalogController::class,
+            'instructors'
+        ]
+    )->name('catalog.instructors');
+
+    Route::get(
         '/catalog/courses/{course}',
         [
             \App\Http\Controllers\Api\V1\CatalogController::class,

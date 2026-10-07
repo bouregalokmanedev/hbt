@@ -502,6 +502,37 @@ export const en = {
       ],
     },
 
+    instructors: {
+      eyebrow: "Your instructors",
+      titleA: "Learn from",
+      titleHighlight: "people",
+      titleB: "who diagnose.",
+      description:
+        "HBTronics instructors are working technicians and engineers who teach the diagnostic reasoning they use every day in the workshop.",
+      prevInstructors: "Previous instructors",
+      nextInstructors: "Next instructors",
+      coursesLabel: "Courses",
+      learnersLabel: "Learners",
+      noBio: "Automotive diagnostics instructor at HBTronics.",
+      fallback: [
+        {
+          name: "Karim Benali",
+          role: "Senior Diagnostics Instructor",
+          bio: "Twenty years turning engine faults into lessons. Karim teaches systematic diagnostics the way real workshops work.",
+        },
+        {
+          name: "Sara Mansouri",
+          role: "Networks & CAN Specialist",
+          bio: "Sara makes vehicle networks click — from CAN frames to UDS sessions, with hands-on captures at every step.",
+        },
+        {
+          name: "Yacine Haddad",
+          role: "Signals & Oscilloscope Coach",
+          bio: "Yacine trains your eyes to read waveforms like a story: sensors, actuators and the faults hiding between them.",
+        },
+      ],
+    },
+
     certification: {
       eyebrow: "Certification",
       titleA: "Your skills.",
@@ -5150,6 +5181,10 @@ export const en = {
         faultTitlePh: "e.g. Throttle actuator control",
         ecus: "ECUs",
         faultCodes: "Fault codes",
+        codeLibraryOpen: "Add from code library",
+        codeLibrarySearch: "Search code or description…",
+        codeLibraryEmpty: "No matching fault codes",
+        codeLibraryClose: "Close",
         liveValues: "Live values",
         adasFlags: "ADAS calibration flags",
         previewManifest: "Preview manifest JSON",

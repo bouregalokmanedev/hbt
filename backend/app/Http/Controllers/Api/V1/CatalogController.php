@@ -10,6 +10,7 @@ use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 final class CatalogController extends Controller
@@ -105,6 +106,44 @@ final class CatalogController extends Controller
         return CourseResource::collection(
             $paginator
         );
+    }
+
+    /**
+     * Public instructor showcase for the landing page: instructors that
+     * own at least one published public course, with course + learner counts.
+     */
+    public function instructors(Request $request)
+    {
+        $limit = min(max((int) $request->integer('per_page', 8), 1), 24);
+
+        $instructorIds = Course::query()
+            ->where('status', CourseStatus::PUBLISHED)
+            ->where('visibility', Visibility::PUBLIC)
+            ->distinct()
+            ->pluck('instructor_id');
+
+        $instructors = User::query()
+            ->role('Instructor')
+            ->whereIn('id', $instructorIds)
+            ->withCount(['instructedCourses as courses_count' => fn ($query) => $query
+                ->where('status', CourseStatus::PUBLISHED)
+                ->where('visibility', Visibility::PUBLIC)])
+            ->withCount(['instructedLearners as learners_count'])
+            ->orderByDesc('courses_count')
+            ->limit($limit)
+            ->get(['id', 'uuid', 'first_name', 'last_name', 'avatar', 'bio', 'country']);
+
+        return response()->json([
+            'data' => $instructors->map(fn (User $user) => [
+                'id' => $user->uuid,
+                'name' => trim("{$user->first_name} {$user->last_name}"),
+                'avatar' => $user->avatar,
+                'bio' => $user->bio,
+                'country' => $user->country,
+                'courses_count' => (int) $user->courses_count,
+                'learners_count' => (int) $user->learners_count,
+            ])->values(),
+        ]);
     }
 
     public function show(

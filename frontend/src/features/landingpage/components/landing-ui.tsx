@@ -1,7 +1,6 @@
-import { useCallback, type ReactNode, type Ref } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode, Ref } from "react";
 import { Link } from "react-router-dom";
-
-import { useFitToViewport } from "../hooks/useFitToViewport";
 
 /*
 |--------------------------------------------------------------------------
@@ -9,8 +8,6 @@ import { useFitToViewport } from "../hooks/useFitToViewport";
 |--------------------------------------------------------------------------
 | Single source of truth for section rhythm + type scale so every landing
 | section shares the same padding, container, and heading styles.
-| Sections are viewport-locked (md+) with scroll-snap: the fit hook scales
-| content down — never up — so a section always fits one screen.
 */
 
 export function LandingSection({
@@ -18,40 +15,15 @@ export function LandingSection({
   children,
   className = "",
   sectionRef,
-  fill = true,
 }: {
   id?: string;
   children: ReactNode;
   className?: string;
   sectionRef?: Ref<HTMLElement>;
-  /** true = locked to one viewport (fit-scaled if needed); false = sized to content (no dead space). */
-  fill?: boolean;
 }) {
-  const { sectionRef: fitRef, contentRef, scale } = useFitToViewport();
-
-  const setRefs = useCallback(
-    (node: HTMLElement | null) => {
-      fitRef.current = node;
-      if (typeof sectionRef === "function") sectionRef(node);
-      else if (sectionRef) (sectionRef as { current: HTMLElement | null }).current = node;
-    },
-    [sectionRef, fitRef],
-  );
-
-  const base = "relative isolate overflow-hidden md:snap-start";
-  const layout = fill
-    ? "py-12 sm:py-14 md:flex md:h-[calc(100svh-5rem)] md:flex-col md:items-center md:justify-center md:py-0"
-    : "py-16 sm:py-20";
-
   return (
-    <section id={id} ref={setRefs} className={`${base} ${layout} ${className}`}>
-      <div
-        ref={contentRef}
-        className="w-full"
-        style={scale < 1 ? { transform: `scale(${scale})`, transformOrigin: "center center" } : undefined}
-      >
-        {children}
-      </div>
+    <section id={id} ref={sectionRef} className={`relative isolate overflow-hidden py-10 sm:py-14 lg:py-16 ${className}`}>
+      {children}
     </section>
   );
 }
@@ -105,10 +77,10 @@ export function SectionTitle({
 }) {
   return (
     <h2
-      className={`mt-3 font-bold tracking-tight ${
+      className={`mt-4 font-bold tracking-tight ${
         size === "display"
-          ? "text-4xl leading-[0.95] sm:text-5xl lg:text-[3.5rem]"
-          : "text-2xl leading-[1.1] sm:text-3xl lg:text-[34px]"
+          ? "text-5xl leading-[0.95] sm:text-6xl lg:text-7xl"
+          : "text-3xl leading-[1.1] sm:text-4xl lg:text-[44px]"
       } ${
         tone === "white" ? "text-white" : "text-[#3A3A3A]"
       } ${className}`}
@@ -129,7 +101,7 @@ export function SectionLead({
 }) {
   return (
     <p
-      className={`mt-3 max-w-2xl text-sm leading-6 sm:text-base sm:leading-7 ${
+      className={`mt-4 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8 ${
         tone === "light" ? "text-white/60" : "text-[#3A3A3A]/60"
       } ${className}`}
     >
@@ -179,5 +151,130 @@ export function GhostCta({
     >
       {children}
     </Link>
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Reveal — unified landing motion primitive
+|--------------------------------------------------------------------------
+| Fades/slides a header block in the first time it enters the viewport.
+| `direction` mirrors automatically in RTL via logical rtl: variants.
+*/
+
+export type RevealDirection = "up" | "left" | "right" | "none";
+
+export function Reveal({
+  children,
+  direction = "up",
+  delay = 0,
+  className = "",
+}: {
+  children: ReactNode;
+  direction?: RevealDirection;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) {
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const hidden =
+    direction === "up"
+      ? "translate-y-8"
+      : direction === "left"
+        ? "-translate-x-8 rtl:translate-x-8"
+        : direction === "right"
+          ? "translate-x-8 rtl:-translate-x-8"
+          : "";
+
+  return (
+    <div
+      ref={ref}
+      style={delay > 0 ? { transitionDelay: `${delay}ms` } : undefined}
+      className={`transition-all duration-700 ease-out will-change-transform ${
+        visible
+          ? "translate-x-0 translate-y-0 opacity-100"
+          : `${hidden} opacity-0`
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| LandingMarquee — CSS-only keyword strip (rendered once, after Hero)
+|--------------------------------------------------------------------------
+| Two identical halves translate -50% on a loop; no JS ticker involved.
+| dir="ltr" keeps the loop math identical in RTL locales.
+*/
+
+const MARQUEE_KEYWORDS = [
+  "DIAGNOSTICS",
+  "CAN BUS",
+  "UDS",
+  "OSCILLOSCOPE",
+  "EV SYSTEMS",
+  "ECU",
+  "FAULT CODES",
+  "LIVE DATA",
+  "SENSORS",
+  "ACTUATORS",
+];
+
+export function LandingMarquee() {
+  return (
+    <div
+      aria-hidden="true"
+      dir="ltr"
+      className="relative overflow-hidden border-y border-white/10 bg-[#141414] py-4"
+    >
+      <div className="animate-landing-marquee flex w-max">
+        {[0, 1].map((copy) => (
+          <div key={copy} className="flex items-center gap-8 pr-8">
+            {MARQUEE_KEYWORDS.map((keyword) => (
+              <span key={keyword} className="flex items-center gap-8">
+                <span className="whitespace-nowrap text-xs font-black uppercase tracking-[0.25em] text-white/70">
+                  {keyword}
+                </span>
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F47822]" />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Edge fades */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#141414] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#141414] to-transparent" />
+    </div>
   );
 }

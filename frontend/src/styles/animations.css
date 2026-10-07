@@ -93,3 +93,28 @@
     transform-origin: center center;
     will-change: transform;
 }
+
+
+/* Landing keyword strip: two identical halves loop -50% (CSS-only). */
+@keyframes landing-marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+
+.animate-landing-marquee {
+    animation: landing-marquee 30s linear infinite;
+    will-change: transform;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-landing-marquee {
+        animation: none;
+    }
+}

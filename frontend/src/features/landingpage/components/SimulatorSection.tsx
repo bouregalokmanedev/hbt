@@ -18,6 +18,7 @@ import {
     Eyebrow,
     LandingContainer,
     LandingSection,
+    Reveal,
     SectionTitle,
 } from "./landing-ui";
 
@@ -103,8 +104,8 @@ export function SimulatorSection() {
                     HEADER
                 ====================================================== */}
 
-                <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
-                    <div className="lg:col-span-7">
+                <Reveal className="grid gap-8 lg:grid-cols-12 lg:items-end">
+                    <div className="lg:col-span-8">
                         <Eyebrow>
                             {t("landingPage.simulator.eyebrow")}
                         </Eyebrow>
@@ -121,18 +122,18 @@ export function SimulatorSection() {
                         </SectionTitle>
                     </div>
 
-                    <div className="lg:col-span-4 lg:col-start-9">
+                    <div className="lg:col-span-3 lg:col-start-10">
                         <p className="border-l-2 border-[#F47822] pl-5 text-sm leading-6 text-[#3A3A3A]/45 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-5">
                             {t("landingPage.simulator.description")}
                         </p>
                     </div>
-                </div>
+                </Reveal>
 
                 {/* =====================================================
                     MAIN WORKSHOP
                 ====================================================== */}
 
-                <div className="relative mt-5 lg:mt-5">
+                <div className="relative mt-10 lg:mt-14">
                     {/* =================================================
                         OUTER GLASS FRAME
                     ================================================== */}
@@ -150,7 +151,7 @@ export function SimulatorSection() {
                                 WORKSHOP IMAGE
                             ================================================== */}
 
-                            <div className="relative min-h-[360px] lg:col-span-8 lg:min-h-[400px]">
+                            <div className="relative min-h-[240px] lg:col-span-8 lg:min-h-[340px]">
                                 <img
                                     src={heroImage}
                                     alt={t("landingPage.simulator.imageAlt")}
@@ -190,7 +191,7 @@ export function SimulatorSection() {
                                         {t("landingPage.simulator.category")}
                                     </p>
 
-                                    <h3 className="mt-3 max-w-3xl text-3xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-4xl lg:text-5xl">
+                                    <h3 className="mt-2 max-w-3xl text-2xl font-black uppercase leading-[0.95] tracking-[-0.055em] text-white sm:text-3xl lg:text-4xl">
                                         {t("landingPage.simulator.scenarioTitleA")}
                                         <span className="block">
                                             {t("landingPage.simulator.scenarioTitleB")}
@@ -235,7 +236,7 @@ export function SimulatorSection() {
                             <div className="flex flex-col bg-[#202020] lg:col-span-4">
                                 {/* Panel header */}
 
-                                <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-3.5 sm:px-7">
+                                <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-5 sm:px-7">
                                     <div className="flex items-center gap-3">
                                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F47822]/10">
                                             <MonitorCog className="h-4 w-4 text-[#F47822]" />
@@ -251,22 +252,18 @@ export function SimulatorSection() {
                                             </p>
                                         </div>
                                     </div>
-
-                                    <span className="font-mono text-[8px] text-white/20">
-                                        EMS-04
-                                    </span>
                                 </div>
 
                                 {/* =================================================
                                     CUSTOMER COMPLAINT
                                 ================================================== */}
 
-                                <div className="px-5 py-4 sm:px-7 sm:py-4">
+                                <div className="px-4 py-5 sm:px-5 sm:py-6">
                                     <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#F47822]">
                                         {t("landingPage.simulator.complaintLabel")}
                                     </p>
 
-                                    <p className="mt-3 text-sm leading-6 text-white/65">
+                                    <p className="mt-4 text-sm leading-7 text-white/65">
                                         {t("landingPage.simulator.complaintText")}
                                     </p>
                                 </div>
@@ -275,7 +272,7 @@ export function SimulatorSection() {
                                     DIAGNOSTIC TOOLS
                                 ================================================== */}
 
-                                <div className="border-t border-white/[0.08] px-5 py-3.5 sm:px-7">
+                                <div className="border-t border-white/[0.08] px-4 py-4 sm:px-5">
                                     <div className="flex items-center justify-between">
                                         <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-white/30">
                                             {t("landingPage.simulator.toolsLabel")}
@@ -286,17 +283,20 @@ export function SimulatorSection() {
                                         </span>
                                     </div>
 
-                                    <div className="mt-3 grid grid-cols-2 gap-2">
+                                    <div className="mt-3 grid grid-cols-2 gap-1.5">
                                         {toolItems.map((tool, index) => {
                                             const Icon = toolIcons[index % toolIcons.length];
 
                                             return (
-                                                <DiagnosticTool
+                                                <Reveal
                                                     key={tool.label}
-                                                    number={String(index + 1).padStart(2, "0")}
+                                                    delay={Math.min(index, 4) * 70}
+                                                >
+                                                <DiagnosticTool
                                                     icon={Icon}
                                                     label={tool.label}
                                                 />
+                                                </Reveal>
                                             );
                                         })}
                                     </div>
@@ -306,7 +306,7 @@ export function SimulatorSection() {
                                     DIAGNOSTIC PRINCIPLE
                                 ================================================== */}
 
-                                <div className="mx-5 border-t border-white/[0.08] py-3 sm:mx-7">
+                                <div className="mx-4 border-t border-white/[0.08] py-4 sm:mx-5">
                                     <div className="flex items-start gap-3">
                                         <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F47822]" />
 
@@ -320,10 +320,10 @@ export function SimulatorSection() {
                                     CTA
                                 ================================================== */}
 
-                                <div className="mt-auto p-3.5 sm:p-4">
+                                <div className="mt-auto p-4 sm:p-5">
                                     <Link
                                         to="/simulator"
-                                        className="group flex items-center justify-between rounded-2xl bg-[#F47822] px-5 py-3.5 text-white transition-all duration-300 hover:bg-[#e96916] hover:shadow-[0_12px_35px_rgba(244,120,34,0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822] focus-visible:ring-offset-2 focus-visible:ring-offset-[#202020]"
+                                        className="group flex items-center justify-between rounded-2xl bg-[#F47822] px-5 py-4 text-white transition-all duration-300 hover:bg-[#e96916] hover:shadow-[0_12px_35px_rgba(244,120,34,0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822] focus-visible:ring-offset-2 focus-visible:ring-offset-[#202020]"
                                     >
                                         <div className="flex items-center gap-3">
                                             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
@@ -367,19 +367,23 @@ export function SimulatorSection() {
                     HOW IT WORKS
                 ====================================================== */}
 
-                <div className="mt-5 border-y border-[#3A3A3A]/10 xl:mt-5">
+                <div className="mt-10 border-y border-[#3A3A3A]/10 xl:mt-12">
                     <div className="grid sm:grid-cols-3">
                         {stepItems.map((step, index) => {
                             const Icon = stepIcons[index % stepIcons.length];
 
                             return (
-                                <ProcessStep
+                                <Reveal
                                     key={step.title}
+                                    delay={index * 90}
+                                >
+                                <ProcessStep
                                     number={String(index + 1).padStart(2, "0")}
                                     title={step.title}
                                     description={step.description}
                                     icon={Icon}
                                 />
+                                </Reveal>
                             );
                         })}
                     </div>
@@ -389,15 +393,7 @@ export function SimulatorSection() {
                     FOOTER
                 ====================================================== */}
 
-                <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
-
-                        <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-[#3A3A3A]/30">
-                            {t("landingPage.simulator.pathLabel")}
-                        </span>
-                    </div>
-
+                <div className="mt-6 flex sm:justify-end">
                     <Link
                         to="/simulator"
                         className="group inline-flex items-center gap-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]"
@@ -453,29 +449,21 @@ function ScenarioMeta({
 ===================================================================== */
 
 function DiagnosticTool({
-    number,
     icon: Icon,
     label,
 }: {
-    number: string;
     icon: typeof Gauge;
     label: string;
 }) {
     return (
-        <div className="group flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.025] px-3 py-2.5 transition-all duration-300 hover:border-[#F47822]/20 hover:bg-[#F47822]/[0.05]">
-            <span className="font-mono text-[8px] text-[#F47822]">
-                {number}
+        <div className="group flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.025] px-2.5 py-2.5 transition-all duration-300 hover:border-[#F47822]/25 hover:bg-[#F47822]/[0.07]">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white/[0.05]">
+                <Icon className="h-3 w-3 text-white/45 transition-colors duration-300 group-hover:text-[#F47822]" />
             </span>
 
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04]">
-                <Icon className="h-3.5 w-3.5 text-white/40 transition-colors duration-300 group-hover:text-[#F47822]" />
-            </span>
-
-            <span className="text-[10px] font-medium text-white/55 transition-colors duration-300 group-hover:text-white/80">
+            <span className="truncate text-[10px] font-medium text-white/60 transition-colors duration-300 group-hover:text-white/85">
                 {label}
             </span>
-
-            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white/10 transition-colors duration-300 group-hover:bg-[#F47822] rtl:ml-0 rtl:mr-auto" />
         </div>
     );
 }
@@ -496,8 +484,8 @@ function ProcessStep({
     icon: typeof Gauge;
 }) {
     return (
-        <div className="group border-b border-[#3A3A3A]/10 p-4 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 sm:p-5 rtl:sm:border-l rtl:sm:border-r-0 rtl:sm:last:border-l-0">
-            <div className="flex items-center justify-between">
+        <div className="group border-b border-[#3A3A3A]/10 p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 sm:p-5 lg:p-6 rtl:sm:border-l rtl:sm:border-r-0 rtl:sm:last:border-l-0">
+            <div className="flex items-start justify-between">
                 <span className="font-mono text-[9px] font-bold text-[#F47822]">
                     {number}
                 </span>
@@ -505,17 +493,15 @@ function ProcessStep({
                 <span className="h-px w-10 bg-[#3A3A3A]/10 transition-all duration-300 group-hover:w-16 group-hover:bg-[#F47822]/40" />
             </div>
 
-            <div className="mt-3 flex items-center gap-2.5">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-[#3A3A3A]/[0.05]">
-                    <Icon className="h-4 w-4 text-[#F47822]" />
-                </span>
-
-                <h3 className="text-base font-black uppercase tracking-[-0.04em] text-[#3A3A3A]">
-                    {title}
-                </h3>
+            <div className="mt-7 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-[#3A3A3A]/[0.05]">
+                <Icon className="h-4 w-4 text-[#F47822]" />
             </div>
 
-            <p className="mt-2 max-w-xs text-[11px] leading-5 text-[#3A3A3A]/40">
+            <h3 className="mt-4 text-xl font-black uppercase tracking-[-0.04em] text-[#3A3A3A]">
+                {title}
+            </h3>
+
+            <p className="mt-3 max-w-xs text-xs leading-6 text-[#3A3A3A]/40">
                 {description}
             </p>
         </div>

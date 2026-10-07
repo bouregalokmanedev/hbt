@@ -12,6 +12,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use App\Models\Course;
 use App\Models\Enrollment;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Domains\Students\Models\StudentSetting;
@@ -134,6 +136,16 @@ public function diagnosticScenarioAttempts(): HasMany
 public function enrollments(): HasMany
 {
     return $this->hasMany(Enrollment::class);
+}
+
+public function instructedCourses(): HasMany
+{
+    return $this->hasMany(Course::class, 'instructor_id');
+}
+
+public function instructedLearners(): HasManyThrough
+{
+    return $this->hasManyThrough(Enrollment::class, Course::class, 'instructor_id', 'course_id');
 }
 public function studentSetting(): HasOne
 {

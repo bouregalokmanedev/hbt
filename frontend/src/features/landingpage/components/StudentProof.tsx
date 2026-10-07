@@ -19,6 +19,7 @@ import {
     Eyebrow,
     LandingContainer,
     LandingSection,
+    Reveal,
     SectionTitle,
 } from "./landing-ui";
 
@@ -251,7 +252,7 @@ export default function StudentProof() {
     }) as string[];
 
     return (
-        <LandingSection id="stories" className="bg-[#F7F7F7]">
+        <LandingSection className="bg-[#F7F7F7]">
             {/* ====================================================
                 SUBTLE BACKGROUND
             ===================================================== */}
@@ -274,7 +275,7 @@ export default function StudentProof() {
                     HEADER
                 ================================================== */}
 
-                <div className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
+                <Reveal className="flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         {/* Small label */}
 
@@ -303,13 +304,13 @@ export default function StudentProof() {
                     <p className="max-w-[330px] text-sm leading-6 text-[#3A3A3A]/50 lg:pb-2">
                         {t("landingPage.proof.description")}
                     </p>
-                </div>
+                </Reveal>
 
                 {/* =================================================
                     DIVIDER
                 ================================================== */}
 
-                <div className="my-10 h-px bg-[#3A3A3A]/10 sm:my-12" />
+                <div className="my-6 h-px bg-[#3A3A3A]/10 sm:my-8" />
 
                 {/* =================================================
                     VIDEO GRID
@@ -317,8 +318,11 @@ export default function StudentProof() {
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     {studentVideos.map((item, index) => (
-                        <StudentVideoCard
+                        <Reveal
                             key={item.id}
+                            delay={Math.min(index, 3) * 90}
+                        >
+                        <StudentVideoCard
                             item={{
                                 ...item,
                                 label:
@@ -326,6 +330,7 @@ export default function StudentProof() {
                                     item.label,
                             }}
                         />
+                        </Reveal>
                     ))}
                 </div>
 
@@ -333,15 +338,7 @@ export default function StudentProof() {
                     BOTTOM LINE
                 ================================================== */}
 
-                <div className="mt-8 flex flex-col gap-5 border-t border-[#3A3A3A]/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
-
-                        <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/35">
-                            {t("landingPage.proof.tagline")}
-                        </span>
-                    </div>
-
+                <div className="mt-6 flex sm:justify-end">
                     <Link
                         to="/register"
                         className="group inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.12em] text-[#3A3A3A]"

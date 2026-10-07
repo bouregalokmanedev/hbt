@@ -9,6 +9,7 @@ import {
     type SimFaultPack,
 } from "../api/simulatorBuilder.api";
 import { getInstructorSimulatorAnalytics } from "../api/instructorApi";
+import { FaultCodeLibraryPicker } from "../components/FaultCodeLibraryPicker";
 import { SimulatorActivityTab } from "../components/SimulatorActivityTab";
 import {
     FAULT_LIBRARY,
@@ -2010,13 +2011,32 @@ export function PackForm({
                                             </button>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.faultCodes")}</p>
+                                            <div className="relative flex items-center justify-between gap-2">
+                                                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.faultCodes")}</p>
+                                                <FaultCodeLibraryPicker
+                                                    onPick={(entry) =>
+                                                        patchFault(fi, {
+                                                            dtcs: [
+                                                                ...fault.dtcs,
+                                                                {
+                                                                    code: entry.code,
+                                                                    desc: entry.desc,
+                                                                    ecu: entry.ecu,
+                                                                    status: "Stored",
+                                                                    count: "1",
+                                                                    severity: entry.severity,
+                                                                },
+                                                            ],
+                                                        })
+                                                    }
+                                                />
+                                            </div>
                                             <ul className="mt-2 space-y-2">
                                                 {fault.dtcs.map((dtc, di) => (
                                                     <li key={di} className="grid gap-2 rounded-xl bg-[#3A3A3A]/[.03] p-2.5 sm:grid-cols-[110px_1fr_110px_130px_110px_80px_auto]">
                                                         <input
                                                             value={dtc.code}
-                                                            onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, code: e.target.value } : d)) })}
+                                                            onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, code: e.target.value.toUpperCase() } : d)) })}
                                                             placeholder="P0000"
                                                             dir="ltr"
                                                             className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs font-bold"

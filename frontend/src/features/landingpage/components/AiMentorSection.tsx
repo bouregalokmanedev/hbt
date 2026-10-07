@@ -19,6 +19,7 @@ import {
     Eyebrow,
     LandingContainer,
     LandingSection,
+    Reveal,
     SectionTitle,
 } from "./landing-ui";
 
@@ -381,14 +382,7 @@ export default function AIMentorSection() {
 
       <LandingContainer className="relative">
         {/* Section header */}
-        <div
-          className={[
-            "mb-6 grid gap-8 transition-all duration-1000 lg:grid-cols-[1fr_auto] lg:items-end",
-            visible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-8 opacity-0",
-          ].join(" ")}
-        >
+        <Reveal className="mb-12 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <div className="flex items-center gap-3">
               <Eyebrow>
@@ -412,7 +406,7 @@ export default function AIMentorSection() {
               {t("landingPage.mentor.description")}
             </p>
           </div>
-        </div>
+        </Reveal>
 
         {/* Main diagnostic workstation */}
         <div
@@ -424,7 +418,7 @@ export default function AIMentorSection() {
           ].join(" ")}
         >
           {/* Top bar */}
-          <div className="flex min-h-[56px] items-center justify-between border-b border-black/8 px-5 sm:px-7">
+          <div className="flex min-h-[62px] items-center justify-between border-b border-black/8 px-5 sm:px-7">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -456,7 +450,7 @@ export default function AIMentorSection() {
           <div className="grid lg:grid-cols-[1.45fr_0.85fr]">
             {/* Diagnostic side */}
             <div className="border-b border-black/8 p-5 sm:p-7 lg:border-b-0 lg:border-r rtl:lg:border-l rtl:lg:border-r-0">
-              <div className="mb-5 flex items-start justify-between gap-5">
+              <div className="mb-7 flex items-start justify-between gap-5">
                 <div>
                   <div className="mb-2 flex items-center gap-2">
                     <Gauge className="h-4 w-4 text-[#F47822]" />
@@ -483,7 +477,7 @@ export default function AIMentorSection() {
               </div>
 
               {/* Complaint */}
-              <div className="mb-5 rounded-2xl border border-black/8 bg-[#ECE9E3] p-4">
+              <div className="mb-7 rounded-2xl border border-black/8 bg-[#ECE9E3] p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <CircleHelp className="h-3.5 w-3.5 text-[#F47822]" />
 
@@ -498,7 +492,7 @@ export default function AIMentorSection() {
               </div>
 
               {/* Live data */}
-              <div className="mb-5">
+              <div className="mb-7">
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
@@ -548,7 +542,7 @@ export default function AIMentorSection() {
 
             {/* Mentor side */}
             <div className="bg-white p-5 sm:p-7">
-              <div className="mb-5 flex items-center justify-between">
+              <div className="mb-7 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#181818] text-white">
                     <Sparkles className="h-4 w-4" />
@@ -584,7 +578,7 @@ export default function AIMentorSection() {
               </MentorMessage>
 
               {/* Test choices */}
-              <div className="mt-4 space-y-2">
+              <div className="mt-5 space-y-2.5">
                 {testOptions.map((option) => {
                   const Icon = option.icon;
                   const isSelected = selectedTest === option.id;
@@ -642,7 +636,7 @@ export default function AIMentorSection() {
               </div>
 
               {/* Progress */}
-              <div className="mt-5">
+              <div className="mt-7">
                 <div className="mb-3 flex items-center justify-between">
                   <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/35">
                     {t("landingPage.mentor.progressLabel")}
@@ -683,7 +677,7 @@ export default function AIMentorSection() {
           </div>
 
           {/* Bottom footer */}
-          <div className="flex flex-col gap-5 border-t border-black/8 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+          <div className="flex flex-col gap-5 border-t border-black/8 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
             <div className="flex items-center gap-5">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-3.5 w-3.5 text-[#F47822]" />
@@ -727,14 +721,15 @@ export default function AIMentorSection() {
         {/* Bottom statement */}
         <div
           className={[
-            "mt-6 grid gap-8 transition-all delay-200 duration-1000 sm:grid-cols-3",
+            "mt-8 grid gap-6 transition-all delay-200 duration-1000 sm:grid-cols-3",
             visible
               ? "translate-y-0 opacity-100"
               : "translate-y-6 opacity-0",
           ].join(" ")}
         >
-          {bottomItems.map((item) => (
-            <div key={item.label}>
+          {bottomItems.map((item, index) => (
+            <Reveal key={item.label} delay={index * 90}>
+            <div>
               <span className="mb-2 block font-mono text-[9px] uppercase tracking-[0.18em] text-[#F47822]">
                 {item.label}
               </span>
@@ -743,6 +738,7 @@ export default function AIMentorSection() {
                 {item.text}
               </p>
             </div>
+            </Reveal>
           ))}
         </div>
       </LandingContainer>

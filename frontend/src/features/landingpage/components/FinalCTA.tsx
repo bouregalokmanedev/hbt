@@ -1,7 +1,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import {
+
+import { Reveal } from "./landing-ui";import {
   ArrowRight,
   ArrowUpRight,
   Check,
@@ -68,7 +69,7 @@ export default function CTASection() {
     <section
       ref={sectionRef}
       aria-labelledby="cta-heading"
-      className="relative overflow-hidden bg-[#F7F7F7] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-32"
+      className="relative overflow-hidden bg-[#F7F7F7] px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16"
     >
       {/* Background technical grid */}
       <div
@@ -167,9 +168,10 @@ export default function CTASection() {
             <circle cx="360" cy="550" r="3" fill="#F47822" />
           </svg>
 
-          <div className="relative grid gap-14 px-7 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-12 lg:px-16 lg:py-20">
+          <div className="relative grid gap-10 px-5 py-7 sm:px-8 sm:py-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10 lg:px-12 lg:py-12">
             {/* Left: message and actions */}
             <div className="relative z-10 max-w-3xl">
+              <Reveal>
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.045] px-3.5 py-2">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F47822] opacity-60" />
@@ -196,6 +198,7 @@ export default function CTASection() {
                 learning, practical scenarios and a platform built to help you
                 understand how systems work—not just memorize answers.
               </p>
+              </Reveal>
 
               {/* Benefits */}
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-3">
@@ -280,9 +283,6 @@ export default function CTASection() {
                       <p className="text-xs font-semibold text-white">
                         From knowledge to capability
                       </p>
-                      <p className="mt-1 text-[10px] text-white/35">
-                        A practical learning journey
-                      </p>
                     </div>
 
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
@@ -329,19 +329,6 @@ export default function CTASection() {
                     })}
                   </div>
 
-                  {/* Bottom status */}
-                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
-                    <div className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-white/35">
-                        Built for practical learning
-                      </span>
-                    </div>
-
-                    <span className="font-mono text-[8px] text-white/25">
-                      HBT / LEARN
-                    </span>
-                  </div>
                 </div>
 
                 {/* Small accent */}

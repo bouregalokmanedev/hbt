@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import {
     ArrowRight,
     ArrowUpRight,
-    CheckCircle2,
     ChevronLeft,
     ChevronRight,
     Clock3,
     Play,
     Radio,
-    ScanLine,
     Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -16,13 +14,32 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import heroImage from "@/assets/landing/heropic.webp";
+import heroImage2 from "@/assets/landing/heropic2.webp";
+import courseArt2 from "@/assets/landing/pic-6.jpg";
+import courseArt3 from "@/assets/landing/pic-8.jpg";
+
+/* Rotating showcase artwork so courses don't all share one image.
+   heropic2 is always pinned to the last course. */
+const courseArtwork = [heroImage, courseArt2, courseArt3];
+
+function artworkFor(index: number, total: number): string {
+    if (total > 0 && index === total - 1) {
+        return heroImage2;
+    }
+
+    return courseArtwork[index % courseArtwork.length];
+}
 
 import {
     Eyebrow,
     LandingContainer,
     LandingSection,
+    Reveal,
     SectionTitle,
 } from "./landing-ui";
+
+import { coursesApi } from "@/features/courses/api/courses.api";
+import type { Course } from "@/features/courses/types/course.types";
 
 /* ================================================================
    COURSE DATA
@@ -31,6 +48,7 @@ import {
 ================================================================ */
 
 type CourseItem = {
+    key: string;
     id: string;
     level: string;
     difficulty: string;
@@ -39,7 +57,34 @@ type CourseItem = {
     duration: string;
     lessons: string;
     accent: string;
+    language: string | null;
+    priceLabel: string | null;
 };
+
+/* Same duration convention as the catalog CourseCard. */
+
+function formatMinutes(minutes: number | null | undefined): string | null {
+    if (
+        minutes === null ||
+        minutes === undefined ||
+        Number.isNaN(minutes)
+    ) {
+        return null;
+    }
+
+    if (minutes < 60) {
+        return `${minutes}m`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remaining = minutes % 60;
+
+    if (remaining === 0) {
+        return `${hours}h`;
+    }
+
+    return `${hours}h ${remaining}m`;
+}
 
 /* ================================================================
    COURSE SECTION
@@ -50,12 +95,93 @@ export function CoursesSection() {
 
     const courseItems = t("landingPage.courses.items", {
         returnObjects: true,
-    }) as CourseItem[];
+    }) as Omit<CourseItem, "key" | "language" | "priceLabel">[];
 
-    const courses = courseItems.map((item) => ({
+    const staticCourses: CourseItem[] = courseItems.map((item, index) => ({
         ...item,
-        image: heroImage,
-    }));
+        key: item.id,
+        image: artworkFor(index, courseItems.length),
+        language: null,
+        priceLabel: null,
+    })) as CourseItem[];
+
+    /* ------------------------------------------------------------
+       LIVE COURSES (public catalog, no auth).
+       On failure or empty response the static items above stay —
+       zero visual regression.
+    ------------------------------------------------------------ */
+
+    const [remoteCourses, setRemoteCourses] = useState<Course[] | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        coursesApi
+            .list({ per_page: 6 })
+            .then((response) => {
+                if (cancelled) {
+                    return;
+                }
+
+                if (response?.data?.length) {
+                    setRemoteCourses(response.data);
+                }
+            })
+            .catch(() => {
+                /* Keep the static items. */
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const difficultyLabels: Record<string, string> = {
+        beginner: t("catalogPage.difficulty.beginner"),
+        intermediate: t("catalogPage.difficulty.intermediate"),
+        advanced: t("catalogPage.difficulty.advanced"),
+    };
+
+    /* Artwork, accents, levels, categories and lessons stay merged
+       by index exactly like before; only the live fields swap in. */
+
+    const courses: (CourseItem & { image: string })[] =
+        remoteCourses !== null && remoteCourses.length > 0
+            ? remoteCourses.map((remote, index) => {
+                  const base =
+                      courseItems[index % courseItems.length];
+
+                  const difficultyKey = (
+                      remote.difficulty ?? ""
+                  ).toLowerCase();
+
+                  return {
+                      key: String(remote.id),
+                      id: base.id,
+                      level: base.level,
+                      difficulty:
+                          difficultyLabels[difficultyKey] ??
+                          remote.difficulty ??
+                          base.difficulty,
+                      category: base.category,
+                      title: remote.title || base.title,
+                      duration:
+                          formatMinutes(remote.duration_minutes) ??
+                          base.duration,
+                      lessons: base.lessons,
+                      accent: base.accent,
+                      image: artworkFor(index, remoteCourses.length),
+                      language: remote.language ?? null,
+                      priceLabel: remote.is_free
+                          ? t("catalogPage.card.free")
+                          : `${remote.price ?? ""} ${remote.currency ?? ""}`.trim() ||
+                            null,
+                  };
+              })
+            : staticCourses.map((item, index, all) => ({
+                  ...item,
+                  image: artworkFor(index, all.length),
+              }));
 
     const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -114,9 +240,11 @@ export function CoursesSection() {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, []);
+    }, [courses.length]);
 
-    const active = courses[activeCourse];
+    const safeActive = Math.min(activeCourse, courses.length - 1);
+
+    const active = courses[safeActive];
 
     const nextCourse = () => {
         setActiveCourse((current) =>
@@ -247,23 +375,11 @@ export function CoursesSection() {
                     HEADER
                 ================================================== */}
 
-                <div
-                    className={`
-                        transition-all
-                        duration-1000
-                        ${
-                            isVisible
-                                ? "translate-y-0 opacity-100"
-                                : "translate-y-8 opacity-0"
-                        }
-                    `}
-                >
-                   
-
+                <Reveal>
                     {/* Heading */}
 
-                    <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
-                        <div className="lg:col-span-7">
+                    <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:items-end">
+                        <div className="lg:col-span-8">
                             <div className="flex items-center gap-3">
                                 <span className="h-px w-10 bg-[#F47822]" />
 
@@ -284,7 +400,7 @@ export function CoursesSection() {
                             </SectionTitle>
                         </div>
 
-                        <div className="lg:col-span-4 lg:col-start-9">
+                        <div className="lg:col-span-3 lg:col-start-10">
                             <div
                                 className="
                                     border-l-2
@@ -299,18 +415,10 @@ export function CoursesSection() {
                                 <p className="text-sm leading-7 text-[#181818]/55 sm:text-base">
                                     {t("landingPage.courses.description")}
                                 </p>
-
-                                <div className="mt-5 flex items-center gap-2">
-                                    <CheckCircle2 className="h-3.5 w-3.5 text-[#F47822]" />
-
-                                    <span className="font-mono text-[8px] font-bold uppercase tracking-[0.15em] text-[#181818]/35">
-                                        {t("landingPage.courses.practicalBadge")}
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </Reveal>
 
                 {/* =================================================
                     COURSE EXPERIENCE
@@ -318,13 +426,13 @@ export function CoursesSection() {
 
                 <div
                     className={`
-                        mt-6
+                        mt-10
                         grid
                         gap-6
                         transition-all
                         delay-150
                         duration-1000
-                        lg:mt-8
+                        lg:mt-14
                         lg:grid-cols-[220px_minmax(0,1fr)]
                         ${
                             isVisible
@@ -338,20 +446,16 @@ export function CoursesSection() {
                     ================================================== */}
 
                     <div className="relative">
-                        <div>
-                            <div className="mb-4 flex items-center justify-between lg:block">
+                        <div className="lg:sticky lg:top-24">
+                            <div className="mb-5 flex items-center justify-between lg:block">
                                 <div>
-                                    <span className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#181818]/30">
-                                        {t("landingPage.courses.navLabel")}
-                                    </span>
-
                                     <p className="mt-2 text-xl font-bold tracking-[-0.03em]">
                                         {t("landingPage.courses.navTitle")}
                                     </p>
                                 </div>
 
-                                <div className="font-mono text-[8px] text-[#181818]/25 lg:mt-4">
-                                    {String(activeCourse + 1).padStart(
+                                <div className="font-mono text-[8px] text-[#181818]/25 lg:mt-5">
+                                    {String(safeActive + 1).padStart(
                                         2,
                                         "0",
                                     )}
@@ -363,14 +467,17 @@ export function CoursesSection() {
                                 </div>
                             </div>
 
-                            <div className="flex gap-2 overflow-x-auto pb-2 lg:block lg:space-y-1.5 lg:overflow-visible">
+                            <div className="grid grid-cols-2 gap-2 pb-2 lg:block lg:space-y-2 lg:pb-0">
                                 {courses.map((course, index) => {
                                     const isActive =
-                                        activeCourse === index;
+                                        safeActive === index;
 
                                     return (
+                                        <Reveal
+                                            key={course.key}
+                                            delay={Math.min(index, 5) * 60}
+                                        >
                                         <button
-                                            key={course.id}
                                             type="button"
                                             onClick={() =>
                                                 setActiveCourse(index)
@@ -378,7 +485,7 @@ export function CoursesSection() {
                                             className={`
                                                 group
                                                 relative
-                                                min-w-[180px]
+                                                w-full
                                                 overflow-hidden
                                                 rounded-xl
                                                 border
@@ -493,13 +600,14 @@ export function CoursesSection() {
                                                 `}
                                             />
                                         </button>
+                                        </Reveal>
                                     );
                                 })}
                             </div>
 
                             {/* navigation */}
 
-                            <div className="mt-4 hidden gap-2 lg:flex">
+                            <div className="mt-5 hidden gap-2 lg:flex">
                                 <button
                                     type="button"
                                     onClick={previousCourse}
@@ -564,17 +672,11 @@ export function CoursesSection() {
                         >
                             {/* top technical strip */}
 
-                            <div className="flex items-center justify-between border-b border-[#181818]/[0.07] px-5 py-3 sm:px-7">
-                                <div className="flex items-center gap-2">
-                                    <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
+                            <div className="flex items-center gap-2 border-b border-[#181818]/[0.07] px-5 py-3 sm:px-7">
+                                <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 
-                                    <span className="font-mono text-[7px] font-bold uppercase tracking-[0.2em] text-[#181818]/35">
-                                        {t("landingPage.courses.activeModule")}
-                                    </span>
-                                </div>
-
-                                <span className="font-mono text-[7px] uppercase tracking-[0.15em] text-[#181818]/25">
-                                    HBT / LMS / {active.id}
+                                <span className="font-mono text-[7px] font-bold uppercase tracking-[0.2em] text-[#181818]/35">
+                                    {t("landingPage.courses.activeModule")}
                                 </span>
                             </div>
 
@@ -582,7 +684,7 @@ export function CoursesSection() {
                                 IMAGE
                             ================================================== */}
 
-                            <div className="p-2.5 sm:p-3">
+                            <div className="p-3 sm:p-4">
                                 <div className="relative aspect-[16/7] overflow-hidden rounded-[23px] bg-[#181818]">
                                     <img
                                         key={active.id}
@@ -637,7 +739,7 @@ export function CoursesSection() {
                                     <div className="absolute inset-x-5 bottom-5 sm:inset-x-7 sm:bottom-7">
                                         <div className="flex flex-wrap items-end justify-between gap-5">
                                             <div>
-                                                <div className="mb-3 flex items-center gap-2">
+                                                <div className="mb-3 flex flex-wrap items-center gap-2">
                                                     <span className="rounded-full border border-[#F47822]/40 bg-[#F47822]/15 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-[#F47822] backdrop-blur-md">
                                                         {active.accent}
                                                     </span>
@@ -645,13 +747,25 @@ export function CoursesSection() {
                                                     <span className="rounded-full border border-white/15 bg-black/20 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-white/60 backdrop-blur-md">
                                                         {active.level}
                                                     </span>
+
+                                                    {active.language && (
+                                                        <span className="rounded-full border border-white/15 bg-black/20 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-white/60 backdrop-blur-md">
+                                                            {active.language}
+                                                        </span>
+                                                    )}
+
+                                                    {active.priceLabel && (
+                                                        <span className="rounded-full border border-white/15 bg-white/90 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-[#181818] backdrop-blur-md">
+                                                            {active.priceLabel}
+                                                        </span>
+                                                    )}
                                                 </div>
 
                                                 <p className="font-mono text-[7px] uppercase tracking-[0.2em] text-white/40">
                                                     {active.category}
                                                 </p>
 
-                                                <h3 className="mt-2 max-w-3xl text-2xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-4xl lg:text-5xl">
+                                                <h3 className="mt-2 max-w-3xl text-3xl font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:text-5xl lg:text-6xl">
                                                     {active.title}
                                                 </h3>
                                             </div>
@@ -725,7 +839,7 @@ export function CoursesSection() {
 
                                 {/* CTA */}
 
-                                <div className="flex items-center border-t border-[#181818]/[0.07] p-3 md:w-[210px] md:border-l md:border-t-0 md:rtl:border-l-0 md:rtl:border-r">
+                                <div className="flex items-center border-t border-[#181818]/[0.07] p-4 md:w-[210px] md:border-l md:border-t-0 md:rtl:border-l-0 md:rtl:border-r">
                                     <Link
                                         to="/catalog"
                                         className="
@@ -813,7 +927,7 @@ export function CoursesSection() {
                             <div className="flex gap-1.5">
                                 {courses.map((course, index) => (
                                     <button
-                                        key={course.id}
+                                        key={course.key}
                                         type="button"
                                         onClick={() =>
                                             setActiveCourse(index)
@@ -827,7 +941,7 @@ export function CoursesSection() {
                                             transition-all
                                             duration-300
                                             ${
-                                                activeCourse === index
+                                                safeActive === index
                                                     ? "w-7 bg-[#F47822]"
                                                     : "w-1.5 bg-[#181818]/15"
                                             }
@@ -870,30 +984,22 @@ export function CoursesSection() {
 
                 <div
                     className="
-                        mt-6
-                        grid
-                        gap-6
+                        mt-10
+                        flex
+                        flex-col
+                        gap-4
                         border-t
                         border-[#181818]/10
                         pt-6
-                        sm:grid-cols-[1fr_auto]
+                        sm:flex-row
                         sm:items-center
-                        lg:mt-8
+                        sm:justify-between
+                        lg:mt-12
                     "
                 >
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
-
-                            <span className="font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#181818]/30">
-                                {t("landingPage.courses.pathLabel")}
-                            </span>
-                        </div>
-
-                        <p className="mt-3 text-xl font-black uppercase tracking-[-0.035em] sm:text-2xl">
-                            {t("landingPage.courses.pathTitle")}
-                        </p>
-                    </div>
+                    <p className="max-w-xl text-sm leading-6 text-[#181818]/50">
+                        {t("landingPage.courses.description")}
+                    </p>
 
                     <Link
                         to="/catalog"
