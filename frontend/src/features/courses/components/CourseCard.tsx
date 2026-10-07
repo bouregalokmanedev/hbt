@@ -5,8 +5,7 @@ import { useTranslation } from "react-i18next";
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import type { Course } from "../types/course.types";
 import type { Enrollment } from "@/features/enrollments/types/enrollment.types";
-import heropic from "@/assets/landing/heropic.webp";
-import heropic2 from "@/assets/landing/heropic2.webp";
+import { resolveCourseImage } from "./CourseThumbnail";
 
 interface CourseCardProps {
   course: Course;
@@ -56,9 +55,7 @@ export function CourseCard({ course, enrollment = null }: CourseCardProps) {
       ? Math.max(0, Math.min(100, enrollment.progress.progress_percentage))
       : null;
 
-  const cardImage =
-    course.thumbnail ??
-    (course.title.toLowerCase().includes("can bus") ? heropic : heropic2);
+  const cardImage = resolveCourseImage(course.title, course.thumbnail);
 
   const priceLabel = course.is_free
     ? t("catalogPage.card.free")
@@ -90,6 +87,10 @@ export function CourseCard({ course, enrollment = null }: CourseCardProps) {
             <img
               src={cardImage}
               alt=""
+              onError={(event) => {
+                const fallback = resolveCourseImage(course.title, null);
+                if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
+              }}
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
             />
           ) : (
