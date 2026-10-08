@@ -20,13 +20,29 @@ function fallbackArtwork(title: string): string {
  * Backend thumbnails arrive in mixed shapes (absolute URL, /storage/…,
  * bare relative path, or null). Normalize to a playable URL and always
  * fall back to bundled artwork so production cards never render empty.
+ *
+ * A localhost URL saved while working locally can never load in
+ * production, so it is treated as missing right away instead of
+ * flashing a broken frame first.
  */
 export function resolveCourseImage(title: string, image?: string | null): string {
     const fallback = fallbackArtwork(title);
     if (!image) return fallback;
     const value = image.trim();
     if (!value) return fallback;
-    if (/^(https?:\/\/|data:|blob:)/i.test(value)) return value;
+    if (/^(https?:\/\/|data:|blob:)/i.test(value)) {
+        try {
+            const host = new URL(value).hostname.toLowerCase();
+            const local = host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host === "[::1]";
+            const pageHost = typeof window !== "undefined" ? window.location.hostname.toLowerCase() : "";
+            if (local && pageHost !== "" && pageHost !== host && pageHost !== "localhost" && pageHost !== "127.0.0.1") {
+                return fallback;
+            }
+        } catch {
+            return fallback;
+        }
+        return value;
+    }
     const path = value.replace(/^\/+/, "");
     const base = env.storageUrl.replace(/\/+$/, "");
     const relative = path.startsWith("storage/") ? path.slice("storage/".length) : path;

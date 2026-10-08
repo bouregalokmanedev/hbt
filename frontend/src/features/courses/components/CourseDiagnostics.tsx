@@ -16,10 +16,12 @@ export function CourseDiagnostics({
     courseId,
     authenticated,
     enrolled,
+    className = "",
 }: {
     courseId: string;
     authenticated: boolean;
     enrolled: boolean;
+    className?: string;
 }) {
     const { t } = useTranslation();
     const [items, setItems] = useState<DiagnosticHubItem[] | null>(null);
@@ -36,7 +38,7 @@ export function CourseDiagnostics({
 
     if (!authenticated) {
         return (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+            <section className={`rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8 ${className}`}>
                 <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#F47822]/10">
                         <FlaskConical className="h-5 w-5 text-[#F47822]" />
@@ -61,7 +63,7 @@ export function CourseDiagnostics({
 
     if (!enrolled) {
         return (
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+            <section className={`rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8 ${className}`}>
                 <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#F47822]/10">
                         <Lock className="h-5 w-5 text-[#F47822]" />
@@ -80,7 +82,7 @@ export function CourseDiagnostics({
 
     if (items === null) {
         return (
-            <section className="rounded-3xl border border-border bg-card p-6 sm:p-8">
+            <section className={`rounded-3xl border border-border bg-card p-6 sm:p-8 ${className}`}>
                 <div className="h-5 w-48 animate-pulse rounded bg-muted" />
                 <div className="mt-3 h-4 w-72 animate-pulse rounded bg-muted" />
             </section>
@@ -90,7 +92,7 @@ export function CourseDiagnostics({
     if (items.length === 0) return null;
 
     return (
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+        <section className={`rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8 ${className}`}>
             <div className="flex items-start justify-between gap-4">
                 <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("courseDetails.scenarios.eyebrow")}</p>

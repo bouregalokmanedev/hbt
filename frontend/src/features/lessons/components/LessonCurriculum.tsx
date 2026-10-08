@@ -18,9 +18,6 @@ import {
     useTranslation,
 } from "react-i18next";
 
-import {
-    coursesApi,
-} from "@/features/courses/api/courses.api";
 import { getAssessments, type Assessment } from "@/features/assessments/api/assessments.api";
 import { ClipboardCheck, LockKeyhole, PlayCircle } from "lucide-react";
 
@@ -36,70 +33,24 @@ import {
 interface LearningCurriculumProps {
     courseId: string;
     currentLessonId: string;
+    curriculum: CourseCurriculum | null;
+    isLoading: boolean;
+    error: string | null;
+    onReload: () => void;
 }
 
 export function LessonCurriculum({
     courseId,
     currentLessonId,
+    curriculum,
+    isLoading,
+    error,
+    onReload,
 }: LearningCurriculumProps) {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const [
-        curriculum,
-        setCurriculum,
-    ] = useState<CourseCurriculum | null>(
-        null,
-    );
-
-    const [
-        isLoading,
-        setIsLoading,
-    ] = useState(true);
-
-    const [
-        error,
-        setError,
-    ] = useState<string | null>(null);
     const [assessments, setAssessments] = useState<Assessment[]>([]);
-
-    useEffect(() => {
-        let cancelled = false;
-
-        async function loadCurriculum() {
-            try {
-                setIsLoading(true);
-                setError(null);
-
-                const data =
-                    await coursesApi.curriculum(
-                        courseId,
-                    );
-
-                if (!cancelled) {
-                    setCurriculum(data);
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setError(
-                        err instanceof Error
-                            ? err.message
-                            : t("lessonPlayer.curriculum.loading"),
-                    );
-                }
-            } finally {
-                if (!cancelled) {
-                    setIsLoading(false);
-                }
-            }
-        }
-
-        void loadCurriculum();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [courseId]);
 
     useEffect(() => { void getAssessments().then(setAssessments).catch(() => setAssessments([])); }, []);
 
@@ -153,6 +104,14 @@ export function LessonCurriculum({
                     <p className="mt-1 text-xs leading-5 text-muted-foreground">
                         {error}
                     </p>
+
+                    <button
+                        type="button"
+                        onClick={onReload}
+                        className="mt-3 rounded-lg bg-[#F47822] px-3.5 py-2 text-[11px] font-bold text-white transition hover:bg-[#df6817]"
+                    >
+                        {t("lessonPlayer.curriculum.retry")}
+                    </button>
                 </div>
             </aside>
         );

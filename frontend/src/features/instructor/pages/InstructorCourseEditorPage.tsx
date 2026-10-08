@@ -4,23 +4,29 @@ import {
     ArrowLeft,
     Award,
     CheckCircle2,
+    ClipboardCheck,
     ExternalLink,
     Eye,
     FileCheck2,
+    ImagePlus,
+    Link2,
     LoaderCircle,
     RotateCcw,
     Save,
     Send,
     Trash2,
+    Upload,
 } from "lucide-react";
 import {
     FormEvent,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from "react";
 import {
     Link,
+    useBlocker,
     useNavigate,
     useParams,
 } from "react-router-dom";
@@ -41,9 +47,13 @@ import {
 import {
     createInstructorCourse,
     deleteInstructorCourse,
+    getInstructorAssessments,
     getInstructorCourse,
+    getInstructorCurriculum,
+    getInstructorQuizzes,
     runInstructorCourseAction,
     updateInstructorCourse,
+    uploadInstructorCourseMedia,
     type InstructorCourseLifecycleAction,
     type InstructorCoursePayload,
 } from "../api/instructorApi";
@@ -138,8 +148,10 @@ export function InstructorCourseEditorPage() {
     const queryClient = useQueryClient();
     const isNew = courseId === "new";
     const [form, setForm] = useState<CourseForm>(emptyForm);
+    const [savedForm, setSavedForm] = useState<CourseForm>(emptyForm);
     const [notice, setNotice] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
     const courseQuery = useQuery({
         queryKey: ["instructor", "course", courseId],
@@ -151,7 +163,9 @@ export function InstructorCourseEditorPage() {
 
     useEffect(() => {
         if (course) {
-            setForm(toForm(course));
+            const next = toForm(course);
+            setForm(next);
+            setSavedForm(next);
         }
     }, [course]);
 
@@ -185,6 +199,8 @@ export function InstructorCourseEditorPage() {
         onSuccess: async (savedCourse) => {
             setError(null);
             setNotice(isNew ? t("instructor.editor.created") : t("instructor.editor.saved"));
+            setSavedForm(form);
+            setLastSavedAt(new Date().toISOString());
             await refreshInstructorData();
             if (isNew) {
                 navigate(`/instructor/courses/${savedCourse.id}`, {
@@ -229,6 +245,22 @@ export function InstructorCourseEditorPage() {
         },
         onError: (requestError) => setError(readError(requestError, t("instructor.editor.actionFail"))),
     });
+
+    const dirty = useMemo(
+        () => JSON.stringify(form) !== JSON.stringify(savedForm),
+        [form, savedForm],
+    );
+
+    // Draft autosave for saved courses: quiet 4s debounce after the last
+    // keystroke. New courses stay manual until the first draft exists.
+    useEffect(() => {
+        if (isNew || !dirty || saveMutation.isPending) return;
+        const timer = window.setTimeout(() => saveMutation.mutate(), 4000);
+        return () => window.clearTimeout(timer);
+    });
+
+    // Guard against losing unsaved edits through sidebar/back navigation.
+    const blocker = useBlocker(dirty && !saveMutation.isPending);
 
     const lifecycleActions = useMemo(() => {
         if (!course) {
@@ -320,6 +352,9 @@ export function InstructorCourseEditorPage() {
                         <Link to={`/instructor/courses/${course.id}/curriculum`} className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#F47822] px-3.5 text-xs font-bold text-white shadow-[0_7px_16px_rgba(244,120,34,.2)] transition hover:bg-[#de6414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40">
                             <FileCheck2 className="h-3.5 w-3.5" /> {t("instructor.editor.curriculum")}
                         </Link>
+                        <Link to={`/instructor/courses/${course.id}/assessments`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] px-3.5 text-xs font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
+                            <ClipboardCheck className="h-3.5 w-3.5" /> {t("instructor.editor.assessments")}
+                        </Link>
                         <Link to={`/instructor/courses/${course.id}/analytics`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-xs font-bold text-[#3A3A3A]/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                             <Activity className="h-3.5 w-3.5" /> {t("instructor.editor.analytics")}
                         </Link>
@@ -332,6 +367,23 @@ export function InstructorCourseEditorPage() {
 
             {notice && <Notice variant="success">{notice}</Notice>}
             {error && <Notice variant="error">{error}</Notice>}
+
+            {blocker.state === "blocked" && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/45 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-label={t("instructor.editor.leaveTitle")}>
+                    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+                        <h2 className="text-base font-bold text-[#3A3A3A]">{t("instructor.editor.leaveTitle")}</h2>
+                        <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/55">{t("instructor.editor.leaveDesc")}</p>
+                        <div className="mt-5 flex justify-end gap-2">
+                            <button type="button" onClick={() => blocker.reset()} className="rounded-xl bg-[#3A3A3A] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#F47822]">
+                                {t("instructor.editor.leaveStay")}
+                            </button>
+                            <button type="button" onClick={() => blocker.proceed()} className="rounded-xl border border-red-200 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50">
+                                {t("instructor.editor.leaveDiscard")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -349,45 +401,96 @@ export function InstructorCourseEditorPage() {
                         </div>
                     </section>
 
-                    <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.04)] sm:p-6">
-                        <SectionTitle title={t("instructor.editor.accessTitle")} description={t("instructor.editor.accessDesc")} />
-                        <div className="mt-6 grid gap-5 md:grid-cols-2">
-                            <TextField label={t("instructor.editor.language")} value={form.language} required onChange={(value) => updateField("language", value)} />
-                            <TextField label={t("instructor.editor.duration")} value={form.duration_minutes} required type="number" min="0" onChange={(value) => updateField("duration_minutes", value)} />
-                            <SelectField label={t("instructor.editor.visibility")} value={form.visibility} onChange={(value) => updateField("visibility", value)} options={[["public", t("instructor.editor.visibilities.public")], ["private", t("instructor.editor.visibilities.private")], ["unlisted", t("instructor.editor.visibilities.unlisted")]]} />
-                            <label className="flex min-h-[46px] items-center gap-3 rounded-xl border border-[#3A3A3A]/10 px-3.5 text-sm text-[#3A3A3A]">
-                                <input type="checkbox" checked={form.is_free} onChange={(event) => updateField("is_free", event.target.checked)} className="h-4 w-4 accent-[#F47822]" />
-                                {t("instructor.editor.free")}
-                            </label>
-                            {!form.is_free && <>
-                                <TextField label={t("instructor.editor.price")} value={form.price} required type="number" min="0" onChange={(value) => updateField("price", value)} />
-                                <div className="grid grid-cols-2 gap-3">
-                                    <TextField label={t("instructor.editor.discount")} value={form.discount_price} type="number" min="0" onChange={(value) => updateField("discount_price", value)} />
-                                    <TextField label={t("instructor.editor.currency")} value={form.currency} required maxLength={3} onChange={(value) => updateField("currency", value.toUpperCase())} />
+                    <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 bg-white shadow-[0_8px_30px_rgba(58,58,58,0.04)]">
+                        <div className="border-b border-[#3A3A3A]/6 bg-[#FCFCFC] px-5 py-4 sm:px-6">
+                            <SectionTitle title={t("instructor.editor.accessTitle")} description={t("instructor.editor.accessDesc")} />
+                            <AccessSummary form={form} />
+                        </div>
+                        <div className="grid gap-0 md:grid-cols-2 md:divide-x md:divide-[#3A3A3A]/6 rtl:md:divide-x-reverse">
+                            <div className="p-5 sm:p-6">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("instructor.editor.accessLearning")}</p>
+                                <div className="mt-4 grid gap-5">
+                                    <TextField label={t("instructor.editor.language")} value={form.language} required onChange={(value) => updateField("language", value)} />
+                                    <div>
+                                        <TextField label={t("instructor.editor.duration")} value={form.duration_minutes} required type="number" min="0" onChange={(value) => updateField("duration_minutes", value)} />
+                                        {Number(form.duration_minutes) > 0 && (
+                                            <p className="mt-1.5 text-[11px] text-[#3A3A3A]/45">
+                                                ≈ {Math.floor(Number(form.duration_minutes) / 60)}h {Number(form.duration_minutes) % 60}m of content
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
-                            </>}
+                            </div>
+                            <div className="border-t border-[#3A3A3A]/6 p-5 sm:p-6 md:border-t-0">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("instructor.editor.accessPricing")}</p>
+                                <div className="mt-4 grid grid-cols-3 gap-1 rounded-xl bg-[#F7F7F7] p-1">
+                                    {(["public", "private", "unlisted"] as const).map((option) => (
+                                        <button
+                                            key={option}
+                                            type="button"
+                                            onClick={() => updateField("visibility", option)}
+                                            aria-pressed={form.visibility === option}
+                                            className={`rounded-lg px-2 py-2 text-[11px] font-bold capitalize transition ${form.visibility === option ? "bg-white text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50 hover:text-[#3A3A3A]"}`}
+                                        >
+                                            {t(`instructor.editor.visibilities.${option}`)}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => updateField("is_free", !form.is_free)}
+                                    aria-pressed={form.is_free}
+                                    className="mt-4 flex w-full items-center justify-between gap-3 rounded-xl border border-[#3A3A3A]/10 px-3.5 py-3 text-sm transition hover:border-[#F47822]/30"
+                                >
+                                    <span className="font-semibold text-[#3A3A3A]">{t("instructor.editor.free")}</span>
+                                    <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${form.is_free ? "bg-[#F47822]" : "bg-[#3A3A3A]/15"}`}>
+                                        <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${form.is_free ? "left-6 rtl:left-1 rtl:right-6" : "left-1 rtl:left-auto rtl:right-1"}`} />
+                                    </span>
+                                </button>
+                                {!form.is_free && (
+                                    <div className="mt-4 grid gap-4">
+                                        <TextField label={t("instructor.editor.price")} value={form.price} required type="number" min="0" onChange={(value) => updateField("price", value)} />
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <TextField label={t("instructor.editor.discount")} value={form.discount_price} type="number" min="0" onChange={(value) => updateField("discount_price", value)} />
+                                            <TextField label={t("instructor.editor.currency")} value={form.currency} required maxLength={3} onChange={(value) => updateField("currency", value.toUpperCase())} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </section>
 
                     <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.04)] sm:p-6">
                         <SectionTitle title={t("instructor.editor.mediaTitle")} description={t("instructor.editor.mediaDesc")} />
                         <div className="mt-6 grid gap-5">
-                            <TextField label={t("instructor.editor.thumbnail")} value={form.thumbnail} type="url" onChange={(value) => updateField("thumbnail", value)} />
-                            <TextField label={t("instructor.editor.cover")} value={form.cover_image} type="url" onChange={(value) => updateField("cover_image", value)} />
-                            <TextField label={t("instructor.editor.previewVideo")} value={form.preview_video} type="url" onChange={(value) => updateField("preview_video", value)} />
+                            <MediaField label={t("instructor.editor.thumbnail")} value={form.thumbnail} kind="image" courseId={isNew ? undefined : courseId} onChange={(value) => updateField("thumbnail", value)} />
+                            <MediaField label={t("instructor.editor.cover")} value={form.cover_image} kind="image" courseId={isNew ? undefined : courseId} onChange={(value) => updateField("cover_image", value)} />
+                            <MediaField label={t("instructor.editor.previewVideo")} value={form.preview_video} kind="video" courseId={isNew ? undefined : courseId} onChange={(value) => updateField("preview_video", value)} />
                         </div>
                     </section>
 
-                    <div className="flex flex-wrap justify-end gap-3">
+                    <div className="flex flex-wrap items-center justify-end gap-3">
+                        {dirty ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-700">
+                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                {t("instructor.editor.unsavedBadge")}
+                            </span>
+                        ) : lastSavedAt ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700">
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                {t("instructor.editor.autosaved")}
+                            </span>
+                        ) : null}
                         <Link to="/instructor/courses" className="rounded-xl px-4 py-3 text-xs font-semibold text-[#3A3A3A]/55 transition hover:bg-white hover:text-[#3A3A3A]">{t("instructor.editor.cancel")}</Link>
                         <button type="submit" disabled={isWorking} className="inline-flex items-center gap-2 rounded-xl bg-[#3A3A3A] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#F47822] disabled:cursor-not-allowed disabled:opacity-60">
                             {saveMutation.isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                            {isNew ? t("instructor.editor.createDraft") : t("instructor.editor.save")}
+                            {saveMutation.isPending ? t("instructor.editor.autosaving") : isNew ? t("instructor.editor.createDraft") : t("instructor.editor.save")}
                         </button>
                     </div>
                 </form>
 
                 {!isNew && course && <aside className="h-fit space-y-4 xl:sticky xl:top-24">
+                    <SetupChecklist courseId={courseId!} form={form} />
                     <section className="rounded-2xl border border-[#3A3A3A]/8 bg-[#3A3A3A] p-5 text-white shadow-[0_10px_30px_rgba(58,58,58,.12)]">
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F9A16C]">{t("instructor.editor.publishEyebrow")}</p>
                         <h2 className="mt-3 text-lg font-semibold capitalize">{statusText(course.status)}</h2>
@@ -416,6 +519,240 @@ function lifecycleKey(action: InstructorCourseLifecycleAction): string {
 
 function readError(error: unknown, fallback: string): string {
     return error instanceof ApiError ? error.message : fallback;
+}
+
+function AccessSummary({ form }: { form: CourseForm }) {
+    const { t } = useTranslation();
+    const price = form.is_free
+        ? t("instructor.editor.accessSummaryFree")
+        : `${form.price || "0"} ${form.currency}`;
+    return (
+        <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#F47822]/8 px-3 py-1.5 text-[11px] font-bold text-[#F47822]">
+            <Eye className="h-3.5 w-3.5" />
+            {price} · {t(`instructor.editor.visibilities.${form.visibility}` as "instructor.editor.visibilities.public")} · {form.duration_minutes || "0"} min
+        </p>
+    );
+}
+
+function SetupChecklist({ courseId, form }: { courseId: string; form: CourseForm }) {
+    const { t } = useTranslation();
+    const curriculum = useQuery({
+        queryKey: ["instructor", "curriculum", courseId, "checklist"],
+        queryFn: () => getInstructorCurriculum(courseId),
+    });
+    const quizzes = useQuery({
+        queryKey: ["instructor", "quizzes", courseId, "checklist"],
+        queryFn: () => getInstructorQuizzes(courseId),
+    });
+    const assessments = useQuery({
+        queryKey: ["instructor", "assessments", courseId, "checklist"],
+        queryFn: () => getInstructorAssessments(courseId),
+    });
+
+    const sections = curriculum.data?.sections ?? [];
+    const publishedLessons = sections.flatMap((section) => section.lessons).filter((lesson) => lesson.status === "published").length;
+
+    const required = [
+        {
+            done: form.title.trim() !== "" && form.description.trim() !== "" && Number(form.duration_minutes) > 0,
+            label: t("instructor.editor.checklistBasics"),
+            hint: t("instructor.editor.checklistBasicsHint"),
+            to: undefined,
+        },
+        {
+            done: form.thumbnail.trim() !== "",
+            label: t("instructor.editor.checklistMedia"),
+            hint: t("instructor.editor.checklistMediaHint"),
+            to: undefined,
+        },
+        {
+            done: sections.length > 0,
+            label: t("instructor.editor.checklistCurriculum"),
+            hint: t("instructor.editor.checklistCurriculumHint"),
+            to: `/instructor/courses/${courseId}/curriculum`,
+        },
+        {
+            done: publishedLessons > 0,
+            label: t("instructor.editor.checklistLessons"),
+            hint: t("instructor.editor.checklistLessonsHint"),
+            to: `/instructor/courses/${courseId}/curriculum`,
+        },
+    ];
+    const bonus = [
+        {
+            done: (quizzes.data?.length ?? 0) > 0,
+            label: t("instructor.editor.checklistQuiz"),
+            hint: t("instructor.editor.checklistQuizHint"),
+            to: `/instructor/courses/${courseId}/quizzes`,
+        },
+        {
+            done: (assessments.data?.length ?? 0) > 0,
+            label: t("instructor.editor.checklistAssessment"),
+            hint: t("instructor.editor.checklistAssessmentHint"),
+            to: `/instructor/courses/${courseId}/assessments`,
+        },
+    ];
+
+    const doneCount = required.filter((step) => step.done).length;
+    const percent = Math.round((doneCount / required.length) * 100);
+
+    return (
+        <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,.04)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("instructor.editor.checklistEyebrow")}</p>
+            <h2 className="mt-2 text-base font-bold text-[#3A3A3A]">{t("instructor.editor.checklistTitle")}</h2>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#3A3A3A]/8">
+                <div className="h-full rounded-full bg-[#F47822] transition-all duration-500" style={{ width: `${percent}%` }} />
+            </div>
+            <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/55">
+                {percent === 100 ? t("instructor.editor.checklistReady") : t("instructor.editor.checklistAlmost", { done: doneCount, total: required.length })}
+            </p>
+            <ul className="mt-4 space-y-2">
+                {[...required, ...bonus].map((step) => (
+                    <li key={step.label}>
+                        {step.to ? (
+                            <Link to={step.to} className="flex items-start gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-[#F7F7F7]">
+                                <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${step.done ? "text-emerald-500" : "text-[#3A3A3A]/20"}`} />
+                                <span>
+                                    <span className="block text-xs font-bold text-[#3A3A3A]">{step.label}</span>
+                                    <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45">{step.hint}</span>
+                                </span>
+                            </Link>
+                        ) : (
+                            <div className="flex items-start gap-2.5 px-2 py-1.5">
+                                <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${step.done ? "text-emerald-500" : "text-[#3A3A3A]/20"}`} />
+                                <span>
+                                    <span className="block text-xs font-bold text-[#3A3A3A]">{step.label}</span>
+                                    <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45">{step.hint}</span>
+                                </span>
+                            </div>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
+}
+
+function MediaField({ label, value, kind, courseId, onChange }: { label: string; value: string; kind: "image" | "video"; courseId?: string; onChange: (value: string) => void }) {
+    const { t } = useTranslation();
+    const [mode, setMode] = useState<"url" | "upload">("url");
+    const [uploading, setUploading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
+    const accept = kind === "video" ? "video/mp4,video/webm" : "image/jpeg,image/png,image/webp";
+    const localhostWarning =
+        /^(https?:\/\/)?(localhost|127\.0\.0\.1|0\.0\.0\.0)([:/]|$)/i.test(value.trim()) &&
+        !/^(https?:\/\/)?(localhost|127\.0\.0\.1)([:/]|$)/i.test(import.meta.env.VITE_API_URL ?? "");
+    const recentKey = courseId ? `hbt:course-media:${courseId}` : null;
+    const [recent, setRecent] = useState<Array<{ url: string; name: string }>>(() => {
+        if (!recentKey) return [];
+        try {
+            const raw = localStorage.getItem(recentKey);
+            const parsed: unknown = JSON.parse(raw ?? "[]");
+            return Array.isArray(parsed) ? parsed.filter((entry): entry is { url: string; name: string } => typeof entry?.url === "string") : [];
+        } catch {
+            return [];
+        }
+    });
+
+    const rememberUpload = (url: string, name: string) => {
+        if (!recentKey) return;
+        setRecent((current) => {
+            const next = [{ url, name }, ...current.filter((entry) => entry.url !== url)].slice(0, 6);
+            try {
+                localStorage.setItem(recentKey, JSON.stringify(next));
+            } catch {
+                // Storage unavailable — reuse list simply stays empty.
+            }
+            return next;
+        });
+    };
+
+    const pick = async (file?: File | null) => {
+        if (!file || uploading || !courseId) return;
+        setError(null);
+        if (file.size > 50 * 1024 * 1024) {
+            setError(t("instructor.editor.mediaTooBig"));
+            return;
+        }
+        const ok = kind === "video" ? file.type.startsWith("video/") : file.type.startsWith("image/");
+        if (!ok) {
+            setError(t("instructor.editor.mediaBadType"));
+            return;
+        }
+        try {
+            setUploading(true);
+            const media = await uploadInstructorCourseMedia(courseId, file);
+            rememberUpload(media.url, file.name);
+            onChange(media.url);
+            setMode("url");
+        } catch (requestError) {
+            setError(requestError instanceof Error ? requestError.message : t("instructor.editor.mediaUploadFail"));
+        } finally {
+            setUploading(false);
+            if (fileRef.current) fileRef.current.value = "";
+        }
+    };
+
+    return (
+        <div className="rounded-xl border border-[#3A3A3A]/10 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="text-xs font-semibold text-[#3A3A3A]/75">{label}</span>
+                <div className="flex rounded-lg bg-[#F7F7F7] p-0.5 text-[11px] font-bold">
+                    <button type="button" onClick={() => setMode("url")} aria-pressed={mode === "url"} className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${mode === "url" ? "bg-white text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50"}`}>
+                        <Link2 className="h-3 w-3" /> {t("instructor.editor.mediaUrlTab")}
+                    </button>
+                    <button type="button" onClick={() => setMode("upload")} aria-pressed={mode === "upload"} className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${mode === "upload" ? "bg-white text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50"}`}>
+                        <Upload className="h-3 w-3" /> {t("instructor.editor.mediaUploadTab")}
+                    </button>
+                </div>
+            </div>
+
+            {value && kind === "image" && (
+                <div className="relative mt-3 overflow-hidden rounded-lg border border-[#3A3A3A]/8 bg-[#222]">
+                    <img src={value} alt="" onError={(event) => { event.currentTarget.style.display = "none"; }} className="aspect-[16/9] w-full object-cover" />
+                    <span className="absolute bottom-2 left-2 rounded-md bg-black/55 px-2 py-1 text-[10px] font-bold text-white">{t("instructor.editor.mediaPreview")}</span>
+                </div>
+            )}
+
+            {mode === "url" ? (
+                <>
+                <input value={value} type="url" dir="ltr" placeholder="https://" onChange={(event) => onChange(event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3.5 text-left text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/30 focus:border-[#F47822] focus:bg-white focus:ring-4 focus:ring-[#F47822]/8" />
+                {localhostWarning && (
+                    <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-semibold leading-5 text-amber-700">
+                        This URL points to localhost — it loads here but will break in production. Upload the file instead.
+                    </p>
+                )}
+                </>
+            ) : !courseId ? (
+                <p className="mt-3 rounded-lg bg-[#FFF8F4] px-3 py-2.5 text-[11px] leading-5 text-[#9c4209]">{t("instructor.editor.mediaUploadNew")}</p>
+            ) : (
+                <div className="mt-3">
+                    <input ref={fileRef} type="file" accept={accept} className="hidden" onChange={(event) => void pick(event.target.files?.[0])} />
+                    <button type="button" disabled={uploading} onClick={() => fileRef.current?.click()} className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#3A3A3A] px-4 text-xs font-bold text-white transition hover:bg-[#F47822] disabled:opacity-60">
+                        {uploading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+                        {uploading ? t("instructor.curriculum.uploading") : accept}
+                    </button>
+                    <p className="mt-2 text-[10px] leading-4 text-[#3A3A3A]/40">{t("instructor.editor.mediaMaxHint")}</p>
+                    {error && <p className="mt-2 text-[11px] font-semibold text-red-600">{error}</p>}
+                    {recent.length > 0 && (
+                        <div className="mt-3">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40">{t("instructor.editor.mediaRecent")}</p>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                {recent.map((entry) => (
+                                    <button key={entry.url} type="button" onClick={() => { onChange(entry.url); setMode("url"); }} title={entry.url} className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#3A3A3A]/65 transition hover:border-[#F47822]/40 hover:text-[#F47822]">
+                                        <span className="max-w-[140px] truncate">{entry.name}</span>
+                                        <span className="font-bold text-[#F47822]">{t("instructor.editor.mediaUse")}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+            {mode === "url" && error && <p className="mt-2 text-[11px] font-semibold text-red-600">{error}</p>}
+        </div>
+    );
 }
 
 function SectionTitle({ title, description }: { title: string; description: string }) {

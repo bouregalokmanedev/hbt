@@ -11,7 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import { env } from "@/config/env";
@@ -28,6 +28,7 @@ import { CourseThumbnail } from "../components/CourseThumbnail";
 import { useCourse } from "../hooks/useCourse";
 import { useCourseCurriculum } from "../hooks/useCourseCurriculum";
 import { useCourseEnrollment } from "../hooks/useCourseEnrollment";
+import { submitCourseFeedback } from "@/features/lessons/api/feedback.api";
 import {
   getCourseReviews,
   type CourseReviewsResponse,
@@ -54,20 +55,29 @@ function formatPrice(
   isFree: boolean,
   currency: string,
   t: TFunction,
+  locale?: string,
 ): string {
   if (isFree) {
     return t("courseDetails.common.free");
   }
 
-  if (discountPrice !== null && discountPrice !== undefined) {
-    return `${discountPrice} ${currency}`;
+  const amount = discountPrice !== null && discountPrice !== undefined
+    ? discountPrice
+    : price;
+
+  if (amount === null || amount === undefined) {
+    return t("courseDetails.page.viewCourse");
   }
 
-  if (price !== null && price !== undefined) {
-    return `${price} ${currency}`;
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: currency || "USD",
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${amount} ${currency}`;
   }
-
-  return t("courseDetails.page.viewCourse");
 }
 
 function getDifficultyLabel(difficulty: string, t: TFunction): string {
@@ -99,6 +109,18 @@ export function CourseDetailsPage() {
   const [duplicateEnrollment, setDuplicateEnrollment] = useState(false);
   const [reviews, setReviews] = useState<CourseReviewsResponse | null>(null);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSending, setReviewSending] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewSent, setReviewSent] = useState(false);
+
+  const loadReviews = useCallback(() => {
+    if (!id) return;
+    void getCourseReviews(id)
+      .then(setReviews)
+      .catch(() => setReviews(null));
+  }, [id]);
 
   useEffect(() => {
     if (enrollmentError?.toLowerCase().includes("already")) {
@@ -107,11 +129,28 @@ export function CourseDetailsPage() {
   }, [enrollmentError]);
 
   useEffect(() => {
-    if (!id) return;
-    void getCourseReviews(id)
-      .then(setReviews)
-      .catch(() => setReviews(null));
-  }, [id]);
+    loadReviews();
+  }, [loadReviews]);
+
+  const submitReview = async () => {
+    if (!id || !reviewRating || reviewSending) return;
+    setReviewSending(true);
+    setReviewError(null);
+    try {
+      await submitCourseFeedback(id, {
+        rating: reviewRating,
+        comment: reviewComment.trim() || undefined,
+      });
+      setReviewSent(true);
+      setReviewRating(0);
+      setReviewComment("");
+      loadReviews();
+    } catch (reason) {
+      setReviewError(reason instanceof Error ? reason.message : t("courseDetails.page.reviewFail"));
+    } finally {
+      setReviewSending(false);
+    }
+  };
 
   const isEnrolled = enrollment?.status === "active";
 
@@ -268,7 +307,7 @@ export function CourseDetailsPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pb-20 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-28 pt-8 sm:px-6 lg:px-8 lg:pb-20">
         {/* =====================================================
                     BACK
                 ====================================================== */}
@@ -290,7 +329,9 @@ export function CourseDetailsPage() {
                 ====================================================== */}
 
         <section className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
-          <div className="min-w-0 space-y-8">
+          {/* Left column uses flex order so the highest-intent blocks
+              (curriculum first, reviews last) lead on every screen size. */}
+          <div className="flex min-w-0 flex-col gap-8">
             {/* Heading */}
 
             <div className="space-y-5">
@@ -470,7 +511,7 @@ export function CourseDetailsPage() {
               </ul>
             </section>
 
-            <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+            <section className="order-6 rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
@@ -558,30 +599,86 @@ export function CourseDetailsPage() {
                   </p>
                 </div>
               )}
+
+              {hasFullAccess && (
+                <div className="mt-6 rounded-2xl border border-border bg-muted/25 p-4 sm:p-5">
+                  <p className="text-sm font-bold text-foreground">
+                    {t("courseDetails.page.writeReview")}
+                  </p>
+                  <div className="mt-3 flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setReviewRating(value)}
+                        aria-label={t("courseDetails.page.rateStars", { n: value })}
+                      >
+                        <Star
+                          className={`h-6 w-6 transition ${value <= reviewRating ? "fill-[#F47822] text-[#F47822]" : "text-border hover:text-[#F47822]"}`}
+                        />
+                      </button>
+                    ))}
+                    {reviewRating === 0 && (
+                      <span className="ms-2 text-xs text-muted-foreground">
+                        {t("courseDetails.page.rateHint")}
+                      </span>
+                    )}
+                  </div>
+                  <textarea
+                    value={reviewComment}
+                    onChange={(event) => setReviewComment(event.target.value)}
+                    placeholder={t("courseDetails.page.reviewPh")}
+                    rows={3}
+                    maxLength={2000}
+                    className="mt-3 w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-[#F47822]"
+                  />
+                  {reviewError && (
+                    <p role="alert" className="mt-2 text-xs font-semibold text-red-600">
+                      {reviewError}
+                    </p>
+                  )}
+                  {reviewSent && (
+                    <p className="mt-2 text-xs font-semibold text-emerald-600">
+                      {t("courseDetails.page.reviewThanks")}
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    disabled={!reviewRating || reviewSending}
+                    onClick={() => void submitReview()}
+                    className="mt-3 inline-flex items-center rounded-xl bg-[#F47822] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#e96b17] disabled:opacity-50"
+                  >
+                    {reviewSending ? t("courseDetails.page.reviewSending") : t("courseDetails.page.reviewSend")}
+                  </button>
+                </div>
+              )}
             </section>
 
             <CourseQuizzes
               courseId={course.id}
               enrolled={isEnrolled || isCompleted}
+              className="order-2"
             />
+
+            <CourseInstructor instructor={course.instructor} className="order-3" />
 
             <CourseDiagnostics
               courseId={course.id}
               authenticated={Boolean(user)}
               enrolled={hasFullAccess}
+              className="order-4"
             />
 
             <CourseCertificate
               courseId={course.id}
               courseTitle={course.title}
               authenticated={Boolean(user)}
+              className="order-5"
             />
 
-            <CourseInstructor instructor={course.instructor} />
+            {/* Curriculum — highest intent, leads the page */}
 
-            {/* Curriculum */}
-
-            <div className="pt-2">
+            <div className="order-1 pt-2">
               {isCurriculumLoading ? (
                 <section className="space-y-5">
                   <div className="flex items-center justify-between">
@@ -679,6 +776,7 @@ export function CourseDetailsPage() {
                         course.is_free,
                         course.currency,
                         t,
+                        dateLocale,
                       )}
                     </p>
 
@@ -750,7 +848,7 @@ export function CourseDetailsPage() {
                       <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-[#F47822]" />
 
                       <span className="text-sm leading-5 text-muted-foreground">
-                        {getDifficultyLabel(course.difficulty, t)} level training
+                        {t("courseDetails.page.levelTraining", { label: getDifficultyLabel(course.difficulty, t) })}
                       </span>
                     </div>
 
@@ -817,6 +915,39 @@ export function CourseDetailsPage() {
             </div>
           </aside>
         </section>
+      </div>
+
+      {/* Sticky mobile CTA — the sidebar stacks far down on small screens,
+          so price + primary action stay reachable while scrolling. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-7xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              {t("courseDetails.page.priceLabel")}
+            </p>
+            <p className="truncate text-lg font-black tracking-tight text-foreground">
+              {formatPrice(course.price, course.discount_price, course.is_free, course.currency, t, dateLocale)}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleStartLearning()}
+            disabled={isEnrolling || duplicateEnrollment}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#F47822] px-6 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(244,120,34,0.22)] transition disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isEnrolling
+              ? t("courseDetails.page.cta.enrolling")
+              : duplicateEnrollment
+                ? t("courseDetails.page.cta.alreadyEnrolled")
+                : isCompleted
+                  ? t("courseDetails.page.cta.review")
+                  : isEnrolled
+                    ? t("courseDetails.page.cta.continue")
+                    : course.is_free
+                      ? t("courseDetails.page.cta.start")
+                      : t("courseDetails.page.cta.enroll")}
+          </button>
+        </div>
       </div>
     </main>
   );

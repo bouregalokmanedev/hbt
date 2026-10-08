@@ -44,6 +44,11 @@ interface LessonVideoPlayerProps {
     theaterMode?: boolean;
     onToggleTheater?: () => void;
     /**
+     * Identity watermark rendered faintly over the video (e.g. the
+     * learner's email). Makes screen leaks traceable.
+     */
+    watermark?: string | null;
+    /**
      * Receives a sampled frame color as an "r, g, b" triplet whenever the
      * ambient glow should update. The parent renders the glow layer so the
      * player itself never re-renders for it.
@@ -73,6 +78,7 @@ export function LessonVideoPlayer({
     onNextLesson,
     theaterMode = false,
     onToggleTheater,
+    watermark = null,
     onAmbientColor,
 }: LessonVideoPlayerProps) {
     const { t } = useTranslation();
@@ -129,6 +135,22 @@ export function LessonVideoPlayer({
         isMuted,
         setIsMuted,
     ] = useState(false);
+
+    const [isBuffering, setIsBuffering] = useState(false);
+
+    const [videoError, setVideoError] = useState<string | null>(null);
+
+    const retryVideo = useCallback(() => {
+        const videoElement = videoRef.current;
+
+        if (!videoElement) {
+            return;
+        }
+
+        setVideoError(null);
+        setIsBuffering(true);
+        videoElement.load();
+    }, []);
 
     /**
      * Saved volume.
@@ -455,6 +477,8 @@ export function LessonVideoPlayer({
         setCurrentTime(0);
         setDuration(0);
         setIsPlaying(false);
+        setIsBuffering(false);
+        setVideoError(null);
     }, [lesson.id]);
 
     // Flush the latest position when the player unmounts or the document is
@@ -1213,12 +1237,24 @@ export function LessonVideoPlayer({
                     onTimeUpdate={
                         handleTimeUpdate
                     }
-                    onPlay={() =>
-                        setIsPlaying(true)
-                    }
+                    onPlay={() => {
+                        setIsPlaying(true);
+                        setIsBuffering(false);
+                    }}
+                    onPlaying={() => {
+                        setIsPlaying(true);
+                        setIsBuffering(false);
+                    }}
                     onPause={() =>
                         setIsPlaying(false)
                     }
+                    onWaiting={() => setIsBuffering(true)}
+                    onStalled={() => setIsBuffering(true)}
+                    onCanPlay={() => setIsBuffering(false)}
+                    onError={() => {
+                        setIsPlaying(false);
+                        setIsBuffering(false);
+                    }}
                     onEnded={
                         handleEnded
                     }
@@ -1228,6 +1264,11 @@ export function LessonVideoPlayer({
                         type={
                             video.mime_type
                         }
+                        onError={() => {
+                            setIsPlaying(false);
+                            setIsBuffering(false);
+                            setVideoError(t("lessonPlayer.video.loadError"));
+                        }}
                     />
 
                     {captionsUrl && (
@@ -1249,6 +1290,10 @@ export function LessonVideoPlayer({
 
                 {/* Prev / Next lesson — pinned LTR so the arrows keep their
                     meaning in Arabic (previous on the left, next on the right). */}
+                {/* Identity watermark — faint, drifting corners. Makes
+                    screen captures traceable without disturbing viewing. */}
+                {watermark && <VideoWatermark text={watermark} />}
+
                 <div dir="ltr" className="pointer-events-none absolute inset-x-3 top-1/2 flex -translate-y-1/2 justify-between sm:inset-x-4">
                     <button
                         type="button"
@@ -1297,6 +1342,30 @@ export function LessonVideoPlayer({
                     >
                         <Play className="ml-1 h-7 w-7 fill-current" />
                     </button>
+                )}
+
+                {/* Buffering spinner — a stall used to look identical to "won't start". */}
+                {isBuffering && !videoError && (
+                    <div className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2">
+                        <span className="h-10 w-10 animate-spin rounded-full border-[3px] border-white/20 border-t-[#F47822]" />
+                        <span className="rounded-full bg-black/60 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/80">
+                            {t("lessonPlayer.video.buffering")}
+                        </span>
+                    </div>
+                )}
+
+                {/* Load failure — retry instead of a dead black frame. */}
+                {videoError && (
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/80 p-6 text-center">
+                        <p className="max-w-xs text-sm font-semibold text-white">{videoError}</p>
+                        <button
+                            type="button"
+                            onClick={retryVideo}
+                            className="rounded-xl bg-[#F47822] px-5 py-2.5 text-xs font-bold text-white transition hover:bg-[#df6817]"
+                        >
+                            {t("lessonPlayer.video.retry")}
+                        </button>
+                    </div>
                 )}
             </div>
 
@@ -1460,6 +1529,40 @@ export function LessonVideoPlayer({
                     </div>
                 </div>
             </div>
+        </div>
+    );
+}
+
+const WATERMARK_SPOTS = [
+    "left-4 top-4",
+    "right-4 top-4",
+    "bottom-20 left-4",
+    "bottom-20 right-4",
+] as const;
+
+/**
+ * Faint learner identity burned into the frame (DOM overlay, not the
+ * file). Drifts between corners so it can't be cropped out once.
+ */
+function VideoWatermark({ text }: { text: string }) {
+    const [spot, setSpot] = useState(0);
+
+    useEffect(() => {
+        const id = window.setInterval(() => {
+            setSpot((value) => (value + 1) % WATERMARK_SPOTS.length);
+        }, 25000);
+
+        return () => window.clearInterval(id);
+    }, []);
+
+    return (
+        <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute z-10 transition-all duration-1000 ${WATERMARK_SPOTS[spot]}`}
+        >
+            <p className="rounded-md bg-black/25 px-2 py-1 text-[10px] font-semibold tracking-wide text-white/45 backdrop-blur-[1px]">
+                {text}
+            </p>
         </div>
     );
 }

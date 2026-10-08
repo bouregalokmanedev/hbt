@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 
 import {
   ArrowLeft,
+  ArrowRight,
   BookOpen,
   CheckCircle2,
   Clock3,
@@ -15,6 +16,7 @@ import {
 
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 import {
   completeLesson,
@@ -128,13 +130,19 @@ interface LessonPlayerContentProps {
 
 function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [activeContentTab, setActiveContentTab] = useState<
     "overview" | "notes" | "documentation" | "feedback" | "instructor"
   >("overview");
   const [theaterMode, setTheaterMode] = useState(false);
-  const { curriculum, reload: reloadCurriculum } =
-    useLearningCurriculum(courseId);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const {
+    curriculum,
+    isLoading: isCurriculumLoading,
+    error: curriculumError,
+    reload: reloadCurriculum,
+  } = useLearningCurriculum(courseId);
   const { lesson, isLoading, error, reload, applyProgress } = useLesson(lessonId);
 
   /*
@@ -169,6 +177,8 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
   );
 
   const handleComplete = useCallback(async () => {
+    if (isCompleting) return;
+    setIsCompleting(true);
     try {
       const serverProgress = await completeLesson(lessonId);
       applyProgress(serverProgress);
@@ -184,16 +194,24 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
 
       const freshCurriculum = await getLearningCurriculum(courseId);
       // Section-aware: a finished section routes to its quiz checkpoint
-      // instead of jumping straight into the next section.
+      // instead of jumping straight into the next section. Nothing left
+      // means the course is complete — head back to celebrate it.
       const step = resolveNextStep(freshCurriculum, lessonId);
 
       if (step) {
         navigate(nextStepPath(courseId, step));
+      } else {
+        navigate(`/courses/${courseId}`);
       }
     } catch (error) {
       console.error("Failed to complete lesson:", error);
+    } finally {
+      setIsCompleting(false);
     }
-  }, [courseId, lessonId, navigate, reload, reloadCurriculum, applyProgress]);
+  }, [courseId, lessonId, navigate, reload, reloadCurriculum, applyProgress, isCompleting]);
+
+  // Next-step preview for the overview actions + last-lesson fallback.
+  const overviewStep = curriculum ? resolveNextStep(curriculum, lessonId) : null;
 
   /*
    * Loading state.
@@ -337,13 +355,11 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
             ====================================================== */}
 
       <main className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-        <div className={`grid gap-6 xl:gap-8 ${theaterMode ? "lg:grid-cols-1" : "lg:grid-cols-[minmax(0,1fr)_390px]"}`}>
-          {/* =================================================
-                        LEFT — LESSON
-                    ================================================== */}
-
-          <section className="min-w-0">
-            <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.035)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className={`flex flex-col gap-6 xl:gap-8 ${theaterMode ? "lg:grid lg:grid-cols-1" : "lg:grid lg:grid-cols-[minmax(0,1fr)_390px]"}`}>
+          {/* LEFT — LESSON (contents on mobile so blocks interleave as
+              video → complete/next → curriculum → tabs → diagnostics) */}
+          <section className="contents lg:block lg:min-w-0">
+            <div className="order-1 mb-0 flex flex-col gap-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-3 shadow-[0_5px_20px_rgba(15,23,42,0.035)] sm:flex-row sm:items-center sm:justify-between sm:px-5 lg:mb-4">
               <div className="flex min-w-0 items-center gap-3">
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${isCompleted ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-[#F47822]/10 text-[#F47822]"}`}
@@ -384,7 +400,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
 
             {/* Video — capped width in theater mode so lower-resolution
                 videos pillarbox on black instead of blowing up. */}
-            <div className={`relative ${theaterMode ? "mx-auto w-full max-w-5xl" : ""}`}>
+            <div className={`relative order-2 ${theaterMode ? "mx-auto w-full max-w-5xl" : ""}`}>
               <div
                 ref={videoAmbientRef}
                 aria-hidden="true"
@@ -398,6 +414,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                   onComplete={handleComplete}
                   theaterMode={theaterMode}
                   onToggleTheater={() => setTheaterMode((value) => !value)}
+                  watermark={user?.email ?? null}
                   onAmbientColor={handleAmbientColor}
                 onPreviousLesson={
                   previousLesson
@@ -413,19 +430,33 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                     if (step) {
                       return () => navigate(nextStepPath(courseId, step));
                     }
-                    return nextLesson
-                      ? () =>
-                          navigate(
-                            `/courses/${courseId}/lessons/${nextLesson.id}`,
-                          )
-                      : undefined;
+                    if (nextLesson) {
+                      return () =>
+                        navigate(
+                          `/courses/${courseId}/lessons/${nextLesson.id}`,
+                        );
+                    }
+                    // Last stop: back to the course (certificate, reviews).
+                    return () => navigate(`/courses/${courseId}`);
                   })()
                 }
               />
               </div>
             </div>
 
-            <section className="mt-6 overflow-hidden rounded-3xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_8px_28px_rgba(15,23,42,0.045)]">
+            {/* Mobile complete/next — same shared curriculum source as below. */}
+            <div className="order-3 lg:hidden">
+              <LessonNavigation
+                courseId={courseId}
+                lesson={lesson}
+                curriculum={curriculum}
+                isLoading={isCurriculumLoading}
+                error={curriculumError}
+                onReload={reloadCurriculum}
+              />
+            </div>
+
+            <section className="order-5 mt-0 overflow-hidden rounded-3xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_8px_28px_rgba(15,23,42,0.045)] lg:mt-6">
               <nav
                 className="flex overflow-x-auto border-b border-gray-100 dark:border-white/10 px-3 sm:px-5"
                 aria-label={t("lessonPlayer.page.contentSections")}
@@ -492,12 +523,53 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
 
                       {lesson.content && (
                         <div
-                          className="prose prose-sm mt-6 max-w-none text-gray-700 prose-headings:text-[#3A3A3A] dark:prose-headings:text-[#ececef] prose-a:text-[#F47822] prose-strong:text-[#3A3A3A] dark:prose-strong:text-[#ececef] sm:prose-base dark:text-gray-300 dark:prose-invert"
+                          className="prose prose-sm mt-6 max-w-none text-gray-700 dark:text-gray-300 prose-headings:text-[#3A3A3A] dark:prose-headings:text-[#ececef] prose-a:text-[#F47822] prose-strong:text-[#3A3A3A] sm:prose-base"
                           dangerouslySetInnerHTML={{
-                            __html: sanitizeHtml(lesson.content),
+                            __html: lesson.content,
                           }}
                         />
                       )}
+                    </div>
+
+                    {/* Inline actions — no need to scroll for the basics. */}
+                    <div className="flex flex-wrap gap-2 border-t border-gray-100 px-5 py-4 dark:border-white/10 sm:px-7">
+                      {!isCompleted ? (
+                        <button
+                          type="button"
+                          disabled={isCompleting}
+                          onClick={() => void handleComplete()}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#df6817] disabled:opacity-60"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {isCompleting ? t("lessonPlayer.nav.completing") : t("lessonPlayer.nav.complete")}
+                        </button>
+                      ) : overviewStep ? (
+                        <button
+                          type="button"
+                          onClick={() => navigate(nextStepPath(courseId, overviewStep))}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-[#3A3A3A] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-black"
+                        >
+                          {overviewStep.kind === "quiz" ? t("lessonPlayer.nav.startQuiz") : t("lessonPlayer.nav.next")}
+                          <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/courses/${courseId}`)}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-emerald-700"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {t("lessonPlayer.nav.backToCourse")}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setActiveContentTab("documentation")}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-[#ececef]"
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        {t("lessonPlayer.page.tabs.documentation")}
+                      </button>
                     </div>
                   </article>
                 </>
@@ -517,19 +589,24 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
               )}
             </section>
 
-            <LessonDiagnostics courseId={courseId} />
+            <div className="order-6 lg:contents">
+              <LessonDiagnostics courseId={courseId} />
+            </div>
           </section>
 
           {/* =================================================
                         RIGHT — CURRICULUM
                     ================================================== */}
 
-          <aside className={theaterMode ? "" : "lg:sticky lg:top-[96px] lg:self-start"}>
+          <aside className={`order-4 lg:order-none ${theaterMode ? "" : "lg:sticky lg:top-[96px] lg:self-start"}`}>
             <div className="overflow-hidden rounded-3xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
               <LessonCurriculum
-                key={`${courseId}-${lesson.progress?.completed_at ?? "active"}-${lesson.progress?.progress_percentage ?? 0}`}
                 courseId={courseId}
                 currentLessonId={lesson.id}
+                curriculum={curriculum}
+                isLoading={isCurriculumLoading}
+                error={curriculumError}
+                onReload={reloadCurriculum}
               />
             </div>
           </aside>
@@ -537,11 +614,18 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
       </main>
 
       {/* =====================================================
-                LESSON NAVIGATION
+                LESSON NAVIGATION (desktop — mobile has its own above)
             ====================================================== */}
 
-      <div className="mx-auto max-w-[1600px] px-4 pb-10 sm:px-6 lg:px-8">
-        <LessonNavigation courseId={courseId} lesson={lesson} />
+      <div className="mx-auto hidden max-w-[1600px] px-4 pb-10 sm:px-6 lg:block lg:px-8">
+        <LessonNavigation
+          courseId={courseId}
+          lesson={lesson}
+          curriculum={curriculum}
+          isLoading={isCurriculumLoading}
+          error={curriculumError}
+          onReload={reloadCurriculum}
+        />
       </div>
     </div>
   );

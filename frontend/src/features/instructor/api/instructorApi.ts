@@ -276,6 +276,35 @@ export async function deleteInstructorLessonMedia(mediaId: string): Promise<void
     await api(`/v1/media/${mediaId}`, { method: "DELETE" });
 }
 
+export async function uploadInstructorCourseMedia(
+    courseId: string,
+    file: File,
+): Promise<InstructorLessonMedia> {
+    const data = new FormData();
+    data.append("file", file);
+    data.append("mediable_type", "App\\Models\\Course");
+    data.append("mediable_id", courseId);
+
+    const token = authStorage.getToken();
+    const response = await fetch(`${env.apiUrl}/v1/media`, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: data,
+    });
+    const payload = await response.json().catch(() => null) as { data?: InstructorLessonMedia; message?: string } | InstructorLessonMedia | null;
+
+    if (!response.ok) {
+        throw new ApiError(payload && typeof payload === "object" && "message" in payload && payload.message ? payload.message : "Unable to upload this course file.", response.status);
+    }
+
+    return payload && typeof payload === "object" && "data" in payload && payload.data
+        ? payload.data
+        : payload as InstructorLessonMedia;
+}
+
 export async function getInstructorQuizzes(courseId: string): Promise<InstructorQuiz[]> {
     return api<InstructorQuiz[]>(`/v1/instructor/courses/${courseId}/quizzes`);
 }

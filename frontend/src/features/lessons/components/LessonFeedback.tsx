@@ -14,10 +14,13 @@ export function LessonFeedback({
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
+  const [lastRating, setLastRating] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const submit = async () => {
     if (!rating || saving) return;
     setSaving(true);
+    setError(null);
     try {
       await submitCourseFeedback(courseId, {
         lesson_id: lessonId,
@@ -25,8 +28,11 @@ export function LessonFeedback({
         comment: comment.trim() || undefined,
       });
       setSent(true);
+      setLastRating(rating);
       setComment("");
       setRating(0);
+    } catch {
+      setError(t("lessonPlayer.feedback.sendFail"));
     } finally {
       setSaving(false);
     }
@@ -60,6 +66,11 @@ export function LessonFeedback({
             />
           </button>
         ))}
+        {rating === 0 && !sent && (
+          <span className="ms-2 text-xs text-gray-400">
+            {t("lessonPlayer.feedback.ratingHint")}
+          </span>
+        )}
       </div>
       <textarea
         value={comment}
@@ -81,10 +92,17 @@ export function LessonFeedback({
           <Send className="h-4 w-4 rtl:-scale-x-100" />
         </button>
       </div>
+      {error && (
+        <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-semibold text-red-600">
+          {error}
+        </p>
+      )}
       {sent && (
         <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
           <CheckCircle2 className="h-4 w-4" />
-          {t("lessonPlayer.feedback.thanks")}
+          {lastRating > 0
+            ? t("lessonPlayer.feedback.ratedThanks", { n: lastRating })
+            : t("lessonPlayer.feedback.thanks")}
         </p>
       )}
     </div>

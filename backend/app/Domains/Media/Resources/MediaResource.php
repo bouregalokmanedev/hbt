@@ -17,7 +17,7 @@ class MediaResource extends JsonResource
          */
         $url = URL::temporarySignedRoute(
             'media.stream',
-            now()->addHours($this->type->value === 'video' ? 6 : 24),
+            now()->addHours($this->type->value === 'video' ? 2 : 24),
             ['media' => $this->id],
         );
 

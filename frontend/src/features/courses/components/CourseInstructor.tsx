@@ -7,14 +7,14 @@ import type { Course } from "../types/course.types";
 
 type Instructor = NonNullable<Course["instructor"]>;
 
-export function CourseInstructor({ instructor }: { instructor?: Instructor | null }) {
+export function CourseInstructor({ instructor, className = "" }: { instructor?: Instructor | null; className?: string }) {
     const { t } = useTranslation();
     if (!instructor) return null;
 
     const fullName = `${instructor.first_name} ${instructor.last_name}`.trim();
 
     return (
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+        <section className={`rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8 ${className}`}>
             <div className="flex items-start gap-4">
                 <UserAvatar
                     user={instructor}

@@ -19,10 +19,12 @@ export function CourseCertificate({
     courseId,
     courseTitle,
     authenticated,
+    className = "",
 }: {
     courseId: string;
     courseTitle: string;
     authenticated: boolean;
+    className?: string;
 }) {
     const { t, i18n } = useTranslation();
     const dateLocale = i18n.language === "ar" ? "ar" : undefined;
@@ -64,7 +66,7 @@ export function CourseCertificate({
 
     if (checked && earned) {
         return (
-            <section className="overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50/60 via-white to-white p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+            <section className={`overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50/60 via-white to-white p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8 ${className}`}>
                 <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-sm">
                         <BadgeCheck className="h-6 w-6" />
@@ -102,7 +104,7 @@ export function CourseCertificate({
     }
 
     return (
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8">
+        <section className={`rounded-3xl border border-border bg-card p-6 shadow-[0_4px_20px_rgba(15,23,42,0.03)] sm:p-8 ${className}`}>
             <div className="flex items-start justify-between gap-4">
                 <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("courseDetails.certificate.eyebrow")}</p>

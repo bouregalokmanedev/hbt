@@ -20,8 +20,8 @@ import {
 } from "react-i18next";
 
 import {
-    getCourseCurriculum,
-} from "@/features/courses/api/courses.api";
+    getLearningCurriculum,
+} from "../api/lessons.api";
 
 import type {
     CourseCurriculum,
@@ -44,26 +44,22 @@ import type {
 interface LessonNavigationProps {
     lesson: Lesson;
     courseId: string;
+    curriculum: CourseCurriculum | null;
+    isLoading: boolean;
+    error: string | null;
+    onReload: () => Promise<void>;
 }
 
 export function LessonNavigation({
     lesson,
     courseId,
+    curriculum,
+    isLoading,
+    error: sharedError,
+    onReload,
 }: LessonNavigationProps) {
     const { t } = useTranslation();
     const navigate = useNavigate();
-
-    const [
-        curriculum,
-        setCurriculum,
-    ] = useState<CourseCurriculum | null>(
-        null,
-    );
-
-    const [
-        isLoading,
-        setIsLoading,
-    ] = useState(true);
 
     const [
         isCompleting,
@@ -87,45 +83,16 @@ export function LessonNavigation({
 
 
     /*
-     * Load curriculum.
+     * Load curriculum from the shared page source on mount is handled by
+     * the parent — this component only refreshes it after completing.
      */
-    useEffect(() => {
-        let cancelled = false;
-
-        async function loadCurriculum() {
-            try {
-                setIsLoading(true);
-                setError(null);
-
-                const data =
-                    await getCourseCurriculum(
-                        courseId,
-                    );
-
-                if (!cancelled) {
-                    setCurriculum(data);
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setError(
-                        err instanceof Error
-                            ? err.message
-                            : t("lessonPlayer.nav.loadFail"),
-                    );
-                }
-            } finally {
-                if (!cancelled) {
-                    setIsLoading(false);
-                }
-            }
+    const refreshShared = async () => {
+        try {
+            await onReload();
+        } catch {
+            // The shared error surface below already covers reload failures.
         }
-
-        void loadCurriculum();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [courseId]);
+    };
 
 
     /*
@@ -237,12 +204,12 @@ export function LessonNavigation({
             /*
              * Section-aware routing: a finished section goes to its
              * quiz checkpoint instead of jumping to the next section.
-             * The curriculum reload keeps per-lesson statuses truthful
-             * on the page we land on.
+             * The shared curriculum reload keeps per-lesson statuses
+             * truthful on the page we land on.
              */
             try {
-                const fresh = await getCourseCurriculum(courseId);
-                setCurriculum(fresh);
+                const fresh = await getLearningCurriculum(courseId);
+                await onReload();
                 const step = resolveNextStep(fresh, lesson.id);
                 if (step) {
                     navigate(nextStepPath(courseId, step));
@@ -286,14 +253,23 @@ export function LessonNavigation({
 
 
     /*
-     * Error loading curriculum.
+     * Error loading curriculum (shared source).
      */
-    if (error && !curriculum) {
+    if ((error ?? sharedError) && !curriculum) {
         return (
             <div className="mx-auto mt-10 max-w-4xl border-t border-border pt-6">
                 <p className="text-center text-sm text-red-500">
-                    {error}
+                    {error ?? sharedError}
                 </p>
+                <div className="mt-3 text-center">
+                    <button
+                        type="button"
+                        onClick={() => void refreshShared()}
+                        className="rounded-lg bg-[#F47822] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#df6817]"
+                    >
+                        {t("lessonPlayer.curriculum.retry")}
+                    </button>
+                </div>
             </div>
         );
     }
@@ -372,11 +348,15 @@ export function LessonNavigation({
                             <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                         </button>
                     ) : (
-                        <div className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                        <button
+                            type="button"
+                            onClick={() => navigate(`/courses/${courseId}`)}
+                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 transition hover:bg-emerald-500/20 dark:text-emerald-400"
+                        >
                             <CheckCircle2 className="h-4 w-4" />
 
                             {t("lessonPlayer.nav.courseComplete")}
-                        </div>
+                        </button>
                     )
                 ) : (
                     <button

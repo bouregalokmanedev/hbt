@@ -20,18 +20,30 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
   const [title, setTitle] = useState(untitled);
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const load = async () => {
+    setIsLoading(true);
+    setLoadError(null);
+    try {
+      const items = await getLessonNotes(lessonId);
+      setNotes(items);
+      // Start on a blank draft — the learner chooses what to open.
+      setActive(null);
+      setTitle(untitled);
+      setContent("");
+    } catch {
+      setLoadError(t("lessonPlayer.notes.loadFail"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    void getLessonNotes(lessonId)
-      .then((items) => {
-        setNotes(items);
-        if (items[0]) {
-          setActive(items[0]);
-          setTitle(items[0].title);
-          setContent(items[0].content ?? "");
-        }
-      })
-      .catch(() => setNotes([]));
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId]);
 
   const select = (note: LessonNote) => {
@@ -47,6 +59,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
   const save = async () => {
     if (saving) return;
     setSaving(true);
+    setActionError(null);
     try {
       const data = {
         title: title.trim() || untitled,
@@ -62,18 +75,52 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
         saved,
         ...items.filter((item) => item.id !== saved.id),
       ]);
+    } catch {
+      setActionError(t("lessonPlayer.notes.saveFail"));
     } finally {
       setSaving(false);
     }
   };
   const remove = async () => {
-    if (!active) return;
-    await deleteLessonNote(lessonId, active.id);
-    const remaining = notes.filter((item) => item.id !== active.id);
-    setNotes(remaining);
-    if (remaining[0]) select(remaining[0]);
-    else newNote();
+    if (!active || saving) return;
+    setSaving(true);
+    setActionError(null);
+    try {
+      await deleteLessonNote(lessonId, active.id);
+      const remaining = notes.filter((item) => item.id !== active.id);
+      setNotes(remaining);
+      if (remaining[0]) select(remaining[0]);
+      else newNote();
+    } catch {
+      setActionError(t("lessonPlayer.notes.deleteFail"));
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="grid gap-5 p-5 sm:p-7 lg:grid-cols-[230px_minmax(0,1fr)]">
+        <div className="h-40 animate-pulse rounded-2xl bg-gray-100 dark:bg-white/5" />
+        <div className="h-64 animate-pulse rounded-2xl bg-gray-100 dark:bg-white/5" />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="p-5 text-center sm:p-7">
+        <p className="text-sm font-semibold text-red-600">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => void load()}
+          className="mt-3 rounded-xl bg-[#F47822] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#DF6819]"
+        >
+          {t("lessonPlayer.notes.retry")}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-5 p-5 sm:p-7 lg:grid-cols-[230px_minmax(0,1fr)]">
@@ -86,7 +133,12 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
           <Plus className="h-4 w-4" /> {t("lessonPlayer.notes.new")}
         </button>
         <div className="mt-3 space-y-1">
-          {notes.map((note) => (
+          {notes.length === 0 ? (
+            <p className="rounded-xl bg-[#FCFCFC] px-3 py-4 text-center text-xs leading-5 text-gray-400 dark:bg-[#232329]">
+              {t("lessonPlayer.notes.emptyTitle")}
+            </p>
+          ) : (
+            notes.map((note) => (
             <button
               type="button"
               key={note.id}
@@ -100,7 +152,8 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
                 {note.content || t("lessonPlayer.notes.emptyNote")}
               </p>
             </button>
-          ))}
+            ))
+          )}
         </div>
       </aside>
       <article className="rounded-2xl border border-gray-100 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 sm:p-5">
@@ -152,7 +205,12 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
           placeholder={t("lessonPlayer.notes.contentPh")}
           className="mt-4 min-h-52 w-full resize-y rounded-xl bg-[#FCFCFC] dark:bg-[#232329] px-4 py-3 text-sm leading-7 text-[#3A3A3A] dark:text-[#ececef] outline-none ring-1 ring-gray-100 dark:ring-white/15 transition focus:bg-white dark:focus:bg-[#1b1b20] focus:ring-2 focus:ring-[#F47822]/30"
         />
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex items-center justify-end gap-3">
+          {actionError && (
+            <p role="alert" className="mr-auto text-xs font-semibold text-red-600">
+              {actionError}
+            </p>
+          )}
           <button
             type="button"
             onClick={() => void save()}
