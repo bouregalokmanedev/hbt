@@ -12,5 +12,6 @@ final readonly class UpdateQuizQuestionData
         public ?int $position = null,
         public ?int $points = null,
         public ?bool $required = null,
+        public ?string $explanation = null,
     ) {}
 }

@@ -20,7 +20,7 @@ class SupportTicket extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'user_id', 'subject', 'category', 'priority', 'status',
+        'user_id', 'subject', 'category', 'tags', 'priority', 'status',
         'assigned_to', 'level', 'due_at', 'resolved_at', 'closed_at',
         'rating', 'rating_comment', 'rated_at',
     ];
@@ -31,6 +31,7 @@ class SupportTicket extends Model
             'status' => TicketStatus::class,
             'priority' => TicketPriority::class,
             'level' => TicketLevel::class,
+            'tags' => 'array',
             'due_at' => 'datetime',
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',

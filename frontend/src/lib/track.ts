@@ -1,5 +1,6 @@
 import { env } from "@/config/env";
 import { hasAnalyticsConsent } from "@/features/cookies/consent";
+import { visitorId } from "@/features/marketing/tracking";
 import { authStorage } from "@/lib/storage/auth-storage";
 
 /**
@@ -72,6 +73,7 @@ export function track(
       event,
       page: typeof window !== "undefined" ? window.location.pathname : null,
       session_hash: getSessionHash(),
+      visitor_id: visitorId(),
       properties: toProperties(properties),
     });
 

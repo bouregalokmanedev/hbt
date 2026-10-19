@@ -110,14 +110,14 @@ export function AdminProfilePage() {
   };
 
   return (
-    <main className="min-h-full bg-[#F3F3F3]">
+    <main className="min-h-full bg-[#F3F3F3] dark:bg-[#101013]">
       {saveSuccess && (
         <div className="fixed right-5 top-5 z-[99999] w-[calc(100%-40px)] max-w-[400px] animate-[profileToastIn_0.3s_ease-out] rtl:left-5 rtl:right-auto">
-          <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
+          <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-white dark:bg-[#1b1b20] shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
             <div className="flex items-start gap-3 px-5 py-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600"><Check className="h-5 w-5" /></div>
-              <div className="min-w-0 flex-1"><p className="text-sm font-semibold text-[#3A3A3A]">{t("admin.profile.updatedTitle")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/55">{t("admin.profile.updatedDesc")}</p></div>
-              <button type="button" aria-label={t("admin.profile.dismiss")} onClick={()=>setSaveSuccess(false)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/30 hover:bg-[#3A3A3A]/5"><X className="h-4 w-4" /></button>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><Check className="h-5 w-5" /></div>
+              <div className="min-w-0 flex-1"><p className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("admin.profile.updatedTitle")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{t("admin.profile.updatedDesc")}</p></div>
+              <button type="button" aria-label={t("admin.profile.dismiss")} onClick={()=>setSaveSuccess(false)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/30 dark:text-white/30 hover:bg-[#3A3A3A]/5 dark:bg-white/5"><X className="h-4 w-4" /></button>
             </div>
             <div className="h-1 w-full bg-emerald-500/10"><div className="h-full w-full origin-left bg-emerald-500 animate-[profileToastProgress_3s_linear_forwards] rtl:origin-right" /></div>
           </div>
@@ -125,11 +125,11 @@ export function AdminProfilePage() {
       )}
       {saveError && (
         <div className="fixed right-5 top-5 z-[99999] w-[calc(100%-40px)] max-w-[400px] animate-[profileToastIn_0.3s_ease-out] rtl:left-5 rtl:right-auto">
-          <div className="overflow-hidden rounded-2xl border border-red-500/20 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
+          <div className="overflow-hidden rounded-2xl border border-red-500/20 bg-white dark:bg-[#1b1b20] shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
             <div className="flex items-start gap-3 px-5 py-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-500"><X className="h-5 w-5" /></div>
-              <div className="min-w-0 flex-1"><p className="text-sm font-semibold text-[#3A3A3A]">{t("admin.profile.saveErrorTitle")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/55">{saveError}</p></div>
-              <button type="button" aria-label={t("admin.profile.dismiss")} onClick={()=>setSaveError(null)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/30 hover:bg-[#3A3A3A]/5"><X className="h-4 w-4" /></button>
+              <div className="min-w-0 flex-1"><p className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("admin.profile.saveErrorTitle")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{saveError}</p></div>
+              <button type="button" aria-label={t("admin.profile.dismiss")} onClick={()=>setSaveError(null)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/30 dark:text-white/30 hover:bg-[#3A3A3A]/5 dark:bg-white/5"><X className="h-4 w-4" /></button>
             </div>
           </div>
         </div>
@@ -143,7 +143,7 @@ export function AdminProfilePage() {
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${isSuperAdmin ? "bg-[#F47822] text-white" : "bg-[#3A3A3A] text-white"}`}>
               <ShieldCheck className="h-3.5 w-3.5" /> {isSuperAdmin ? t("admin.profile.roleSuper") : t("admin.profile.roleAdmin")}
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-xs font-semibold text-[#3A3A3A]/60">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-xs font-semibold text-[#3A3A3A]/60 dark:text-white/60">
               {user.email} · {user.roles?.join(" · ")}
             </span>
           </div>
@@ -158,38 +158,38 @@ export function AdminProfilePage() {
             <div className="space-y-5">
               <ProfileInformation user={user} form={form} isEditing={isEditing} isSaving={isSaving} onEdit={handleEdit} onCancel={handleCancel} onSave={handleSave} onFieldChange={updateField} />
 
-              <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.05)] sm:p-6">
+              <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_8px_30px_rgba(58,58,58,0.05)] sm:p-6">
                 <div className="flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822]"><BookOpenIcon /></span>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("admin.profile.scope.eyebrow")}</p>
-                    <h3 className="text-sm font-semibold text-[#3A3A3A]">{isSuperAdmin ? t("admin.profile.scope.titleSuper") : t("admin.profile.scope.titleAdmin")}</h3>
+                    <h3 className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{isSuperAdmin ? t("admin.profile.scope.titleSuper") : t("admin.profile.scope.titleAdmin")}</h3>
                   </div>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-xl bg-[#FAFAFA] px-4 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40">{t("admin.profile.scope.canDo")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/65">{isSuperAdmin ? t("admin.profile.scope.canDoSuper") : t("admin.profile.scope.canDoAdmin")}</p></div>
-                  <div className="rounded-xl bg-[#FAFAFA] px-4 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40">{t("admin.profile.scope.cannotDo")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/65">{isSuperAdmin ? t("admin.profile.scope.cannotSuper") : t("admin.profile.scope.cannotAdmin")}</p></div>
+                  <div className="rounded-xl bg-[#FAFAFA] dark:bg-[#1b1b20] px-4 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40 dark:text-white/40">{t("admin.profile.scope.canDo")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/65 dark:text-white/65">{isSuperAdmin ? t("admin.profile.scope.canDoSuper") : t("admin.profile.scope.canDoAdmin")}</p></div>
+                  <div className="rounded-xl bg-[#FAFAFA] dark:bg-[#1b1b20] px-4 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40 dark:text-white/40">{t("admin.profile.scope.cannotDo")}</p><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/65 dark:text-white/65">{isSuperAdmin ? t("admin.profile.scope.cannotSuper") : t("admin.profile.scope.cannotAdmin")}</p></div>
                 </div>
               </section>
             </div>
 
             <div className="space-y-5">
-              <section className="rounded-2xl border border-[#F47822]/15 bg-[#FFF8F4] p-5">
+              <section className="rounded-2xl border border-[#F47822]/15 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("admin.profile.card.eyebrow")}</p>
-                <h3 className="mt-1 text-sm font-bold text-[#3A3A3A]">{t("admin.profile.card.title")}</h3>
+                <h3 className="mt-1 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("admin.profile.card.title")}</h3>
                 <div className="mt-4 flex items-center gap-3">
                   <UserAvatar user={user} className="h-12 w-12" fallbackClassName="bg-[#3A3A3A] text-white font-bold" />
-                  <div><p className="text-sm font-bold text-[#3A3A3A]">{user.first_name} {user.last_name}</p><p className="text-xs text-[#3A3A3A]/50">@{user.username} · {isSuperAdmin ? t("admin.profile.card.superLabel") : t("admin.profile.card.adminLabel")}</p></div>
+                  <div><p className="text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{user.first_name} {user.last_name}</p><p className="text-xs text-[#3A3A3A]/50 dark:text-white/50">@{user.username} · {isSuperAdmin ? t("admin.profile.card.superLabel") : t("admin.profile.card.adminLabel")}</p></div>
                 </div>
-                <p className="mt-3 line-clamp-3 text-xs leading-5 text-[#3A3A3A]/60">{user.bio || t("admin.profile.card.bioFallback")}</p>
+                <p className="mt-3 line-clamp-3 text-xs leading-5 text-[#3A3A3A]/60 dark:text-white/60">{user.bio || t("admin.profile.card.bioFallback")}</p>
               </section>
 
-              <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.05)]">
-                <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#F47822]" /><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#3A3A3A]">{t("admin.profile.quick.title")}</p></div>
+              <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_8px_30px_rgba(58,58,58,0.05)]">
+                <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#F47822]" /><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#3A3A3A] dark:text-[#ececef]">{t("admin.profile.quick.title")}</p></div>
                 <div className="mt-3 grid gap-2">
                   <a href="/admin/users" className="rounded-xl bg-[#3A3A3A] px-4 py-3 text-xs font-semibold text-white hover:bg-[#F47822] transition">{t("admin.profile.quick.managePeople")}</a>
-                  <a href="/admin/activity" className="rounded-xl border border-[#3A3A3A]/8 bg-[#FAFAFA] px-4 py-3 text-xs font-semibold text-[#3A3A3A] hover:border-[#F47822]/20">{t("admin.profile.quick.auditTrail")}</a>
-                  <a href="/admin/settings" className="rounded-xl border border-[#F47822]/15 bg-[#FFF8F4] px-4 py-3 text-xs font-semibold text-[#F47822] hover:bg-[#F47822]/10 transition">{t("admin.profile.quick.settingsLink")}</a>
+                  <a href="/admin/activity" className="rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FAFAFA] px-4 py-3 text-xs font-semibold text-[#3A3A3A] hover:border-[#F47822]/20">{t("admin.profile.quick.auditTrail")}</a>
+                  <a href="/admin/settings" className="rounded-xl border border-[#F47822]/15 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-4 py-3 text-xs font-semibold text-[#F47822] hover:bg-[#F47822]/10 transition">{t("admin.profile.quick.settingsLink")}</a>
                 </div>
               </section>
             </div>
@@ -203,9 +203,9 @@ export function AdminProfilePage() {
 
 function StatCard({ icon: Icon, label, value, hint }: { icon: React.ElementType; label:string; value:number|string; hint:string }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 bg-white px-4 py-4 shadow-[0_8px_30px_rgba(58,58,58,0.05)]">
+    <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-4 shadow-[0_8px_30px_rgba(58,58,58,0.05)]">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822]"><Icon className="h-5 w-5" /></span>
-      <div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40">{label}</p><p className="text-lg font-bold text-[#3A3A3A]">{value}</p><p className="text-[11px] text-[#3A3A3A]/45">{hint}</p></div>
+      <div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40 dark:text-white/40">{label}</p><p className="text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">{value}</p><p className="text-[11px] text-[#3A3A3A]/45 dark:text-white/45">{hint}</p></div>
     </div>
   );
 }

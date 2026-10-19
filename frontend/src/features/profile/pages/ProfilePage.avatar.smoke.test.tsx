@@ -153,6 +153,24 @@ describe("ProfilePage avatar", () => {
     });
   });
 
+  it("personalises the cover for the Sales role", async () => {
+    useAuthStore.setState({
+      user: buildUser({ roles: ["Sales"], avatar: null }),
+    });
+
+    const view = renderPage();
+
+    expect(await screen.findByText("HBT Sales")).toBeInTheDocument();
+    expect(screen.getByText("Convert. Close. Grow.")).toBeInTheDocument();
+    // The sales cover swaps the automotive ECU sketch for a growth chart.
+    expect(
+      view.container.querySelector('svg[viewBox="0 0 140 95"]'),
+    ).toBeInTheDocument();
+    expect(
+      view.container.querySelector('svg[viewBox="0 0 130 90"]'),
+    ).not.toBeInTheDocument();
+  });
+
   it("keeps showing the saved avatar after navigating away and back", async () => {
     const user = buildUser({ avatar: "data:image/png;base64,BBBB" });
 

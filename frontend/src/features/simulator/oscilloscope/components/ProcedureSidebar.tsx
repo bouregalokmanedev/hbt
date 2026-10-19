@@ -33,8 +33,8 @@ export function ProcedureSidebar({
   const doneCount = done.filter(Boolean).length;
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col overflow-auto border-e border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+    <aside className="flex w-72 shrink-0 flex-col overflow-auto border-e border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
           {(t("oscilloscope.header.exercise", { defaultValue: "Exercise" }) as string)} {comp.code}
         </div>
@@ -47,7 +47,7 @@ export function ProcedureSidebar({
       </div>
 
       {/* procedure */}
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
             {t("oscilloscope.proc.title", { defaultValue: "Procedure" }) as string}
@@ -68,7 +68,7 @@ export function ProcedureSidebar({
               <span
                 className={clsx(
                   "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-black",
-                  done[i] ? "bg-[#0E9F6E] text-white" : "border border-[#3A3A3A]/15 text-[#3A3A3A]/40 dark:border-white/15 dark:text-white/40",
+                  done[i] ? "bg-[#0E9F6E] text-white" : "border border-[#3A3A3A]/15 dark:border-white/15 text-[#3A3A3A]/40 dark:border-white/15 dark:text-white/40",
                 )}
               >
                 {done[i] ? "✓" : i + 1}
@@ -82,7 +82,7 @@ export function ProcedureSidebar({
       </div>
 
       {/* measurement */}
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
           {t("oscilloscope.proc.measurement", { defaultValue: "Measurement" }) as string}
         </div>
@@ -92,7 +92,7 @@ export function ProcedureSidebar({
       </div>
 
       {/* reference values */}
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
           {t("oscilloscope.proc.refValues", { defaultValue: "Reference values" }) as string}
         </div>
@@ -114,7 +114,7 @@ export function ProcedureSidebar({
           <span className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
             {t("oscilloscope.proc.faultInjection", { defaultValue: "Fault injection" }) as string}
           </span>
-          <span className={clsx("text-[10px] font-black uppercase", state.fault === "none" ? "text-emerald-600" : "text-[#D92D20]")}>
+          <span className={clsx("text-[10px] font-black uppercase", state.fault === "none" ? "text-emerald-600 dark:text-emerald-400" : "text-[#D92D20]")}>
             {state.fault === "none"
               ? (t("oscilloscope.proc.healthy", { defaultValue: "Healthy" }) as string)
               : (t("oscilloscope.proc.faultActive", { defaultValue: "Fault active" }) as string)}
@@ -130,7 +130,7 @@ export function ProcedureSidebar({
                 "rounded-md border px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/30",
                 state.fault === f
                   ? "border-[#0E9F6E] bg-[#0E9F6E]/10 text-[#0E9F6E]"
-                  : "border-[#3A3A3A]/10 text-[#3A3A3A] hover:border-[#0E9F6E]/40 dark:border-white/10 dark:text-white",
+                  : "border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A] hover:border-[#0E9F6E]/40 dark:border-white/10 dark:text-white",
               )}
             >
               {t(`content.oscilloscope.fault.${f}.label`, { defaultValue: f }) as string}

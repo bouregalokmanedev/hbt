@@ -29,7 +29,7 @@ export function ProgressScreen({ engine, onSelect }: { engine: MeterProcedureEng
                             key={comp.ref}
                             type="button"
                             onClick={() => onSelect(comp.ref)}
-                            className="flex w-full items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 bg-white p-4 text-left transition hover:border-[#1F6AE1]/40 dark:border-white/10 dark:bg-[#1b1b20]"
+                            className="flex w-full items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 text-left transition hover:border-[#1F6AE1]/40 dark:border-white/10 dark:bg-[#1b1b20]"
                         >
                             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#1F6AE1]/10 font-mono text-xs font-black text-[#1F6AE1]">
                                 {comp.ref}

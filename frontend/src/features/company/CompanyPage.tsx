@@ -3,6 +3,7 @@ import {
     ArrowUpRight,
     Award,
     BookOpen,
+    Building2,
     Check,
     ChevronRight,
     Cpu,
@@ -23,6 +24,14 @@ import { useTranslation } from "react-i18next";
 
 import { Footer } from "../landingpage/components/FooterSection";
 import { Navbar } from "./../../components/navigation/Navbar";
+import { StatsSection } from "./StatsSection";
+import { PhotoFrame } from "./PhotoFrame";
+import {
+    WORKSHOP_MAIN,
+    WORKSHOP_GALLERY,
+    HEAD_PORTRAIT,
+    CORE_MEMBER_PHOTOS,
+} from "./photos";
 
 
 /* =============================================================
@@ -68,12 +77,42 @@ export function CompanyPage() {
         returnObjects: true,
     }) as string[];
 
+    const partnershipItems = (
+        t("companyPage.partnership.items", { returnObjects: true }) as Array<{
+            title: string;
+            description: string;
+        }>
+    ).map((item, index) => ({
+        ...item,
+        icon: [Building2, Users, GraduationCap][index] ?? Building2,
+    }));
+
+    const workshopFeatures = (
+        t("companyPage.workshop.features", { returnObjects: true }) as Array<{
+            title: string;
+            description: string;
+        }>
+    ).map((item, index) => ({
+        ...item,
+        icon: [Wrench, Gauge, Cpu, ShieldCheck][index] ?? Wrench,
+    }));
+
+    const head = t("companyPage.headCore.head", { returnObjects: true }) as {
+        name: string;
+        role: string;
+        bio: string;
+    };
+
+    const coreMembers = t("companyPage.headCore.members", {
+        returnObjects: true,
+    }) as Array<{ name: string; role: string }>;
+
     const heroLabels = t("companyPage.hero.labels", {
         returnObjects: true,
     }) as string[];
 
     return (
-        <div className="company-page-ar min-h-screen bg-white text-hbt-dark">
+        <div className="company-page-ar min-h-screen bg-white dark:bg-[#1b1b20] text-hbt-dark dark:text-[#ececef]">
 
             <Navbar />
 
@@ -88,8 +127,8 @@ export function CompanyPage() {
                         relative
                         overflow-hidden
                         border-b
-                        border-slate-200
-                        bg-[#F7F7F7]
+                        border-slate-200 dark:border-white/10
+                        bg-[#F7F7F7] dark:bg-[#101013]
                     "
                 >
 
@@ -157,7 +196,7 @@ export function CompanyPage() {
                                         rounded-full
                                         border
                                         border-hbt-orange/20
-                                        bg-white
+                                        bg-white dark:bg-[#1b1b20]
                                         px-3
                                         py-1.5
                                         shadow-sm
@@ -194,7 +233,7 @@ export function CompanyPage() {
                                         font-bold
                                         leading-[0.95]
                                         tracking-[-0.055em]
-                                        text-hbt-dark
+                                        text-hbt-dark dark:text-[#ececef]
                                         sm:text-6xl
                                         lg:text-8xl
                                     "
@@ -218,7 +257,7 @@ export function CompanyPage() {
                                         max-w-2xl
                                         text-base
                                         leading-7
-                                        text-slate-500
+                                        text-slate-500 dark:text-white/55
                                         sm:text-lg
                                     "
                                 >
@@ -275,17 +314,17 @@ export function CompanyPage() {
                                             gap-2
                                             rounded-xl
                                             border
-                                            border-slate-300
-                                            bg-white
+                                            border-slate-300 dark:border-white/15
+                                            bg-white dark:bg-[#1b1b20]
                                             px-5
                                             py-3.5
                                             text-sm
                                             font-semibold
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             transition-all
                                             duration-300
-                                            hover:border-slate-400
-                                            hover:bg-slate-50
+                                            hover:border-slate-400 dark:border-white/20
+                                            hover:bg-slate-50 dark:bg-white/5 dark:hover:bg-white/5
                                         "
                                     >
                                         {t("companyPage.hero.contactBtn")}
@@ -323,7 +362,7 @@ export function CompanyPage() {
                                             inset-0
                                             rounded-full
                                             border
-                                            border-slate-300
+                                            border-slate-300 dark:border-white/15
                                         "
                                     />
 
@@ -334,7 +373,7 @@ export function CompanyPage() {
                                             rounded-full
                                             border
                                             border-dashed
-                                            border-slate-300
+                                            border-slate-300 dark:border-white/15
                                         "
                                     />
 
@@ -344,7 +383,7 @@ export function CompanyPage() {
                                             inset-[24%]
                                             rounded-full
                                             border
-                                            border-slate-300
+                                            border-slate-300 dark:border-white/15
                                         "
                                     />
 
@@ -434,7 +473,7 @@ export function CompanyPage() {
                     INTRO
                 ================================================== */}
 
-                <section className="border-b border-slate-200 bg-white">
+                <section className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20]">
 
                     <div
                         className="
@@ -479,7 +518,7 @@ export function CompanyPage() {
                                     font-semibold
                                     leading-tight
                                     tracking-[-0.035em]
-                                    text-hbt-dark
+                                    text-hbt-dark dark:text-[#ececef]
                                     sm:text-4xl
                                     lg:text-5xl
                                 "
@@ -494,7 +533,7 @@ export function CompanyPage() {
                                     max-w-3xl
                                     text-base
                                     leading-7
-                                    text-slate-500
+                                    text-slate-500 dark:text-white/55
                                     sm:text-lg
                                     sm:leading-8
                                 "
@@ -509,7 +548,7 @@ export function CompanyPage() {
                                     max-w-3xl
                                     text-base
                                     leading-7
-                                    text-slate-500
+                                    text-slate-500 dark:text-white/55
                                     sm:text-lg
                                     sm:leading-8
                                 "
@@ -525,10 +564,223 @@ export function CompanyPage() {
 
 
                 {/* =================================================
+                    WORKSHOP
+                ================================================== */}
+
+                <section className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20]">
+
+                    <div
+                        className="
+                            mx-auto
+                            w-full
+                            max-w-[1600px]
+                            px-5
+                            py-20
+                            sm:px-8
+                            lg:px-12
+                            lg:py-28
+                        "
+                    >
+
+                        <div
+                            className="
+                                mb-14
+                                flex
+                                flex-col
+                                justify-between
+                                gap-6
+                                lg:flex-row
+                                lg:items-end
+                            "
+                        >
+
+                            <div>
+
+                                <span
+                                    className="
+                                        font-mono
+                                        text-[9px]
+                                        font-bold
+                                        uppercase
+                                        tracking-[0.25em]
+                                        text-hbt-orange
+                                    "
+                                >
+                                    {t("companyPage.workshop.eyebrow")}
+                                </span>
+
+                                <h2
+                                    className="
+                                        mt-4
+                                        max-w-xl
+                                        text-3xl
+                                        font-semibold
+                                        tracking-[-0.04em]
+                                        text-hbt-dark dark:text-[#ececef]
+                                        sm:text-4xl
+                                    "
+                                >
+                                    {t("companyPage.workshop.title")}
+                                </h2>
+
+                            </div>
+
+
+                            <p
+                                className="
+                                    max-w-md
+                                    text-sm
+                                    leading-6
+                                    text-slate-500 dark:text-white/55
+                                "
+                            >
+                                {t("companyPage.workshop.description")}
+                            </p>
+
+                        </div>
+
+
+                        {/* Photo mosaic */}
+
+                        <div className="grid gap-4">
+
+                            <div className="grid gap-4 lg:grid-cols-12">
+
+                                <div
+                                    className="
+                                        relative
+                                        aspect-[16/10]
+                                        overflow-hidden
+                                        rounded-2xl
+                                        border
+                                        border-slate-200 dark:border-white/10
+                                        lg:col-span-7
+                                    "
+                                >
+                                    <PhotoFrame
+                                        src={WORKSHOP_MAIN}
+                                        alt={t("companyPage.workshop.mainAlt")}
+                                    />
+                                </div>
+
+                                <div className="grid gap-4 lg:col-span-5">
+
+                                    <div
+                                        className="
+                                            relative
+                                            aspect-[16/9]
+                                            overflow-hidden
+                                            rounded-2xl
+                                            border
+                                            border-slate-200 dark:border-white/10
+                                        "
+                                    >
+                                        <PhotoFrame
+                                            src={WORKSHOP_GALLERY[0] ?? null}
+                                            alt={t("companyPage.workshop.galleryAlt", { n: 1 })}
+                                        />
+                                    </div>
+
+                                    <div
+                                        className="
+                                            relative
+                                            aspect-[16/9]
+                                            overflow-hidden
+                                            rounded-2xl
+                                            border
+                                            border-slate-200 dark:border-white/10
+                                        "
+                                    >
+                                        <PhotoFrame
+                                            src={WORKSHOP_GALLERY[1] ?? null}
+                                            alt={t("companyPage.workshop.galleryAlt", { n: 2 })}
+                                        />
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                className="
+                                    relative
+                                    aspect-[16/9]
+                                    overflow-hidden
+                                    rounded-2xl
+                                    border
+                                    border-slate-200 dark:border-white/10
+                                    sm:aspect-[21/9]
+                                "
+                            >
+                                <PhotoFrame
+                                    src={WORKSHOP_GALLERY[2] ?? null}
+                                    alt={t("companyPage.workshop.galleryAlt", { n: 3 })}
+                                />
+                            </div>
+
+                        </div>
+
+
+                        {/* Feature strip */}
+
+                        <div
+                            className="
+                                mt-10
+                                grid
+                                gap-px
+                                overflow-hidden
+                                rounded-2xl
+                                border
+                                border-slate-200 dark:border-white/10
+                                bg-slate-200 dark:bg-white/10
+                                sm:grid-cols-2
+                                lg:grid-cols-4
+                            "
+                        >
+
+                            {workshopFeatures.map((item) => {
+                                const Icon = item.icon;
+
+                                return (
+                                    <div
+                                        key={item.title}
+                                        className="group bg-white dark:bg-[#1b1b20] p-6 transition-colors duration-300 hover:bg-[#FCFCFC] dark:hover:bg-[#1f1f24]"
+                                    >
+
+                                        <Icon className="h-5 w-5 text-hbt-orange transition-transform duration-300 group-hover:scale-110" />
+
+                                        <h3 className="mt-5 text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
+                                            {item.title}
+                                        </h3>
+
+                                        <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-white/45">
+                                            {item.description}
+                                        </p>
+
+                                    </div>
+                                );
+                            })}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* =================================================
+                    STATS
+                ================================================== */}
+
+                <StatsSection />
+
+
+                {/* =================================================
                     PRINCIPLES
                 ================================================== */}
 
-                <section className="bg-[#F7F7F7]">
+                <section className="bg-[#F7F7F7] dark:bg-[#101013]">
 
                     <div
                         className="
@@ -576,7 +828,7 @@ export function CompanyPage() {
                                         text-3xl
                                         font-semibold
                                         tracking-[-0.04em]
-                                        text-hbt-dark
+                                        text-hbt-dark dark:text-[#ececef]
                                         sm:text-4xl
                                     "
                                 >
@@ -591,7 +843,7 @@ export function CompanyPage() {
                                     max-w-md
                                     text-sm
                                     leading-6
-                                    text-slate-500
+                                    text-slate-500 dark:text-white/55
                                 "
                             >
                                 {t("companyPage.principles.side")}
@@ -607,8 +859,8 @@ export function CompanyPage() {
                                 overflow-hidden
                                 rounded-2xl
                                 border
-                                border-slate-200
-                                bg-slate-200
+                                border-slate-200 dark:border-white/10
+                                bg-slate-200 dark:bg-white/10
                                 md:grid-cols-3
                             "
                         >
@@ -623,11 +875,11 @@ export function CompanyPage() {
                                             key={item.number}
                                             className="
                                                 group
-                                                bg-white
+                                                bg-white dark:bg-[#1b1b20]
                                                 p-7
                                                 transition-colors
                                                 duration-300
-                                                hover:bg-[#FCFCFC]
+                                                hover:bg-[#FCFCFC] dark:bg-[#1b1b20]
                                                 sm:p-9
                                             "
                                         >
@@ -662,7 +914,7 @@ export function CompanyPage() {
                                                     className="
                                                         font-mono
                                                         text-[10px]
-                                                        text-slate-300
+                                                        text-slate-300 dark:text-white/45
                                                     "
                                                 >
                                                     {item.number}
@@ -676,7 +928,7 @@ export function CompanyPage() {
                                                     mt-8
                                                     text-lg
                                                     font-semibold
-                                                    text-hbt-dark
+                                                    text-hbt-dark dark:text-[#ececef]
                                                 "
                                             >
                                                 {item.title}
@@ -688,7 +940,7 @@ export function CompanyPage() {
                                                     mt-3
                                                     text-sm
                                                     leading-6
-                                                    text-slate-500
+                                                    text-slate-500 dark:text-white/55
                                                 "
                                             >
                                                 {
@@ -700,6 +952,205 @@ export function CompanyPage() {
                                     );
                                 },
                             )}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* =================================================
+                    HEAD CORE (LEADERSHIP)
+                ================================================== */}
+
+                <section className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20]">
+
+                    <div
+                        className="
+                            mx-auto
+                            w-full
+                            max-w-[1600px]
+                            px-5
+                            py-20
+                            sm:px-8
+                            lg:px-12
+                            lg:py-28
+                        "
+                    >
+
+                        <div
+                            className="
+                                mb-14
+                                flex
+                                flex-col
+                                justify-between
+                                gap-6
+                                lg:flex-row
+                                lg:items-end
+                            "
+                        >
+
+                            <div>
+
+                                <span
+                                    className="
+                                        font-mono
+                                        text-[9px]
+                                        font-bold
+                                        uppercase
+                                        tracking-[0.25em]
+                                        text-hbt-orange
+                                    "
+                                >
+                                    {t("companyPage.headCore.eyebrow")}
+                                </span>
+
+                                <h2
+                                    className="
+                                        mt-4
+                                        max-w-xl
+                                        text-3xl
+                                        font-semibold
+                                        tracking-[-0.04em]
+                                        text-hbt-dark dark:text-[#ececef]
+                                        sm:text-4xl
+                                    "
+                                >
+                                    {t("companyPage.headCore.title")}
+                                </h2>
+
+                            </div>
+
+
+                            <p
+                                className="
+                                    max-w-md
+                                    text-sm
+                                    leading-6
+                                    text-slate-500 dark:text-white/55
+                                "
+                            >
+                                {t("companyPage.headCore.description")}
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            className="
+                                grid
+                                gap-10
+                                lg:grid-cols-[0.85fr_1.15fr]
+                                lg:items-start
+                            "
+                        >
+
+                            {/* Head */}
+
+                            <article className="group">
+
+                                <div
+                                    className="
+                                        relative
+                                        aspect-[4/5]
+                                        overflow-hidden
+                                        rounded-2xl
+                                        border
+                                        border-slate-200 dark:border-white/10
+                                    "
+                                >
+                                    <PhotoFrame
+                                        src={HEAD_PORTRAIT}
+                                        alt={t("companyPage.headCore.headAlt")}
+                                    />
+                                </div>
+
+                                {head.name && (
+                                    <h3 className="mt-6 text-xl font-semibold tracking-[-0.02em] text-hbt-dark dark:text-[#ececef]">
+                                        {head.name}
+                                    </h3>
+                                )}
+
+                                <p className={`${head.name ? "mt-1" : "mt-6"} text-sm font-bold uppercase tracking-[0.12em] text-hbt-orange`}>
+                                    {head.role}
+                                </p>
+
+                                <p className="mt-3 max-w-md text-sm leading-6 text-slate-500 dark:text-white/55">
+                                    {head.bio}
+                                </p>
+
+                            </article>
+
+
+                            {/* Core members */}
+
+                            <div
+                                className="
+                                    grid
+                                    gap-3
+                                    sm:grid-cols-2
+                                "
+                            >
+
+                                {coreMembers.map((member, index) => (
+                                    <div
+                                        key={`${member.role}-${index}`}
+                                        className="
+                                            group
+                                            flex
+                                            items-center
+                                            gap-4
+                                            rounded-2xl
+                                            border
+                                            border-slate-200 dark:border-white/10
+                                            bg-white dark:bg-[#1b1b20]
+                                            p-4
+                                            transition-all
+                                            duration-300
+                                            hover:-translate-y-0.5
+                                            hover:border-hbt-orange/30
+                                            hover:shadow-sm
+                                        "
+                                    >
+
+                                        <div
+                                            className="
+                                                relative
+                                                h-20
+                                                w-20
+                                                shrink-0
+                                                overflow-hidden
+                                                rounded-xl
+                                                border
+                                                border-slate-200 dark:border-white/10
+                                            "
+                                        >
+                                            <PhotoFrame
+                                                src={CORE_MEMBER_PHOTOS[index] ?? null}
+                                                alt={member.role}
+                                                compact
+                                            />
+                                        </div>
+
+                                        <div className="min-w-0">
+
+                                            {member.name && (
+                                                <p className="truncate text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
+                                                    {member.name}
+                                                </p>
+                                            )}
+
+                                            <p className={`${member.name ? "mt-0.5" : ""} text-xs font-semibold text-hbt-orange`}>
+                                                {member.role}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+                                ))}
+
+                            </div>
 
                         </div>
 
@@ -901,7 +1352,7 @@ export function CompanyPage() {
                     WHO IT'S FOR
                 ================================================== */}
 
-                <section className="border-b border-slate-200 bg-white">
+                <section className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20]">
 
                     <div
                         className="
@@ -943,7 +1394,7 @@ export function CompanyPage() {
                                     font-semibold
                                     leading-tight
                                     tracking-[-0.04em]
-                                    text-hbt-dark
+                                    text-hbt-dark dark:text-[#ececef]
                                     sm:text-4xl
                                 "
                             >
@@ -957,7 +1408,7 @@ export function CompanyPage() {
                                     max-w-md
                                     text-sm
                                     leading-6
-                                    text-slate-500
+                                    text-slate-500 dark:text-white/55
                                 "
                             >
                                 {t("companyPage.audiences.description")}
@@ -985,8 +1436,8 @@ export function CompanyPage() {
                                             gap-4
                                             rounded-xl
                                             border
-                                            border-slate-200
-                                            bg-white
+                                            border-slate-200 dark:border-white/10
+                                            bg-white dark:bg-[#1b1b20]
                                             p-5
                                             transition-all
                                             duration-300
@@ -1017,7 +1468,7 @@ export function CompanyPage() {
                                             className="
                                                 text-sm
                                                 font-semibold
-                                                text-hbt-dark
+                                                text-hbt-dark dark:text-[#ececef]
                                             "
                                         >
                                             {audience}
@@ -1029,7 +1480,7 @@ export function CompanyPage() {
                                                 ms-auto
                                                 h-4
                                                 w-4
-                                                text-slate-300
+                                                text-slate-300 dark:text-white/45
                                                 transition-all
                                                 duration-300
                                                 group-hover:-translate-y-0.5
@@ -1053,10 +1504,212 @@ export function CompanyPage() {
 
 
                 {/* =================================================
+                    PARTNERSHIP
+                ================================================== */}
+
+                <section className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20]">
+
+                    <div
+                        className="
+                            mx-auto
+                            w-full
+                            max-w-[1600px]
+                            px-5
+                            py-20
+                            sm:px-8
+                            lg:px-12
+                            lg:py-28
+                        "
+                    >
+
+                        <div
+                            className="
+                                mb-14
+                                grid
+                                gap-8
+                                lg:grid-cols-[0.9fr_1.1fr]
+                                lg:items-end
+                            "
+                        >
+
+                            <div>
+
+                                <span
+                                    className="
+                                        font-mono
+                                        text-[9px]
+                                        font-bold
+                                        uppercase
+                                        tracking-[0.25em]
+                                        text-hbt-orange
+                                    "
+                                >
+                                    {t("companyPage.partnership.eyebrow")}
+                                </span>
+
+                                <h2
+                                    className="
+                                        mt-4
+                                        max-w-xl
+                                        text-3xl
+                                        font-semibold
+                                        tracking-[-0.04em]
+                                        text-hbt-dark dark:text-[#ececef]
+                                        sm:text-4xl
+                                    "
+                                >
+                                    {t("companyPage.partnership.title")}
+                                </h2>
+
+                            </div>
+
+
+                            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+
+                                <p
+                                    className="
+                                        max-w-md
+                                        text-sm
+                                        leading-6
+                                        text-slate-500 dark:text-white/55
+                                    "
+                                >
+                                    {t("companyPage.partnership.description")}
+                                </p>
+
+
+                                <Link
+                                    to="/contact"
+                                    className="
+                                        group
+                                        inline-flex
+                                        shrink-0
+                                        items-center
+                                        gap-2
+                                        rounded-xl
+                                        bg-hbt-orange
+                                        px-5
+                                        py-3.5
+                                        text-sm
+                                        font-bold
+                                        text-white
+                                        shadow-[0_10px_30px_rgba(244,120,34,0.2)]
+                                        transition-all
+                                        duration-300
+                                        hover:-translate-y-0.5
+                                        hover:bg-[#e96916]
+                                    "
+                                >
+                                    {t("companyPage.partnership.ctaBtn")}
+
+                                    <ArrowUpRight
+                                        className="
+                                            h-4
+                                            w-4
+                                            transition-transform
+                                            duration-300
+                                            group-hover:-translate-y-0.5
+                                            group-hover:translate-x-0.5
+                                            rtl:-scale-x-100
+                                            rtl:group-hover:-translate-x-0.5
+                                            rtl:group-hover:translate-x-0
+                                        "
+                                    />
+                                </Link>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            className="
+                                grid
+                                gap-px
+                                overflow-hidden
+                                rounded-2xl
+                                border
+                                border-slate-200 dark:border-white/10
+                                bg-slate-200 dark:bg-white/10
+                                md:grid-cols-3
+                            "
+                        >
+
+                            {partnershipItems.map((item) => {
+                                const Icon = item.icon;
+
+                                return (
+                                    <article
+                                        key={item.title}
+                                        className="
+                                            group
+                                            bg-white dark:bg-[#1b1b20]
+                                            p-7
+                                            transition-colors
+                                            duration-300
+                                            hover:bg-[#FCFCFC] dark:hover:bg-[#1f1f24]
+                                            sm:p-9
+                                        "
+                                    >
+
+                                        <div
+                                            className="
+                                                flex
+                                                h-11
+                                                w-11
+                                                items-center
+                                                justify-center
+                                                rounded-xl
+                                                bg-orange-50
+                                                text-hbt-orange
+                                                transition-transform
+                                                duration-300
+                                                group-hover:scale-105
+                                            "
+                                        >
+                                            <Icon className="h-5 w-5" />
+                                        </div>
+
+
+                                        <h3
+                                            className="
+                                                mt-8
+                                                text-lg
+                                                font-semibold
+                                                text-hbt-dark dark:text-[#ececef]
+                                            "
+                                        >
+                                            {item.title}
+                                        </h3>
+
+
+                                        <p
+                                            className="
+                                                mt-3
+                                                text-sm
+                                                leading-6
+                                                text-slate-500 dark:text-white/55
+                                            "
+                                        >
+                                            {item.description}
+                                        </p>
+
+                                    </article>
+                                );
+                            })}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* =================================================
                     MISSION
                 ================================================== */}
 
-                <section className="relative overflow-hidden bg-[#F7F7F7]">
+                <section className="relative overflow-hidden bg-[#F7F7F7] dark:bg-[#101013]">
 
                     <div
                         aria-hidden="true"
@@ -1143,7 +1796,7 @@ export function CompanyPage() {
                                 font-semibold
                                 leading-[1.05]
                                 tracking-[-0.045em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-5xl
                                 lg:text-6xl
                             "
@@ -1163,7 +1816,7 @@ export function CompanyPage() {
                                 max-w-2xl
                                 text-base
                                 leading-7
-                                text-slate-500
+                                text-slate-500 dark:text-white/55
                                 sm:text-lg
                             "
                         >
@@ -1179,7 +1832,7 @@ export function CompanyPage() {
                     CTA
                 ================================================== */}
 
-                <section className="bg-white">
+                <section className="bg-white dark:bg-[#1b1b20]">
 
                     <div
                         className="
@@ -1289,12 +1942,12 @@ export function CompanyPage() {
                                             items-center
                                             gap-2
                                             rounded-xl
-                                            bg-white
+                                            bg-white dark:bg-[#1b1b20]
                                             px-5
                                             py-3.5
                                             text-sm
                                             font-bold
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             transition-all
                                             duration-300
                                             hover:-translate-y-0.5
@@ -1385,8 +2038,8 @@ function TechnicalLabel({
                 gap-2
                 rounded-lg
                 border
-                border-slate-200
-                bg-white
+                border-slate-200 dark:border-white/10
+                bg-white dark:bg-[#1b1b20]
                 px-3
                 py-2
                 shadow-sm
@@ -1408,7 +2061,7 @@ function TechnicalLabel({
                 className="
                     text-[10px]
                     font-semibold
-                    text-hbt-dark
+                    text-hbt-dark dark:text-[#ececef]
                 "
             >
                 {label}

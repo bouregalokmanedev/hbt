@@ -12,7 +12,7 @@ export function CourseEmptyState({ hasFilters, onClearFilters }: CourseEmptyStat
   return (
     <div
       data-testid="course-empty"
-      className="rounded-3xl border border-dashed border-[#3A3A3A]/15 bg-white px-6 py-16 text-center dark:border-white/15 dark:bg-[#1b1b20]"
+      className="rounded-3xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-6 py-16 text-center dark:border-white/15 dark:bg-[#1b1b20]"
     >
       <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#F47822]/10 text-[#F47822]">
         <SearchX className="h-6 w-6" />

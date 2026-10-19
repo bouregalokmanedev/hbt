@@ -64,12 +64,12 @@ export function AdminRolesPage() {
       />
 
       {savedRole && (
-        <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
           {t("admin.roles.saved", { role: savedRole })}
         </div>
       )}
       {failedRole && (
-        <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           {t("admin.roles.saveError", { role: failedRole.role, message: failedRole.message })}
         </div>
       )}
@@ -86,7 +86,7 @@ export function AdminRolesPage() {
                     {role.protected ? <Lock className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
                   </span>
                   <div>
-                    <h2 className="flex items-center gap-2 text-base font-bold text-[#3A3A3A]">
+                    <h2 className="flex items-center gap-2 text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">
                       {role.name}
                       {role.protected && (
                         <span className="rounded-full bg-[#3A3A3A] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.1em] text-white">
@@ -94,7 +94,7 @@ export function AdminRolesPage() {
                         </span>
                       )}
                     </h2>
-                    <p className="mt-0.5 flex items-center gap-1 text-xs text-[#3A3A3A]/50">
+                    <p className="mt-0.5 flex items-center gap-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                       <UsersRound className="h-3 w-3 rtl:-scale-x-100" /> {t("admin.roles.meta", { accounts: role.users_count, permissions: current.length })}
                     </p>
                   </div>
@@ -113,14 +113,14 @@ export function AdminRolesPage() {
               </div>
 
               {role.protected ? (
-                <p className="mt-4 rounded-xl bg-[#F7F7F7] px-4 py-3 text-xs leading-5 text-[#3A3A3A]/55">
+                <p className="mt-4 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-4 py-3 text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">
                   {t("admin.roles.protectedNote")}
                 </p>
               ) : (
                 <div className="mt-4 space-y-4">
                   {groups.map(([group, permissions]) => (
                     <div key={group}>
-                      <p className="text-[10px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/40">{group}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/40 dark:text-white/40">{group}</p>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {permissions.map((permission) => {
                           const active = current.includes(permission);
@@ -133,7 +133,7 @@ export function AdminRolesPage() {
                               className={`rounded-full border px-3 py-1.5 font-mono text-[11px] font-semibold transition ${
                                 active
                                   ? "border-[#F47822] bg-[#F47822]/10 text-[#F47822]"
-                                  : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/45 hover:border-[#F47822]/40 hover:text-[#3A3A3A]"
+                                  : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/45 dark:text-white/45 hover:border-[#F47822]/40 hover:text-[#3A3A3A]"
                               }`}
                             >
                               {permission}

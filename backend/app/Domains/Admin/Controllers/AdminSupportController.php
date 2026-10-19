@@ -40,6 +40,9 @@ class AdminSupportController extends Controller
                 ->whereNotNull('due_at')
                 ->where('due_at', '<', now());
         }
+        if ($tag = trim((string) $request->query('tag', ''))) {
+            $query->whereJsonContains('tags', $tag);
+        }
         if ($search = trim((string) $request->query('search', ''))) {
             $needle = '%'.mb_strtolower($search).'%';
             $query->where(function ($builder) use ($needle) {
@@ -272,6 +275,97 @@ class AdminSupportController extends Controller
     }
 
     /**
+     * Bulk resolve / close / assign a page of tickets in one call. Guards
+     * against empty id lists and silently skips closed tickets so an agent
+     * can't reopen work a teammate just finished.
+     */
+    public function bulk(Request $request, AuditService $audit): JsonResponse
+    {
+        $this->authorize('manage', SupportTicket::class);
+
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:100'],
+            'ids.*' => ['uuid'],
+            'action' => ['required', 'in:resolve,close,assign'],
+            'assignee_id' => ['required_if:action,assign', 'nullable', 'uuid', 'exists:users,uuid'],
+        ]);
+
+        $ids = array_values(array_unique($data['ids']));
+        $tickets = SupportTicket::query()->whereIn('id', $ids)->get();
+
+        $assignee = null;
+        if ($data['action'] === 'assign') {
+            $assignee = User::where('uuid', $data['assignee_id'])->firstOrFail();
+            abort_unless(
+                $assignee->hasAnyRole([UserRole::SUPPORT->value, UserRole::ADMIN->value, UserRole::SUPER_ADMIN->value]),
+                422,
+                'Tickets can only be assigned to support staff.',
+            );
+        }
+
+        $skipped = 0;
+        foreach ($tickets as $ticket) {
+            if ($ticket->status === TicketStatus::CLOSED) {
+                $skipped++;
+                continue;
+            }
+
+            if ($data['action'] === 'resolve') {
+                $ticket->update(['status' => TicketStatus::RESOLVED->value, 'resolved_at' => now()]);
+            } elseif ($data['action'] === 'close') {
+                $ticket->update(['status' => TicketStatus::CLOSED->value, 'closed_at' => now()]);
+            } else {
+                $ticket->update(['assigned_to' => $assignee->id]);
+            }
+        }
+
+        $audit->log('ticket.bulk.'.$data['action'], $tickets->first(), [], [], [
+            'count' => $tickets->count() - $skipped,
+            'skipped' => $skipped,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bulk action applied.',
+            'data' => [
+                'updated' => $tickets->count() - $skipped,
+                'skipped' => $skipped,
+            ],
+        ]);
+    }
+
+    /**
+     * Set (replace) a ticket's free-form tags — a small array of short labels.
+     */
+    public function setTags(Request $request, SupportTicket $ticket, AuditService $audit): JsonResponse
+    {
+        $this->authorize('manage', SupportTicket::class);
+
+        $data = $request->validate([
+            'tags' => ['nullable', 'array', 'max:10'],
+            'tags.*' => ['string', 'max:32'],
+        ]);
+
+        $tags = collect($data['tags'] ?? [])
+            ->map(fn (string $tag) => mb_strtolower(trim($tag)))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $old = $ticket->tags ?? [];
+        $ticket->update(['tags' => $tags]);
+
+        $audit->log('ticket.tagged', $ticket, ['tags' => $old], ['tags' => $tags]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tags updated.',
+            'data' => $this->serialize($this->reload($ticket), true),
+        ]);
+    }
+
+    /**
      * In-app + email nudge to the student who filed the ticket. Failures are
      * logged only: a broken notification must never fail the agent's action.
      */
@@ -305,11 +399,13 @@ class AdminSupportController extends Controller
             'id' => $ticket->id,
             'subject' => $ticket->subject,
             'category' => $ticket->category,
+            'tags' => $ticket->tags ?? [],
             'priority' => $ticket->priority->value,
             'status' => $ticket->status->value,
             'level' => $ticket->level->value,
             'user' => $ticket->user?->full_name,
             'email' => $ticket->user?->email,
+            'user_uuid' => $ticket->user?->uuid,
             'assignee' => $ticket->assignee?->full_name,
             'due_at' => $ticket->due_at?->toISOString(),
             'overdue' => $ticket->isOverdue(),

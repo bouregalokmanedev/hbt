@@ -42,7 +42,7 @@ import { LessonNotes } from "../components/LessonNotes";
 import { LessonFeedback } from "../components/LessonFeedback";
 import { LessonDiagnostics } from "../components/LessonDiagnostics";
 import { LessonInstructor } from "../components/LessonInstructor";
-import { LessonMentorPopup } from "../components/LessonMentorPopup";
+import { LessonQuickActions } from "../components/LessonQuickActions";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 
 export function LessonPlayerPage() {
@@ -72,7 +72,7 @@ export function LessonPlayerPage() {
             {t("lessonPlayer.page.lessonNotFound")}
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-gray-500">
+          <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-white/55">
             {t("lessonPlayer.page.lessonNotFoundDesc")}
           </p>
 
@@ -104,7 +104,7 @@ export function LessonPlayerPage() {
             {t("lessonPlayer.page.courseNotFound")}
           </h1>
 
-          <p className="mt-3 text-sm leading-6 text-gray-500">
+          <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-white/55">
             {t("lessonPlayer.page.courseNotFoundDesc")}
           </p>
 
@@ -232,7 +232,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
             {t("lessonPlayer.page.loadingLesson")}
           </p>
 
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 dark:text-white/55">
             {t("lessonPlayer.page.loadingDesc")}
           </p>
         </div>
@@ -259,7 +259,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
             {t("lessonPlayer.page.loadFail")}
           </h1>
 
-          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-500">
+          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-gray-500 dark:text-white/55">
             {error ?? t("lessonPlayer.page.loadFailFallback")}
           </p>
 
@@ -301,7 +301,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
 
   return (
     <div className="min-h-screen bg-[#F7F7F7] dark:bg-[#101013]">
-      <LessonMentorPopup
+      <LessonQuickActions
         lessonTitle={lesson.title}
         lessonId={lesson.id}
         courseId={courseId}
@@ -314,7 +314,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
         <div className="mx-auto flex h-[72px] max-w-[1600px] items-center gap-4 px-4 sm:px-6 lg:px-8">
           <Link
             to={`/courses/${courseId}`}
-            className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-gray-500 transition-all hover:-translate-x-0.5 hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5"
+            className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-gray-500 dark:text-white/55 transition-all hover:-translate-x-0.5 hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5"
             aria-label={t("lessonPlayer.page.backCourse")}
           >
             <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
@@ -383,7 +383,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                   </p>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-3 text-xs text-gray-500 sm:border-l sm:border-gray-100 dark:sm:border-white/10 sm:pl-4">
+              <div className="flex shrink-0 items-center gap-3 text-xs text-gray-500 dark:text-white/55 sm:border-l sm:border-gray-100 dark:sm:border-white/10 sm:pl-4">
                 <span className="inline-flex items-center gap-1.5">
                   <Clock3 className="h-4 w-4 text-[#F47822]" />
                   {lesson.duration_minutes} {t("lessonPlayer.page.min")}
@@ -474,7 +474,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                     key={tab}
                     type="button"
                     onClick={() => setActiveContentTab(tab)}
-                    className={`relative inline-flex shrink-0 items-center gap-2 px-3 py-4 text-xs font-bold transition-colors sm:px-4 ${activeContentTab === tab ? "text-[#F47822]" : "text-gray-400 hover:text-[#3A3A3A] dark:hover:text-[#ececef]"}`}
+                    className={`relative inline-flex shrink-0 items-center gap-2 px-3 py-4 text-xs font-bold transition-colors sm:px-4 ${activeContentTab === tab ? "text-[#F47822]" : "text-gray-400 dark:text-white/40 hover:text-[#3A3A3A] dark:hover:text-[#ececef]"}`}
                   >
                     <Icon className="h-4 w-4" />
                     {label}
@@ -532,7 +532,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                     </div>
 
                     {/* Inline actions — no need to scroll for the basics. */}
-                    <div className="flex flex-wrap gap-2 border-t border-gray-100 px-5 py-4 dark:border-white/10 sm:px-7">
+                    <div className="flex flex-wrap gap-2 border-t border-gray-100 dark:border-white/8 px-5 py-4 dark:border-white/10 sm:px-7">
                       {!isCompleted ? (
                         <button
                           type="button"
@@ -565,7 +565,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                       <button
                         type="button"
                         onClick={() => setActiveContentTab("documentation")}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-[#ececef]"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-white/10 px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-[#ececef]"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         {t("lessonPlayer.page.tabs.documentation")}

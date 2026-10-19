@@ -29,7 +29,7 @@ export function CertificatesCard() {
   return (
     <section
       data-testid="dashboard-card-certificates-content"
-      className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-5 shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:border-white/10 dark:bg-[#1b1b20] sm:p-6"
+      className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:border-white/10 dark:bg-[#1b1b20] sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -69,7 +69,7 @@ export function CertificatesCard() {
           {top.map((certificate) => (
             <li
               key={certificate.id}
-              className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] px-3 py-2.5 dark:border-white/8 dark:bg-white/[0.04]"
+              className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5 dark:border-white/8 dark:bg-white/[0.04]"
             >
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F47822]/10 text-[#F47822]">
                 <Award className="h-4 w-4" />

@@ -204,72 +204,120 @@ class StartQuizAttemptActionTest extends TestCase
             0
         );
     }
-  public function test_max_attempts_prevents_new_attempt(): void
-{
-    $user = User::factory()->create();
 
-    $quiz = Quiz::factory()->create([
-        'status' => QuizStatus::PUBLISHED,
-        'max_attempts' => 2,
-    ]);
+    public function test_max_attempts_prevents_new_attempt(): void
+    {
+        $user = User::factory()->create();
 
-    QuizAttempt::factory()
-        ->submitted()
-        ->create([
-            'quiz_id' => $quiz->id,
-            'user_id' => $user->id,
-            'attempt_number' => 1,
+        $quiz = Quiz::factory()->create([
+            'status' => QuizStatus::PUBLISHED,
+            'max_attempts' => 2,
         ]);
 
-    QuizAttempt::factory()
-        ->submitted()
-        ->create([
-            'quiz_id' => $quiz->id,
-            'user_id' => $user->id,
-            'attempt_number' => 2,
+        QuizAttempt::factory()
+            ->submitted()
+            ->create([
+                'quiz_id' => $quiz->id,
+                'user_id' => $user->id,
+                'attempt_number' => 1,
+            ]);
+
+        QuizAttempt::factory()
+            ->submitted()
+            ->create([
+                'quiz_id' => $quiz->id,
+                'user_id' => $user->id,
+                'attempt_number' => 2,
+            ]);
+
+        $this->expectException(
+            ValidationException::class
+        );
+
+        $this->action->execute(
+            quiz: $quiz,
+            user: $user,
+        );
+    }
+
+    public function test_null_max_attempts_allows_unlimited_attempts(): void
+    {
+        $user = User::factory()->create();
+
+        $quiz = Quiz::factory()->create([
+            'status' => QuizStatus::PUBLISHED,
+            'max_attempts' => null,
         ]);
 
-    $this->expectException(
-        ValidationException::class
-    );
+        QuizAttempt::factory()
+            ->submitted()
+            ->create([
+                'quiz_id' => $quiz->id,
+                'user_id' => $user->id,
+                'attempt_number' => 1,
+            ]);
 
-    $this->action->execute(
-        quiz: $quiz,
-        user: $user,
-    );
-}
+        $attempt = $this->action->execute(
+            quiz: $quiz,
+            user: $user,
+        );
 
-public function test_null_max_attempts_allows_unlimited_attempts(): void
-{
-    $user = User::factory()->create();
+        $this->assertSame(
+            2,
+            $attempt->attempt_number
+        );
 
-    $quiz = Quiz::factory()->create([
-        'status' => QuizStatus::PUBLISHED,
-        'max_attempts' => null,
-    ]);
+        $this->assertSame(
+            QuizAttemptStatus::IN_PROGRESS,
+            $attempt->status
+        );
+    }
 
-    QuizAttempt::factory()
-        ->submitted()
-        ->create([
-            'quiz_id' => $quiz->id,
-            'user_id' => $user->id,
-            'attempt_number' => 1,
+    public function test_attempt_expiry_follows_the_quiz_time_limit(): void
+    {
+        $user = User::factory()->create();
+
+        $quiz = Quiz::factory()->create([
+            'status' => QuizStatus::PUBLISHED,
+            'time_limit' => 20,
+            'max_attempts' => null,
         ]);
 
-    $attempt = $this->action->execute(
-        quiz: $quiz,
-        user: $user,
-    );
+        $attempt = $this->action->execute(
+            quiz: $quiz,
+            user: $user,
+        );
 
-    $this->assertSame(
-        2,
-        $attempt->attempt_number
-    );
+        $this->assertNotNull($attempt->expires_at);
 
-    $this->assertSame(
-        QuizAttemptStatus::IN_PROGRESS,
-        $attempt->status
-    );
-}
-    
+        $this->assertTrue(
+            $attempt->expires_at->between(
+                now()->addMinutes(20)->subSeconds(10),
+                now()->addMinutes(20)->addSeconds(10),
+            )
+        );
+    }
+
+    public function test_untimed_quiz_creates_an_attempt_without_expiry(): void
+    {
+        $user = User::factory()->create();
+
+        $quiz = Quiz::factory()->create([
+            'status' => QuizStatus::PUBLISHED,
+            'time_limit' => null,
+            'max_attempts' => null,
+        ]);
+
+        $attempt = $this->action->execute(
+            quiz: $quiz,
+            user: $user,
+        );
+
+        $this->assertNull($attempt->expires_at);
+
+        $this->assertSame(
+            QuizAttemptStatus::IN_PROGRESS,
+            $attempt->status
+        );
+    }
 }

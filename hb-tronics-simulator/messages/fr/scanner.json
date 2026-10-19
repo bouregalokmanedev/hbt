@@ -300,6 +300,20 @@
     "close": "Fermer",
     "complete": "Fin du dialogue guidé"
   },
+  "device": {
+    "kicker": "Tablette de diagnostic",
+    "hint": "Touchez un bouton",
+    "btn": {
+      "special": "Fonction spéciale",
+      "report": "Rapport",
+      "remote": "Contrôle à distance",
+      "autoscan": "Auto-scan",
+      "diagnosis": "Diagnostic",
+      "updates": "Mises à jour",
+      "setting": "Paramètres",
+      "more": "Plus"
+    }
+  },
   "rail": {
     "label": "Outils du scanner",
     "home": "Accueil du scanner"

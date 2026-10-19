@@ -100,6 +100,28 @@ class AchievementService
         $lessonNotes = LessonNote::where('user_id', $user->id)->count();
         $certificates = Certificate::where('user_id', $user->id)->count();
 
+        $coldStart = DiagnosticScenarioAttempt::where('user_id', $user->id)
+            ->where('passed', true)
+            ->where('attempt_number', 1)
+            ->exists();
+        $cleanHands = DiagnosticScenarioAttempt::where('user_id', $user->id)
+            ->where('passed', true)
+            ->whereNotExists(function ($query) use ($user) {
+                $query->selectRaw('1')
+                    ->from('diagnostic_hint_usages')
+                    ->whereColumn('diagnostic_hint_usages.diagnostic_scenario_attempt_id', 'diagnostic_scenario_attempts.id')
+                    ->where('diagnostic_hint_usages.user_id', $user->id);
+            })
+            ->exists();
+        $comeback = QuizAttempt::where('user_id', $user->id)
+                ->where('passed', true)
+                ->where('attempt_number', '>', 1)
+                ->exists()
+            || AssessmentAttempt::where('user_id', $user->id)
+                ->where('passed', true)
+                ->where('attempt_number', '>', 1)
+                ->exists();
+
         $earned = [
             'member' => true,
             'pro' => $hasProRole,
@@ -140,6 +162,11 @@ class AchievementService
             'good-samaritan' => $peerBonusesGiven >= 5,
             'curator' => $lessonNotes >= 10,
             'credentialed' => $certificates >= 5,
+            'cold-start' => $coldStart,
+            'clean-hands' => $cleanHands,
+            'comeback' => $comeback,
+            'certified' => $certificates >= 1,
+            'reviewer' => $reviewCount >= 1,
             'rising-star' => false,      // computed after counting
             'badge-hoarder' => false,    // only knowable once the rest are persisted
         ];
@@ -175,6 +202,7 @@ class AchievementService
             'quiz-ace' => 1, 'proven' => 10, 'diagnostic-master' => 15,
             'ambassador' => 3, 'challenger' => 10, 'rivalry' => 5, 'good-samaritan' => 5,
             'curator' => 10, 'credentialed' => 5, 'badge-hoarder' => 15,
+            'cold-start' => 1, 'clean-hands' => 1, 'comeback' => 1, 'certified' => 1, 'reviewer' => 1,
             'rising-star' => 3,
         ];
         $progressMap = [
@@ -197,6 +225,9 @@ class AchievementService
             'ambassador' => min($referrals, 3), 'challenger' => min($challengesCompleted, 10),
             'rivalry' => min($rivalsSent, 5), 'good-samaritan' => min($peerBonusesGiven, 5),
             'curator' => min($lessonNotes, 10), 'credentialed' => min($certificates, 5),
+            'cold-start' => $coldStart ? 1 : 0, 'clean-hands' => $cleanHands ? 1 : 0,
+            'comeback' => $comeback ? 1 : 0, 'certified' => min($certificates, 1),
+            'reviewer' => min($reviewCount, 1),
             'badge-hoarder' => min($ownedBadges, 15),
             'rising-star' => min(collect($earned)->filter(fn ($v, $k) => ! in_array($k, ['rising-star', 'badge-hoarder'], true) && $v)->count(), 3),
         ];
@@ -241,6 +272,11 @@ class AchievementService
             ['id'=>'good-samaritan','title'=>'Good Samaritan','description'=>'Send five peer bonuses to classmates.','icon'=>'☮','completed'=>$earned['good-samaritan']],
             ['id'=>'curator','title'=>'Curator','description'=>'Take notes on ten lessons.','icon'=>'✎','completed'=>$earned['curator']],
             ['id'=>'credentialed','title'=>'Credentialed','description'=>'Earn five certificates.','icon'=>'▤','completed'=>$earned['credentialed']],
+            ['id'=>'cold-start','title'=>'Cold Start','description'=>'Pass a diagnostic scenario on your first attempt.','icon'=>'❄','completed'=>$earned['cold-start']],
+            ['id'=>'clean-hands','title'=>'Clean Hands','description'=>'Pass a diagnostic scenario without using any hints.','icon'=>'✋','completed'=>$earned['clean-hands']],
+            ['id'=>'comeback','title'=>'Comeback Kid','description'=>'Fail a quiz or assessment, then come back and pass it.','icon'=>'↩','completed'=>$earned['comeback']],
+            ['id'=>'certified','title'=>'Certified','description'=>'Earn your first certificate.','icon'=>'🎓','completed'=>$earned['certified']],
+            ['id'=>'reviewer','title'=>'Reviewer','description'=>'Submit your first course review.','icon'=>'✍','completed'=>$earned['reviewer']],
             ['id'=>'badge-hoarder','title'=>'Badge Collector','description'=>'Own fifteen badges.','icon'=>'❖','completed'=>$earned['badge-hoarder']],
             ['id'=>'rising-star','title'=>'Rising Star','description'=>'Earn three badges to unlock this badge.','icon'=>'✹','completed'=>$earned['rising-star']],
         ])->map(fn (array $badge) => $badge + ['progress' => $progressMap[$badge['id']] ?? 0, 'target' => $targets[$badge['id']] ?? 1])->all();

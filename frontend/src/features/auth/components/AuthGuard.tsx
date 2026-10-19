@@ -82,17 +82,17 @@ export function AuthGuard() {
     if (!user.email_verified_at) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-background px-5">
-                <section className="w-full max-w-md overflow-hidden rounded-3xl border border-[#3A3A3A]/10 bg-white shadow-[0_16px_45px_rgba(58,58,58,0.12)]">
+                <section className="w-full max-w-md overflow-hidden rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_16px_45px_rgba(58,58,58,0.12)]">
                     <div className="h-1.5 bg-[#F47822]" />
                     <div className="p-7 text-center sm:p-8">
                         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F47822]/10"><MailCheck className="h-7 w-7 text-[#F47822]" /></div>
                         <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("verifyEmailGate.eyebrow")}</p>
-                        <h1 className="mt-2 text-xl font-bold text-[#3A3A3A]">{t("verifyEmailGate.title")}</h1>
-                        <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/55">{t("verifyEmailGate.body", { email: user.email })}</p>
+                        <h1 className="mt-2 text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("verifyEmailGate.title")}</h1>
+                        <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/55 dark:text-white/55">{t("verifyEmailGate.body", { email: user.email })}</p>
                         <button type="button" onClick={() => void initialize()} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#F47822] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#df6817]"><RefreshCw className="h-4 w-4" />{t("verifyEmailGate.checked")}</button>
-                        <button type="button" onClick={() => void resend()} disabled={resending || cooldown > 0} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] px-4 py-3 text-sm font-semibold text-[#F47822] transition hover:bg-[#FDEEE5] disabled:opacity-60"><Send className="h-4 w-4" />{cooldown > 0 ? `${t("verifyEmailGate.resendWait")} ${cooldown}s` : resending ? t("verifyEmailGate.sending") : resent ? t("verifyEmailGate.sent") : t("verifyEmailGate.resend")}</button>
-                        {resendError && <p role="alert" className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-xs text-red-600">{resendError}</p>}
-                        <button type="button" onClick={() => void logout()} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 px-4 py-3 text-sm font-semibold text-[#3A3A3A]/60 transition hover:bg-[#F7F7F7]"><LogOut className="h-4 w-4" />{t("verifyEmailGate.signOut")}</button>
+                        <button type="button" onClick={() => void resend()} disabled={resending || cooldown > 0} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-4 py-3 text-sm font-semibold text-[#F47822] transition hover:bg-[#FDEEE5] dark:bg-[#F47822]/15 disabled:opacity-60"><Send className="h-4 w-4" />{cooldown > 0 ? `${t("verifyEmailGate.resendWait")} ${cooldown}s` : resending ? t("verifyEmailGate.sending") : resent ? t("verifyEmailGate.sent") : t("verifyEmailGate.resend")}</button>
+                        {resendError && <p role="alert" className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-2.5 text-xs text-red-600 dark:text-red-400">{resendError}</p>}
+                        <button type="button" onClick={() => void logout()} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-3 text-sm font-semibold text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#F7F7F7] dark:bg-[#101013]"><LogOut className="h-4 w-4" />{t("verifyEmailGate.signOut")}</button>
                     </div>
                 </section>
             </div>

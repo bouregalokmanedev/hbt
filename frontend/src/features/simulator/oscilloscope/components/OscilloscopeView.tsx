@@ -42,7 +42,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
 
   if (!engine || !state) {
     return (
-      <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
         <div className="flex items-center gap-3 text-sm font-bold text-[#3A3A3A]/50 dark:text-white/50">
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0E9F6E]/25 border-t-[#0E9F6E]" />
           {t("simulator.dmmLab.loading", { defaultValue: "Loading…" }) as string}
@@ -59,9 +59,9 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
   const tr = (key: string, fallback: string) => t(key, { defaultValue: fallback }) as string;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
       {/* header */}
-      <div className="flex items-center gap-4 border-b border-[#3A3A3A]/10 bg-white px-4 py-2 dark:border-white/10 dark:bg-[#1b1b20]">
+      <div className="flex items-center gap-4 border-b border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 dark:border-white/10 dark:bg-[#1b1b20]">
         <div className="min-w-0">
           <div className="text-[11px] font-black uppercase tracking-[0.14em] text-[#0E9F6E]">
             {tr("oscilloscope.title", "Oscilloscope")}
@@ -73,7 +73,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
         <span dir="ltr" className="ms-auto font-mono text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60">
           {tr("oscilloscope.header.score", "Score")} <span className="font-mono text-sm font-black text-[#3A3A3A] dark:text-white">{engine.score()}/100</span>
         </span>
-        <div className="inline-flex rounded-xl bg-[#3A3A3A]/5 p-1 dark:bg-white/5">
+        <div className="inline-flex rounded-xl bg-[#3A3A3A]/5 dark:bg-white/5 p-1 dark:bg-white/5">
           {SCREENS.map((s) => (
             <button
               key={s}
@@ -82,7 +82,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
               aria-current={state.screen === s ? "page" : undefined}
               className={clsx(
                 "rounded-lg px-3 py-1.5 text-xs font-black focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20",
-                state.screen === s ? "bg-white text-[#0E9F6E] shadow dark:bg-[#1b1b20]" : "text-[#3A3A3A]/50 dark:text-white/50",
+                state.screen === s ? "bg-white dark:bg-[#1b1b20] text-[#0E9F6E] shadow dark:bg-[#1b1b20]" : "text-[#3A3A3A]/50 dark:text-white/50",
               )}
             >
               {tr(`oscilloscope.screen.${s}`, SCREEN_LABELS[s])}
@@ -98,10 +98,10 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
           <>
             <ProcedureSidebar engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
             <div className="min-w-0 flex-1 space-y-3 overflow-auto p-4">
-              <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+              <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
                 <ScopeControls engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
               </div>
-              <div className="overflow-hidden rounded-xl border border-[#3A3A3A]/10 bg-[#0C1116] p-2 dark:border-white/10">
+              <div className="overflow-hidden rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#0C1116] p-2 dark:border-white/10">
                 <WaveformCanvas engine={engine} state={state} />
               </div>
               <MeasurementRow engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
@@ -122,7 +122,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
                   engine.setScreen("scope");
                 }}
                 className={clsx(
-                  "rounded-xl border bg-white p-4 text-start shadow-sm transition hover:shadow dark:bg-[#1b1b20] focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20",
+                  "rounded-xl border bg-white dark:bg-[#1b1b20] p-4 text-start shadow-sm transition hover:shadow dark:bg-[#1b1b20] focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20",
                   c.id === state.compId ? "border-[#0E9F6E]" : "border-[#3A3A3A]/10 dark:border-white/10",
                 )}
               >
@@ -140,7 +140,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
 
         {state.screen === "connect" ? (
           <div className="min-w-0 flex-1 overflow-auto p-6">
-            <div className="mx-auto max-w-lg rounded-xl border border-[#3A3A3A]/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="mx-auto max-w-lg rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
               <div className="text-sm font-black text-[#3A3A3A] dark:text-white">
                 {tr("oscilloscope.probes.title", "Probes")}
               </div>
@@ -153,7 +153,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
                   .map((key) => (
                     <div
                       key={key}
-                      className="flex items-center justify-between gap-2 rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 py-2 dark:border-white/10 dark:bg-white/5"
+                      className="flex items-center justify-between gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-3 py-2 dark:border-white/10 dark:bg-white/5"
                     >
                       <span className="font-mono text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60">
                         {tr("oscilloscope.probes.channel", "Channel")} {key}
@@ -162,7 +162,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
                         dir="ltr"
                         value={state.probes[key] ?? ""}
                         onChange={(e) => engine.placeProbe(key, e.target.value || null)}
-                        className="rounded-md border border-[#3A3A3A]/15 bg-white px-2 py-1 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                        className="rounded-md border border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-2 py-1 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                       >
                         <option value="">—</option>
                         {comp.pins.map((p) => (
@@ -179,8 +179,8 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
                 className={clsx(
                   "mt-3 rounded-xl px-3 py-2 text-sm font-bold",
                   engine.stepChecks().probeOk
-                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
-                    : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
+                    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
+                    : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
                 )}
               >
                 {engine.stepChecks().probeOk
@@ -201,7 +201,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
         {state.screen === "compare" ? (
           <div className="min-w-0 flex-1 overflow-auto p-5">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+              <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
                 <div className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
                   {tr("oscilloscope.compare.live", "Live")}
                 </div>
@@ -209,7 +209,7 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
                   <WaveformCanvas engine={engine} state={state} height={300} />
                 </div>
               </div>
-              <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+              <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
                 <div className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
                   {tr("oscilloscope.compare.reference", "Reference")}
                 </div>

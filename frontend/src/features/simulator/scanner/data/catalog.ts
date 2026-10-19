@@ -25,7 +25,10 @@ export interface BackendCatalogVariant {
     id: string;
     name: string;
     engine_code: string | null;
+    fuel_type?: string | null;
     transmission: string | null;
+    year_from?: number | null;
+    year_to?: number | null;
     metadata: {
         vin?: string;
         odometer_km?: number;

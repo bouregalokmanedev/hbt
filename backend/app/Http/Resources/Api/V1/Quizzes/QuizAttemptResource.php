@@ -44,16 +44,20 @@ final class QuizAttemptResource extends JsonResource
             'updated_at' => $this->updated_at?->toISOString(),
 
             'answers' => $this->whenLoaded('answers', function () {
+                $graded = $this->status?->value === 'submitted';
+
                 return $this->answers->map(
-                    function ($answer) {
+                    function ($answer) use ($graded) {
                         return [
                             'id' => $answer->id,
 
                             'question_id' => $answer->question_id,
 
-                            'is_correct' => $answer->is_correct,
+                            // Draft answers are ungraded — only reveal the
+                            // verdict once the attempt has been scored.
+                            'is_correct' => $graded ? $answer->is_correct : null,
 
-                            'points_earned' => $answer->points_earned,
+                            'points_earned' => $graded ? $answer->points_earned : null,
 
                             'selected_options' => $answer->relationLoaded(
                                 'selectedOptions'
@@ -84,6 +88,9 @@ final class QuizAttemptResource extends JsonResource
                             'id' => $question->id,
                             'question' => $question->question,
                             'type' => $question->type->value,
+                            'points' => $question->points,
+                            'required' => $question->required,
+                            'explanation' => $question->explanation,
                             'options' => $question->relationLoaded('options')
                                 ? $question->options->map(fn ($option) => [
                                     'id' => $option->id,

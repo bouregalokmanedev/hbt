@@ -47,6 +47,7 @@ describe("track", () => {
     expect(body.properties).toEqual({ source: "pricing_page" });
     expect(typeof body.session_hash).toBe("string");
     expect(String(body.session_hash).length).toBeGreaterThan(0);
+    expect(String(body.visitor_id)).toMatch(/^[0-9a-f-]{36}$/i);
   });
 
   it("stringifies numeric properties and drops empty ones", () => {

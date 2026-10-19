@@ -71,7 +71,7 @@ export function AtlasCanvas({
         className="mx-auto"
         style={{ maxWidth: 900, transform: `scale(${state.zoom})`, transformOrigin: "top center" }}
       >
-        <div className="relative overflow-hidden rounded-2xl border border-[#3A3A3A]/10 bg-white shadow-[0_14px_36px_rgba(58,58,58,0.12)] ring-1 ring-[#3A3A3A]/5 dark:border-white/10 dark:bg-[#1b1b20] dark:shadow-black/40 dark:ring-white/5">
+        <div className="relative overflow-hidden rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_14px_36px_rgba(58,58,58,0.12)] ring-1 ring-[#3A3A3A]/5 dark:border-white/10 dark:bg-[#1b1b20] dark:shadow-black/40 dark:ring-white/5">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={img} alt={cap} className="block h-auto w-full select-none" draggable={false} />

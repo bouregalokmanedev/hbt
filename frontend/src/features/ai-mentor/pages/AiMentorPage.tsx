@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { mentorApi } from "../api/mentor-api";
 import { MentorChatPanel } from "../components/MentorChatPanel";
 import type { MentorConversation } from "../types/mentor";
@@ -40,6 +41,9 @@ function createTab(seq: number, t: (key: string) => string, forceNew: boolean): 
 
 export function AiMentorPage() {
     const { t } = useTranslation();
+    // Deep-link support (e.g. from a scanner fault row): /ai-mentor?prompt=…
+    const [searchParams] = useSearchParams();
+    const deepLinkPrompt = searchParams.get("prompt") ?? "";
     const [history, setHistory] = useState<MentorConversation[]>([]);
     const [historyLoading, setHistoryLoading] = useState(true);
     const [historyError, setHistoryError] = useState<string | null>(null);
@@ -52,7 +56,9 @@ export function AiMentorPage() {
     }]);
     const [activeKey, setActiveKey] = useState("tab-1");
     const [limitNotice, setLimitNotice] = useState(false);
-    const [drafts, setDrafts] = useState<Record<string, string>>({});
+    const [drafts, setDrafts] = useState<Record<string, string>>(
+        (): Record<string, string> => (deepLinkPrompt ? { "tab-1": deepLinkPrompt } : {}),
+    );
     const tabSeqRef = useRef(2);
     const knownIdsRef = useRef(new Set<string>());
 
@@ -299,7 +305,7 @@ export function AiMentorPage() {
                                                         aria-label={t("mentor.history.archive")}
                                                         disabled={archivingId === item.id}
                                                         onClick={() => void archiveConversation(item.id)}
-                                                        className="rounded-lg p-1.5 text-[#3A3A3A]/40 dark:text-white/40 opacity-0 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-40"
+                                                        className="rounded-lg p-1.5 text-[#3A3A3A]/40 dark:text-white/40 opacity-0 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-40"
                                                     >
                                                         <Archive className="h-3.5 w-3.5" />
                                                     </button>
@@ -348,7 +354,7 @@ export function AiMentorPage() {
                     </aside>
 
                     <section
-                        className="order-1 flex min-h-[720px] min-w-0 flex-col overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white shadow-[0_18px_50px_rgba(58,58,58,.08)] lg:order-2"
+                        className="order-1 flex min-h-[720px] min-w-0 flex-col overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_18px_50px_rgba(58,58,58,.08)] lg:order-2"
                     >
                         <div className="shrink-0 border-b border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-3 pt-3 sm:px-4">
                             <div className="flex items-center gap-2 overflow-x-auto pb-1">

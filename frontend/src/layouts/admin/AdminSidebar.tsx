@@ -95,6 +95,7 @@ const sections: NavSection[] = [
             { labelKey: "admin.sidebar.roles", to: "/admin/roles", icon: KeyRound },
             { labelKey: "admin.sidebar.system", to: "/admin/system", icon: MonitorCog },
             { labelKey: "admin.sidebar.settings", to: "/admin/settings", icon: Settings },
+            { labelKey: "admin.sidebar.guide", to: "/admin/guide", icon: BookOpen },
         ],
     },
 ];
@@ -124,9 +125,9 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
     };
 
     return <>
-        {open && <button type="button" aria-label={t("admin.sidebar.closeAria")} onClick={onClose} className="fixed inset-0 z-40 bg-[#3A3A3A]/30 backdrop-blur-sm lg:hidden" />}
-        <aside className={`fixed inset-y-0 start-0 z-50 flex w-[272px] flex-col border-e border-[#3A3A3A]/8 bg-[#FCFCFC] shadow-[12px_0_40px_rgba(58,58,58,.07)] rtl:shadow-[-12px_0_40px_rgba(58,58,58,.07)] transition-all duration-300 ${collapsed ? "lg:w-[78px]" : "lg:w-[272px]"} ${open ? "translate-x-0" : isRTL ? "translate-x-full lg:translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-            <div className={`flex h-[76px] shrink-0 items-center border-b border-[#3A3A3A]/7 bg-white/80 px-5 ${collapsed ? "justify-center px-0" : "justify-between"}`}>
+        {open && <button type="button" aria-label={t("admin.sidebar.closeAria")} onClick={onClose} className="fixed inset-0 z-40 bg-[#3A3A3A]/30 dark:bg-white/30 backdrop-blur-sm lg:hidden" />}
+        <aside className={`fixed inset-y-0 start-0 z-50 flex w-[272px] flex-col border-e border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] shadow-[12px_0_40px_rgba(58,58,58,.07)] rtl:shadow-[-12px_0_40px_rgba(58,58,58,.07)] transition-all duration-300 ${collapsed ? "lg:w-[78px]" : "lg:w-[272px]"} ${open ? "translate-x-0" : isRTL ? "translate-x-full lg:translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+            <div className={`flex h-[76px] shrink-0 items-center border-b border-[#3A3A3A]/7 dark:border-white/7 bg-white/80 px-5 ${collapsed ? "justify-center px-0" : "justify-between"}`}>
                 {!collapsed ? (
                     <div className="flex min-w-0 items-center">
                         <img src={hbtLogo} alt="HBTronics" className="h-8 w-auto max-w-[150px] object-contain object-left rtl:object-right" />
@@ -135,7 +136,7 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                 ) : (
                     <img src={hbtCompactLogo} alt="HBTronics" className="h-9 w-9 rounded-lg object-cover" />
                 )}
-                <button type="button" onClick={onClose} aria-label={t("admin.sidebar.closeAria")} className="grid h-8 w-8 place-items-center rounded-lg text-[#3A3A3A]/45 lg:hidden"><X className="h-4 w-4" /></button>
+                <button type="button" onClick={onClose} aria-label={t("admin.sidebar.closeAria")} className="grid h-8 w-8 place-items-center rounded-lg text-[#3A3A3A]/45 dark:text-white/45 lg:hidden"><X className="h-4 w-4" /></button>
             </div>
             {/* Collapse toggle floating just outside the sidebar edge */}
             <button
@@ -143,15 +144,15 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                 onClick={onToggle}
                 aria-label={collapsed ? t("admin.sidebar.expandAria") : t("admin.sidebar.collapseAria")}
                 title={collapsed ? t("admin.sidebar.expandAria") : t("admin.sidebar.collapseAria")}
-                className="absolute -right-4 top-24 hidden h-8 w-8 items-center justify-center rounded-full border border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/55 shadow-[0_4px_14px_rgba(58,58,58,0.12)] transition hover:border-[#F47822]/30 hover:text-[#F47822] lg:flex rtl:-left-4 rtl:right-auto"
+                className="absolute -right-4 top-24 hidden h-8 w-8 items-center justify-center rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/55 dark:text-white/55 shadow-[0_4px_14px_rgba(58,58,58,0.12)] transition hover:border-[#F47822]/30 hover:text-[#F47822] lg:flex rtl:-left-4 rtl:right-auto"
             >
                 {collapsed ? <ChevronRight className="h-4 w-4 rtl:-scale-x-100" /> : <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" />}
             </button>
             <nav className="flex-1 overflow-y-auto px-3 py-5 [scrollbar-width:thin]">
-                {!collapsed && <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.18em] text-[#3A3A3A]/32">{t("admin.sidebar.control")}</p>}
+                {!collapsed && <p className="mb-2 px-3 text-[9px] font-bold uppercase tracking-[.18em] text-[#3A3A3A]/32 dark:text-white/32">{t("admin.sidebar.control")}</p>}
                 {visibleSections.map((section) => (
                     <div key={section.titleKey} className="mb-4 last:mb-0">
-                        {!collapsed && <p className="mb-1 px-3 text-[9px] font-bold uppercase tracking-[.18em] text-[#3A3A3A]/32">{t(section.titleKey)}</p>}
+                        {!collapsed && <p className="mb-1 px-3 text-[9px] font-bold uppercase tracking-[.18em] text-[#3A3A3A]/32 dark:text-white/32">{t(section.titleKey)}</p>}
                         <div className="space-y-1">
                             {section.items.map(({ labelKey, to, icon: Icon }) => {
                                 const badgeCount =
@@ -161,7 +162,7 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                                           ? (badges.announcements ?? 0)
                                           : 0;
                                 return (
-                                <NavLink key={to} to={to} end={to === "/admin"} onClick={onClose} title={collapsed ? t(labelKey) : undefined} className={({ isActive }) => `relative flex h-11 items-center gap-3 rounded-xl px-3 text-xs font-semibold transition-all ${isActive ? "bg-[#F47822] text-white shadow-[0_8px_18px_rgba(244,120,34,.2)]" : "text-[#3A3A3A]/58 hover:bg-white hover:text-[#3A3A3A] hover:shadow-sm"} ${collapsed ? "justify-center px-0" : ""}`}>
+                                <NavLink key={to} to={to} end={to === "/admin"} onClick={onClose} title={collapsed ? t(labelKey) : undefined} className={({ isActive }) => `relative flex h-11 items-center gap-3 rounded-xl px-3 text-xs font-semibold transition-all ${isActive ? "bg-[#F47822] text-white shadow-[0_8px_18px_rgba(244,120,34,.2)]" : "text-[#3A3A3A]/58 dark:text-white/58 hover:bg-white dark:hover:bg-white/10 hover:text-[#3A3A3A] hover:shadow-sm"} ${collapsed ? "justify-center px-0" : ""}`}>
                                     <Icon className="h-4 w-4 shrink-0" />
                                     {!collapsed && <span className="truncate">{t(labelKey)}</span>}
                                     {badgeCount > 0 && !collapsed && (
@@ -179,7 +180,7 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                     </div>
                 ))}
             </nav>
-            <div className="shrink-0 border-t border-[#3A3A3A]/8 p-3">
+            <div className="shrink-0 border-t border-[#3A3A3A]/8 dark:border-white/8 p-3">
                 {/* Profile */}
                 <NavLink
                     to="/admin/profile"
@@ -189,7 +190,7 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                         `
                         group relative flex h-10 items-center gap-3 rounded-xl px-3
                         text-xs font-medium transition-all
-                        ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"}
+                        ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A]"}
                         ${collapsed ? "justify-center px-0" : ""}
                         `
                     }
@@ -199,7 +200,7 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                 </NavLink>
 
                 {/* User */}
-                <div className={`mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/6 bg-[#F7F7F7] p-2 ${collapsed ? "justify-center" : ""}`}>
+                <div className={`mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/6 dark:border-white/6 bg-[#F7F7F7] dark:bg-[#101013] p-2 ${collapsed ? "justify-center" : ""}`}>
                     <UserAvatar
                         user={user}
                         className="h-9 w-9"
@@ -209,10 +210,10 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                     {!collapsed && (
                         <>
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-xs font-semibold text-[#3A3A3A]">
+                                <p className="truncate text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                     {user?.first_name} {user?.last_name}
                                 </p>
-                                <p className="truncate text-[10px] text-[#3A3A3A]/40">{user?.email}</p>
+                                <p className="truncate text-[10px] text-[#3A3A3A]/40 dark:text-white/40">{user?.email}</p>
                             </div>
 
                             <button
@@ -220,7 +221,7 @@ export function AdminSidebar({ open, collapsed, onClose, onToggle }: Props) {
                                 onClick={() => void handleLogout()}
                                 title={t("admin.sidebar.logout")}
                                 aria-label={t("admin.sidebar.logout")}
-                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/35 transition hover:bg-red-50 hover:text-red-500"
+                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/35 dark:text-white/35 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-500"
                             >
                                 <LogOut className="h-3.5 w-3.5" />
                             </button>

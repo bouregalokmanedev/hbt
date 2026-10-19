@@ -14,7 +14,7 @@ export function AdasScreen({ engine }: { engine: ScannerEngine }) {
     const doneCount = snap.adasDone.filter(Boolean).length;
     return (
         <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
-            <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-4 dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 dark:border-white/10 dark:bg-[#1b1b20]">
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">
                     {t("simulator.scannerLab.adasScreen.items")} · {ADAS_ITEMS.length}
                 </p>

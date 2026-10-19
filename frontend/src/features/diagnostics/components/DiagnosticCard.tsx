@@ -16,7 +16,7 @@ const toolIconKeys = [
 function StateBadge({ state }: { state: DiagnosticHubItem["state"] }) {
     const { t } = useTranslation();
     if (state === "completed") return <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm"><CheckCircle2 className="h-3.5 w-3.5" /> {t("diagnostics.card.completed")}</span>;
-    if (state === "in_progress") return <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F47822] px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> {t("diagnostics.card.live")}</span>;
+    if (state === "in_progress") return <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F47822] px-2.5 py-1 text-[11px] font-bold tracking-wide text-white shadow-sm"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white dark:bg-[#1b1b20]" /> {t("diagnostics.card.live")}</span>;
     return <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[#3A3A3A] dark:text-[#ececef] shadow-sm backdrop-blur"><Play className="h-3 w-3" /> {t("diagnostics.card.available")}</span>;
 }
 

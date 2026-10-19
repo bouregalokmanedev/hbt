@@ -32,8 +32,8 @@ final class StaffHubController
 
     /**
      * Publish news to every member of staff. Available to Admin, Super Admin,
-     * Support and Instructor alike — the audience is always forced to `staff`
-     * so this endpoint can never be used to reach students.
+     * Sales, Support and Instructor alike — the audience is always forced to
+     * `staff` so this endpoint can never be used to reach students.
      */
     public function storeNews(Request $request, AdminBroadcastService $broadcasts): AdminBroadcastResource
     {

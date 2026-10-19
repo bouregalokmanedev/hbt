@@ -23,7 +23,7 @@ export function AuthLanguageSwitch() {
 
     return (
         <div
-            className="flex items-center gap-1 rounded-full border border-[#3A3A3A]/10 bg-white/80 p-1 shadow-sm backdrop-blur"
+            className="flex items-center gap-1 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white/80 p-1 shadow-sm backdrop-blur"
             aria-label={t.common.changeLanguage}
         >
             <button
@@ -35,7 +35,7 @@ export function AuthLanguageSwitch() {
                     "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
                     language === "en"
                         ? "bg-[#3A3A3A] text-white"
-                        : "text-[#3A3A3A]/60 hover:text-[#3A3A3A]",
+                        : "text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]",
                 ].join(" ")}
             >
                 EN
@@ -50,7 +50,7 @@ export function AuthLanguageSwitch() {
                     "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
                     language === "ar"
                         ? "bg-[#3A3A3A] text-white"
-                        : "text-[#3A3A3A]/60 hover:text-[#3A3A3A]",
+                        : "text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]",
                 ].join(" ")}
             >
                 العربية

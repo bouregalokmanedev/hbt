@@ -118,16 +118,16 @@ export function MultimeterPanel({
 
     const statusChip =
         live.status === "ok"
-            ? { label: t("diagnostics.tools.multimeter.statusReady"), cls: "border-emerald-300 bg-emerald-50 text-emerald-700" }
+            ? { label: t("diagnostics.tools.multimeter.statusReady"), cls: "border-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" }
             : live.status === "wrongJack"
-              ? { label: t("simulator.dmmLab.wrongJack"), cls: "border-red-200 bg-red-50 text-red-700" }
+              ? { label: t("simulator.dmmLab.wrongJack"), cls: "border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400" }
               : live.status === "wrongMode"
-                ? { label: t("simulator.dmmLab.wrongMode"), cls: "border-amber-200 bg-amber-50 text-amber-700" }
+                ? { label: t("simulator.dmmLab.wrongMode"), cls: "border-amber-200 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400" }
                 : live.status === "wrongPoints"
-                  ? { label: t("diagnostics.tools.multimeter.statusWrongPoints"), cls: "border-amber-200 bg-amber-50 text-amber-700" }
+                  ? { label: t("diagnostics.tools.multimeter.statusWrongPoints"), cls: "border-amber-200 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400" }
                   : live.status === "off"
-                    ? { label: t("diagnostics.tools.multimeter.statusOff"), cls: "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/50" }
-                    : { label: t("diagnostics.tools.multimeter.statusPlace"), cls: "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/50" };
+                    ? { label: t("diagnostics.tools.multimeter.statusOff"), cls: "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/50 dark:text-white/50" }
+                    : { label: t("diagnostics.tools.multimeter.statusPlace"), cls: "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/50 dark:text-white/50" };
 
     return (
         <div className="space-y-3">
@@ -152,7 +152,7 @@ export function MultimeterPanel({
                         <button
                             type="button"
                             onClick={() => setPhotoOpen((v) => !v)}
-                            className="rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
+                            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
                         >
                             {photoOpen ? t("simulator.dmmLab.bench.hidePhoto") : t("simulator.dmmLab.bench.showPhoto")}
                         </button>
@@ -161,7 +161,7 @@ export function MultimeterPanel({
                         type="button"
                         onClick={() => setMuted(sfx.toggleMute())}
                         aria-pressed={muted}
-                        className="rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
+                        className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
                     >
                         {muted ? t("simulator.dmmLab.bench.sfxOff") : t("simulator.dmmLab.bench.sfxOn")}
                     </button>
@@ -171,25 +171,25 @@ export function MultimeterPanel({
             <div ref={gridRef} className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_280px]">
                 <section className="min-w-0 space-y-3">
                     <GuideCard engine={engine} />
-                    <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+                    <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
                         <p className="text-[10px] font-bold uppercase tracking-wide text-[#1F6AE1]">
                             {t("diagnostics.tools.multimeter.checklistTitle")}
                         </p>
                         <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] font-bold">
-                            <span className={placement.modeOk ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                            <span className={placement.modeOk ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                 ✓ {t("simulator.dmmLab.bench.guideDialDone")}
                             </span>
-                            <span className={placement.jackOk ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                            <span className={placement.jackOk ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                 ✓ {t("simulator.dmmLab.bench.guideJackDone")}
                             </span>
-                            <span className={placement.redOk && !!state.red ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                            <span className={placement.redOk && !!state.red ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                 ✓ {t("simulator.dmmLab.bench.guideRedDone")}
                             </span>
-                            <span className={placement.blackOk && !!state.black ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                            <span className={placement.blackOk && !!state.black ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                 ✓ {t("simulator.dmmLab.bench.guideBlackDone")}
                             </span>
                         </div>
-                        <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-2.5 dark:border-white/10 dark:bg-white/[0.03]">
+                        <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-2.5 dark:border-white/10 dark:bg-white/[0.03]">
                             <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
                                 {t("diagnostics.tools.multimeter.liveReading")}
                             </p>
@@ -211,7 +211,7 @@ export function MultimeterPanel({
                 </section>
 
                 <section className="min-w-0 space-y-3">
-                    <div className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+                    <div className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
                         <ComponentArt sym={comp.sym} className="h-14 w-20 shrink-0" />
                         <div className="min-w-0">
                             <p className="truncate text-sm font-black text-[#3A3A3A] dark:text-white">{comp.name}</p>
@@ -247,7 +247,7 @@ export function MultimeterPanel({
                 </section>
             </div>
 
-            <p className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-[11px] text-[#3A3A3A]/50 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/50">
+            <p className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 text-[11px] text-[#3A3A3A]/50 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/50">
                 {t("diagnostics.tools.multimeter.submitHint")}
             </p>
 

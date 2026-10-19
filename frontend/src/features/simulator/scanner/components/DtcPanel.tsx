@@ -99,13 +99,13 @@ export function DtcPanel({
         return (
             <div
                 data-testid="dtc-detail"
-                className="overflow-hidden rounded-2xl border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]"
+                className="overflow-hidden rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]"
             >
-                <div className="border-b border-[#3A3A3A]/10 px-5 pb-4 pt-5 dark:border-white/10 sm:px-6">
+                <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 px-5 pb-4 pt-5 dark:border-white/10 sm:px-6">
                     <button
                         type="button"
                         onClick={() => setActiveCode(null)}
-                        className="mb-4 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-black text-[#3A3A3A]/55 transition hover:bg-[#3A3A3A]/[.05] hover:text-[#F47822] dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-[#F47822]"
+                        className="mb-4 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-black text-[#3A3A3A]/55 dark:text-white/55 transition hover:bg-[#3A3A3A]/[.05] dark:bg-white/[.05] hover:text-[#F47822] dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-[#F47822]"
                     >
                         <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
                         {t("simulator.scannerLab.dtcDetail.back")}
@@ -173,7 +173,7 @@ export function DtcPanel({
                     {detailTab === "overview" && (
                         <div className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
                             <div className="grid gap-4">
-                                <section className="rounded-xl border border-[#E3E5E8] bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                                <section className="rounded-xl border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8A9099]">
                                         {t("simulator.scannerLab.dtcDetail.whatMeans")}
                                     </h3>
@@ -187,14 +187,14 @@ export function DtcPanel({
                                         </p>
                                     )}
                                 </section>
-                                <section className="rounded-xl border border-[#E3E5E8] bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                                <section className="rounded-xl border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8A9099]">
                                         {t("simulator.scannerLab.dtcDetail.freezeTitle")}
                                     </h3>
                                     {d && d.freeze.length > 0 ? (
                                         <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[#EDEFF1] bg-[#EDEFF1] sm:grid-cols-3 dark:border-white/10 dark:bg-white/10">
                                             {d.freeze.map((cell) => (
-                                                <div key={cell.k} className="bg-white p-3 dark:bg-[#1b1b20]">
+                                                <div key={cell.k} className="bg-white dark:bg-[#1b1b20] p-3 dark:bg-[#1b1b20]">
                                                     <p className="min-h-[26px] text-[11px] leading-4 text-[#8A9099]">{cell.k}</p>
                                                     <p
                                                         dir="ltr"
@@ -216,7 +216,7 @@ export function DtcPanel({
                                 </section>
                             </div>
                             <div className="grid content-start gap-4">
-                                <section className="rounded-xl border border-[#E3E5E8] bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                                <section className="rounded-xl border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8A9099]">
                                         {t("simulator.scannerLab.dtcDetail.testConditions")}
                                     </h3>
@@ -245,7 +245,7 @@ export function DtcPanel({
                                         )}
                                     </ul>
                                 </section>
-                                <section className="rounded-xl border border-[#E3E5E8] bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                                <section className="rounded-xl border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8A9099]">
                                         {t("simulator.scannerLab.dtcDetail.toolsNeeded")}
                                     </h3>
@@ -275,7 +275,7 @@ export function DtcPanel({
                                 {(d?.causes ?? []).map((c) => (
                                     <div
                                         key={c.label}
-                                        className="flex items-center gap-4 rounded-lg border border-[#E3E5E8] border-l-[3px] bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#1b1b20]"
+                                        className="flex items-center gap-4 rounded-lg border border-[#E3E5E8] border-l-[3px] bg-white dark:bg-[#1b1b20] px-4 py-3.5 dark:border-white/10 dark:bg-[#1b1b20]"
                                         style={{ borderLeftColor: c.pct >= 40 ? "#D92D20" : c.pct >= 15 ? "#F59E0B" : "#8A9099" }}
                                     >
                                         <div className="min-w-0 flex-1">
@@ -310,7 +310,7 @@ export function DtcPanel({
                                     {tree.map((step, i) => (
                                         <div
                                             key={step.id}
-                                            className="rounded-lg border border-[#E3E5E8] bg-white p-4 dark:border-white/10 dark:bg-[#1b1b20]"
+                                            className="rounded-lg border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-4 dark:border-white/10 dark:bg-[#1b1b20]"
                                         >
                                             <div className="flex items-start gap-3">
                                                 <span
@@ -361,7 +361,7 @@ export function DtcPanel({
                                     {t("simulator.scannerLab.dtcDetail.openTree")}
                                 </button>
                             </div>
-                            <aside className="h-fit rounded-xl border border-[#E3E5E8] bg-white p-4 dark:border-white/10 dark:bg-[#1b1b20]">
+                            <aside className="h-fit rounded-xl border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-4 dark:border-white/10 dark:bg-[#1b1b20]">
                                 <h3 className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8A9099]">
                                     {t("simulator.scannerLab.dtcDetail.progress")}
                                 </h3>
@@ -422,7 +422,7 @@ export function DtcPanel({
 
                     {detailTab === "repair" && (
                         <div className="grid max-w-5xl gap-4 lg:grid-cols-[1.2fr_1fr]">
-                            <section className="rounded-xl border border-[#E3E5E8] bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                            <section className="rounded-xl border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                                 <h3 className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8A9099]">
                                     {t("simulator.scannerLab.dtcDetail.repairDecision")}
                                 </h3>
@@ -476,7 +476,7 @@ export function DtcPanel({
     return (
         <div
             data-testid="dtc-list"
-            className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]"
+            className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]"
         >
             <div className="flex flex-wrap items-center gap-2">
                 {filterChips.map((chip) => (
@@ -487,7 +487,7 @@ export function DtcPanel({
                         className={`rounded-full px-3.5 py-2 text-xs font-black transition ${
                             filter === chip.id
                                 ? "bg-[#14181C] text-white dark:bg-white dark:text-[#14181C]"
-                                : "border border-[#3A3A3A]/10 text-[#3A3A3A]/55 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:text-white"
+                                : "border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:text-white"
                         }`}
                     >
                         {chip.label} {counts[chip.id]}
@@ -504,13 +504,13 @@ export function DtcPanel({
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder={t("simulator.scannerLab.dtcDetail.searchPh")}
                             aria-label={t("simulator.scannerLab.dtcDetail.searchPh")}
-                            className="h-9 w-44 rounded-lg border border-[#E3E5E8] bg-white ps-8 pe-3 text-xs text-[#14171A] outline-none transition focus:border-[#F47822] focus:ring-2 focus:ring-[#F47822]/25 sm:w-56 dark:border-white/10 dark:bg-[#101013] dark:text-white"
+                            className="h-9 w-44 rounded-lg border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] ps-8 pe-3 text-xs text-[#14171A] outline-none transition focus:border-[#F47822] focus:ring-2 focus:ring-[#F47822]/25 sm:w-56 dark:border-white/10 dark:bg-[#101013] dark:text-white"
                         />
                     </label>
                     <button
                         type="button"
                         onClick={() => setClearOpen(true)}
-                        className="rounded-full border border-red-200 px-3 py-2 text-xs font-black text-red-600 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
+                        className="rounded-full border border-red-200 dark:border-red-500/20 px-3 py-2 text-xs font-black text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
                     >
                         {t("simulator.scannerLab.dtcDetail.confirmClear")}
                     </button>
@@ -561,7 +561,7 @@ export function DtcPanel({
                                     onClick={() => setOpenCode(open ? null : d.code)}
                                     aria-expanded={open}
                                     aria-label={d.code}
-                                    className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-[#8A9099] transition hover:bg-[#3A3A3A]/[.06] hover:text-[#14171A] dark:hover:bg-white/10 dark:hover:text-white"
+                                    className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-[#8A9099] transition hover:bg-[#3A3A3A]/[.06] dark:bg-white/[.06] hover:text-[#14171A] dark:hover:bg-white/10 dark:hover:text-white"
                                 >
                                     <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
                                 </button>
@@ -608,7 +608,7 @@ export function DtcPanel({
                                                 key={btn.key}
                                                 type="button"
                                                 onClick={() => openDetail(d.code, btn.tab)}
-                                                className="rounded-md border border-[#E3E5E8] bg-white px-3.5 py-2 text-xs font-semibold text-[#14171A] transition hover:border-[#F47822] hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                                                className="rounded-md border border-[#E3E5E8] bg-white dark:bg-[#1b1b20] px-3.5 py-2 text-xs font-semibold text-[#14171A] transition hover:border-[#F47822] hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                                             >
                                                 {t(`simulator.scannerLab.dtcDetail.${btn.key}`)}
                                             </button>
@@ -620,7 +620,7 @@ export function DtcPanel({
                     );
                 })}
                 {rows.length === 0 && (
-                    <p className="rounded-xl border border-dashed border-[#3A3A3A]/15 px-4 py-8 text-center text-sm text-[#8A9099] dark:border-white/15">
+                    <p className="rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-4 py-8 text-center text-sm text-[#8A9099] dark:border-white/15">
                         {t("simulator.scannerLab.dtcDetail.empty")}
                     </p>
                 )}
@@ -631,7 +631,7 @@ export function DtcPanel({
                     <div
                         role="dialog"
                         aria-modal="true"
-                        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#1b1b20]"
+                        className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1b1b20] p-6 shadow-2xl dark:bg-[#1b1b20]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex items-start justify-between gap-3">
@@ -642,7 +642,7 @@ export function DtcPanel({
                                 type="button"
                                 onClick={() => setClearOpen(false)}
                                 aria-label={t("simulator.scannerLab.dtcDetail.cancel")}
-                                className="rounded-lg p-1 text-[#3A3A3A]/40 hover:text-[#3A3A3A] dark:text-white/40 dark:hover:text-white"
+                                className="rounded-lg p-1 text-[#3A3A3A]/40 dark:text-white/40 hover:text-[#3A3A3A] dark:text-white/40 dark:hover:text-white"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -654,7 +654,7 @@ export function DtcPanel({
                             <button
                                 type="button"
                                 onClick={() => setClearOpen(false)}
-                                className="rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-black text-[#3A3A3A] dark:border-white/10 dark:text-white"
+                                className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-black text-[#3A3A3A] dark:border-white/10 dark:text-white"
                             >
                                 {t("simulator.scannerLab.dtcDetail.cancel")}
                             </button>

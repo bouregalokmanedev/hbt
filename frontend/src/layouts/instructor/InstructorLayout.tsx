@@ -18,6 +18,10 @@ import {
     ScrollToTop,
 } from "@/components/navigation";
 
+import {
+    VisitorTracker,
+} from "@/features/marketing/tracking";
+
 export function InstructorLayout() {
     const [
         sidebarOpen,
@@ -65,7 +69,7 @@ export function InstructorLayout() {
                 />
 
                 <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-                    <Outlet />
+                    <><VisitorTracker /><Outlet /></>
                 </main>
             </div>
         </div>

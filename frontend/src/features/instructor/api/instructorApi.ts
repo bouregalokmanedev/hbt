@@ -329,7 +329,7 @@ export async function createInstructorQuizQuestion(quizId: string, payload: { qu
     await api(`/v1/instructor/quizzes/${quizId}/questions`, { method: "POST", body: payload });
 }
 
-export async function updateInstructorQuizQuestion(questionId: string, payload: { question?: string; type?: string; points?: number; required?: boolean; position?: number }): Promise<void> {
+export async function updateInstructorQuizQuestion(questionId: string, payload: { question?: string; type?: string; points?: number; required?: boolean; position?: number; explanation?: string | null }): Promise<void> {
     await api(`/v1/instructor/quiz-questions/${questionId}`, { method: "PATCH", body: payload });
 }
 

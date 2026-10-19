@@ -199,22 +199,22 @@ export function InstructorDiagnosticsPage() {
             </section>
 
             {attempts.isLoading && scenarios.isLoading && (
-                <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-8 text-sm text-[#3A3A3A]/50">
+                <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-8 text-sm text-[#3A3A3A]/50 dark:text-white/50">
                     {t("instructor.diagnostics.loadingDiagnostics")}
                 </div>
             )}
 
             {actionError && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+                <div className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-4 text-sm font-semibold text-red-700 dark:text-red-400">
                     {actionError}
                 </div>
             )}
 
             {attempts.isError && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800">
+                <div className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-5 text-sm text-red-800">
                     {t("instructor.diagnostics.loadError")}
                     {attempts.error instanceof Error && (
-                        <span className="mt-1 block text-xs text-red-600">{t("instructor.diagnostics.loadErrorDetail", { message: attempts.error.message })}</span>
+                        <span className="mt-1 block text-xs text-red-600 dark:text-red-400">{t("instructor.diagnostics.loadErrorDetail", { message: attempts.error.message })}</span>
                     )}
                 </div>
             )}
@@ -222,17 +222,17 @@ export function InstructorDiagnosticsPage() {
             {!attempts.isLoading && !attempts.isError && !scenarios.isLoading && !scenarios.isError && (
                 <>
                     {activeTab === "attempts" && (
-                        <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 bg-white shadow-[0_10px_30px_rgba(58,58,58,.045)]">
+                        <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-[0_10px_30px_rgba(58,58,58,.045)]">
                             {items.length ? (
                                 <>
-                                    <div className="flex flex-wrap items-center gap-2 border-b border-[#3A3A3A]/7 bg-[#FCFCFC] px-4 py-3 text-xs sm:px-6">
+                                    <div className="flex flex-wrap items-center gap-2 border-b border-[#3A3A3A]/7 dark:border-white/7 bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3 text-xs sm:px-6">
                                         <span className="rounded-full bg-[#3A3A3A] px-2.5 py-1 font-mono font-bold text-white">
                                             {t("instructor.diagnostics.attemptsCount", { count: items.length })}
                                         </span>
-                                        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-700">
+                                        <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-700 dark:text-emerald-400">
                                             {t("instructor.diagnostics.passedCount", { count: passed })}
                                         </span>
-                                        <span className="ms-auto text-[11px] font-semibold text-[#3A3A3A]/45">
+                                        <span className="ms-auto text-[11px] font-semibold text-[#3A3A3A]/45 dark:text-white/45">
                                             {t("instructor.diagnostics.selectAttemptHint")}
                                         </span>
                                     </div>
@@ -247,8 +247,8 @@ export function InstructorDiagnosticsPage() {
                                     <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#F47822]/10">
                                         <Stethoscope className="h-6 w-6 text-[#F47822]" />
                                     </div>
-                                    <p className="mt-4 text-sm font-bold text-[#3A3A3A]">{t("instructor.diagnostics.emptyAttemptsTitle")}</p>
-                                    <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-[#3A3A3A]/50">
+                                    <p className="mt-4 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.emptyAttemptsTitle")}</p>
+                                    <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">
                                         {t("instructor.diagnostics.emptyAttemptsDesc")}
                                     </p>
                                 </div>
@@ -257,8 +257,8 @@ export function InstructorDiagnosticsPage() {
                     )}
 
                     {activeTab === "scenarios" && (
-                        <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 bg-white shadow-[0_10px_30px_rgba(58,58,58,.045)]">
-                            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#3A3A3A]/7 px-4 py-4 sm:px-6">
+                        <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-[0_10px_30px_rgba(58,58,58,.045)]">
+                            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#3A3A3A]/7 dark:border-white/7 px-4 py-4 sm:px-6">
                                 <div className="flex flex-wrap items-center gap-3">
                                     <ScenariosSearch value={search} onChange={setSearch} />
                                 </div>
@@ -270,28 +270,28 @@ export function InstructorDiagnosticsPage() {
                                 </button>
                             </div>
                             {scenariosList.length > 0 && (
-                                <div className="flex flex-wrap items-center gap-2 border-b border-[#3A3A3A]/7 bg-[#FCFCFC] px-4 py-3 text-xs sm:px-6">
+                                <div className="flex flex-wrap items-center gap-2 border-b border-[#3A3A3A]/7 dark:border-white/7 bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3 text-xs sm:px-6">
                                     <span className="rounded-full bg-[#3A3A3A] px-2.5 py-1 font-mono font-bold text-white">
                                         {t("instructor.diagnostics.scenariosCount", { count: scenariosList.length })}
                                     </span>
-                                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-700">
+                                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 font-bold text-emerald-700 dark:text-emerald-400">
                                         {t("instructor.diagnostics.publishedCount", { count: scenariosList.filter((s) => s.status === "published").length })}
                                     </span>
-                                    <span className="rounded-full bg-[#3A3A3A]/[.06] px-2.5 py-1 font-bold text-[#3A3A3A]/60">
+                                    <span className="rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2.5 py-1 font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("instructor.diagnostics.draftsCount", { count: scenariosList.filter((s) => s.status === "draft").length })}
                                     </span>
-                                    <span className="ms-auto text-[11px] font-semibold text-[#3A3A3A]/45">
+                                    <span className="ms-auto text-[11px] font-semibold text-[#3A3A3A]/45 dark:text-white/45">
                                         {t("instructor.diagnostics.selectScenarioHint")}
                                     </span>
                                 </div>
                             )}
 
                             {scenarios.isLoading ? (
-                                <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-8 text-sm text-[#3A3A3A]/50">
+                                <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-8 text-sm text-[#3A3A3A]/50 dark:text-white/50">
                                     {t("instructor.diagnostics.loadingScenarios")}
                                 </div>
                             ) : scenarios.isError ? (
-                                <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800">
+                                <div className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-5 text-sm text-red-800">
                                     {t("instructor.diagnostics.scenariosError")}
                                 </div>
                             ) : filteredScenarios.length === 0 ? (
@@ -299,10 +299,10 @@ export function InstructorDiagnosticsPage() {
                                     <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#F47822]/10">
                                         <Stethoscope className="h-6 w-6 text-[#F47822]" />
                                     </div>
-                                    <p className="mt-4 text-sm font-bold text-[#3A3A3A]">
+                                    <p className="mt-4 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                         {search ? t("instructor.diagnostics.noMatchTitle") : t("instructor.diagnostics.noneTitle")}
                                     </p>
-                                    <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-[#3A3A3A]/50">
+                                    <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">
                                         {search
                                             ? t("instructor.diagnostics.noMatchDesc")
                                             : t("instructor.diagnostics.noneDesc")}
@@ -363,12 +363,12 @@ function ScenariosSearch({ value, onChange }: { value: string; onChange: (value:
     const isRTL = i18n.language === "ar";
     return (
         <label className="relative max-w-xs">
-            <Search className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/30 ${isRTL ? "right-3" : "left-3"}`} />
+            <Search className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/30 dark:text-white/30 ${isRTL ? "right-3" : "left-3"}`} />
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={t("instructor.diagnostics.searchPh")}
-                className={`h-10 w-full max-w-xs rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] pr-3 text-sm outline-none focus:border-[#F47822] ${isRTL ? "pl-3 pr-10" : "pl-10"}`}
+                className={`h-10 w-full max-w-xs rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] pr-3 text-sm outline-none focus:border-[#F47822] ${isRTL ? "pl-3 pr-10" : "pl-10"}`}
             />
         </label>
     );
@@ -397,27 +397,27 @@ function AttemptRow({ item, onSelect }: { item: InstructorDiagnosticAttempt; onS
     return (
         <div
             onClick={onSelect}
-            className="flex w-full cursor-pointer flex-wrap items-center gap-3 px-4 py-3.5 text-start transition hover:bg-[#FCFCFC] sm:px-6"
+            className="flex w-full cursor-pointer flex-wrap items-center gap-3 px-4 py-3.5 text-start transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20] sm:px-6"
         >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#3A3A3A] text-xs font-black text-white">
                 {initialsOf(item.student?.name)}
             </span>
             <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-[#3A3A3A]">
+                <p className="truncate text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {item.student?.name ?? t("instructor.diagnostics.row.unknownStudent")}
                     {item.attempt_number != null && (
-                        <span className="ms-2 font-mono text-[11px] font-bold text-[#3A3A3A]/40">
+                        <span className="ms-2 font-mono text-[11px] font-bold text-[#3A3A3A]/40 dark:text-white/40">
                             #{item.attempt_number}
                         </span>
                     )}
                 </p>
-                <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/50">
+                <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                     {item.scenario?.title ?? item.scenario_id.slice(0, 8)}
                     {item.student?.email ? ` · ${item.student.email}` : ""}
                 </p>
             </div>
-            <div className="hidden items-center gap-2 text-xs text-[#3A3A3A]/50 md:flex">
-                <span className="rounded-full bg-[#3A3A3A]/[.05] px-2.5 py-1 font-bold">
+            <div className="hidden items-center gap-2 text-xs text-[#3A3A3A]/50 dark:text-white/50 md:flex">
+                <span className="rounded-full bg-[#3A3A3A]/[.05] dark:bg-white/[.05] px-2.5 py-1 font-bold">
                     {t("instructor.diagnostics.row.hints", { count: item.hints_used ?? 0 })}
                 </span>
                 <span>{formatAttemptDate(item.submitted_at ?? item.started_at, i18n.language)}</span>
@@ -426,19 +426,19 @@ function AttemptRow({ item, onSelect }: { item: InstructorDiagnosticAttempt; onS
                 dir="ltr"
                 className={`shrink-0 rounded-xl px-3 py-1.5 font-mono text-sm font-black tabular-nums ${
                     score === null
-                        ? "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/50"
+                        ? "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/50 dark:text-white/50"
                         : score >= 70
-                          ? "bg-emerald-50 text-emerald-700"
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                           : score >= 40
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-red-50 text-red-700"
+                            ? "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                            : "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
                 }`}
             >
                 {score === null ? "—" : `${score}`}
             </span>
             <span
                 className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-wide ${
-                    item.passed ? "bg-emerald-500/10 text-emerald-700" : "bg-red-500/10 text-red-700"
+                    item.passed ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-red-500/10 text-red-700 dark:text-red-400"
                 }`}
             >
                 {item.passed ? t("instructor.diagnostics.row.pass") : t("instructor.diagnostics.row.fail")}
@@ -462,13 +462,13 @@ function AttemptDrawer({ attemptId, onClose }: { attemptId: string; onClose: () 
 
     return (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/50">
-            <div className="flex h-full w-full max-w-xl flex-col bg-[#F8F7F6] shadow-2xl">
-                <div className="flex items-start justify-between gap-4 border-b border-[#3A3A3A]/10 bg-white px-6 py-5">
+            <div className="flex h-full w-full max-w-xl flex-col bg-[#F8F7F6] dark:bg-[#101013] shadow-2xl">
+                <div className="flex items-start justify-between gap-4 border-b border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-6 py-5">
                     <div className="min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">
                             {t("instructor.diagnostics.drawer.eyebrow")}
                         </p>
-                        <h2 className="mt-1 truncate font-mono text-sm font-black text-[#3A3A3A]" dir="ltr">
+                        <h2 className="mt-1 truncate font-mono text-sm font-black text-[#3A3A3A] dark:text-[#ececef]" dir="ltr">
                             {attemptId.slice(0, 8)}
                         </h2>
                     </div>
@@ -476,7 +476,7 @@ function AttemptDrawer({ attemptId, onClose }: { attemptId: string; onClose: () 
                         type="button"
                         onClick={onClose}
                         aria-label={t("instructor.diagnostics.drawer.closeAria")}
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:bg-white"
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:bg-white dark:hover:bg-white/10"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -484,9 +484,9 @@ function AttemptDrawer({ attemptId, onClose }: { attemptId: string; onClose: () 
 
                 <div className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
                     {result.isLoading ? (
-                        <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#3A3A3A]/50">{t("instructor.diagnostics.drawer.loading")}</p>
+                        <p className="rounded-2xl bg-white dark:bg-[#1b1b20] p-8 text-center text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.diagnostics.drawer.loading")}</p>
                     ) : result.isError || !detail ? (
-                        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">
+                        <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:bg-amber-500/10 p-5 text-sm text-amber-800">
                             {t("instructor.diagnostics.drawer.empty")}
                         </div>
                     ) : (
@@ -522,14 +522,14 @@ function AttemptDrawer({ attemptId, onClose }: { attemptId: string; onClose: () 
                             </section>
 
                             {breakdown.length > 0 && (
-                                <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
-                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">{t("instructor.diagnostics.drawer.breakdown")}</h3>
+                                <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
+                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.diagnostics.drawer.breakdown")}</h3>
                                     <ul className="mt-3 space-y-1.5">
                                         {breakdown.map((entry) => (
                                             <li key={entry.step_id} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm">
                                                 <span className={`h-2 w-2 shrink-0 rounded-full ${entry.is_correct ? "bg-emerald-500" : "bg-red-500"}`} />
-                                                <span className="min-w-0 flex-1 truncate font-semibold text-[#3A3A3A]">{entry.title}</span>
-                                                <span dir="ltr" className="shrink-0 font-mono text-[11px] font-bold text-[#3A3A3A]/50">
+                                                <span className="min-w-0 flex-1 truncate font-semibold text-[#3A3A3A] dark:text-[#ececef]">{entry.title}</span>
+                                                <span dir="ltr" className="shrink-0 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:text-white/50">
                                                     {entry.points_earned}/{entry.points_possible}
                                                 </span>
                                             </li>
@@ -541,7 +541,7 @@ function AttemptDrawer({ attemptId, onClose }: { attemptId: string; onClose: () 
                             {((detail.strengths ?? []).length > 0 || (detail.weaknesses ?? []).length > 0) && (
                                 <section className="grid gap-3 sm:grid-cols-2">
                                     <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
-                                        <h3 className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-emerald-700">
+                                        <h3 className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
                                             <CheckCircle2 className="h-3.5 w-3.5" /> {t("instructor.diagnostics.drawer.strengths")}
                                         </h3>
                                         <ul className="mt-2 space-y-1 text-xs leading-5 text-emerald-900">
@@ -550,8 +550,8 @@ function AttemptDrawer({ attemptId, onClose }: { attemptId: string; onClose: () 
                                             ))}
                                         </ul>
                                     </div>
-                                    <div className="rounded-2xl border border-red-200 bg-red-50/60 p-4">
-                                        <h3 className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-red-700">
+                                    <div className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50/60 p-4">
+                                        <h3 className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wide text-red-700 dark:text-red-400">
                                             <XCircle className="h-3.5 w-3.5" /> {t("instructor.diagnostics.drawer.improve")}
                                         </h3>
                                         <ul className="mt-2 space-y-1 text-xs leading-5 text-red-900">
@@ -607,21 +607,21 @@ function ScenarioRow({
     return (
         <div
             onClick={onView}
-            className="flex w-full cursor-pointer flex-wrap items-center gap-3 px-4 py-3.5 text-start transition hover:bg-[#FCFCFC] sm:px-6"
+            className="flex w-full cursor-pointer flex-wrap items-center gap-3 px-4 py-3.5 text-start transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20] sm:px-6"
         >
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
                 <Stethoscope className="h-5 w-5" />
             </span>
             <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-2">
-                    <span className="truncate text-sm font-bold text-[#3A3A3A]">
+                    <span className="truncate text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                         {scenario.title}
                     </span>
-                    <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide ${scenario.status === "published" ? "bg-emerald-500/10 text-emerald-700" : scenario.status === "archived" ? "bg-red-500/10 text-red-700" : "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/55"}`}>
+                    <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wide ${scenario.status === "published" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : scenario.status === "archived" ? "bg-red-500/10 text-red-700 dark:text-red-400" : "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/55 dark:text-white/55"}`}>
                         {statusLabel}
                     </span>
                 </p>
-                <p className="mt-1 truncate text-xs text-[#3A3A3A]/50">
+                <p className="mt-1 truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                     {scenario.course?.title ?? t("instructor.diagnostics.row.noCourse")} · <span>{t("instructor.diagnostics.row.version", { version: scenario.version })}</span> · {t("instructor.diagnostics.row.stepsAttempts", { steps: scenario.steps_count, attempts: scenario.attempts_count })}
                     {scenario.is_required && <span className="ms-1.5 rounded-full bg-[#F47822]/10 px-2 py-0.5 text-[10px] font-bold text-[#F47822]">{t("instructor.diagnostics.row.required")}</span>}
                 </p>
@@ -630,10 +630,10 @@ function ScenarioRow({
                 dir="ltr"
                 className={`hidden shrink-0 rounded-xl px-3 py-1.5 font-mono text-sm font-black tabular-nums sm:inline-block ${
                     scenario.pass_rate === null
-                        ? "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/50"
+                        ? "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/50 dark:text-white/50"
                         : scenario.pass_rate >= 70
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-amber-50 text-amber-700"
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                          : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400"
                 }`}
             >
                 {scenario.pass_rate === null ? "—" : `${scenario.pass_rate}%`}
@@ -645,17 +645,17 @@ function ScenarioRow({
                     </button>
                 )}
                 {onUnpublish && (
-                    <button onClick={(e) => { e.stopPropagation(); onUnpublish(); }} title={t("instructor.diagnostics.row.unpublish")} className="h-8 rounded-lg border border-[#3A3A3A]/10 bg-white px-3 text-xs font-bold text-[#3A3A3A] hover:bg-[#FCFCFC]">
+                    <button onClick={(e) => { e.stopPropagation(); onUnpublish(); }} title={t("instructor.diagnostics.row.unpublish")} className="h-8 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-bold text-[#3A3A3A] hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                         {t("instructor.diagnostics.row.unpublish")}
                     </button>
                 )}
-                <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title={t("instructor.diagnostics.row.openEditor")} className="grid h-8 w-8 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:border-[#F47822]/40 hover:text-[#F47822]">
+                <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title={t("instructor.diagnostics.row.openEditor")} className="grid h-8 w-8 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:border-[#F47822]/40 hover:text-[#F47822]">
                     <Edit className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onFork(); }} title={t("instructor.diagnostics.row.forkNewVersion")} className="hidden h-8 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs font-bold text-[#3A3A3A]/60 hover:text-[#3A3A3A] sm:block">
+                <button onClick={(e) => { e.stopPropagation(); onFork(); }} title={t("instructor.diagnostics.row.forkNewVersion")} className="hidden h-8 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] sm:block">
                     {t("instructor.diagnostics.row.fork")}
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onArchive(); }} title={t("instructor.diagnostics.row.archive")} className="grid h-8 w-8 place-items-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+                <button onClick={(e) => { e.stopPropagation(); onArchive(); }} title={t("instructor.diagnostics.row.archive")} className="grid h-8 w-8 place-items-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10">
                     <Archive className="h-3.5 w-3.5" />
                 </button>
             </span>
@@ -713,8 +713,8 @@ function CreateScenarioModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-bl-sm">
-            <div className="w-full max-w-md rounded-2xl bg-white p-8">
-                <h2 className="mb-6 text-xl font-semibold text-[#3A3A3A]">{t("instructor.diagnostics.createModal.title")}</h2>
+            <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#1b1b20] p-8">
+                <h2 className="mb-6 text-xl font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.createModal.title")}</h2>
                 <form
                     className="space-y-4"
                     onSubmit={(event) => {
@@ -723,11 +723,11 @@ function CreateScenarioModal({
                     }}
                 >
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A]">{t("instructor.diagnostics.createModal.courseLabel")}</label>
+                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.createModal.courseLabel")}</label>
                         <select
                             value={courseId}
                             onChange={(e) => setCourseId(e.target.value)}
-                            className="w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
+                            className="w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
                         >
                             <option value="">{t("instructor.diagnostics.createModal.selectCourse")}</option>
                             {courses.isLoading && <option value="" disabled>{t("instructor.diagnostics.createModal.loadingCourses")}</option>}
@@ -738,55 +738,55 @@ function CreateScenarioModal({
                             ))}
                         </select>
                         {courses.isError && (
-                            <p className="mt-1 text-xs text-red-600">{t("instructor.diagnostics.createModal.coursesFailed")}</p>
+                            <p className="mt-1 text-xs text-red-600 dark:text-red-400">{t("instructor.diagnostics.createModal.coursesFailed")}</p>
                         )}
                     </div>
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A]">{t("instructor.diagnostics.createModal.titleLabel")}</label>
+                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.createModal.titleLabel")}</label>
                         <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder={t("instructor.diagnostics.createModal.titlePh")}
-                            className="w-full rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
+                            className="w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
                         />
                     </div>
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A]">{t("instructor.diagnostics.createModal.passingScore")}</label>
+                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.createModal.passingScore")}</label>
                         <input
                             type="number"
                             value={passingScore}
                             onChange={(e) => setPassingScore(Number(e.target.value))}
                             min="0"
                             max="100"
-                            className="w-full rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
+                            className="w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
                         />
                     </div>
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A]">{t("instructor.diagnostics.createModal.timeLimit")}</label>
+                        <label className="mb-2 block text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.createModal.timeLimit")}</label>
                         <input
                             type="number"
                             value={timeLimit}
                             onChange={(e) => setTimeLimit(Number(e.target.value))}
                             min="0"
-                            className="w-full rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
+                            className="w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-sm focus:border-[#F47822] focus:outline-none"
                         />
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.diagnostics.createModal.noLimitHint")}</p>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.diagnostics.createModal.noLimitHint")}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <input
                             type="checkbox"
                             checked={isRequired}
                             onChange={(e) => setIsRequired(e.target.checked)}
-                            className="h-4 w-4 rounded border-[#3A3A3A]/10"
+                            className="h-4 w-4 rounded border-[#3A3A3A]/10 dark:border-white/10"
                         />
-                        <span className="text-sm text-[#3A3A3A]">{t("instructor.diagnostics.createModal.required")}</span>
+                        <span className="text-sm text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.diagnostics.createModal.required")}</span>
                     </div>
-                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
                     <div className="mt-6 flex gap-3">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 rounded-xl border border-[#3A3A3A]/20 bg-white px-4 py-2 text-sm font-medium text-[#3A3A3A] hover:bg-[#FCFCFC]"
+                            className="flex-1 rounded-xl border border-[#3A3A3A]/20 dark:border-white/20 bg-white dark:bg-[#1b1b20] px-4 py-2 text-sm font-medium text-[#3A3A3A] hover:bg-[#FCFCFC] dark:bg-[#1b1b20]"
                         >
                             {t("instructor.diagnostics.createModal.cancel")}
                         </button>
@@ -807,9 +807,9 @@ function CreateScenarioModal({
 const ACTION_TYPES = ["inspect", "scan", "measure", "test", "identify", "diagnose", "repair"] as const;
 
 const STATUS_CHIP: Record<string, string> = {
-    draft: "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/60",
-    published: "bg-emerald-50 text-emerald-700",
-    archived: "bg-red-50 text-red-600",
+    draft: "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/60 dark:text-white/60",
+    published: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    archived: "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400",
 };
 
 function ScenarioEditor({
@@ -1064,19 +1064,19 @@ function ScenarioEditor({
 
     return (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/50">
-            <div className="flex h-full w-full max-w-3xl flex-col bg-[#F8F7F6] shadow-2xl">
-                <div className="flex items-start justify-between gap-4 border-b border-[#3A3A3A]/10 bg-white px-6 py-5">
+            <div className="flex h-full w-full max-w-3xl flex-col bg-[#F8F7F6] dark:bg-[#101013] shadow-2xl">
+                <div className="flex items-start justify-between gap-4 border-b border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-6 py-5">
                     <div className="min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">
                             {scenario?.version != null
                                 ? t("instructor.diagnostics.editor.eyebrow", { version: scenario.version })
                                 : t("instructor.diagnostics.editor.eyebrowNoVersion")}
                         </p>
-                        <h2 className="mt-1 truncate text-xl font-bold text-[#3A3A3A]">
+                        <h2 className="mt-1 truncate text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {detail.isLoading ? t("instructor.diagnostics.editor.loadingTitle") : (scenario?.title ?? t("instructor.diagnostics.editor.titleFallback"))}
                         </h2>
                         {scenario && (
-                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[#3A3A3A]/55">
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-[#3A3A3A]/55 dark:text-white/55">
                                 <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${STATUS_CHIP[scenario.status] ?? STATUS_CHIP.draft}`}>
                                     {statusLabel(scenario.status)}
                                 </span>
@@ -1089,7 +1089,7 @@ function ScenarioEditor({
                         type="button"
                         onClick={onClose}
                         aria-label={t("instructor.diagnostics.editor.closeAria")}
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:bg-white"
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:bg-white dark:hover:bg-white/10"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -1097,47 +1097,47 @@ function ScenarioEditor({
 
                 <div className="flex-1 space-y-5 overflow-y-auto px-6 py-6">
                     {error && (
-                        <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                        <p role="alert" className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:text-red-400">
                             {error}
                         </p>
                     )}
                     {detail.isLoading ? (
-                        <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#3A3A3A]/50">{t("instructor.diagnostics.editor.loadingScenario")}</p>
+                        <p className="rounded-2xl bg-white dark:bg-[#1b1b20] p-8 text-center text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.diagnostics.editor.loadingScenario")}</p>
                     ) : detail.isError || !scenario ? (
-                        <p className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800">
+                        <p className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-5 text-sm text-red-800">
                             {t("instructor.diagnostics.editor.loadFailed")}
                         </p>
                     ) : (
                         <>
                             {!isDraft && (
-                                <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                                <p className="rounded-2xl border border-amber-200 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800">
                                     {t("instructor.diagnostics.editor.immutableNote")}
                                 </p>
                             )}
 
-                            <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
-                                <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">{t("instructor.diagnostics.editor.details")}</h3>
+                            <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
+                                <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.diagnostics.editor.details")}</h3>
                                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                                    <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                    <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                         {t("instructor.diagnostics.editor.titleLabel")}
                                         <input
                                             value={draft.title}
                                             disabled={!isDraft}
                                             onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-                                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                                         />
                                     </label>
-                                    <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                    <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                         {t("instructor.diagnostics.editor.descriptionLabel")}
                                         <textarea
                                             value={draft.description}
                                             disabled={!isDraft}
                                             onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
                                             rows={3}
-                                            className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2.5 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                                            className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                                         />
                                     </label>
-                                    <label className="block text-xs font-bold text-[#3A3A3A]">
+                                    <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                         {t("instructor.diagnostics.editor.passingScoreLabel")}
                                         <input
                                             type="number"
@@ -1146,10 +1146,10 @@ function ScenarioEditor({
                                             value={draft.passing_score}
                                             disabled={!isDraft}
                                             onChange={(e) => setDraft((d) => ({ ...d, passing_score: Number(e.target.value) }))}
-                                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                                         />
                                     </label>
-                                    <label className="block text-xs font-bold text-[#3A3A3A]">
+                                    <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                         {t("instructor.diagnostics.editor.timeLimitLabel")}
                                         <input
                                             type="number"
@@ -1157,10 +1157,10 @@ function ScenarioEditor({
                                             value={draft.time_limit}
                                             disabled={!isDraft}
                                             onChange={(e) => setDraft((d) => ({ ...d, time_limit: e.target.value }))}
-                                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                                         />
                                     </label>
-                                    <label className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                    <label className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                         <input
                                             type="checkbox"
                                             checked={draft.is_required}
@@ -1173,12 +1173,12 @@ function ScenarioEditor({
                                 </div>
 
                                 {/* Vehicle & fault */}
-                                <div className="mt-5 rounded-2xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-4">
-                                    <h4 className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/55">
+                                <div className="mt-5 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-4">
+                                    <h4 className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/55 dark:text-white/55">
                                         {t("instructor.diagnostics.editor.vehicleSection")}
                                     </h4>
                                     <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                                        <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                             {t("instructor.diagnostics.editor.vehicleLabel")}
                                             <select
                                                 value={selectedVariantId}
@@ -1187,7 +1187,7 @@ function ScenarioEditor({
                                                     setSelectedVariantId(e.target.value);
                                                     setDraft((d) => ({ ...d, data_pack_id: "" }));
                                                 }}
-                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-2 text-sm disabled:opacity-60"
+                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-sm disabled:opacity-60"
                                             >
                                                 <option value="">
                                                     {scenario?.vehicle?.label ?? t("instructor.diagnostics.editor.vehicleNone")}
@@ -1199,16 +1199,16 @@ function ScenarioEditor({
                                                 ))}
                                             </select>
                                             {vehicles.isError && (
-                                                <p className="mt-1 text-xs text-red-600">{t("instructor.diagnostics.editor.vehicleLoadFailed")}</p>
+                                                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{t("instructor.diagnostics.editor.vehicleLoadFailed")}</p>
                                             )}
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                             {t("instructor.diagnostics.editor.vehicleLabel")} · pack
                                             <select
                                                 value={draft.data_pack_id}
                                                 disabled={!isDraft || selectedVariantId === ""}
                                                 onChange={(e) => setDraft((d) => ({ ...d, data_pack_id: e.target.value }))}
-                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-2 text-sm disabled:opacity-60"
+                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-sm disabled:opacity-60"
                                             >
                                                 <option value="">
                                                     {scenario?.data_pack_id
@@ -1222,7 +1222,7 @@ function ScenarioEditor({
                                                 ))}
                                             </select>
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                             {t("instructor.diagnostics.editor.complaintLabel")}
                                             <textarea
                                                 value={draft.customer_complaint}
@@ -1230,30 +1230,30 @@ function ScenarioEditor({
                                                 onChange={(e) => setDraft((d) => ({ ...d, customer_complaint: e.target.value }))}
                                                 rows={2}
                                                 placeholder={t("instructor.diagnostics.editor.complaintPh")}
-                                                className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-2 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                                                className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-2 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.faultCodesLabel")}
                                             <input
                                                 value={draft.fault_codes}
                                                 disabled={!isDraft}
                                                 onChange={(e) => setDraft((d) => ({ ...d, fault_codes: e.target.value }))}
                                                 placeholder={t("instructor.diagnostics.editor.faultCodesPh")}
-                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 font-mono text-sm outline-none focus:border-[#F47822] disabled:opacity-60"
+                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 font-mono text-sm outline-none focus:border-[#F47822] disabled:opacity-60"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.systemTagLabel")}
                                             <input
                                                 value={draft.system_tag}
                                                 disabled={!isDraft}
                                                 onChange={(e) => setDraft((d) => ({ ...d, system_tag: e.target.value }))}
                                                 placeholder={t("instructor.diagnostics.editor.systemTagPh")}
-                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-sm outline-none focus:border-[#F47822] disabled:opacity-60"
+                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-sm outline-none focus:border-[#F47822] disabled:opacity-60"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.maxHintsLabel")}
                                             <input
                                                 type="number"
@@ -1262,7 +1262,7 @@ function ScenarioEditor({
                                                 value={draft.max_hints}
                                                 disabled={!isDraft}
                                                 onChange={(e) => setDraft((d) => ({ ...d, max_hints: Number(e.target.value) }))}
-                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-sm outline-none focus:border-[#F47822] disabled:opacity-60"
+                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-sm outline-none focus:border-[#F47822] disabled:opacity-60"
                                             />
                                         </label>
                                     </div>
@@ -1279,9 +1279,9 @@ function ScenarioEditor({
                                 )}
                             </section>
 
-                            <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
+                            <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">
+                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("instructor.diagnostics.editor.stepsTitle", { count: scenario.steps?.length ?? 0 })}
                                     </h3>
                                     {isDraft && (
@@ -1313,7 +1313,7 @@ function ScenarioEditor({
                                 )}
                                 <ul className="mt-4 space-y-2">
                                     {(scenario.steps ?? []).map((step, index) => (
-                                        <li key={step.id} className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC]">
+                                        <li key={step.id} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20]">
                                             <div className="flex items-center gap-2 px-3.5 py-3">
                                                 <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#3A3A3A] font-mono text-[11px] font-black text-white">
                                                     {step.position ?? index + 1}
@@ -1321,19 +1321,19 @@ function ScenarioEditor({
                                                 <button
                                                     type="button"
                                                     onClick={() => setExpandedStep(expandedStep === step.id ? null : step.id)}
-                                                    className="min-w-0 flex-1 truncate text-start text-sm font-bold text-[#3A3A3A]"
+                                                    className="min-w-0 flex-1 truncate text-start text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]"
                                                 >
                                                     {step.title}
                                                     <span className="ms-2 rounded-full bg-[#F47822]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#F47822]">
                                                         {step.action_type}
                                                     </span>
                                                     {step.tool ? (
-                                                        <span className="ms-1.5 rounded-full border border-[#3A3A3A]/10 bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/55">
+                                                        <span className="ms-1.5 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/55 dark:text-white/55">
                                                             {step.tool}
                                                         </span>
                                                     ) : null}
                                                     {step.is_terminal && (
-                                                        <span className="ms-1.5 rounded-full bg-[#3A3A3A]/[.06] px-2 py-0.5 text-[10px] font-bold text-[#3A3A3A]/55">
+                                                        <span className="ms-1.5 rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2 py-0.5 text-[10px] font-bold text-[#3A3A3A]/55 dark:text-white/55">
                                                             {t("instructor.diagnostics.editor.terminal")}
                                                         </span>
                                                     )}
@@ -1345,7 +1345,7 @@ function ScenarioEditor({
                                                             disabled={index === 0}
                                                             onClick={() => void moveStep(index, -1)}
                                                             aria-label={t("instructor.diagnostics.editor.moveUp")}
-                                                            className="grid h-8 w-8 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] disabled:opacity-30"
+                                                            className="grid h-8 w-8 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] disabled:opacity-30"
                                                         >
                                                             ↑
                                                         </button>
@@ -1354,7 +1354,7 @@ function ScenarioEditor({
                                                             disabled={index === (scenario.steps?.length ?? 1) - 1}
                                                             onClick={() => void moveStep(index, 1)}
                                                             aria-label={t("instructor.diagnostics.editor.moveDown")}
-                                                            className="grid h-8 w-8 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] disabled:opacity-30"
+                                                            className="grid h-8 w-8 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] disabled:opacity-30"
                                                         >
                                                             ↓
                                                         </button>
@@ -1362,7 +1362,7 @@ function ScenarioEditor({
                                                             type="button"
                                                             onClick={() => void removeStep(step.id, step.title)}
                                                             aria-label={t("instructor.diagnostics.editor.deleteStepAria", { title: step.title })}
-                                                            className="grid h-8 w-8 place-items-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                                                            className="grid h-8 w-8 place-items-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" />
                                                         </button>
@@ -1391,16 +1391,16 @@ function ScenarioEditor({
                                     ))}
                                 </ul>
                                 {(scenario.steps ?? []).length === 0 && (
-                                    <p className="mt-3 rounded-xl border border-dashed border-[#3A3A3A]/15 p-5 text-center text-xs text-[#3A3A3A]/50">
+                                    <p className="mt-3 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-5 text-center text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                         {t("instructor.diagnostics.editor.noSteps")}
                                     </p>
                                 )}
                             </section>
 
                             {/* Scoring criteria */}
-                            <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
+                            <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">
+                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("instructor.diagnostics.editor.criteriaSection", {
                                             count: scenario.scoring_criteria?.length ?? 0,
                                         })}
@@ -1416,27 +1416,27 @@ function ScenarioEditor({
                                     )}
                                 </div>
                                 {!isDraft && (
-                                    <p className="mt-2 text-xs text-[#3A3A3A]/50">{t("instructor.diagnostics.editor.draftOnlyCriteria")}</p>
+                                    <p className="mt-2 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.diagnostics.editor.draftOnlyCriteria")}</p>
                                 )}
                                 {isDraft && showAddCriterion && (
-                                    <div className="mt-3 grid gap-2 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3 sm:grid-cols-2">
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                    <div className="mt-3 grid gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3 sm:grid-cols-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.criterionKey")}
                                             <input
                                                 value={criterionDraft.key}
                                                 onChange={(e) => setCriterionDraft((d) => ({ ...d, key: e.target.value }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.criterionTitle")}
                                             <input
                                                 value={criterionDraft.title}
                                                 onChange={(e) => setCriterionDraft((d) => ({ ...d, title: e.target.value }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.criterionPoints")}
                                             <input
                                                 type="number"
@@ -1444,15 +1444,15 @@ function ScenarioEditor({
                                                 max={100}
                                                 value={criterionDraft.points}
                                                 onChange={(e) => setCriterionDraft((d) => ({ ...d, points: Number(e.target.value) }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.criterionEval")}
                                             <select
                                                 value={criterionDraft.evaluation_type}
                                                 onChange={(e) => setCriterionDraft((d) => ({ ...d, evaluation_type: e.target.value }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                                             >
                                                 <option value="boolean">boolean</option>
                                                 <option value="contains">contains</option>
@@ -1460,12 +1460,12 @@ function ScenarioEditor({
                                                 <option value="set_match">set_match</option>
                                             </select>
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.hintStep")}
                                             <select
                                                 value={criterionDraft.step_id}
                                                 onChange={(e) => setCriterionDraft((d) => ({ ...d, step_id: e.target.value }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                                             >
                                                 <option value="">{t("instructor.diagnostics.editor.hintStepGlobal")}</option>
                                                 {(scenario.steps ?? []).map((s) => (
@@ -1473,13 +1473,13 @@ function ScenarioEditor({
                                                 ))}
                                             </select>
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                             {t("instructor.diagnostics.editor.criterionRules")}
                                             <input
                                                 value={criterionDraft.rules}
                                                 onChange={(e) => setCriterionDraft((d) => ({ ...d, rules: e.target.value }))}
                                                 placeholder='{"expected": "P2118"}'
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
                                         <div className="sm:col-span-2 flex gap-2">
@@ -1494,7 +1494,7 @@ function ScenarioEditor({
                                             <button
                                                 type="button"
                                                 onClick={() => setShowAddCriterion(false)}
-                                                className="rounded-lg border border-[#3A3A3A]/10 px-3.5 py-1.5 text-xs font-bold text-[#3A3A3A]/60"
+                                                className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3.5 py-1.5 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60"
                                             >
                                                 {t("instructor.diagnostics.stepForm.cancel")}
                                             </button>
@@ -1503,15 +1503,15 @@ function ScenarioEditor({
                                 )}
                                 <ul className="mt-3 space-y-2">
                                     {(scenario.scoring_criteria ?? []).map((criterion) => (
-                                        <li key={criterion.id} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2.5">
+                                        <li key={criterion.id} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5">
                                             <span className="rounded-full bg-[#F47822]/10 px-2 py-0.5 font-mono text-[10px] font-black text-[#F47822]">
                                                 {criterion.points}p
                                             </span>
-                                            <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#3A3A3A]">
+                                            <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                                 {criterion.title}
-                                                <span className="ms-2 font-mono text-[10px] text-[#3A3A3A]/45">{criterion.key}</span>
+                                                <span className="ms-2 font-mono text-[10px] text-[#3A3A3A]/45 dark:text-white/45">{criterion.key}</span>
                                             </span>
-                                            <span className="shrink-0 rounded-full bg-[#3A3A3A]/[.06] px-2 py-0.5 font-mono text-[10px] text-[#3A3A3A]/55">
+                                            <span className="shrink-0 rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2 py-0.5 font-mono text-[10px] text-[#3A3A3A]/55 dark:text-white/55">
                                                 {criterion.evaluation_type}
                                             </span>
                                             {isDraft && (
@@ -1519,7 +1519,7 @@ function ScenarioEditor({
                                                     type="button"
                                                     onClick={() => void removeCriterion(criterion.id)}
                                                     aria-label={t("instructor.diagnostics.editor.deleteCriterion")}
-                                                    className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                                                    className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-500 hover:bg-red-50 dark:bg-red-500/10"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </button>
@@ -1528,16 +1528,16 @@ function ScenarioEditor({
                                     ))}
                                 </ul>
                                 {(scenario.scoring_criteria ?? []).length === 0 && (
-                                    <p className="mt-3 rounded-xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-xs text-[#3A3A3A]/50">
+                                    <p className="mt-3 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                         {t("instructor.diagnostics.editor.noCriteria")}
                                     </p>
                                 )}
                             </section>
 
                             {/* Hints */}
-                            <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
+                            <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
                                 <div className="flex items-center justify-between gap-2">
-                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">
+                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("instructor.diagnostics.editor.hintsSection", {
                                             count: scenario.hints?.length ?? 0,
                                         })}
@@ -1553,23 +1553,23 @@ function ScenarioEditor({
                                     )}
                                 </div>
                                 {!isDraft && (
-                                    <p className="mt-2 text-xs text-[#3A3A3A]/50">{t("instructor.diagnostics.editor.draftOnlyHints")}</p>
+                                    <p className="mt-2 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.diagnostics.editor.draftOnlyHints")}</p>
                                 )}
                                 {isDraft && showAddHint && (
-                                    <div className="mt-3 grid gap-2 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3 sm:grid-cols-2">
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                    <div className="mt-3 grid gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3 sm:grid-cols-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.hintLevel")}
                                             <select
                                                 value={hintDraft.level}
                                                 onChange={(e) => setHintDraft((d) => ({ ...d, level: Number(e.target.value) }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                                             >
                                                 <option value={1}>1</option>
                                                 <option value={2}>2</option>
                                                 <option value={3}>3</option>
                                             </select>
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.hintPenalty")}
                                             <input
                                                 type="number"
@@ -1577,15 +1577,15 @@ function ScenarioEditor({
                                                 max={50}
                                                 value={hintDraft.penalty_points}
                                                 onChange={(e) => setHintDraft((d) => ({ ...d, penalty_points: Number(e.target.value) }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.hintStep")}
                                             <select
                                                 value={hintDraft.diagnostic_scenario_step_id}
                                                 onChange={(e) => setHintDraft((d) => ({ ...d, diagnostic_scenario_step_id: e.target.value }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                                             >
                                                 <option value="">{t("instructor.diagnostics.editor.hintStepGlobal")}</option>
                                                 {(scenario.steps ?? []).map((s) => (
@@ -1593,21 +1593,21 @@ function ScenarioEditor({
                                                 ))}
                                             </select>
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.diagnostics.editor.criterionTitle")}
                                             <input
                                                 value={hintDraft.title}
                                                 onChange={(e) => setHintDraft((d) => ({ ...d, title: e.target.value }))}
-                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                                             {t("instructor.diagnostics.editor.hintText")}
                                             <textarea
                                                 value={hintDraft.content}
                                                 onChange={(e) => setHintDraft((d) => ({ ...d, content: e.target.value }))}
                                                 rows={2}
-                                                className="mt-1 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 py-2 text-xs outline-none focus:border-[#F47822]"
+                                                className="mt-1 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 py-2 text-xs outline-none focus:border-[#F47822]"
                                             />
                                         </label>
                                         <div className="sm:col-span-2 flex gap-2">
@@ -1622,7 +1622,7 @@ function ScenarioEditor({
                                             <button
                                                 type="button"
                                                 onClick={() => setShowAddHint(false)}
-                                                className="rounded-lg border border-[#3A3A3A]/10 px-3.5 py-1.5 text-xs font-bold text-[#3A3A3A]/60"
+                                                className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3.5 py-1.5 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60"
                                             >
                                                 {t("instructor.diagnostics.stepForm.cancel")}
                                             </button>
@@ -1631,11 +1631,11 @@ function ScenarioEditor({
                                 )}
                                 <ul className="mt-3 space-y-2">
                                     {(scenario.hints ?? []).map((hint) => (
-                                        <li key={hint.id} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2.5">
+                                        <li key={hint.id} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5">
                                             <span className="rounded-full bg-[#3A3A3A] px-2 py-0.5 font-mono text-[10px] font-black text-white">
                                                 L{hint.level}
                                             </span>
-                                            <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#3A3A3A]">
+                                            <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                                 {hint.title || hint.content.slice(0, 60)}
                                             </span>
                                             <span className="shrink-0 rounded-full bg-[#F47822]/10 px-2 py-0.5 font-mono text-[10px] font-bold text-[#F47822]">
@@ -1646,7 +1646,7 @@ function ScenarioEditor({
                                                     type="button"
                                                     onClick={() => void removeHint(hint.id)}
                                                     aria-label={t("instructor.diagnostics.editor.deleteHint")}
-                                                    className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                                                    className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-500 hover:bg-red-50 dark:bg-red-500/10"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </button>
@@ -1655,14 +1655,14 @@ function ScenarioEditor({
                                     ))}
                                 </ul>
                                 {(scenario.hints ?? []).length === 0 && (
-                                    <p className="mt-3 rounded-xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-xs text-[#3A3A3A]/50">
+                                    <p className="mt-3 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                         {t("instructor.diagnostics.editor.noHints")}
                                     </p>
                                 )}
                             </section>
 
-                            <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
-                                <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">{t("instructor.diagnostics.editor.lifecycle")}</h3>
+                            <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
+                                <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.diagnostics.editor.lifecycle")}</h3>
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     {scenario.status !== "published" && (
                                         <button
@@ -1697,7 +1697,7 @@ function ScenarioEditor({
                                                     }
                                                 })()
                                             }
-                                            className="rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-black text-[#3A3A3A] hover:bg-[#FCFCFC]"
+                                            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-black text-[#3A3A3A] hover:bg-[#FCFCFC] dark:bg-[#1b1b20]"
                                         >
                                             {t("instructor.diagnostics.editor.unpublish")}
                                         </button>
@@ -1716,7 +1716,7 @@ function ScenarioEditor({
                                                 }
                                             })()
                                         }
-                                        className="rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-black text-[#3A3A3A]/70 hover:text-[#3A3A3A]"
+                                        className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-black text-[#3A3A3A]/70 dark:text-white/70 hover:text-[#3A3A3A]"
                                     >
                                         {t("instructor.diagnostics.editor.forkNewVersion")}
                                     </button>
@@ -1735,7 +1735,7 @@ function ScenarioEditor({
                                                 }
                                             })();
                                         }}
-                                        className="rounded-xl border border-red-200 px-4 py-2 text-xs font-black text-red-600 hover:bg-red-50"
+                                        className="rounded-xl border border-red-200 dark:border-red-500/20 px-4 py-2 text-xs font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                     >
                                         {t("instructor.diagnostics.editor.archive")}
                                     </button>
@@ -1743,15 +1743,15 @@ function ScenarioEditor({
                             </section>
 
                             {(scenario.recent_attempts ?? []).length > 0 && (
-                                <section className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5">
-                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60">{t("instructor.diagnostics.editor.recentAttempts")}</h3>
+                                <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5">
+                                    <h3 className="text-sm font-black uppercase tracking-wide text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.diagnostics.editor.recentAttempts")}</h3>
                                     <ul className="mt-3 divide-y divide-[#3A3A3A]/[.06] text-sm">
                                         {(scenario.recent_attempts ?? []).slice(0, 5).map((attempt) => (
                                             <li key={attempt.id} className="flex items-center justify-between gap-3 py-2">
-                                                <span className="min-w-0 truncate font-semibold text-[#3A3A3A]">
+                                                <span className="min-w-0 truncate font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                                     {attempt.student ?? attempt.id.slice(0, 8)}
                                                 </span>
-                                                <span className={`shrink-0 rounded-full px-2.5 py-1 font-mono text-[11px] font-bold ${attempt.passed ? "bg-emerald-50 text-emerald-700" : "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/60"}`}>
+                                                <span className={`shrink-0 rounded-full px-2.5 py-1 font-mono text-[11px] font-bold ${attempt.passed ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/60 dark:text-white/60"}`}>
                                                     {attempt.score ?? "—"}
                                                 </span>
                                             </li>
@@ -1868,19 +1868,19 @@ export function StepForm({
     };
 
     return (
-        <div className="border-t border-[#3A3A3A]/[.07] bg-white px-3.5 py-4">
+        <div className="border-t border-[#3A3A3A]/[.07] dark:border-white/[.07] bg-white dark:bg-[#1b1b20] px-3.5 py-4">
             <div className="grid gap-3 sm:grid-cols-2">
-                <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                     {t("instructor.diagnostics.stepForm.titleLabel")}
                     <input
                         value={title}
                         disabled={readOnly}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder={t("instructor.diagnostics.stepForm.titlePh")}
-                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                     />
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A] sm:col-span-2">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef] sm:col-span-2">
                     {t("instructor.diagnostics.stepForm.descriptionLabel")}
                     <textarea
                         value={description}
@@ -1888,29 +1888,29 @@ export function StepForm({
                         onChange={(e) => setDescription(e.target.value)}
                         rows={2}
                         placeholder={t("instructor.diagnostics.stepForm.descriptionPh")}
-                        className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                        className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                     />
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.diagnostics.stepForm.actionType")}
                     <select
                         value={actionType}
                         disabled={readOnly}
                         onChange={(e) => setActionType(e.target.value)}
-                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-2 text-sm"
+                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-2 text-sm"
                     >
                         {ACTION_TYPES.map((kind) => (
                             <option key={kind} value={kind}>{kind}</option>
                         ))}
                     </select>
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.diagnostics.stepForm.toolLabel")}
                     <select
                         value={tool}
                         disabled={readOnly}
                         onChange={(e) => setTool(e.target.value)}
-                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-2 text-sm"
+                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-2 text-sm"
                     >
                         <option value="">{t("instructor.diagnostics.stepForm.toolPh")}</option>
                         {TOOLS.map((key) => (
@@ -1918,7 +1918,7 @@ export function StepForm({
                         ))}
                     </select>
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.diagnostics.stepForm.durationLabel")}
                     <input
                         type="number"
@@ -1926,16 +1926,16 @@ export function StepForm({
                         value={duration}
                         disabled={readOnly}
                         onChange={(e) => setDuration(e.target.value)}
-                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
+                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm font-normal outline-none focus:border-[#F47822] disabled:opacity-60"
                     />
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.diagnostics.stepForm.disciplineLabel")}
                     <select
                         value={discipline}
                         disabled={readOnly}
                         onChange={(e) => setDiscipline(e.target.value)}
-                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-2 text-sm"
+                        className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-2 text-sm"
                     >
                         <option value="">{t("instructor.diagnostics.stepForm.disciplineNone")}</option>
                         <option value="mechanical">{t("instructor.diagnostics.stepForm.disciplineMechanical")}</option>
@@ -1944,7 +1944,7 @@ export function StepForm({
                     </select>
                 </label>
                 <div className="flex items-end gap-4 pb-2">
-                    <label className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A]">
+                    <label className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                         <input
                             type="checkbox"
                             checked={isRequired}
@@ -1954,7 +1954,7 @@ export function StepForm({
                         />
                         {t("instructor.diagnostics.stepForm.required")}
                     </label>
-                    <label className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A]">
+                    <label className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                         <input
                             type="checkbox"
                             checked={isTerminal}
@@ -1967,8 +1967,8 @@ export function StepForm({
                 </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
-                <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/50">
+            <div className="mt-4 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3">
+                <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/50 dark:text-white/50">
                     {t("instructor.diagnostics.stepForm.evidenceTitle")}
                 </p>
                 <div className="mt-2 space-y-2">
@@ -1983,7 +1983,7 @@ export function StepForm({
                                     )
                                 }
                                 placeholder={t("instructor.diagnostics.stepForm.evidenceKeyPh")}
-                                className="h-9 w-1/3 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs font-mono outline-none focus:border-[#F47822] disabled:opacity-60"
+                                className="h-9 w-1/3 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs font-mono outline-none focus:border-[#F47822] disabled:opacity-60"
                             />
                             <input
                                 value={row.value}
@@ -1994,14 +1994,14 @@ export function StepForm({
                                     )
                                 }
                                 placeholder={t("instructor.diagnostics.stepForm.evidenceValuePh")}
-                                className="h-9 flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                className="h-9 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                             />
                             {!readOnly && (
                                 <button
                                     type="button"
                                     onClick={() => setEvidenceRows((rows) => rows.filter((_, i) => i !== index))}
                                     aria-label={t("instructor.diagnostics.stepForm.evidenceRemove")}
-                                    className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50"
+                                    className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-500 hover:bg-red-50 dark:bg-red-500/10"
                                 >
                                     <Trash2 className="h-3.5 w-3.5" />
                                 </button>
@@ -2012,7 +2012,7 @@ export function StepForm({
                         <button
                             type="button"
                             onClick={() => setEvidenceRows((rows) => [...rows, { key: "", value: "" }])}
-                            className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                         >
                             <Plus className="h-3 w-3" /> {t("instructor.diagnostics.stepForm.evidenceAdd")}
                         </button>
@@ -2021,15 +2021,15 @@ export function StepForm({
             </div>
 
             {tool === "multimeter" && (
-                <div className="mt-3 rounded-xl border border-[#1F6AE1]/20 bg-[#FBFDFF] p-3">
+                <div className="mt-3 rounded-xl border border-[#1F6AE1]/20 bg-[#FBFDFF] dark:bg-[#1b1b20] p-3">
                     <p className="text-[11px] font-black uppercase tracking-wide text-[#1F6AE1]">
                         {t("instructor.diagnostics.stepForm.mmTitle")}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">
+                    <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                         {t("instructor.diagnostics.stepForm.mmHint")}
                     </p>
                     <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.diagnostics.stepForm.mmComponent")}
                             <input
                                 value={mmComponent}
@@ -2037,16 +2037,16 @@ export function StepForm({
                                 onChange={(e) => setMmComponent(e.target.value)}
                                 placeholder="A1"
                                 dir="ltr"
-                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                             />
                         </label>
-                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.diagnostics.stepForm.mmMode")}
                             <select
                                 value={mmMode}
                                 disabled={readOnly}
                                 onChange={(e) => setMmMode(e.target.value)}
-                                className="mt-1.5 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-sm"
+                                className="mt-1.5 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-sm"
                             >
                                 {MM_MODES.map((m) => (
                                     <option key={m || "none"} value={m}>
@@ -2055,7 +2055,7 @@ export function StepForm({
                                 ))}
                             </select>
                         </label>
-                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.diagnostics.stepForm.mmUnit")}
                             <input
                                 value={mmUnit}
@@ -2063,10 +2063,10 @@ export function StepForm({
                                 onChange={(e) => setMmUnit(e.target.value)}
                                 placeholder="V"
                                 dir="ltr"
-                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                             />
                         </label>
-                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.diagnostics.stepForm.mmRed")}
                             <input
                                 value={mmRed}
@@ -2074,10 +2074,10 @@ export function StepForm({
                                 onChange={(e) => setMmRed(e.target.value)}
                                 placeholder="c1"
                                 dir="ltr"
-                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                             />
                         </label>
-                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.diagnostics.stepForm.mmBlack")}
                             <input
                                 value={mmBlack}
@@ -2085,11 +2085,11 @@ export function StepForm({
                                 onChange={(e) => setMmBlack(e.target.value)}
                                 placeholder="gnd"
                                 dir="ltr"
-                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                             />
                         </label>
                         <div className="grid grid-cols-2 gap-2">
-                            <label className="block text-xs font-bold text-[#3A3A3A]">
+                            <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                 {t("instructor.diagnostics.stepForm.mmMin")}
                                 <input
                                     type="number"
@@ -2097,10 +2097,10 @@ export function StepForm({
                                     value={mmMin}
                                     disabled={readOnly}
                                     onChange={(e) => setMmMin(e.target.value)}
-                                    className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                    className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                                 />
                             </label>
-                            <label className="block text-xs font-bold text-[#3A3A3A]">
+                            <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                 {t("instructor.diagnostics.stepForm.mmMax")}
                                 <input
                                     type="number"
@@ -2108,7 +2108,7 @@ export function StepForm({
                                     value={mmMax}
                                     disabled={readOnly}
                                     onChange={(e) => setMmMax(e.target.value)}
-                                    className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
+                                    className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs outline-none focus:border-[#F47822] disabled:opacity-60"
                                 />
                             </label>
                         </div>
@@ -2142,7 +2142,7 @@ export function StepForm({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60"
+                        className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60"
                     >
                         {t("instructor.diagnostics.stepForm.cancel")}
                     </button>

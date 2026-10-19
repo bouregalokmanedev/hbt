@@ -60,12 +60,12 @@ export function AdminRiskPage() {
         <AdminPanel>
           <h2 className="flex items-center gap-2 font-semibold"><ShieldAlert className="h-4 w-4 text-[#F47822]" /> {t("admin.risk.createTitle")}</h2>
           <div className="mt-4 grid gap-3">
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("admin.risk.titlePh")} aria-label={t("admin.risk.createTitle")} className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm outline-none focus:border-[#F47822]" />
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("admin.risk.titlePh")} aria-label={t("admin.risk.createTitle")} className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm outline-none focus:border-[#F47822]" />
             <div className="grid grid-cols-2 gap-3">
-              <label className="grid gap-1 text-xs font-semibold">{t("admin.risk.probability")}<input type="number" min={1} max={5} value={probability} onChange={(e) => setProbability(Number(e.target.value))} className="h-10 rounded-xl border border-[#3A3A3A]/10 px-3 outline-none" /></label>
-              <label className="grid gap-1 text-xs font-semibold">{t("admin.risk.impact")}<input type="number" min={1} max={5} value={impact} onChange={(e) => setImpact(Number(e.target.value))} className="h-10 rounded-xl border border-[#3A3A3A]/10 px-3 outline-none" /></label>
+              <label className="grid gap-1 text-xs font-semibold">{t("admin.risk.probability")}<input type="number" min={1} max={5} value={probability} onChange={(e) => setProbability(Number(e.target.value))} className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 outline-none" /></label>
+              <label className="grid gap-1 text-xs font-semibold">{t("admin.risk.impact")}<input type="number" min={1} max={5} value={impact} onChange={(e) => setImpact(Number(e.target.value))} className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 outline-none" /></label>
             </div>
-            <p className="text-xs text-[#3A3A3A]/50">{t("admin.risk.score", { score: probability * impact, level: levelForScore(probability * impact) })}</p>
+            <p className="text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.risk.score", { score: probability * impact, level: levelForScore(probability * impact) })}</p>
             <button type="button" onClick={() => void createRisk()} className="inline-flex items-center gap-1.5 rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#E96D18]"><Plus className="h-4 w-4" /> {t("admin.risk.add")}</button>
           </div>
         </AdminPanel>
@@ -75,14 +75,14 @@ export function AdminRiskPage() {
           {incidents.data && incidents.data.data.length ? (
             <ul className="mt-3 space-y-2">
               {incidents.data.data.slice(0, 5).map((inc) => (
-                <li key={inc.id} className="flex items-center justify-between rounded-xl bg-[#FCFCFC] px-3 py-2.5">
+                <li key={inc.id} className="flex items-center justify-between rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5">
                   <span className="min-w-0 flex-1 truncate text-xs font-semibold">{inc.incident_number} — {inc.title}</span>
-                  <span className={`ml-2 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold capitalize rtl:ml-0 rtl:mr-2 ${inc.severity === "critical" ? "bg-red-50 text-red-600" : inc.severity === "high" ? "bg-amber-50 text-amber-700" : "bg-[#3A3A3A]/8 text-[#3A3A3A]"}`}>{inc.severity}</span>
+                  <span className={`ml-2 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold capitalize rtl:ml-0 rtl:mr-2 ${inc.severity === "critical" ? "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400" : inc.severity === "high" ? "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400" : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]"}`}>{inc.severity}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("admin.risk.incidentsEmpty")}</p>
+            <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.risk.incidentsEmpty")}</p>
           )}
         </AdminPanel>
       </div>
@@ -93,11 +93,11 @@ export function AdminRiskPage() {
           {overdue.data && overdue.data.length ? (
             <ul className="mt-3 space-y-2">
               {overdue.data.map((r) => (
-                <li key={r.id} className="rounded-xl bg-amber-50 px-3 py-2.5 text-xs"><span className="font-bold">{r.title}</span><span className="ml-2 text-[#3A3A3A]/50 rtl:ml-0 rtl:mr-2">{t("admin.risk.due", { date: r.next_review_at ? new Date(r.next_review_at).toLocaleDateString(i18n.language) : t("admin.risk.noDate") })}</span></li>
+                <li key={r.id} className="rounded-xl bg-amber-50 dark:bg-amber-500/10 px-3 py-2.5 text-xs"><span className="font-bold">{r.title}</span><span className="ml-2 text-[#3A3A3A]/50 dark:text-white/50 rtl:ml-0 rtl:mr-2">{t("admin.risk.due", { date: r.next_review_at ? new Date(r.next_review_at).toLocaleDateString(i18n.language) : t("admin.risk.noDate") })}</span></li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700"><CheckCircle2 className="h-4 w-4" /> {t("admin.risk.overdueEmpty")}</p>
+            <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400"><CheckCircle2 className="h-4 w-4" /> {t("admin.risk.overdueEmpty")}</p>
           )}
         </AdminPanel>
 
@@ -106,11 +106,11 @@ export function AdminRiskPage() {
           {failed.data && failed.data.length ? (
             <ul className="mt-3 space-y-2">
               {failed.data.map((c) => (
-                <li key={c.id} className="rounded-xl bg-red-50 px-3 py-2.5 text-xs"><span className="font-bold">{c.name}</span><span className="text-[#3A3A3A]/50"> — {c.risk ?? ""}</span></li>
+                <li key={c.id} className="rounded-xl bg-red-50 dark:bg-red-500/10 px-3 py-2.5 text-xs"><span className="font-bold">{c.name}</span><span className="text-[#3A3A3A]/50 dark:text-white/50"> — {c.risk ?? ""}</span></li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700"><CheckCircle2 className="h-4 w-4" /> {t("admin.risk.failedEmpty")}</p>
+            <p className="mt-3 flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400"><CheckCircle2 className="h-4 w-4" /> {t("admin.risk.failedEmpty")}</p>
           )}
         </AdminPanel>
       </div>
@@ -120,7 +120,7 @@ export function AdminRiskPage() {
         {risks.data && risks.data.data.length ? (
           <div className="mt-3 overflow-x-auto">
             <table className="w-full min-w-[600px] text-left text-xs rtl:text-right">
-              <thead className="border-b border-[#3A3A3A]/8 text-[10px] uppercase tracking-wide text-[#3A3A3A]/40"><tr><th className="pb-2">{t("admin.risk.headers.title")}</th><th className="pb-2">{t("admin.risk.headers.level")}</th><th className="pb-2">{t("admin.risk.headers.score")}</th><th className="pb-2">{t("admin.risk.headers.status")}</th></tr></thead>
+              <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40"><tr><th className="pb-2">{t("admin.risk.headers.title")}</th><th className="pb-2">{t("admin.risk.headers.level")}</th><th className="pb-2">{t("admin.risk.headers.score")}</th><th className="pb-2">{t("admin.risk.headers.status")}</th></tr></thead>
               <tbody className="divide-y divide-[#3A3A3A]/7">
                 {risks.data.data.slice(0, 8).map((r) => (
                   <tr key={r.id}><td className="py-2 font-semibold">{r.title}</td><td className="capitalize">{r.level}</td><td>{r.score}</td><td className="capitalize">{r.status}</td></tr>
@@ -129,7 +129,7 @@ export function AdminRiskPage() {
             </table>
           </div>
         ) : (
-          <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("admin.risk.empty")}</p>
+          <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.risk.empty")}</p>
         )}
       </AdminPanel>
     </div>
@@ -137,10 +137,10 @@ export function AdminRiskPage() {
 }
 
 function Kpi({ label, value, tone }: { label: string; value: number; tone: "red" | "amber" | "dark" | "green" }) {
-  const tones = { red: "bg-red-50 text-red-600", amber: "bg-amber-50 text-amber-700", dark: "bg-[#3A3A3A] text-white", green: "bg-emerald-50 text-emerald-700" } as const;
+  const tones = { red: "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400", amber: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400", dark: "bg-[#3A3A3A] text-white", green: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" } as const;
   return (
-    <div className={`rounded-2xl border p-4 ${tone === "dark" ? "border-[#3A3A3A] bg-[#3A3A3A] text-white" : "border-[#3A3A3A]/8 bg-white"}`}>
-      <p className={`text-[10px] font-bold uppercase tracking-wide ${tone === "dark" ? "text-white/50" : "text-[#3A3A3A]/40"}`}>{label}</p>
+    <div className={`rounded-2xl border p-4 ${tone === "dark" ? "border-[#3A3A3A] bg-[#3A3A3A] text-white" : "border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20]"}`}>
+      <p className={`text-[10px] font-bold uppercase tracking-wide ${tone === "dark" ? "text-white/50" : "text-[#3A3A3A]/40 dark:text-white/40"}`}>{label}</p>
       <p className="mt-2 text-2xl font-bold">{value}</p>
     </div>
   );

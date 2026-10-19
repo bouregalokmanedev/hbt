@@ -42,7 +42,7 @@ export function AdminAssessmentsPage() {
         description={t("admin.assessments.description")}
       />
 
-      <div className="flex gap-1.5 self-start rounded-2xl bg-white p-1.5 shadow-[0_4px_14px_rgba(58,58,58,.05)]">
+      <div className="flex gap-1.5 self-start rounded-2xl bg-white dark:bg-[#1b1b20] p-1.5 shadow-[0_4px_14px_rgba(58,58,58,.05)]">
         <TabButton active={tab === "quizzes"} onClick={() => switchTab("quizzes")} icon={<ClipboardCheck className="h-3.5 w-3.5 rtl:-scale-x-100" />} label={t("admin.assessments.tabs.quizzes")} />
         <TabButton active={tab === "assessments"} onClick={() => switchTab("assessments")} icon={<Award className="h-3.5 w-3.5 rtl:-scale-x-100" />} label={t("admin.assessments.tabs.assessments")} />
       </div>
@@ -93,7 +93,7 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold transition-all ${
-        active ? "bg-[#3A3A3A] text-white shadow" : "text-[#3A3A3A]/55 hover:text-[#3A3A3A]"
+        active ? "bg-[#3A3A3A] text-white shadow" : "text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A]"
       }`}
     >
       {icon}
@@ -122,7 +122,7 @@ function Toolbar({
   return (
     <div className="flex flex-wrap gap-3">
       <label className="relative min-w-[220px] flex-1">
-        <Search className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/40 ${isRTL ? "right-3" : "left-3"}`} />
+        <Search className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/40 dark:text-white/40 ${isRTL ? "right-3" : "left-3"}`} />
         <input
           value={search}
           onChange={(event) => {
@@ -130,7 +130,7 @@ function Toolbar({
             setPage(1);
           }}
           placeholder={t("admin.assessments.searchPh")}
-          className={`h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] text-sm outline-none transition focus:border-[#F47822] ${isRTL ? "pl-3 pr-10" : "pl-10 pr-3"}`}
+          className={`h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] text-sm outline-none transition focus:border-[#F47822] ${isRTL ? "pl-3 pr-10" : "pl-10 pr-3"}`}
         />
       </label>
       <select
@@ -139,7 +139,7 @@ function Toolbar({
           setStatus(event.target.value);
           setPage(1);
         }}
-        className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-semibold capitalize text-[#3A3A3A]/70 outline-none transition focus:border-[#F47822]"
+        className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-semibold capitalize text-[#3A3A3A]/70 dark:text-white/70 outline-none transition focus:border-[#F47822]"
       >
         <option value="">{t("admin.assessments.allStatuses")}</option>
         {statuses.map((entry) => (
@@ -156,7 +156,7 @@ function Toolbar({
             setStatus("");
             setPage(1);
           }}
-          className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 px-4 text-xs font-bold text-[#3A3A3A]/60 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+          className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
         >
           <X className="h-3.5 w-3.5" /> {t("admin.assessments.clear")}
         </button>
@@ -191,7 +191,7 @@ function QuizTable(props: {
       <Toolbar {...props} statuses={["draft", "published", "archived"]} />
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[840px] text-left rtl:text-right">
-          <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+          <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
             <tr>
               <th className="pb-3">{t("admin.assessments.headers.quiz")}</th>
               <th className="pb-3">{t("admin.assessments.headers.course")}</th>
@@ -204,27 +204,27 @@ function QuizTable(props: {
           </thead>
           <tbody className="divide-y divide-[#3A3A3A]/7">
             {data.data.map((quiz: AdminQuiz) => (
-              <tr key={quiz.id} className="transition hover:bg-[#FCFCFC]">
+              <tr key={quiz.id} className="transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                 <td className="py-4">
                   <button type="button" onClick={() => props.onSelect(quiz.id)} className="max-w-xs text-left rtl:text-right">
                     <span className="block truncate text-sm font-semibold hover:text-[#F47822]">{quiz.title}</span>
-                    <span className="mt-0.5 block text-xs text-[#3A3A3A]/45">{t("admin.assessments.passThreshold", { value: quiz.pass_percentage })}</span>
+                    <span className="mt-0.5 block text-xs text-[#3A3A3A]/45 dark:text-white/45">{t("admin.assessments.passThreshold", { value: quiz.pass_percentage })}</span>
                   </button>
                 </td>
-                <td className="max-w-[200px] truncate py-4 text-xs text-[#3A3A3A]/60">{quiz.course ?? "—"}</td>
+                <td className="max-w-[200px] truncate py-4 text-xs text-[#3A3A3A]/60 dark:text-white/60">{quiz.course ?? "—"}</td>
                 <td className="py-4">
                   <Status value={quiz.status} />
                 </td>
-                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70">{quiz.questions_count}</td>
-                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70">{quiz.attempts_count}</td>
-                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70">
+                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70">{quiz.questions_count}</td>
+                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70">{quiz.attempts_count}</td>
+                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70">
                   {quiz.pass_rate === null ? "—" : `${quiz.pass_rate}%`}
                 </td>
                 <td className="py-4 text-right rtl:text-left">
                   <button
                     type="button"
                     onClick={() => props.onSelect(quiz.id)}
-                    className="rounded-lg border border-[#3A3A3A]/10 px-3 py-2 text-xs font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                    className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                   >
                     {t("admin.assessments.inspect")}
                   </button>
@@ -233,7 +233,7 @@ function QuizTable(props: {
             ))}
             {data.data.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-sm text-[#3A3A3A]/45">
+                <td colSpan={7} className="py-10 text-center text-sm text-[#3A3A3A]/45 dark:text-white/45">
                   {t("admin.assessments.emptyQuizzes")}
                 </td>
               </tr>
@@ -274,7 +274,7 @@ function AssessmentTable(props: {
       <Toolbar {...props} statuses={["draft", "published"]} />
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[840px] text-left rtl:text-right">
-          <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+          <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
             <tr>
               <th className="pb-3">{t("admin.assessments.headers.assessment")}</th>
               <th className="pb-3">{t("admin.assessments.headers.course")}</th>
@@ -287,31 +287,31 @@ function AssessmentTable(props: {
           </thead>
           <tbody className="divide-y divide-[#3A3A3A]/7">
             {data.data.map((assessment: AdminAssessment) => (
-              <tr key={assessment.id} className="transition hover:bg-[#FCFCFC]">
+              <tr key={assessment.id} className="transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                 <td className="py-4">
                   <button type="button" onClick={() => props.onSelect(assessment.id)} className="max-w-xs text-left rtl:text-right">
                     <span className="block truncate text-sm font-semibold hover:text-[#F47822]">
                       {assessment.title}
                     </span>
-                    <span className="mt-0.5 block text-xs text-[#3A3A3A]/45">
+                    <span className="mt-0.5 block text-xs text-[#3A3A3A]/45 dark:text-white/45">
                       {assessment.is_required ? t("admin.assessments.required") : t("admin.assessments.optional")}
                     </span>
                   </button>
                 </td>
-                <td className="max-w-[200px] truncate py-4 text-xs text-[#3A3A3A]/60">{assessment.course ?? "—"}</td>
+                <td className="max-w-[200px] truncate py-4 text-xs text-[#3A3A3A]/60 dark:text-white/60">{assessment.course ?? "—"}</td>
                 <td className="py-4">
                   <Status value={assessment.status} />
                 </td>
-                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70">{assessment.minimum_score}%</td>
-                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70">{assessment.attempts_count}</td>
-                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70">
+                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70">{assessment.minimum_score}%</td>
+                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70">{assessment.attempts_count}</td>
+                <td className="py-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70">
                   {assessment.pass_rate === null ? "—" : `${assessment.pass_rate}%`}
                 </td>
                 <td className="py-4 text-right rtl:text-left">
                   <button
                     type="button"
                     onClick={() => props.onSelect(assessment.id)}
-                    className="rounded-lg border border-[#3A3A3A]/10 px-3 py-2 text-xs font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                    className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                   >
                     {t("admin.assessments.inspect")}
                   </button>
@@ -320,7 +320,7 @@ function AssessmentTable(props: {
             ))}
             {data.data.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-10 text-center text-sm text-[#3A3A3A]/45">
+                <td colSpan={7} className="py-10 text-center text-sm text-[#3A3A3A]/45 dark:text-white/45">
                   {t("admin.assessments.emptyAssessments")}
                 </td>
               </tr>

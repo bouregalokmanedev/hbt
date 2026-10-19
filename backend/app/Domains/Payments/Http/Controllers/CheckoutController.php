@@ -18,6 +18,7 @@ class CheckoutController extends Controller
             'provider' => ['sometimes', 'string', 'in:stripe,paypal,manual'],
             'currency' => ['sometimes', 'string', 'size:3'],
             'idempotency_key' => ['sometimes', 'string', 'max:80'],
+            'coupon_code' => ['sometimes', 'nullable', 'string', 'max:40'],
         ]);
 
         $provider = $data['provider'] ?? 'stripe';
@@ -30,6 +31,7 @@ class CheckoutController extends Controller
             provider: $provider,
             currency: $currency,
             idempotencyKey: $key,
+            couponCode: $data['coupon_code'] ?? null,
         );
 
         if ($result['free']) {

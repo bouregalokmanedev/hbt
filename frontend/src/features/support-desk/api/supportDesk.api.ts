@@ -12,9 +12,11 @@ export interface DeskTicketSummary {
     level?: string;
     user?: string | null;
     email?: string | null;
+    user_uuid?: string | null;
     assignee?: string | null;
     due_at?: string | null;
     overdue: boolean;
+    tags?: string[];
     created_at?: string | null;
 }
 
@@ -63,8 +65,89 @@ export interface DeskTicketFilters {
     assigned?: "me" | "unassigned";
     overdue?: boolean;
     search?: string;
+    tag?: string;
     page?: number;
     per_page?: number;
+}
+
+/** Read-only student lookup rows for the support directory. */
+export interface DeskStudentSummary {
+    id: string;
+    name: string;
+    email: string;
+    status?: string | null;
+    verified: boolean;
+    enrollments_count: number;
+    completed_count: number;
+    certificates_count: number;
+    open_tickets: number;
+    last_active_at?: string | null;
+    joined_at?: string | null;
+}
+
+export interface DeskStudentEnrollment {
+    id: string;
+    status: string;
+    enrolled_at?: string | null;
+    completed_at?: string | null;
+    course: { id: number; title: string; status: string } | null;
+    progress_percentage: number;
+    time_spent: number;
+}
+
+export interface DeskStudentCertificate {
+    id: string;
+    certificate_number: string;
+    course_title?: string | null;
+    issued_at?: string | null;
+}
+
+export interface DeskStudentTicket {
+    id: string;
+    subject: string;
+    category?: string | null;
+    status: string;
+    priority: string;
+    overdue: boolean;
+    created_at?: string | null;
+}
+
+export interface DeskStudentDetail {
+    id: string;
+    name: string;
+    email: string;
+    status?: string | null;
+    verified: boolean;
+    joined_at?: string | null;
+    last_active_at?: string | null;
+    summary: { enrollments: number; completed: number; certificates: number; open_tickets: number };
+    enrollments: DeskStudentEnrollment[];
+    certificates: DeskStudentCertificate[];
+    tickets: DeskStudentTicket[];
+}
+
+export interface DeskStudentListResponse {
+    data: DeskStudentSummary[];
+    meta: { current_page: number; last_page: number; per_page: number; total: number };
+}
+
+export interface CannedReply {
+    id: string;
+    title: string;
+    body: string;
+}
+
+/** Per-agent performance row for the team leaderboard. */
+export interface DeskAgentPerf {
+    id: string;
+    name: string;
+    email: string;
+    roles: string[];
+    open: number;
+    resolved_month: number;
+    csat_average: number;
+    csat_count: number;
+    avg_first_response_hours: number | null;
 }
 
 export type MailFolder = "inbox" | "sent" | "archive";
@@ -132,6 +215,7 @@ function query(filters: DeskTicketFilters = {}): string {
     if (filters.level) params.set("level", filters.level);
     if (filters.assigned) params.set("assigned", filters.assigned);
     if (filters.overdue) params.set("overdue", "true");
+    if (filters.tag) params.set("tag", filters.tag);
     if (filters.search) params.set("search", filters.search);
     if (filters.page) params.set("page", String(filters.page));
     if (filters.per_page) params.set("per_page", String(filters.per_page));
@@ -185,6 +269,31 @@ export const supportDeskApi = {
         api<DeskTicketDetails>(`/v1/support-desk/tickets/${id}/close`, { method: "POST", body: {} }),
     escalate: (id: string, body: { level: "admin" | "super_admin"; note?: string }) =>
         api<DeskTicketDetails>(`/v1/support-desk/tickets/${id}/escalate`, { method: "POST", body }),
+    bulk: (ids: string[], action: "resolve" | "close" | "assign", assigneeId?: string) =>
+        api<{ updated: number; skipped: number }>("/v1/support-desk/tickets/bulk", {
+            method: "POST",
+            body: { ids, action, ...(assigneeId ? { assignee_id: assigneeId } : {}) },
+        }),
+    setTags: (id: string, tags: string[]) =>
+        api<DeskTicketDetails>(`/v1/support-desk/tickets/${id}/tags`, { method: "PATCH", body: { tags } }),
+
+    // Read-only student lookup.
+    students: (search = "", page = 1) =>
+        rawDesk<DeskStudentListResponse>(
+            `/v1/support-desk/students?per_page=15&page=${page}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+        ),
+    student: (id: string) => api<DeskStudentDetail>(`/v1/support-desk/students/${id}`),
+
+    // Per-agent performance leaderboard.
+    // The api() helper unwraps { data: [...] } → returns the array directly.
+    agents: () => api<DeskAgentPerf[]>("/v1/support-desk/agents"),
+
+    // Canned reply templates.
+    cannedReplies: () => api<CannedReply[]>("/v1/support-desk/canned-replies"),
+    createCannedReply: (body: { title: string; body: string }) =>
+        api<CannedReply>("/v1/support-desk/canned-replies", { method: "POST", body }),
+    deleteCannedReply: (id: string) =>
+        api<{ success: boolean }>(`/v1/support-desk/canned-replies/${id}`, { method: "DELETE" }),
 
     // Mailbox — contact-form threads plus everything agents send.
     mail: (filters: MailFilters = {}) => rawDesk<MailListResponse>(`/v1/support-desk/mail${mailQuery(filters)}`),

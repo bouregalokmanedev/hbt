@@ -37,6 +37,9 @@ import {
     useAuth,
 } from "../hooks/useAuth";
 import {
+    visitorId,
+} from "@/features/marketing/tracking";
+import {
     dashboardRouteFor,
 } from "../utils/dashboard-route";
 import {
@@ -132,6 +135,7 @@ export function RegisterPage() {
                 password_confirmation:
                     values.passwordConfirmation,
                 ...(ref ? { ref } : {}),
+                visitor_id: visitorId(),
             });
 
             sessionStorage.removeItem("hbt:auth-return-to");
@@ -359,7 +363,7 @@ export function RegisterPage() {
                     {bannerMessage && (
                         <div
                             role="alert"
-                            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                            className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
                         >
                             {bannerMessage}
                         </div>
@@ -367,7 +371,7 @@ export function RegisterPage() {
 
 
                     {/* Terms */}
-                    <p className="pt-1 text-center text-[11px] leading-5 text-[#3A3A3A]/50">
+                    <p className="pt-1 text-center text-[11px] leading-5 text-[#3A3A3A]/50 dark:text-white/50">
                         {t.register.terms}
                     </p>
 
@@ -406,7 +410,7 @@ export function RegisterPage() {
 
 
                 {/* Secure authentication */}
-                <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-[#3A3A3A]/50">
+                <div className="mt-5 flex items-center justify-center gap-2 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                     <svg
                         width="14"
                         height="14"
@@ -443,13 +447,13 @@ export function RegisterPage() {
 
                 {/* Divider */}
                 <div className="my-5 flex items-center gap-3">
-                    <div className="h-px flex-1 bg-[#3A3A3A]/10" />
+                    <div className="h-px flex-1 bg-[#3A3A3A]/10 dark:bg-white/10" />
 
-                    <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#3A3A3A]/35">
+                    <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#3A3A3A]/35 dark:text-white/35">
                         {t.common.or}
                     </span>
 
-                    <div className="h-px flex-1 bg-[#3A3A3A]/10" />
+                    <div className="h-px flex-1 bg-[#3A3A3A]/10 dark:bg-white/10" />
                 </div>
 
 
@@ -468,13 +472,13 @@ export function RegisterPage() {
                         gap-3
                         rounded-xl
                         border
-                        border-[#3A3A3A]/10
-                        bg-white
+                        border-[#3A3A3A]/10 dark:border-white/10
+                        bg-white dark:bg-[#1b1b20]
                         text-sm
                         font-medium
                         text-[#3A3A3A]
                         transition
-                        hover:bg-[#F3F3F3]
+                        hover:bg-[#F3F3F3] dark:bg-[#101013]
                         focus:outline-none
                         focus:ring-4
                         focus:ring-[#F47822]/10
@@ -492,7 +496,7 @@ export function RegisterPage() {
 
 
                 {/* Login */}
-                <div className="mt-5 pb-2 text-center text-sm text-[#3A3A3A]/60">
+                <div className="mt-5 pb-2 text-center text-sm text-[#3A3A3A]/60 dark:text-white/60">
                     {
                         t.common
                             .alreadyAccount

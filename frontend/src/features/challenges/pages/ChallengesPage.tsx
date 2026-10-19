@@ -32,7 +32,7 @@ function statusTone(status: Challenge["status"]): string {
     if (status === "in_progress") {
         return "bg-[#F47822]/15 text-[#F47822]";
     }
-    return "bg-[#3A3A3A]/10 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60";
+    return "bg-[#3A3A3A]/10 dark:bg-white/10 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60";
 }
 
 function statusLabel(t: (k: string, o?: Record<string, unknown>) => string, status: Challenge["status"]): string {
@@ -165,7 +165,7 @@ export function ChallengesPage() {
             <div className="mx-auto max-w-[1440px] px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
                 <Link
                     to="/dashboard"
-                    className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-xs font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:text-white/70 dark:hover:text-[#F47822]"
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-xs font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:text-white/70 dark:hover:text-[#F47822]"
                 >
                     <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" />
                     {t("challenges.backToDashboard")}
@@ -212,14 +212,14 @@ export function ChallengesPage() {
                 </section>
 
                 {error ? (
-                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400" role="alert">
+                    <div className="mt-4 rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-4 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400" role="alert">
                         {error}
                     </div>
                 ) : null}
 
                 <div className="mt-6 grid gap-5 lg:grid-cols-3">
                     {/* My board */}
-                    <section className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20] lg:col-span-2">
+                    <section className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20] lg:col-span-2">
                         <div className="flex items-center justify-between gap-3">
                             <div>
                                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#F47822]">
@@ -235,7 +235,7 @@ export function ChallengesPage() {
                         </div>
 
                         {(today?.challenges ?? []).length === 0 ? (
-                            <p className="mt-5 rounded-2xl border border-dashed border-[#3A3A3A]/15 px-4 py-8 text-center text-sm text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55">
+                            <p className="mt-5 rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-4 py-8 text-center text-sm text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55">
                                 {t("challenges.notRanked")}
                             </p>
                         ) : (
@@ -243,7 +243,7 @@ export function ChallengesPage() {
                             {(today?.challenges ?? []).map((challenge) => (
                                 <li
                                     key={challenge.id}
-                                    className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 p-4 transition hover:border-[#F47822]/30 dark:border-white/8"
+                                    className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 p-4 transition hover:border-[#F47822]/30 dark:border-white/8"
                                 >
                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
                                         {challenge.status === "completed" || challenge.status === "claimed" ? (
@@ -282,7 +282,7 @@ export function ChallengesPage() {
                                         {challenge.route ? (
                                             <Link
                                                 to={challenge.route}
-                                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-xs font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:text-white/70"
+                                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-xs font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:text-white/70"
                                             >
                                                 {t("challenges.go")}
                                                 <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
@@ -296,7 +296,7 @@ export function ChallengesPage() {
                     </section>
 
                     {/* Today's race leaderboard */}
-                    <section className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
+                    <section className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
                         <div className="flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-[#F47822]" />
                             <div>
@@ -317,7 +317,7 @@ export function ChallengesPage() {
                                 </p>
                             </div>
                         ) : (
-                            <p className="mt-4 rounded-2xl bg-[#3A3A3A]/8 p-3 text-sm text-[#3A3A3A]/60 dark:bg-white/8 dark:text-white/60">
+                            <p className="mt-4 rounded-2xl bg-[#3A3A3A]/8 dark:bg-white/8 p-3 text-sm text-[#3A3A3A]/60 dark:bg-white/8 dark:text-white/60">
                                 {t("challenges.notRanked")}
                             </p>
                         )}
@@ -326,7 +326,7 @@ export function ChallengesPage() {
                             {(board?.top ?? []).map((entry, index) => (
                                 <li
                                     key={entry.user_id}
-                                    className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 p-3 dark:border-white/8"
+                                    className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 p-3 dark:border-white/8"
                                 >
                                     <span className="w-6 text-center text-sm font-bold text-[#F47822]">{index + 1}</span>
                                     <div className="min-w-0 flex-1">
@@ -338,7 +338,7 @@ export function ChallengesPage() {
                                 </li>
                             ))}
                             {!board?.top?.length ? (
-                                <li className="rounded-xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                                <li className="rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                                     {t("challenges.leaderboardEmpty")}
                                 </li>
                             ) : null}
@@ -349,7 +349,7 @@ export function ChallengesPage() {
                 {/* Review + feed + rivals */}
                 <div className="mt-6 grid gap-5 lg:grid-cols-3">
                     {/* Yesterday review */}
-                    <section className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
+                    <section className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
                         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#F47822]">
                             {t("challenges.reviewEyebrow")}
                         </p>
@@ -360,7 +360,7 @@ export function ChallengesPage() {
                             {t("challenges.reviewDesc", { date: review?.date ?? "" })}
                         </p>
 
-                        <div className="mt-4 rounded-2xl bg-[#3A3A3A]/8 p-4 dark:bg-white/8">
+                        <div className="mt-4 rounded-2xl bg-[#3A3A3A]/8 dark:bg-white/8 p-4 dark:bg-white/8">
                             <p className="text-3xl font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                 {review?.summary.done ?? 0}/{review?.summary.total ?? 0}
                             </p>
@@ -385,7 +385,7 @@ export function ChallengesPage() {
                     </section>
 
                     {/* Peer activity feed */}
-                    <section className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
+                    <section className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
                         <div className="flex items-center gap-2">
                             <Users className="h-5 w-5 text-[#F47822]" />
                             <div>
@@ -400,7 +400,7 @@ export function ChallengesPage() {
 
                         <ul className="mt-4 space-y-3">
                             {feed.map((item) => (
-                                <li key={item.id} className="rounded-xl border border-[#3A3A3A]/8 p-3 dark:border-white/8">
+                                <li key={item.id} className="rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 p-3 dark:border-white/8">
                                     <div className="flex items-start justify-between gap-2">
                                         <p className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{item.name}</p>
                                         <span className="shrink-0 text-[10px] text-[#3A3A3A]/40 dark:text-white/40">
@@ -414,7 +414,7 @@ export function ChallengesPage() {
                                 </li>
                             ))}
                             {!feed.length ? (
-                                <li className="rounded-xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                                <li className="rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                                     {t("challenges.feedEmpty")}
                                 </li>
                             ) : null}
@@ -422,7 +422,7 @@ export function ChallengesPage() {
                     </section>
 
                     {/* Rivals / challenge students */}
-                    <section className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
+                    <section className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)] dark:border-white/10 dark:bg-[#1b1b20]">
                         <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2">
                                 <Swords className="h-5 w-5 text-[#F47822]" />
@@ -438,7 +438,7 @@ export function ChallengesPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPeers((v) => !v)}
-                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-xs font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:text-white/70"
+                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-xs font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:text-white/70"
                             >
                                 <UserPlus className="h-3.5 w-3.5" />
                                 {t("challenges.challengeSomeone")}
@@ -446,7 +446,7 @@ export function ChallengesPage() {
                         </div>
 
                         {showPeers ? (
-                            <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto rounded-2xl border border-[#3A3A3A]/8 p-2 dark:border-white/8">
+                            <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 p-2 dark:border-white/8">
                                 {peers.map((peer) => (
                                     <li key={peer.user_id} className="flex items-center justify-between gap-2">
                                         <span className="truncate text-sm text-[#3A3A3A]/70 dark:text-white/70">{peer.name}</span>
@@ -470,7 +470,7 @@ export function ChallengesPage() {
 
                         <ul className="mt-4 space-y-3">
                             {rivals.map((rival) => (
-                                <li key={rival.id} className="rounded-xl border border-[#3A3A3A]/8 p-3 dark:border-white/8">
+                                <li key={rival.id} className="rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 p-3 dark:border-white/8">
                                     <div className="flex items-start justify-between gap-2">
                                         <div>
                                             <p className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
@@ -514,7 +514,7 @@ export function ChallengesPage() {
                                 </li>
                             ))}
                             {!rivals.length ? (
-                                <li className="rounded-xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                                <li className="rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                                     {t("challenges.rivalsEmpty")}
                                 </li>
                             ) : null}
@@ -535,7 +535,7 @@ export function ChallengesPage() {
                         }}
                     >
                         <div
-                            className="w-full max-w-lg rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]"
+                            className="w-full max-w-lg rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-start justify-between gap-3">
@@ -553,7 +553,7 @@ export function ChallengesPage() {
                                         setResult(null);
                                         setActiveRivalId(null);
                                     }}
-                                    className="rounded-lg border border-[#3A3A3A]/10 px-2.5 py-1.5 text-xs font-semibold text-[#3A3A3A]/60 dark:border-white/10 dark:text-white/60"
+                                    className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2.5 py-1.5 text-xs font-semibold text-[#3A3A3A]/60 dark:border-white/10 dark:text-white/60"
                                 >
                                     {t("challenges.close")}
                                 </button>

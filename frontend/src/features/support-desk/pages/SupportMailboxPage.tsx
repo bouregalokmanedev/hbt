@@ -244,10 +244,10 @@ export function SupportMailboxPage() {
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F47822]">
                         {t("supportDesk.mail.eyebrow")}
                     </p>
-                    <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#3A3A3A]">
+                    <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                         {t("supportDesk.mail.title")}
                     </h1>
-                    <p className="mt-1 max-w-2xl text-sm text-[#3A3A3A]/55">
+                    <p className="mt-1 max-w-2xl text-sm text-[#3A3A3A]/55 dark:text-white/55">
                         {t("supportDesk.mail.description")}
                     </p>
                 </div>
@@ -258,7 +258,7 @@ export function SupportMailboxPage() {
                             reloadList();
                             if (openId) setThreadTick((tick) => tick + 1);
                         }}
-                        className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-white px-4 text-xs font-bold text-[#3A3A3A]/60 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                        className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                     >
                         <RefreshCw className="h-4 w-4" />
                         {t("supportDesk.mail.refresh")}
@@ -275,7 +275,7 @@ export function SupportMailboxPage() {
             </header>
 
             {notice && (
-                <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                <p className="rounded-2xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                     {notice}
                 </p>
             )}
@@ -297,7 +297,7 @@ export function SupportMailboxPage() {
                                 className={`inline-flex shrink-0 items-center justify-between gap-2 rounded-full px-4 py-2 text-xs font-bold transition lg:w-full lg:rounded-xl ${
                                     active
                                         ? "bg-[#F47822] text-white shadow-[0_8px_20px_rgba(244,120,34,0.25)]"
-                                        : "bg-white text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                                        : "bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                                 }`}
                             >
                                 <span className="inline-flex items-center gap-2">
@@ -323,13 +323,13 @@ export function SupportMailboxPage() {
                 {/* List */}
                 <section
                     aria-label={t("supportDesk.mail.listAria")}
-                    className={`min-w-0 rounded-2xl border border-[#3A3A3A]/8 bg-white shadow-sm ${
+                    className={`min-w-0 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-sm ${
                         openId ? "hidden lg:block" : "block"
                     }`}
                 >
-                    <div className="border-b border-[#3A3A3A]/8 p-3">
+                    <div className="border-b border-[#3A3A3A]/8 dark:border-white/8 p-3">
                         <label className="relative block">
-                            <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/30" />
+                            <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/30 dark:text-white/30" />
                             <input
                                 value={searchInput}
                                 onChange={(event) => setSearchInput(event.target.value)}
@@ -342,13 +342,13 @@ export function SupportMailboxPage() {
                                 }}
                                 placeholder={t("supportDesk.mail.searchPh")}
                                 aria-label={t("supportDesk.mail.searchAria")}
-                                className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] ps-9 pe-3 text-sm outline-none transition focus:border-[#F47822] focus:bg-white"
+                                className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] ps-9 pe-3 text-sm outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                             />
                         </label>
                     </div>
 
                     {listError && (
-                        <p role="alert" className="m-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">
+                        <p role="alert" className="m-3 rounded-xl bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400">
                             {listError}
                         </p>
                     )}
@@ -356,16 +356,16 @@ export function SupportMailboxPage() {
                     {!list ? (
                         <div className="space-y-2 p-3">
                             {[0, 1, 2, 3].map((row) => (
-                                <div key={row} className="h-16 animate-pulse rounded-xl bg-[#F7F7F7]" />
+                                <div key={row} className="h-16 animate-pulse rounded-xl bg-[#F7F7F7] dark:bg-[#101013]" />
                             ))}
                         </div>
                     ) : list.data.length === 0 ? (
                         <div className="p-8 text-center">
                             <Mail className="mx-auto h-7 w-7 text-[#F47822]/40" />
-                            <p className="mt-3 text-sm font-bold text-[#3A3A3A]">
+                            <p className="mt-3 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                 {search ? t("supportDesk.mail.emptySearch") : t("supportDesk.mail.emptyTitle")}
                             </p>
-                            <p className="mt-1 text-xs text-[#3A3A3A]/45">
+                            <p className="mt-1 text-xs text-[#3A3A3A]/45 dark:text-white/45">
                                 {search ? "" : t("supportDesk.mail.emptyDesc")}
                             </p>
                             {search && (
@@ -409,23 +409,23 @@ export function SupportMailboxPage() {
                                                     )}
                                                     <span
                                                         className={`min-w-0 flex-1 truncate text-sm ${
-                                                            item.read ? "text-[#3A3A3A]/75" : "font-bold text-[#3A3A3A]"
+                                                            item.read ? "text-[#3A3A3A]/75 dark:text-white/75" : "font-bold text-[#3A3A3A]"
                                                         }`}
                                                     >
                                                         {item.subject}
                                                     </span>
-                                                    <span className="shrink-0 text-[11px] text-[#3A3A3A]/40">
+                                                    <span className="shrink-0 text-[11px] text-[#3A3A3A]/40 dark:text-white/40">
                                                         {formatWhen(item.created_at, locale)}
                                                     </span>
                                                 </span>
-                                                <span className="mt-1 block truncate text-xs text-[#3A3A3A]/45">
+                                                <span className="mt-1 block truncate text-xs text-[#3A3A3A]/45 dark:text-white/45">
                                                     {sender}
                                                 </span>
-                                                <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/40">
+                                                <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/40 dark:text-white/40">
                                                     {item.preview}
                                                 </span>
                                                 {item.message_count > 0 && (
-                                                    <span className="mt-1 inline-block rounded-full bg-[#3A3A3A]/6 px-2 py-0.5 text-[10px] font-bold text-[#3A3A3A]/55">
+                                                    <span className="mt-1 inline-block rounded-full bg-[#3A3A3A]/6 dark:bg-white/6 px-2 py-0.5 text-[10px] font-bold text-[#3A3A3A]/55 dark:text-white/55">
                                                         {t("supportDesk.mail.messageCount", {
                                                             count: item.message_count + 1,
                                                         })}
@@ -436,7 +436,7 @@ export function SupportMailboxPage() {
                                     );
                                 })}
                             </ul>
-                            <div className="flex items-center justify-between border-t border-[#3A3A3A]/8 px-4 py-3 text-xs text-[#3A3A3A]/50">
+                            <div className="flex items-center justify-between border-t border-[#3A3A3A]/8 dark:border-white/8 px-4 py-3 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                 <span>
                                     {t("supportDesk.mail.pageOf", {
                                         current: list.meta.current_page,
@@ -449,7 +449,7 @@ export function SupportMailboxPage() {
                                         type="button"
                                         disabled={list.meta.current_page <= 1}
                                         onClick={() => patch({ page: String(list.meta.current_page - 1) }, false)}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-3 py-1.5 font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-40"
+                                        className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-40"
                                     >
                                         <ChevronLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
                                         {t("supportDesk.mail.previous")}
@@ -458,7 +458,7 @@ export function SupportMailboxPage() {
                                         type="button"
                                         disabled={list.meta.current_page >= list.meta.last_page}
                                         onClick={() => patch({ page: String(list.meta.current_page + 1) }, false)}
-                                        className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-3 py-1.5 font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-40"
+                                        className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-40"
                                     >
                                         {t("supportDesk.mail.next")}
                                         <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
@@ -472,7 +472,7 @@ export function SupportMailboxPage() {
                 {/* Reading pane */}
                 <section
                     aria-label={t("supportDesk.mail.readingAria")}
-                    className={`min-w-0 rounded-2xl border border-[#3A3A3A]/8 bg-white shadow-sm ${
+                    className={`min-w-0 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-sm ${
                         openId ? "block" : "hidden lg:block"
                     }`}
                 >
@@ -480,31 +480,31 @@ export function SupportMailboxPage() {
                         <div className="flex h-full min-h-[320px] items-center justify-center p-8 text-center">
                             <div>
                                 <Mail className="mx-auto h-9 w-9 text-[#F47822]/35" />
-                                <p className="mt-3 text-sm font-bold text-[#3A3A3A]/60">
+                                <p className="mt-3 text-sm font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                     {t("supportDesk.mail.selectPrompt")}
                                 </p>
-                                <p className="mt-1 text-xs text-[#3A3A3A]/45">{t("supportDesk.mail.selectHint")}</p>
+                                <p className="mt-1 text-xs text-[#3A3A3A]/45 dark:text-white/45">{t("supportDesk.mail.selectHint")}</p>
                             </div>
                         </div>
                     ) : threadError ? (
-                        <p role="alert" className="m-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+                        <p role="alert" className="m-4 rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">
                             {threadError}
                         </p>
                     ) : threadLoading || !activeThread ? (
                         <div className="space-y-3 p-5">
-                            <div className="h-5 w-2/3 animate-pulse rounded bg-[#F7F7F7]" />
-                            <div className="h-24 animate-pulse rounded-xl bg-[#F7F7F7]" />
-                            <div className="h-24 animate-pulse rounded-xl bg-[#F7F7F7]" />
+                            <div className="h-5 w-2/3 animate-pulse rounded bg-[#F7F7F7] dark:bg-[#101013]" />
+                            <div className="h-24 animate-pulse rounded-xl bg-[#F7F7F7] dark:bg-[#101013]" />
+                            <div className="h-24 animate-pulse rounded-xl bg-[#F7F7F7] dark:bg-[#101013]" />
                         </div>
                     ) : (
                         <>
-                            <header className="border-b border-[#3A3A3A]/8 p-4 sm:p-5">
+                            <header className="border-b border-[#3A3A3A]/8 dark:border-white/8 p-4 sm:p-5">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
-                                        <h2 className="truncate text-lg font-bold text-[#3A3A3A]">
+                                        <h2 className="truncate text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {activeThread.subject}
                                         </h2>
-                                        <p className="mt-1 truncate text-xs text-[#3A3A3A]/50">
+                                        <p className="mt-1 truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                             {activeThread.direction === "inbound"
                                                 ? t("supportDesk.mail.fromLabel", {
                                                       name: activeThread.from_name || activeThread.from_email,
@@ -520,7 +520,7 @@ export function SupportMailboxPage() {
                                         <button
                                             type="button"
                                             onClick={closeThread}
-                                            className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 px-2.5 py-1.5 text-[11px] font-bold text-[#3A3A3A]/60 transition hover:border-[#F47822]/40 hover:text-[#F47822] lg:hidden"
+                                            className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2.5 py-1.5 text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/40 hover:text-[#F47822] lg:hidden"
                                         >
                                             <ChevronLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
                                             {t("supportDesk.mail.back")}
@@ -529,7 +529,7 @@ export function SupportMailboxPage() {
                                             type="button"
                                             onClick={markUnread}
                                             aria-label={t("supportDesk.mail.markUnread")}
-                                            className="rounded-lg border border-[#3A3A3A]/10 p-2 text-[#3A3A3A]/50 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                                            className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 p-2 text-[#3A3A3A]/50 dark:text-white/50 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                                         >
                                             <Mail className="h-4 w-4" />
                                         </button>
@@ -541,7 +541,7 @@ export function SupportMailboxPage() {
                                                     ? t("supportDesk.mail.restore")
                                                     : t("supportDesk.mail.archive")
                                             }
-                                            className="rounded-lg border border-[#3A3A3A]/10 p-2 text-[#3A3A3A]/50 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                                            className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 p-2 text-[#3A3A3A]/50 dark:text-white/50 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                                         >
                                             {activeThread.archived ? (
                                                 <ArchiveRestore className="h-4 w-4" />
@@ -562,7 +562,7 @@ export function SupportMailboxPage() {
                                             className={`rounded-2xl border p-4 ${
                                                 outbound
                                                     ? "border-[#F47822]/20 bg-[#F47822]/6"
-                                                    : "border-[#3A3A3A]/8 bg-[#FAFAFA]"
+                                                    : "border-[#3A3A3A]/8 dark:border-white/8 bg-[#FAFAFA]"
                                             }`}
                                         >
                                             <div className="flex items-center gap-3">
@@ -570,26 +570,26 @@ export function SupportMailboxPage() {
                                                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                                                         outbound
                                                             ? "bg-[#F47822] text-white"
-                                                            : "bg-[#3A3A3A]/8 text-[#3A3A3A]/70"
+                                                            : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/70 dark:text-white/70"
                                                     }`}
                                                 >
                                                     {initialsOf(message.from_name || message.from_email)}
                                                 </span>
                                                 <span className="min-w-0 flex-1">
-                                                    <span className="block truncate text-sm font-bold text-[#3A3A3A]">
+                                                    <span className="block truncate text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                                         {message.from_name || message.from_email}
                                                     </span>
-                                                    <span className="block truncate text-[11px] text-[#3A3A3A]/45">
+                                                    <span className="block truncate text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
                                                         {message.from_email}
                                                         {" → "}
                                                         {message.to_email}
                                                     </span>
                                                 </span>
-                                                <span className="shrink-0 text-[11px] text-[#3A3A3A]/45">
+                                                <span className="shrink-0 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
                                                     {formatFull(message.created_at, locale)}
                                                 </span>
                                             </div>
-                                            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-[#3A3A3A]/80">
+                                            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-[#3A3A3A]/80 dark:text-white/80">
                                                 {message.body}
                                             </p>
                                         </article>
@@ -597,11 +597,11 @@ export function SupportMailboxPage() {
                                 })}
                             </div>
 
-                            <div className="border-t border-[#3A3A3A]/8 p-4 sm:p-5">
+                            <div className="border-t border-[#3A3A3A]/8 dark:border-white/8 p-4 sm:p-5">
                                 {replyError && (
                                     <p
                                         role="alert"
-                                        className="mb-2 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600"
+                                        className="mb-2 rounded-xl bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400"
                                     >
                                         {replyError}
                                     </p>
@@ -613,11 +613,11 @@ export function SupportMailboxPage() {
                                         onChange={(event) => setReplyBody(event.target.value)}
                                         rows={3}
                                         placeholder={t("supportDesk.mail.replyPh")}
-                                        className="w-full resize-y rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 py-2.5 text-sm outline-none transition focus:border-[#F47822] focus:bg-white"
+                                        className="w-full resize-y rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 py-2.5 text-sm outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                                     />
                                 </label>
                                 <div className="mt-3 flex items-center justify-between gap-3">
-                                    <p className="text-[11px] text-[#3A3A3A]/40">
+                                    <p className="text-[11px] text-[#3A3A3A]/40 dark:text-white/40">
                                         {t("supportDesk.mail.replyNote")}
                                     </p>
                                     <button
@@ -719,7 +719,7 @@ function ComposeDialog({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-end justify-center bg-[#3A3A3A]/35 p-4 backdrop-blur-sm sm:items-center"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-[#3A3A3A]/35 dark:bg-white/35 p-4 backdrop-blur-sm sm:items-center"
             onClick={onClose}
             role="presentation"
         >
@@ -728,31 +728,31 @@ function ComposeDialog({
                 aria-modal="true"
                 aria-label={t("supportDesk.mail.composeModal.title")}
                 onClick={(event) => event.stopPropagation()}
-                className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-2xl"
+                className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-2xl"
             >
                 <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-base font-bold text-[#3A3A3A]">
+                    <h2 className="text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">
                         {t("supportDesk.mail.composeModal.title")}
                     </h2>
                     <button
                         type="button"
                         onClick={onClose}
                         aria-label={t("supportDesk.mail.composeModal.close")}
-                        className="rounded-lg p-1.5 text-[#3A3A3A]/45 transition hover:bg-[#F7F7F7] hover:text-[#3A3A3A]"
+                        className="rounded-lg p-1.5 text-[#3A3A3A]/45 dark:text-white/45 transition hover:bg-[#F7F7F7] dark:bg-[#101013] hover:text-[#3A3A3A]"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 </div>
 
                 {error && (
-                    <p role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">
+                    <p role="alert" className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400">
                         {error}
                     </p>
                 )}
 
                 <div className="mt-4 space-y-3">
                     <label className="block">
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50 dark:text-white/50">
                             {t("supportDesk.mail.composeModal.to")}
                         </span>
                         <input
@@ -764,12 +764,12 @@ function ComposeDialog({
                             }}
                             type="email"
                             placeholder={t("supportDesk.mail.composeModal.toPh")}
-                            className="mt-1 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 text-sm outline-none transition focus:border-[#F47822] focus:bg-white"
+                            className="mt-1 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 text-sm outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                         />
                     </label>
 
-                    <div className="rounded-xl border border-[#3A3A3A]/8 bg-[#FAFAFA] p-3">
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50">
+                    <div className="rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FAFAFA] p-3">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50 dark:text-white/50">
                             {t("supportDesk.mail.composeModal.pickStudent")}
                         </span>
                         <input
@@ -777,11 +777,11 @@ function ComposeDialog({
                             onChange={(event) => setQuery(event.target.value)}
                             placeholder={t("supportDesk.mail.composeModal.pickPh")}
                             aria-label={t("supportDesk.mail.composeModal.pickPh")}
-                            className="mt-2 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-3 text-xs outline-none transition focus:border-[#F47822]"
+                            className="mt-2 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs outline-none transition focus:border-[#F47822]"
                         />
                         <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto">
                             {recipients.length === 0 ? (
-                                <li className="text-xs text-[#3A3A3A]/45">
+                                <li className="text-xs text-[#3A3A3A]/45 dark:text-white/45">
                                     {t("supportDesk.mail.composeModal.noStudents")}
                                 </li>
                             ) : (
@@ -794,10 +794,10 @@ function ComposeDialog({
                                                 setToEmail(candidate.email);
                                                 setToName(candidate.name);
                                             }}
-                                            className={`w-full rounded-lg px-2 py-1.5 text-start text-xs transition hover:bg-white ${
+                                            className={`w-full rounded-lg px-2 py-1.5 text-start text-xs transition hover:bg-white dark:hover:bg-white/10 ${
                                                 recipient?.id === candidate.id
                                                     ? "bg-[#F47822]/10 text-[#F47822]"
-                                                    : "text-[#3A3A3A]/70"
+                                                    : "text-[#3A3A3A]/70 dark:text-white/70"
                                             }`}
                                         >
                                             <span className="block truncate font-bold">{candidate.name}</span>
@@ -812,19 +812,19 @@ function ComposeDialog({
                     </div>
 
                     <label className="block">
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50 dark:text-white/50">
                             {t("supportDesk.mail.composeModal.subject")}
                         </span>
                         <input
                             value={subject}
                             onChange={(event) => setSubject(event.target.value)}
                             placeholder={t("supportDesk.mail.composeModal.subjectPh")}
-                            className="mt-1 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 text-sm outline-none transition focus:border-[#F47822] focus:bg-white"
+                            className="mt-1 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 text-sm outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                         />
                     </label>
 
                     <label className="block">
-                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50">
+                        <span className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/50 dark:text-white/50">
                             {t("supportDesk.mail.composeModal.body")}
                         </span>
                         <textarea
@@ -832,11 +832,11 @@ function ComposeDialog({
                             onChange={(event) => setBody(event.target.value)}
                             rows={5}
                             placeholder={t("supportDesk.mail.composeModal.bodyPh")}
-                            className="mt-1 w-full resize-y rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 py-2.5 text-sm outline-none transition focus:border-[#F47822] focus:bg-white"
+                            className="mt-1 w-full resize-y rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 py-2.5 text-sm outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                         />
                     </label>
 
-                    <p className="text-[11px] text-[#3A3A3A]/40">
+                    <p className="text-[11px] text-[#3A3A3A]/40 dark:text-white/40">
                         {t("supportDesk.mail.composeModal.fromNote")}
                     </p>
                 </div>
@@ -845,7 +845,7 @@ function ComposeDialog({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="h-11 rounded-xl border border-[#3A3A3A]/10 px-4 text-xs font-bold text-[#3A3A3A]/60 transition hover:bg-[#F7F7F7]"
+                        className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#F7F7F7] dark:bg-[#101013]"
                     >
                         {t("supportDesk.mail.composeModal.cancel")}
                     </button>

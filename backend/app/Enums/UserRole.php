@@ -9,6 +9,7 @@ enum UserRole: string
     case INSTRUCTOR = 'Instructor';
     case STUDENT = 'Student';
     case SUPPORT = 'Support';
+    case SALES = 'Sales';
 
     /**
      * Roles that make up platform staff: the people who run and teach on the
@@ -24,6 +25,7 @@ enum UserRole: string
             self::SUPER_ADMIN->value,
             self::SUPPORT->value,
             self::INSTRUCTOR->value,
+            self::SALES->value,
         ];
     }
 }

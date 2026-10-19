@@ -35,7 +35,7 @@ export function FaultCodeLibraryPicker({
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="rounded-lg border border-[#3A3A3A]/20 bg-white px-3 py-1.5 text-[11px] font-black text-[#3A3A3A] hover:border-[#F47822]/50 hover:text-[#F47822]"
+                className="rounded-lg border border-[#3A3A3A]/20 dark:border-white/20 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-[11px] font-black text-[#3A3A3A] hover:border-[#F47822]/50 hover:text-[#F47822]"
             >
                 {t("instructor.simulator.packForm.codeLibraryOpen")}
             </button>
@@ -43,7 +43,7 @@ export function FaultCodeLibraryPicker({
     }
 
     return (
-        <div className="absolute end-0 top-full z-20 mt-1 w-[min(380px,90vw)] rounded-xl border border-[#3A3A3A]/15 bg-white p-2 shadow-xl">
+        <div className="absolute end-0 top-full z-20 mt-1 w-[min(380px,90vw)] rounded-xl border border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-2 shadow-xl">
             <div className="flex items-center gap-2">
                 <input
                     autoFocus
@@ -52,7 +52,7 @@ export function FaultCodeLibraryPicker({
                     placeholder={t("instructor.simulator.packForm.codeLibrarySearch")}
                     aria-label={t("instructor.simulator.packForm.codeLibrarySearch")}
                     dir="ltr"
-                    className="h-9 min-w-0 flex-1 rounded-lg border border-[#3A3A3A]/10 bg-[#FCFCFC] px-2.5 font-mono text-xs"
+                    className="h-9 min-w-0 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-2.5 font-mono text-xs"
                 />
                 <button
                     type="button"
@@ -61,7 +61,7 @@ export function FaultCodeLibraryPicker({
                         setOpen(false);
                         setQuery("");
                     }}
-                    className="rounded-lg px-2.5 py-2 text-[11px] font-black text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/[.05] hover:text-[#3A3A3A]"
+                    className="rounded-lg px-2.5 py-2 text-[11px] font-black text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/[.05] dark:bg-white/[.05] hover:text-[#3A3A3A]"
                 >
                     ✕
                 </button>
@@ -69,7 +69,7 @@ export function FaultCodeLibraryPicker({
 
             <ul className="mt-2 max-h-56 overflow-y-auto">
                 {results.length === 0 ? (
-                    <li className="px-2 py-3 text-center text-[11px] text-[#3A3A3A]/50">
+                    <li className="px-2 py-3 text-center text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                         {t("instructor.simulator.packForm.codeLibraryEmpty")}
                     </li>
                 ) : (
@@ -82,16 +82,16 @@ export function FaultCodeLibraryPicker({
                             >
                                 <span
                                     dir="ltr"
-                                    className="shrink-0 font-mono text-xs font-bold text-[#3A3A3A]"
+                                    className="shrink-0 font-mono text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]"
                                 >
                                     {entry.code}
                                 </span>
-                                <span className="min-w-0 flex-1 truncate text-[11px] text-[#3A3A3A]/70">
+                                <span className="min-w-0 flex-1 truncate text-[11px] text-[#3A3A3A]/70 dark:text-white/70">
                                     {entry.desc}
                                 </span>
                                 <span
                                     dir="ltr"
-                                    className="shrink-0 rounded bg-[#3A3A3A]/[.06] px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#3A3A3A]/55"
+                                    className="shrink-0 rounded bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#3A3A3A]/55 dark:text-white/55"
                                 >
                                     {entry.ecu}
                                 </span>

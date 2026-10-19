@@ -143,7 +143,7 @@ export function LeaderboardCard() {
         return (
             <section className="rounded-3xl border border-border bg-card p-6 shadow-sm">
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                         <Trophy className="h-5 w-5" />
                     </div>
                     <div>
@@ -166,7 +166,7 @@ export function LeaderboardCard() {
                 className="rounded-3xl border border-border bg-card p-6 shadow-sm"
             >
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                         <Trophy className="h-5 w-5" />
                     </div>
                     <div>

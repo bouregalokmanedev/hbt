@@ -37,7 +37,7 @@ export function CertificateCard({
     return (
         <article
             data-testid={`certificate-card-${certificate.certificate_number}`}
-            className="rounded-3xl bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.06)] transition hover:shadow-[0_14px_34px_rgba(58,58,58,0.10)] sm:p-6 dark:bg-[#1b1b20]"
+            className="rounded-3xl bg-white dark:bg-[#1b1b20] p-5 shadow-[0_8px_30px_rgba(58,58,58,0.06)] transition hover:shadow-[0_14px_34px_rgba(58,58,58,0.10)] sm:p-6 dark:bg-[#1b1b20]"
         >
             <div className="flex items-start justify-between gap-3">
                 <p className="text-base font-black tracking-[0.18em] text-[#3A3A3A] dark:text-white">
@@ -72,7 +72,7 @@ export function CertificateCard({
             </p>
 
             <div className="mt-5 flex items-center gap-3">
-                <div className="shrink-0 rounded-lg bg-white p-1 dark:bg-white">
+                <div className="shrink-0 rounded-lg bg-white dark:bg-[#1b1b20] p-1 dark:bg-white dark:bg-[#1b1b20]">
                     <QRCodeSVG value={verifyUrl} size={64} level="M" />
                 </div>
                 <div className="min-w-0">
@@ -101,7 +101,7 @@ export function CertificateCard({
                     onClick={onShare}
                     data-testid={`certificate-share-${certificate.certificate_number}`}
                     aria-label={shared ? t("certificates.shareCopied") : t("certificates.shareAria")}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#3A3A3A]/10 text-[#3A3A3A]/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/10 dark:text-white/60"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/10 dark:text-white/60"
                 >
                     {shared ? (
                         <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -114,7 +114,7 @@ export function CertificateCard({
                     to={verifyPath}
                     data-testid={`certificate-verify-${certificate.certificate_number}`}
                     aria-label={t("certificates.verifyAria")}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#3A3A3A]/10 text-[#3A3A3A]/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/10 dark:text-white/60"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/10 dark:text-white/60"
                 >
                     <ExternalLink className="h-4 w-4" />
                 </Link>

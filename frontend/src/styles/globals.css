@@ -194,6 +194,13 @@ textarea::placeholder {
     outline-offset: 3px;
 }
 
+/* The scanner stage is a drag/keyboard surface, not a control: the global
+   ring would draw a stray orange box around the whole tablet. */
+.scanner-stage-quiet-focus:focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
+}
+
 /* The auth fields supply their own single-border focus state. */
 .auth-floating-input:focus-visible {
     outline: none !important;

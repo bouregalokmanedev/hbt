@@ -36,6 +36,7 @@ export const adminRoutes: RouteObject[] = [
                             { path: "/admin/system", lazy: () => import("@/features/admin/pages/AdminSystemPage").then((m) => ({ Component: m.AdminSystemPage })) },
                             { path: "/admin/settings", lazy: () => import("@/features/admin/pages/AdminSettingsPage").then((m) => ({ Component: m.AdminSettingsPage })) },
                             { path: "/admin/profile", lazy: () => import("@/features/admin/pages/AdminProfilePage").then((m) => ({ Component: m.AdminProfilePage })) },
+                            { path: "/admin/guide", lazy: () => import("@/features/guide/pages").then((m) => ({ Component: m.AdminGuidePage })) },
                             ...staffHubRoutes("/admin/staff-hub"),
                             { path: "/admin/messages", element: <MessagesPage basePath="/admin" announcementsHref="/admin/messages/announcements" /> },
                             // The composer + delivery history live at /admin/announcements;

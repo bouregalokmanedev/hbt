@@ -1,4 +1,4 @@
-export const ROLE_OPTIONS = ["Student", "Instructor", "Admin", "Super Admin", "Support"] as const;
+export const ROLE_OPTIONS = ["Student", "Instructor", "Admin", "Super Admin", "Support", "Sales"] as const;
 
 export const STATUS_OPTIONS = ["active", "inactive", "pending", "suspended"] as const;
 
@@ -8,6 +8,7 @@ const ROLE_LABEL_KEYS: Record<string, string> = {
     Admin: "admin.users.row.roles.admin",
     "Super Admin": "admin.users.row.roles.superAdmin",
     Support: "admin.users.row.roles.support",
+    Sales: "admin.users.row.roles.sales",
 };
 
 /** Roles and statuses are a shared vocabulary: label keys live here so the

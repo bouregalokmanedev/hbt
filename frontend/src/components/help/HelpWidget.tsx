@@ -16,6 +16,7 @@ import {
     localized,
     searchArticles,
 } from "@/features/help/data/articles";
+import { useHelpStore } from "./help.store";
 
 /**
  * Floating help launcher available on public and student surfaces.
@@ -29,25 +30,32 @@ export function HelpWidget() {
     const { user } = useAuth();
     const location = useLocation();
 
-    const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
     const panelRef = useRef<HTMLDivElement | null>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
 
+    const open = useHelpStore((state) => state.open);
+    const closePanel = useHelpStore((state) => state.closePanel);
+    const togglePanel = useHelpStore((state) => state.togglePanel);
+
     const results = useMemo(() => searchArticles(query, locale, 4), [query, locale]);
 
     // Any navigation dismisses the panel so it never covers the new screen.
-    useEffect(() => setOpen(false), [location.pathname]);
+    useEffect(() => closePanel(), [location.pathname, closePanel]);
+
+    // The lesson player runs its own quick-action cluster in this corner, so
+    // the standalone launcher steps aside there while the panel stays shared.
+    const isLessonPlayer = /\/courses\/[^/]+\/lessons\/[^/]+/.test(location.pathname);
 
     useEffect(() => {
         if (!open) return;
         const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Escape") setOpen(false);
+            if (event.key === "Escape") closePanel();
         };
         const onPointerDown = (event: PointerEvent) => {
             const target = event.target as Node;
             if (panelRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
-            setOpen(false);
+            closePanel();
         };
         document.addEventListener("keydown", onKeyDown);
         document.addEventListener("pointerdown", onPointerDown);
@@ -55,7 +63,7 @@ export function HelpWidget() {
             document.removeEventListener("keydown", onKeyDown);
             document.removeEventListener("pointerdown", onPointerDown);
         };
-    }, [open]);
+    }, [open, closePanel]);
 
     return (
         <div className="fixed bottom-5 end-5 z-50 flex flex-col items-end gap-3">
@@ -64,7 +72,7 @@ export function HelpWidget() {
                     ref={panelRef}
                     role="dialog"
                     aria-label={t("help.widget.title")}
-                    className="w-[min(20rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-[#3A3A3A]/10 bg-white shadow-[0_18px_50px_rgba(58,58,58,0.22)]"
+                    className="w-[min(20rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_18px_50px_rgba(58,58,58,0.22)]"
                 >
                     <div className="flex items-center justify-between bg-[#F47822] px-4 py-3">
                         <div className="flex items-center gap-2 text-white">
@@ -73,7 +81,7 @@ export function HelpWidget() {
                         </div>
                         <button
                             type="button"
-                            onClick={() => setOpen(false)}
+                            onClick={closePanel}
                             aria-label={t("help.widget.close")}
                             className="rounded-lg p-1 text-white/80 transition hover:bg-white/15 hover:text-white"
                         >
@@ -85,7 +93,7 @@ export function HelpWidget() {
                         <div className="relative">
                             <Search
                                 aria-hidden
-                                className="pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#3A3A3A]/40"
+                                className="pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#3A3A3A]/40 dark:text-white/40"
                             />
                             <input
                                 autoFocus
@@ -93,7 +101,7 @@ export function HelpWidget() {
                                 onChange={(event) => setQuery(event.target.value)}
                                 placeholder={t("help.widget.searchPh")}
                                 aria-label={t("help.widget.searchPh")}
-                                className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] ps-9 pe-3 text-xs outline-none transition focus:border-[#F47822] focus:bg-white"
+                                className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] ps-9 pe-3 text-xs outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                             />
                         </div>
 
@@ -103,7 +111,7 @@ export function HelpWidget() {
                                     <li key={article.slug}>
                                         <Link
                                             to={`/help/${article.slug}`}
-                                            className="flex items-center justify-between gap-2 rounded-xl border border-[#3A3A3A]/8 px-3 py-2.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                                            className="flex items-center justify-between gap-2 rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 px-3 py-2.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                                         >
                                             <span className="line-clamp-2">
                                                 {localized(article.title, locale)}
@@ -113,7 +121,7 @@ export function HelpWidget() {
                                     </li>
                                 ))}
                                 {results.length === 0 && (
-                                    <li className="rounded-xl bg-[#FAFAFA] px-3 py-2.5 text-[11px] text-[#3A3A3A]/55">
+                                    <li className="rounded-xl bg-[#FAFAFA] px-3 py-2.5 text-[11px] text-[#3A3A3A]/55 dark:text-white/55">
                                         {t("help.widget.noResults")}
                                     </li>
                                 )}
@@ -141,16 +149,18 @@ export function HelpWidget() {
                 </div>
             )}
 
-            <button
-                ref={buttonRef}
-                type="button"
-                onClick={() => setOpen((value) => !value)}
-                aria-expanded={open}
-                aria-label={t("help.widget.open")}
-                className="flex h-13 w-13 items-center justify-center rounded-full bg-[#F47822] text-white shadow-[0_10px_30px_rgba(244,120,34,0.4)] transition hover:scale-105 hover:bg-[#E96D18] focus:outline-none focus:ring-4 focus:ring-[#F47822]/25"
-            >
-                {open ? <X className="h-5 w-5" /> : <LifeBuoy className="h-6 w-6" />}
-            </button>
+            {!isLessonPlayer && (
+                <button
+                    ref={buttonRef}
+                    type="button"
+                    onClick={togglePanel}
+                    aria-expanded={open}
+                    aria-label={t("help.widget.open")}
+                    className="flex h-13 w-13 items-center justify-center rounded-full bg-[#F47822] text-white shadow-[0_10px_30px_rgba(244,120,34,0.4)] transition hover:scale-105 hover:bg-[#E96D18] focus:outline-none focus:ring-4 focus:ring-[#F47822]/25"
+                >
+                    {open ? <X className="h-5 w-5" /> : <LifeBuoy className="h-6 w-6" />}
+                </button>
+            )}
         </div>
     );
 }
@@ -168,7 +178,7 @@ function WidgetLink({
         <li>
             <Link
                 to={to}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:bg-[#FFF8F4] hover:text-[#F47822]"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822]"
             >
                 <span className="text-[#F47822]">{icon}</span>
                 {children}

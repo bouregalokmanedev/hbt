@@ -44,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
         'referral_code',
         'referred_by',
+        'visitor_id',
         'email',
         'phone',
         'avatar',
@@ -138,6 +139,19 @@ public function enrollments(): HasMany
     return $this->hasMany(Enrollment::class);
 }
 
+/** Leads this user owns in the sales pipeline (owner_id stores the public uuid). */
+public function ownedLeads(): HasMany
+{
+    return $this->hasMany(\App\Models\ContactMessage::class, 'owner_id', 'uuid');
+}
+
+/** This month's deal quota, if the team set one. */
+public function currentQuota(): HasOne
+{
+    return $this->hasOne(\App\Models\SalesQuota::class, 'user_id', 'uuid')
+        ->where('year_month', now()->format('Y-m'));
+}
+
 public function instructedCourses(): HasMany
 {
     return $this->hasMany(Course::class, 'instructor_id');
@@ -180,8 +194,13 @@ public function simulatorSessions(): HasMany
     return $this->hasMany(\App\Domains\Simulator\Models\SimulatorSession::class);
 }
 
-public function simulatorResults(): HasMany
-{
-    return $this->hasMany(\App\Domains\Simulator\Models\SimulatorResult::class);
-}
+    public function simulatorResults(): HasMany
+    {
+        return $this->hasMany(\App\Domains\Simulator\Models\SimulatorResult::class);
+    }
+
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
 }

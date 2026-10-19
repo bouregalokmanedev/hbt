@@ -61,7 +61,7 @@ export function PodiumProfilePopup({
 
     return (
         <div className="pointer-events-none invisible absolute inset-x-0 top-full z-30 mt-2 opacity-0 transition duration-150 group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
-            <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-4 text-start shadow-[0_18px_40px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 text-start shadow-[0_18px_40px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-[#1b1b20]">
                 <div className="flex items-center gap-3">
                     <UserAvatar
                         user={{
@@ -96,7 +96,7 @@ export function PodiumProfilePopup({
                         badges.map((badge) => (
                             <span
                                 key={badge.id}
-                                className="inline-flex items-center gap-1 rounded-full bg-[#3A3A3A]/6 px-2 py-1 text-[10px] font-bold text-[#3A3A3A]/70 dark:bg-white/8 dark:text-white/70"
+                                className="inline-flex items-center gap-1 rounded-full bg-[#3A3A3A]/6 dark:bg-white/6 px-2 py-1 text-[10px] font-bold text-[#3A3A3A]/70 dark:bg-white/8 dark:text-white/70"
                             >
                                 {t(`badges.${badge.id}.title`, { defaultValue: badge.id })}
                             </span>

@@ -44,8 +44,22 @@ final readonly class RegisterAction
                 'timezone' => $dto->timezone,
                 'referral_code' => ReferralCode::generate(),
                 'referred_by' => $inviter?->id,
+                'visitor_id' => $dto->visitor_id,
 
             ]);
+
+            // Identity stitching: everything this browser did anonymously
+            // (page views, captured lead emails) now belongs to the account.
+            if ($dto->visitor_id) {
+                \App\Domains\Analytics\Models\AnalyticsEvent::query()
+                    ->where('visitor_id', $dto->visitor_id)
+                    ->whereNull('user_id')
+                    ->update(['user_id' => $user->id]);
+                \App\Models\ContactMessage::query()
+                    ->where('visitor_id', $dto->visitor_id)
+                    ->whereNull('converted_at')
+                    ->update(['converted_at' => now()]);
+            }
 
             $user->assignRole(UserRole::STUDENT->value);
 

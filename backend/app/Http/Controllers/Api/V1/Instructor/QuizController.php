@@ -133,6 +133,7 @@ final class QuizController
             position: $data['position'] ?? ((int) $quiz->questions()->max('position')) + 1,
             points: $data['points'] ?? 1,
             required: $data['required'] ?? true,
+            explanation: $data['explanation'] ?? null,
         ));
 
         return response()->json($question->load('options'), 201);
@@ -149,6 +150,14 @@ final class QuizController
             position: $data['position'] ?? null,
             points: $data['points'] ?? null,
             required: $data['required'] ?? null,
+            /*
+             * Absent key = leave the stored explanation alone. A present key
+             * that arrives empty (the request pipeline converts "" to null)
+             * means "clear it".
+             */
+            explanation: array_key_exists('explanation', $data)
+                ? ($data['explanation'] ?? '')
+                : null,
         ))->load('options'));
     }
 
@@ -217,6 +226,7 @@ final class QuizController
             'position' => ['sometimes', 'integer', 'min:1'],
             'points' => ['sometimes', 'integer', 'min:1'],
             'required' => ['sometimes', 'boolean'],
+            'explanation' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ]);
     }
 

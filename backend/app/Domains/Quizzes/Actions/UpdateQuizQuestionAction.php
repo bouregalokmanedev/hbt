@@ -21,6 +21,19 @@ final class UpdateQuizQuestionAction
             ], fn ($value) => $value !== null)
         );
 
+        /*
+         * Explanation is optional and clearable, so it sits outside the
+         * null-filtered payload: an empty string wipes it, an absent key
+         * leaves it untouched.
+         */
+        if ($data->explanation !== null) {
+            $question->update([
+                'explanation' => $data->explanation === ''
+                    ? null
+                    : $data->explanation,
+            ]);
+        }
+
         return $question->refresh();
     }
 }

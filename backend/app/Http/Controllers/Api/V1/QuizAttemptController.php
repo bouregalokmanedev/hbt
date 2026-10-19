@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domains\Quizzes\Actions\SaveQuizAttemptAnswersAction;
 use App\Domains\Quizzes\Actions\StartQuizAttemptAction;
 use App\Domains\Quizzes\Actions\SubmitQuizAttemptAction;
 use App\Domains\Quizzes\DTOs\SubmitQuizAttemptData;
 use App\Domains\Quizzes\Models\Quiz;
 use App\Domains\Quizzes\Models\QuizAttempt;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Quizzes\SaveQuizAttemptAnswersRequest;
 use App\Http\Requests\Api\V1\Quizzes\StartQuizAttemptRequest;
 use App\Http\Requests\Api\V1\Quizzes\SubmitQuizAttemptRequest;
 use App\Http\Resources\Api\V1\Quizzes\QuizAttemptResource;
@@ -22,6 +24,7 @@ final class QuizAttemptController extends Controller
     public function __construct(
         private readonly StartQuizAttemptAction $startQuizAttemptAction,
         private readonly SubmitQuizAttemptAction $submitQuizAttemptAction,
+        private readonly SaveQuizAttemptAnswersAction $saveQuizAttemptAnswersAction,
     ) {
     }
 
@@ -107,6 +110,34 @@ final class QuizAttemptController extends Controller
             $attempt->update(['tab_switch_count' => $count, 'blocked_at' => $count >= 3 ? now() : null, 'status' => $count >= 3 ? QuizAttemptStatus::EXPIRED : QuizAttemptStatus::IN_PROGRESS, 'timed_out_at' => $count >= 3 ? now() : null]);
         }
         return response()->json(['data' => ['tab_switch_count' => $attempt->fresh()->tab_switch_count, 'blocked' => $attempt->fresh()->blocked_at !== null]]);
+    }
+
+    /**
+     * Autosave one question's selection while the attempt is running.
+     */
+    public function saveAnswers(
+        SaveQuizAttemptAnswersRequest $request,
+        Quiz $quiz,
+        QuizAttempt $attempt,
+        string $question,
+    ): JsonResponse {
+        $this->ensureAttemptBelongsToUser(
+            $request,
+            $quiz,
+            $attempt,
+        );
+
+        $this->saveQuizAttemptAnswersAction->execute(
+            attempt: $attempt,
+            questionId: $question,
+            optionIds: $request->validated('option_ids') ?? [],
+        );
+
+        return response()->json([
+            'data' => [
+                'saved' => true,
+            ],
+        ]);
     }
 
     /**

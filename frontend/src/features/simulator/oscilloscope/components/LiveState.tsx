@@ -51,7 +51,7 @@ export function LiveState({
   );
 
   return (
-    <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] p-3 dark:border-white/10 dark:bg-white/5">
+    <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] p-3 dark:border-white/10 dark:bg-white/5">
       <div className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/45 dark:text-white/45">
         {t("oscilloscope.info.liveState", { defaultValue: "Live state" }) as string}
       </div>

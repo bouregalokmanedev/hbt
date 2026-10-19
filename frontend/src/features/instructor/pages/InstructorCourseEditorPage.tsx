@@ -308,9 +308,9 @@ export function InstructorCourseEditorPage() {
 
     if (!isNew && (courseQuery.isError || !course)) {
         return (
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+            <div className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-6">
                 <h1 className="text-lg font-semibold text-red-900">{t("instructor.editor.errorTitle")}</h1>
-                <p className="mt-2 text-sm text-red-700">{t("instructor.editor.errorDesc")}</p>
+                <p className="mt-2 text-sm text-red-700 dark:text-red-400">{t("instructor.editor.errorDesc")}</p>
                 <Link to="/instructor/courses" className="mt-5 inline-flex rounded-xl bg-[#3A3A3A] px-4 py-2.5 text-xs font-semibold text-white">{t("instructor.editor.back")}</Link>
             </div>
         );
@@ -322,17 +322,17 @@ export function InstructorCourseEditorPage() {
         <div className="mx-auto max-w-6xl space-y-6">
             <header className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <Link to="/instructor/courses" className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3A3A3A]/50 transition hover:text-[#F47822]">
+                    <Link to="/instructor/courses" className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3A3A3A]/50 dark:text-white/50 transition hover:text-[#F47822]">
                         <ArrowLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
                         {t("instructor.editor.back")}
                     </Link>
                     <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F47822]">
                         {isNew ? t("instructor.editor.eyebrowNew") : t("instructor.editor.eyebrowEdit")}
                     </p>
-                    <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#3A3A3A]">
+                    <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                         {isNew ? t("instructor.editor.titleNew") : course?.title ?? t("instructor.editor.titleFallback")}
                     </h1>
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-[#3A3A3A]/50">
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-[#3A3A3A]/50 dark:text-white/50">
                         {isNew
                             ? t("instructor.editor.descNew")
                             : t("instructor.editor.descEdit")}
@@ -345,20 +345,20 @@ export function InstructorCourseEditorPage() {
                             {statusText(course.status)}
                         </span>
                         {course.status === "published" && (
-                            <Link to={`/courses/${course.id}`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-xs font-bold text-[#3A3A3A]/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
+                            <Link to={`/courses/${course.id}`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                                 <ExternalLink className="h-3.5 w-3.5" /> {t("instructor.editor.preview")}
                             </Link>
                         )}
                         <Link to={`/instructor/courses/${course.id}/curriculum`} className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#F47822] px-3.5 text-xs font-bold text-white shadow-[0_7px_16px_rgba(244,120,34,.2)] transition hover:bg-[#de6414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40">
                             <FileCheck2 className="h-3.5 w-3.5" /> {t("instructor.editor.curriculum")}
                         </Link>
-                        <Link to={`/instructor/courses/${course.id}/assessments`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] px-3.5 text-xs font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
+                        <Link to={`/instructor/courses/${course.id}/assessments`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3.5 text-xs font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                             <ClipboardCheck className="h-3.5 w-3.5" /> {t("instructor.editor.assessments")}
                         </Link>
-                        <Link to={`/instructor/courses/${course.id}/analytics`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-xs font-bold text-[#3A3A3A]/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
+                        <Link to={`/instructor/courses/${course.id}/analytics`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                             <Activity className="h-3.5 w-3.5" /> {t("instructor.editor.analytics")}
                         </Link>
-                        <Link to={`/instructor/courses/${course.id}/outcomes`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-xs font-bold text-[#3A3A3A]/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
+                        <Link to={`/instructor/courses/${course.id}/outcomes`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                             <Award className="h-3.5 w-3.5" /> {t("instructor.editor.outcomes")}
                         </Link>
                     </div>
@@ -369,15 +369,15 @@ export function InstructorCourseEditorPage() {
             {error && <Notice variant="error">{error}</Notice>}
 
             {blocker.state === "blocked" && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/45 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-label={t("instructor.editor.leaveTitle")}>
-                    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
-                        <h2 className="text-base font-bold text-[#3A3A3A]">{t("instructor.editor.leaveTitle")}</h2>
-                        <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/55">{t("instructor.editor.leaveDesc")}</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/45 dark:bg-white/45 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-label={t("instructor.editor.leaveTitle")}>
+                    <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#1b1b20] p-6 shadow-2xl">
+                        <h2 className="text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.editor.leaveTitle")}</h2>
+                        <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/55 dark:text-white/55">{t("instructor.editor.leaveDesc")}</p>
                         <div className="mt-5 flex justify-end gap-2">
                             <button type="button" onClick={() => blocker.reset()} className="rounded-xl bg-[#3A3A3A] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#F47822]">
                                 {t("instructor.editor.leaveStay")}
                             </button>
-                            <button type="button" onClick={() => blocker.proceed()} className="rounded-xl border border-red-200 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50">
+                            <button type="button" onClick={() => blocker.proceed()} className="rounded-xl border border-red-200 dark:border-red-500/20 px-4 py-2.5 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10">
                                 {t("instructor.editor.leaveDiscard")}
                             </button>
                         </div>
@@ -387,7 +387,7 @@ export function InstructorCourseEditorPage() {
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.04)] sm:p-6">
+                    <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_8px_30px_rgba(58,58,58,0.04)] sm:p-6">
                         <SectionTitle title={t("instructor.editor.basicsTitle")} description={t("instructor.editor.basicsDesc")} />
                         <div className="mt-6 grid gap-5 md:grid-cols-2">
                             <TextField label={t("instructor.editor.title")} value={form.title} required className="md:col-span-2" onChange={(value) => {
@@ -401,8 +401,8 @@ export function InstructorCourseEditorPage() {
                         </div>
                     </section>
 
-                    <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 bg-white shadow-[0_8px_30px_rgba(58,58,58,0.04)]">
-                        <div className="border-b border-[#3A3A3A]/6 bg-[#FCFCFC] px-5 py-4 sm:px-6">
+                    <section className="overflow-hidden rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-[0_8px_30px_rgba(58,58,58,0.04)]">
+                        <div className="border-b border-[#3A3A3A]/6 dark:border-white/6 bg-[#FCFCFC] dark:bg-[#1b1b20] px-5 py-4 sm:px-6">
                             <SectionTitle title={t("instructor.editor.accessTitle")} description={t("instructor.editor.accessDesc")} />
                             <AccessSummary form={form} />
                         </div>
@@ -414,23 +414,23 @@ export function InstructorCourseEditorPage() {
                                     <div>
                                         <TextField label={t("instructor.editor.duration")} value={form.duration_minutes} required type="number" min="0" onChange={(value) => updateField("duration_minutes", value)} />
                                         {Number(form.duration_minutes) > 0 && (
-                                            <p className="mt-1.5 text-[11px] text-[#3A3A3A]/45">
+                                            <p className="mt-1.5 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
                                                 ≈ {Math.floor(Number(form.duration_minutes) / 60)}h {Number(form.duration_minutes) % 60}m of content
                                             </p>
                                         )}
                                     </div>
                                 </div>
                             </div>
-                            <div className="border-t border-[#3A3A3A]/6 p-5 sm:p-6 md:border-t-0">
+                            <div className="border-t border-[#3A3A3A]/6 dark:border-white/6 p-5 sm:p-6 md:border-t-0">
                                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("instructor.editor.accessPricing")}</p>
-                                <div className="mt-4 grid grid-cols-3 gap-1 rounded-xl bg-[#F7F7F7] p-1">
+                                <div className="mt-4 grid grid-cols-3 gap-1 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] p-1">
                                     {(["public", "private", "unlisted"] as const).map((option) => (
                                         <button
                                             key={option}
                                             type="button"
                                             onClick={() => updateField("visibility", option)}
                                             aria-pressed={form.visibility === option}
-                                            className={`rounded-lg px-2 py-2 text-[11px] font-bold capitalize transition ${form.visibility === option ? "bg-white text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50 hover:text-[#3A3A3A]"}`}
+                                            className={`rounded-lg px-2 py-2 text-[11px] font-bold capitalize transition ${form.visibility === option ? "bg-white dark:bg-[#1b1b20] text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50 dark:text-white/50 hover:text-[#3A3A3A]"}`}
                                         >
                                             {t(`instructor.editor.visibilities.${option}`)}
                                         </button>
@@ -440,11 +440,11 @@ export function InstructorCourseEditorPage() {
                                     type="button"
                                     onClick={() => updateField("is_free", !form.is_free)}
                                     aria-pressed={form.is_free}
-                                    className="mt-4 flex w-full items-center justify-between gap-3 rounded-xl border border-[#3A3A3A]/10 px-3.5 py-3 text-sm transition hover:border-[#F47822]/30"
+                                    className="mt-4 flex w-full items-center justify-between gap-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3.5 py-3 text-sm transition hover:border-[#F47822]/30"
                                 >
-                                    <span className="font-semibold text-[#3A3A3A]">{t("instructor.editor.free")}</span>
-                                    <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${form.is_free ? "bg-[#F47822]" : "bg-[#3A3A3A]/15"}`}>
-                                        <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${form.is_free ? "left-6 rtl:left-1 rtl:right-6" : "left-1 rtl:left-auto rtl:right-1"}`} />
+                                    <span className="font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.editor.free")}</span>
+                                    <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${form.is_free ? "bg-[#F47822]" : "bg-[#3A3A3A]/15 dark:bg-white/15"}`}>
+                                        <span className={`absolute top-1 h-4 w-4 rounded-full bg-white dark:bg-[#1b1b20] shadow transition-all ${form.is_free ? "left-6 rtl:left-1 rtl:right-6" : "left-1 rtl:left-auto rtl:right-1"}`} />
                                     </span>
                                 </button>
                                 {!form.is_free && (
@@ -460,7 +460,7 @@ export function InstructorCourseEditorPage() {
                         </div>
                     </section>
 
-                    <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,0.04)] sm:p-6">
+                    <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_8px_30px_rgba(58,58,58,0.04)] sm:p-6">
                         <SectionTitle title={t("instructor.editor.mediaTitle")} description={t("instructor.editor.mediaDesc")} />
                         <div className="mt-6 grid gap-5">
                             <MediaField label={t("instructor.editor.thumbnail")} value={form.thumbnail} kind="image" courseId={isNew ? undefined : courseId} onChange={(value) => updateField("thumbnail", value)} />
@@ -471,17 +471,17 @@ export function InstructorCourseEditorPage() {
 
                     <div className="flex flex-wrap items-center justify-end gap-3">
                         {dirty ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-700">
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-400">
                                 <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                                 {t("instructor.editor.unsavedBadge")}
                             </span>
                         ) : lastSavedAt ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700">
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                                 <CheckCircle2 className="h-3.5 w-3.5" />
                                 {t("instructor.editor.autosaved")}
                             </span>
                         ) : null}
-                        <Link to="/instructor/courses" className="rounded-xl px-4 py-3 text-xs font-semibold text-[#3A3A3A]/55 transition hover:bg-white hover:text-[#3A3A3A]">{t("instructor.editor.cancel")}</Link>
+                        <Link to="/instructor/courses" className="rounded-xl px-4 py-3 text-xs font-semibold text-[#3A3A3A]/55 dark:text-white/55 transition hover:bg-white dark:hover:bg-white/10 hover:text-[#3A3A3A]">{t("instructor.editor.cancel")}</Link>
                         <button type="submit" disabled={isWorking} className="inline-flex items-center gap-2 rounded-xl bg-[#3A3A3A] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#F47822] disabled:cursor-not-allowed disabled:opacity-60">
                             {saveMutation.isPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                             {saveMutation.isPending ? t("instructor.editor.autosaving") : isNew ? t("instructor.editor.createDraft") : t("instructor.editor.save")}
@@ -491,21 +491,21 @@ export function InstructorCourseEditorPage() {
 
                 {!isNew && course && <aside className="h-fit space-y-4 xl:sticky xl:top-24">
                     <SetupChecklist courseId={courseId!} form={form} />
-                    <section className="rounded-2xl border border-[#3A3A3A]/8 bg-[#3A3A3A] p-5 text-white shadow-[0_10px_30px_rgba(58,58,58,.12)]">
+                    <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#3A3A3A] p-5 text-white shadow-[0_10px_30px_rgba(58,58,58,.12)]">
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F9A16C]">{t("instructor.editor.publishEyebrow")}</p>
                         <h2 className="mt-3 text-lg font-semibold capitalize">{statusText(course.status)}</h2>
                         <p className="mt-2 text-xs leading-5 text-white/60">{t("instructor.editor.publishHint")}</p>
                         <div className="mt-5 space-y-2">
-                            {lifecycleActions.map(({ action, label, icon: Icon }) => <button key={action} type="button" disabled={isWorking} onClick={() => lifecycleMutation.mutate(action)} className="flex w-full items-center justify-between rounded-xl bg-white px-3.5 py-3 text-start text-xs font-bold text-[#3A3A3A] transition hover:bg-[#F47822] hover:text-white disabled:opacity-60"><span>{label}</span><Icon className={`h-4 w-4 ${action === "submit-review" ? "rtl:-scale-x-100" : ""}`} /></button>)}
+                            {lifecycleActions.map(({ action, label, icon: Icon }) => <button key={action} type="button" disabled={isWorking} onClick={() => lifecycleMutation.mutate(action)} className="flex w-full items-center justify-between rounded-xl bg-white dark:bg-[#1b1b20] px-3.5 py-3 text-start text-xs font-bold text-[#3A3A3A] transition hover:bg-[#F47822] hover:text-white disabled:opacity-60"><span>{label}</span><Icon className={`h-4 w-4 ${action === "submit-review" ? "rtl:-scale-x-100" : ""}`} /></button>)}
                         </div>
                     </section>
 
-                    <section className="rounded-2xl border border-red-100 bg-red-50 p-5">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-600">{t("instructor.editor.dangerTitle")}</p>
+                    <section className="rounded-2xl border border-red-100 bg-red-50 dark:bg-red-500/10 p-5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-red-600 dark:text-red-400">{t("instructor.editor.dangerTitle")}</p>
                         <p className="mt-2 text-xs leading-5 text-red-900/65">{t("instructor.editor.dangerDesc")}</p>
                         <button type="button" disabled={isWorking} onClick={() => {
                             if (window.confirm(t("instructor.editor.deleteConfirm", { title: course.title }))) deleteMutation.mutate();
-                        }} className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-red-700 transition hover:text-red-900 disabled:opacity-60"><Trash2 className="h-4 w-4" /> {t("instructor.editor.delete")}</button>
+                        }} className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-red-700 dark:text-red-400 transition hover:text-red-900 disabled:opacity-60"><Trash2 className="h-4 w-4" /> {t("instructor.editor.delete")}</button>
                     </section>
                 </aside>}
             </div>
@@ -597,32 +597,32 @@ function SetupChecklist({ courseId, form }: { courseId: string; form: CourseForm
     const percent = Math.round((doneCount / required.length) * 100);
 
     return (
-        <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_8px_30px_rgba(58,58,58,.04)]">
+        <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_8px_30px_rgba(58,58,58,.04)]">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("instructor.editor.checklistEyebrow")}</p>
-            <h2 className="mt-2 text-base font-bold text-[#3A3A3A]">{t("instructor.editor.checklistTitle")}</h2>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#3A3A3A]/8">
+            <h2 className="mt-2 text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.editor.checklistTitle")}</h2>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#3A3A3A]/8 dark:bg-white/8">
                 <div className="h-full rounded-full bg-[#F47822] transition-all duration-500" style={{ width: `${percent}%` }} />
             </div>
-            <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/55">
+            <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/55 dark:text-white/55">
                 {percent === 100 ? t("instructor.editor.checklistReady") : t("instructor.editor.checklistAlmost", { done: doneCount, total: required.length })}
             </p>
             <ul className="mt-4 space-y-2">
                 {[...required, ...bonus].map((step) => (
                     <li key={step.label}>
                         {step.to ? (
-                            <Link to={step.to} className="flex items-start gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-[#F7F7F7]">
-                                <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${step.done ? "text-emerald-500" : "text-[#3A3A3A]/20"}`} />
+                            <Link to={step.to} className="flex items-start gap-2.5 rounded-xl px-2 py-1.5 transition hover:bg-[#F7F7F7] dark:bg-[#101013]">
+                                <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${step.done ? "text-emerald-500" : "text-[#3A3A3A]/20 dark:text-white/20"}`} />
                                 <span>
-                                    <span className="block text-xs font-bold text-[#3A3A3A]">{step.label}</span>
-                                    <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45">{step.hint}</span>
+                                    <span className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{step.label}</span>
+                                    <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45 dark:text-white/45">{step.hint}</span>
                                 </span>
                             </Link>
                         ) : (
                             <div className="flex items-start gap-2.5 px-2 py-1.5">
-                                <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${step.done ? "text-emerald-500" : "text-[#3A3A3A]/20"}`} />
+                                <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${step.done ? "text-emerald-500" : "text-[#3A3A3A]/20 dark:text-white/20"}`} />
                                 <span>
-                                    <span className="block text-xs font-bold text-[#3A3A3A]">{step.label}</span>
-                                    <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45">{step.hint}</span>
+                                    <span className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{step.label}</span>
+                                    <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45 dark:text-white/45">{step.hint}</span>
                                 </span>
                             </div>
                         )}
@@ -695,21 +695,21 @@ function MediaField({ label, value, kind, courseId, onChange }: { label: string;
     };
 
     return (
-        <div className="rounded-xl border border-[#3A3A3A]/10 p-4">
+        <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-xs font-semibold text-[#3A3A3A]/75">{label}</span>
-                <div className="flex rounded-lg bg-[#F7F7F7] p-0.5 text-[11px] font-bold">
-                    <button type="button" onClick={() => setMode("url")} aria-pressed={mode === "url"} className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${mode === "url" ? "bg-white text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50"}`}>
+                <span className="text-xs font-semibold text-[#3A3A3A]/75 dark:text-white/75">{label}</span>
+                <div className="flex rounded-lg bg-[#F7F7F7] dark:bg-[#101013] p-0.5 text-[11px] font-bold">
+                    <button type="button" onClick={() => setMode("url")} aria-pressed={mode === "url"} className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${mode === "url" ? "bg-white dark:bg-[#1b1b20] text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50 dark:text-white/50"}`}>
                         <Link2 className="h-3 w-3" /> {t("instructor.editor.mediaUrlTab")}
                     </button>
-                    <button type="button" onClick={() => setMode("upload")} aria-pressed={mode === "upload"} className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${mode === "upload" ? "bg-white text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50"}`}>
+                    <button type="button" onClick={() => setMode("upload")} aria-pressed={mode === "upload"} className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${mode === "upload" ? "bg-white dark:bg-[#1b1b20] text-[#F47822] shadow-sm" : "text-[#3A3A3A]/50 dark:text-white/50"}`}>
                         <Upload className="h-3 w-3" /> {t("instructor.editor.mediaUploadTab")}
                     </button>
                 </div>
             </div>
 
             {value && kind === "image" && (
-                <div className="relative mt-3 overflow-hidden rounded-lg border border-[#3A3A3A]/8 bg-[#222]">
+                <div className="relative mt-3 overflow-hidden rounded-lg border border-[#3A3A3A]/8 dark:border-white/8 bg-[#222]">
                     <img src={value} alt="" onError={(event) => { event.currentTarget.style.display = "none"; }} className="aspect-[16/9] w-full object-cover" />
                     <span className="absolute bottom-2 left-2 rounded-md bg-black/55 px-2 py-1 text-[10px] font-bold text-white">{t("instructor.editor.mediaPreview")}</span>
                 </div>
@@ -717,15 +717,15 @@ function MediaField({ label, value, kind, courseId, onChange }: { label: string;
 
             {mode === "url" ? (
                 <>
-                <input value={value} type="url" dir="ltr" placeholder="https://" onChange={(event) => onChange(event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3.5 text-left text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/30 focus:border-[#F47822] focus:bg-white focus:ring-4 focus:ring-[#F47822]/8" />
+                <input value={value} type="url" dir="ltr" placeholder="https://" onChange={(event) => onChange(event.target.value)} className="mt-3 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3.5 text-left text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/30 dark:text-white/30 focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20] focus:ring-4 focus:ring-[#F47822]/8" />
                 {localhostWarning && (
-                    <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-semibold leading-5 text-amber-700">
+                    <p className="mt-2 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-[11px] font-semibold leading-5 text-amber-700 dark:text-amber-400">
                         This URL points to localhost — it loads here but will break in production. Upload the file instead.
                     </p>
                 )}
                 </>
             ) : !courseId ? (
-                <p className="mt-3 rounded-lg bg-[#FFF8F4] px-3 py-2.5 text-[11px] leading-5 text-[#9c4209]">{t("instructor.editor.mediaUploadNew")}</p>
+                <p className="mt-3 rounded-lg bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3 py-2.5 text-[11px] leading-5 text-[#9c4209] dark:text-amber-200">{t("instructor.editor.mediaUploadNew")}</p>
             ) : (
                 <div className="mt-3">
                     <input ref={fileRef} type="file" accept={accept} className="hidden" onChange={(event) => void pick(event.target.files?.[0])} />
@@ -733,14 +733,14 @@ function MediaField({ label, value, kind, courseId, onChange }: { label: string;
                         {uploading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
                         {uploading ? t("instructor.curriculum.uploading") : accept}
                     </button>
-                    <p className="mt-2 text-[10px] leading-4 text-[#3A3A3A]/40">{t("instructor.editor.mediaMaxHint")}</p>
-                    {error && <p className="mt-2 text-[11px] font-semibold text-red-600">{error}</p>}
+                    <p className="mt-2 text-[10px] leading-4 text-[#3A3A3A]/40 dark:text-white/40">{t("instructor.editor.mediaMaxHint")}</p>
+                    {error && <p className="mt-2 text-[11px] font-semibold text-red-600 dark:text-red-400">{error}</p>}
                     {recent.length > 0 && (
                         <div className="mt-3">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40">{t("instructor.editor.mediaRecent")}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40 dark:text-white/40">{t("instructor.editor.mediaRecent")}</p>
                             <div className="mt-2 flex flex-wrap gap-1.5">
                                 {recent.map((entry) => (
-                                    <button key={entry.url} type="button" onClick={() => { onChange(entry.url); setMode("url"); }} title={entry.url} className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#3A3A3A]/65 transition hover:border-[#F47822]/40 hover:text-[#F47822]">
+                                    <button key={entry.url} type="button" onClick={() => { onChange(entry.url); setMode("url"); }} title={entry.url} className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 py-1.5 text-[11px] font-semibold text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#F47822]/40 hover:text-[#F47822]">
                                         <span className="max-w-[140px] truncate">{entry.name}</span>
                                         <span className="font-bold text-[#F47822]">{t("instructor.editor.mediaUse")}</span>
                                     </button>
@@ -750,29 +750,29 @@ function MediaField({ label, value, kind, courseId, onChange }: { label: string;
                     )}
                 </div>
             )}
-            {mode === "url" && error && <p className="mt-2 text-[11px] font-semibold text-red-600">{error}</p>}
+            {mode === "url" && error && <p className="mt-2 text-[11px] font-semibold text-red-600 dark:text-red-400">{error}</p>}
         </div>
     );
 }
 
 function SectionTitle({ title, description }: { title: string; description: string }) {
-    return <div><h2 className="text-base font-semibold text-[#3A3A3A]">{title}</h2><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45">{description}</p></div>;
+    return <div><h2 className="text-base font-semibold text-[#3A3A3A] dark:text-[#ececef]">{title}</h2><p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">{description}</p></div>;
 }
 
 function TextField({ label, value, onChange, className = "", hint, ...props }: { label: string; value: string; onChange: (value: string) => void; className?: string; hint?: string } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
-    return <label className={`block ${className}`}><span className="text-xs font-semibold text-[#3A3A3A]/75">{label}</span><input {...props} value={value} onChange={(event) => onChange(event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3.5 text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/30 focus:border-[#F47822] focus:bg-white focus:ring-4 focus:ring-[#F47822]/8" />{hint && <span className="mt-1.5 block text-[11px] text-[#3A3A3A]/40">{hint}</span>}</label>;
+    return <label className={`block ${className}`}><span className="text-xs font-semibold text-[#3A3A3A]/75 dark:text-white/75">{label}</span><input {...props} value={value} onChange={(event) => onChange(event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3.5 text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/30 dark:text-white/30 focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20] focus:ring-4 focus:ring-[#F47822]/8" />{hint && <span className="mt-1.5 block text-[11px] text-[#3A3A3A]/40 dark:text-white/40">{hint}</span>}</label>;
 }
 
 function TextAreaField({ label, value, onChange, className = "", ...props }: { label: string; value: string; onChange: (value: string) => void; className?: string } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "value" | "onChange">) {
-    return <label className={`block ${className}`}><span className="text-xs font-semibold text-[#3A3A3A]/75">{label}</span><textarea {...props} value={value} onChange={(event) => onChange(event.target.value)} rows={6} className="mt-2 w-full resize-y rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3.5 py-3 text-sm leading-6 text-[#3A3A3A] outline-none transition focus:border-[#F47822] focus:bg-white focus:ring-4 focus:ring-[#F47822]/8" /></label>;
+    return <label className={`block ${className}`}><span className="text-xs font-semibold text-[#3A3A3A]/75 dark:text-white/75">{label}</span><textarea {...props} value={value} onChange={(event) => onChange(event.target.value)} rows={6} className="mt-2 w-full resize-y rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3.5 py-3 text-sm leading-6 text-[#3A3A3A] outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20] focus:ring-4 focus:ring-[#F47822]/8" /></label>;
 }
 
 function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: Array<[string, string]> }) {
-    return <label className="block"><span className="text-xs font-semibold text-[#3A3A3A]/75">{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3.5 text-sm text-[#3A3A3A] outline-none transition focus:border-[#F47822] focus:bg-white focus:ring-4 focus:ring-[#F47822]/8">{options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>;
+    return <label className="block"><span className="text-xs font-semibold text-[#3A3A3A]/75 dark:text-white/75">{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3.5 text-sm text-[#3A3A3A] outline-none transition focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20] focus:ring-4 focus:ring-[#F47822]/8">{options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>;
 }
 
 function Notice({ variant, children }: { variant: "success" | "error"; children: string }) {
-    const classes = variant === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800";
+    const classes = variant === "success" ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800" : "border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 text-red-800";
     return <div className={`rounded-xl border px-4 py-3 text-sm ${classes}`}>{children}</div>;
 }
 

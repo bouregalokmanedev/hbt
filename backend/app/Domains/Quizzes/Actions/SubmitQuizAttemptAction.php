@@ -13,6 +13,11 @@ use App\Domains\Progression\Services\StudentProgressionService;
 
 final class SubmitQuizAttemptAction
 {
+    /**
+     * Grace window for the client's auto-submit at timer zero.
+     */
+    private const int SUBMIT_GRACE_SECONDS = 15;
+
     public function execute(
         QuizAttempt $attempt,
         SubmitQuizAttemptData $data,
@@ -39,14 +44,28 @@ final class SubmitQuizAttemptAction
             );
         }
 
-        // Check expiration before starting the transaction.
+        /*
+         * The client auto-submits the moment the timer hits zero, so allow a
+         * short grace window — otherwise the network round-trip loses the
+         * student's work to a race with our own expiry check.
+         */
+        $deadline = $attempt->expires_at;
+
         if (
+            $deadline === null &&
             $attempt->quiz->time_limit !== null &&
-            $attempt->started_at !== null &&
-            $attempt->started_at
+            $attempt->started_at !== null
+        ) {
+            $deadline = $attempt->started_at
                 ->copy()
-                ->addMinutes($attempt->quiz->time_limit)
-                ->isPast()
+                ->addMinutes($attempt->quiz->time_limit);
+        }
+
+        if (
+            $deadline !== null &&
+            now()->greaterThan(
+                $deadline->copy()->addSeconds(self::SUBMIT_GRACE_SECONDS)
+            )
         ) {
             $attempt->update([
                 'status' => QuizAttemptStatus::EXPIRED,
@@ -60,6 +79,12 @@ final class SubmitQuizAttemptAction
         return DB::transaction(function () use ($attempt, $data) {
             $score = 0;
             $totalPoints = 0;
+
+            /*
+             * Autosaved drafts are replaced by the graded rows we build below,
+             * otherwise they collide with the (attempt_id, question_id) key.
+             */
+            $this->discardDraftAnswers($attempt);
 
             foreach ($attempt->quiz->questions as $question) {
                 $totalPoints += $question->points;
@@ -158,6 +183,28 @@ foreach ($submittedOptionIds as $optionId) {
                 'answers.selectedOptions',
             ]);
         });
+    }
+
+    /**
+     * Drop autosaved (ungraded) answers so grading starts from a clean slate.
+     */
+    private function discardDraftAnswers(QuizAttempt $attempt): void
+    {
+        $answerIds = QuizAttemptAnswer::query()
+            ->where('attempt_id', $attempt->id)
+            ->pluck('id');
+
+        if ($answerIds->isEmpty()) {
+            return;
+        }
+
+        QuizAttemptAnswerOption::query()
+            ->whereIn('answer_id', $answerIds)
+            ->delete();
+
+        QuizAttemptAnswer::query()
+            ->whereIn('id', $answerIds)
+            ->delete();
     }
 
     private function questionIsCorrect(

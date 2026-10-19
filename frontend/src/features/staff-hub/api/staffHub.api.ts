@@ -19,7 +19,7 @@ export interface StaffRoomMember {
 
 /**
  * Staff Hub endpoints. Both are guarded by the `role:Admin|Super Admin|
- * Support|Instructor` middleware, so students can never reach them.
+ * Sales|Support|Instructor` middleware, so students can never reach them.
  */
 export const staffHubApi = {
   /** Idempotent: creates the shared room on first call, then just returns it. */

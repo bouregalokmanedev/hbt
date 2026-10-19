@@ -28,7 +28,7 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
     return (
         <section
             data-testid="instructor-progression"
-            className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6"
+            className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6"
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="flex gap-3">
@@ -36,10 +36,10 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
                         <Trophy className="h-4 w-4" />
                     </div>
                     <div>
-                        <h2 className="font-semibold text-[#3A3A3A]">
+                        <h2 className="font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.dashboard.progression.title")}
                         </h2>
-                        <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45">
+                        <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">
                             {t("instructor.dashboard.progression.subtitle")}
                         </p>
                     </div>
@@ -53,10 +53,10 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
 
             <div className="mt-5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <p className="text-lg font-black tracking-tight text-[#3A3A3A]">
+                    <p className="text-lg font-black tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                         {data.title}
                     </p>
-                    <p className="text-xs font-bold text-[#3A3A3A]/55">
+                    <p className="text-xs font-bold text-[#3A3A3A]/55 dark:text-white/55">
                         {t("instructor.dashboard.progression.xp", {
                             value: data.total_xp,
                         })}
@@ -64,7 +64,7 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
                 </div>
 
                 <div
-                    className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#3A3A3A]/8"
+                    className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#3A3A3A]/8 dark:bg-white/8"
                     role="progressbar"
                     aria-valuemin={0}
                     aria-valuemax={100}
@@ -77,7 +77,7 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
                     />
                 </div>
 
-                <p className="mt-2 text-[11px] font-semibold text-[#3A3A3A]/50">
+                <p className="mt-2 text-[11px] font-semibold text-[#3A3A3A]/50 dark:text-white/50">
                     {maxed
                         ? t("instructor.dashboard.progression.maxed")
                         : t("instructor.dashboard.progression.toNext", {
@@ -88,18 +88,18 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
             </div>
 
             <div className="mt-5 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFF8F4] px-3 py-1.5 text-[11px] font-black text-[#F47822]">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3 py-1.5 text-[11px] font-black text-[#F47822]">
                     <Flame className="h-3.5 w-3.5" />
                     {t("instructor.dashboard.progression.streak", {
                         value: data.current_streak,
                     })}
                 </span>
-                <span className="rounded-full bg-[#3A3A3A]/6 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]/60">
+                <span className="rounded-full bg-[#3A3A3A]/6 dark:bg-white/6 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                     {t("instructor.dashboard.progression.best", {
                         value: data.longest_streak,
                     })}
                 </span>
-                <span className="ml-auto text-[10px] font-black uppercase tracking-[.12em] text-[#3A3A3A]/35">
+                <span className="ml-auto text-[10px] font-black uppercase tracking-[.12em] text-[#3A3A3A]/35 dark:text-white/35">
                     {t("instructor.dashboard.progression.activity")}
                 </span>
                 <div className="flex gap-1.5">
@@ -114,7 +114,7 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
                             className={`h-3.5 w-3.5 rounded-full ${
                                 day.active
                                     ? "bg-[#F47822]"
-                                    : "bg-[#3A3A3A]/12"
+                                    : "bg-[#3A3A3A]/12 dark:bg-white/12"
                             }`}
                         />
                     ))}
@@ -122,12 +122,12 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
             </div>
 
             <div className="mt-5">
-                <p className="text-[11px] font-black uppercase tracking-[.12em] text-[#3A3A3A]/40">
+                <p className="text-[11px] font-black uppercase tracking-[.12em] text-[#3A3A3A]/40 dark:text-white/40">
                     {t("instructor.dashboard.progression.recent")}
                 </p>
 
                 {data.recent_awards.length === 0 ? (
-                    <p className="mt-2 text-xs leading-5 text-[#3A3A3A]/45">
+                    <p className="mt-2 text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">
                         {t("instructor.dashboard.progression.empty")}
                     </p>
                 ) : (
@@ -137,7 +137,7 @@ export function ProgressionCard({ data }: { data?: InstructorProgression }) {
                                 key={award.id}
                                 className="flex items-center justify-between gap-3"
                             >
-                                <span className="inline-flex min-w-0 items-center gap-2 text-xs font-semibold text-[#3A3A3A]/75">
+                                <span className="inline-flex min-w-0 items-center gap-2 text-xs font-semibold text-[#3A3A3A]/75 dark:text-white/75">
                                     <Award className="h-3.5 w-3.5 shrink-0 text-[#F47822]" />
                                     <span className="truncate">
                                         {t(

@@ -53,8 +53,8 @@ function ReportDetail({ result }: { result: SimulatorResult }) {
                 <div
                     className={`grid h-16 w-16 shrink-0 place-items-center rounded-2xl text-lg font-black ${
                         result.score >= 70
-                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
-                            : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
+                            ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                            : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"
                     }`}
                 >
                     {result.score}
@@ -181,7 +181,7 @@ export function SimulatorReportsPage() {
                     {results !== null && results.length > 0 && (
                         <div className="mt-5 grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
                             {/* Run list — pick a report, its full record opens beside it. */}
-                            <ul className="flex flex-col gap-2 self-start rounded-2xl border border-[#3A3A3A]/8 bg-[#F8F7F6] p-2 dark:border-white/8 dark:bg-[#101013]">
+                            <ul className="flex flex-col gap-2 self-start rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#F8F7F6] p-2 dark:border-white/8 dark:bg-[#101013]">
                                 {results.map((result) => {
                                     const active = selected?.id === result.id;
                                     return (
@@ -192,7 +192,7 @@ export function SimulatorReportsPage() {
                                                 aria-current={active ? "true" : undefined}
                                                 className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-start transition ${
                                                     active
-                                                        ? "bg-white shadow-sm ring-2 ring-[#F47822]/40 dark:bg-[#1b1b20]"
+                                                        ? "bg-white dark:bg-[#1b1b20] shadow-sm ring-2 ring-[#F47822]/40 dark:bg-[#1b1b20]"
                                                         : "hover:bg-white/70 dark:hover:bg-white/5"
                                                 }`}
                                             >
@@ -226,7 +226,7 @@ export function SimulatorReportsPage() {
                             {/* The report itself — steps, verdict and run metadata inline. */}
                             <section
                                 aria-label={t("simulator.reports.detailTitle")}
-                                className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 dark:border-white/8 dark:bg-[#1b1b20] sm:p-6"
+                                className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/8 dark:bg-[#1b1b20] sm:p-6"
                             >
                                 {selected ? (
                                     <ReportDetail result={selected} />

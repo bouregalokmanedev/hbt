@@ -56,7 +56,7 @@ export function Eyebrow({
           ? "text-[#F47822]"
           : tone === "light"
             ? "text-[#F9A16C]"
-            : "text-[#3A3A3A]/45"
+            : "text-[#3A3A3A]/45 dark:text-white/45"
       }`}
     >
       {children}
@@ -102,7 +102,7 @@ export function SectionLead({
   return (
     <p
       className={`mt-4 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8 ${
-        tone === "light" ? "text-white/60" : "text-[#3A3A3A]/60"
+        tone === "light" ? "text-white/60" : "text-[#3A3A3A]/60 dark:text-white/60"
       } ${className}`}
     >
       {children}
@@ -146,7 +146,7 @@ export function GhostCta({
       className={`inline-flex h-12 items-center justify-center gap-2 rounded-xl border px-6 text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 ${
         tone === "light"
           ? "border-white/20 bg-white/[.06] text-white hover:border-white/35 hover:bg-white/[.14]"
-          : "border-[#3A3A3A]/12 bg-white text-[#3A3A3A] hover:border-[#F47822]/35 hover:text-[#F47822]"
+          : "border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] text-[#3A3A3A] hover:border-[#F47822]/35 hover:text-[#F47822]"
       } ${className}`}
     >
       {children}

@@ -351,7 +351,7 @@ export function LessonNavigation({
                         <button
                             type="button"
                             onClick={() => navigate(`/courses/${courseId}`)}
-                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 transition hover:bg-emerald-500/20 dark:text-emerald-400"
+                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 transition hover:bg-emerald-500/20 dark:text-emerald-400"
                         >
                             <CheckCircle2 className="h-4 w-4" />
 

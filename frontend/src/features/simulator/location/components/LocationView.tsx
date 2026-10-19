@@ -42,7 +42,7 @@ export function LocationView({
 
   if (!engine || !state) {
     return (
-      <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
         <div className="flex items-center gap-3 text-sm font-bold text-[#3A3A3A]/50 dark:text-white/50">
           <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#F47822]/25 border-t-[#F47822]" />
           {tr("simulator.dmmLab.loading", "Loading…")}
@@ -55,9 +55,9 @@ export function LocationView({
   const progressPct = Math.round((tasksDone / TASK_SET) * 100);
 
   return (
-    <div className="flex min-h-[520px] flex-col overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+    <div className="flex min-h-[520px] flex-col overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
       {/* header */}
-      <div className="flex items-center gap-3.5 border-b border-[#3A3A3A]/8 bg-white px-4 py-3 dark:border-white/8 dark:bg-[#1b1b20]">
+      <div className="flex items-center gap-3.5 border-b border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-3 dark:border-white/8 dark:bg-[#1b1b20]">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
           <MapPin size={18} />
         </span>
@@ -67,7 +67,7 @@ export function LocationView({
           </div>
           <div className="truncate text-sm font-medium text-[#3A3A3A]/60 dark:text-white/60">{tr("location.subtitle", "Component location · engine bay, fuse box, ECUs & ground points")}</div>
         </div>
-        <div className="ms-auto inline-flex rounded-2xl bg-[#3A3A3A]/5 p-1 dark:bg-white/5">
+        <div className="ms-auto inline-flex rounded-2xl bg-[#3A3A3A]/5 dark:bg-white/5 p-1 dark:bg-white/5">
           {MODES.map((m) => (
             <button
               key={m}
@@ -78,7 +78,7 @@ export function LocationView({
                 "rounded-xl px-3.5 py-1.5 text-xs font-black transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/30",
                 state.mode === m
                   ? "bg-[#F47822] text-white shadow-[0_6px_14px_rgba(244,120,34,0.3)]"
-                  : "text-[#3A3A3A]/50 hover:text-[#F47822] dark:text-white/50 dark:hover:text-[#F47822]",
+                  : "text-[#3A3A3A]/50 dark:text-white/50 hover:text-[#F47822] dark:text-white/50 dark:hover:text-[#F47822]",
               )}
             >
               {tr(`location.mode.${m}`, m)}
@@ -94,8 +94,8 @@ export function LocationView({
 
         {/* center: view tabs + toolbar + atlas */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex flex-wrap items-center gap-2 border-b border-[#3A3A3A]/8 bg-white px-4 py-2 dark:border-white/8 dark:bg-[#1b1b20]">
-            <div className="inline-flex rounded-2xl bg-[#3A3A3A]/5 p-1 dark:bg-white/5">
+          <div className="flex flex-wrap items-center gap-2 border-b border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-2 dark:border-white/8 dark:bg-[#1b1b20]">
+            <div className="inline-flex rounded-2xl bg-[#3A3A3A]/5 dark:bg-white/5 p-1 dark:bg-white/5">
               {LOC_VIEWS.map((v) => (
                 <button
                   key={v.id}
@@ -105,15 +105,15 @@ export function LocationView({
                   className={clsx(
                     "rounded-xl px-2.5 py-1.5 text-xs font-black transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/25",
                     state.view === v.id
-                      ? "bg-white text-[#F47822] shadow-[0_4px_10px_rgba(58,58,58,0.10)] ring-1 ring-[#F47822]/25 dark:bg-[#1b1b20]"
-                      : "text-[#3A3A3A]/50 hover:text-[#F47822] dark:text-white/50 dark:hover:text-[#F47822]",
+                      ? "bg-white dark:bg-[#1b1b20] text-[#F47822] shadow-[0_4px_10px_rgba(58,58,58,0.10)] ring-1 ring-[#F47822]/25 dark:bg-[#1b1b20]"
+                      : "text-[#3A3A3A]/50 dark:text-white/50 hover:text-[#F47822] dark:text-white/50 dark:hover:text-[#F47822]",
                   )}
                 >
                   {tr(`location.view.${v.id}`, v.id)}
                 </button>
               ))}
             </div>
-            <label className="ms-2 flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-1 text-xs font-bold text-[#3A3A3A]/60 transition hover:text-[#F47822] dark:text-white/60 dark:hover:text-[#F47822]">
+            <label className="ms-2 flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-1 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:text-[#F47822] dark:text-white/60 dark:hover:text-[#F47822]">
               <input
                 type="checkbox"
                 checked={state.outlines}
@@ -122,7 +122,7 @@ export function LocationView({
               />
               {tr("location.toolbar.outlines", "Hotspot outlines")}
             </label>
-            <label className="flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-1 text-xs font-bold text-[#3A3A3A]/60 transition hover:text-[#F47822] dark:text-white/60 dark:hover:text-[#F47822]">
+            <label className="flex cursor-pointer items-center gap-1.5 rounded-lg px-1.5 py-1 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:text-[#F47822] dark:text-white/60 dark:hover:text-[#F47822]">
               <input
                 type="checkbox"
                 checked={state.dimOthers}
@@ -131,7 +131,7 @@ export function LocationView({
               />
               {tr("location.toolbar.dim", "Dim others")}
             </label>
-            <div className="ms-auto inline-flex items-center gap-0.5 rounded-2xl border border-[#3A3A3A]/10 bg-white p-1 dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="ms-auto inline-flex items-center gap-0.5 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1 dark:border-white/10 dark:bg-[#1b1b20]">
               <button
                 type="button"
                 onClick={() => engine.setZoom(state.zoom - 0.15)}

@@ -57,7 +57,7 @@ export function SimulatorSection() {
     const stepIcons = [ScanLine, Wrench, Gauge];
 
     return (
-        <LandingSection id="simulator" className="bg-[#EEEAE4] text-[#3A3A3A]">
+        <LandingSection id="simulator" className="bg-[#EEEAE4] text-[#3A3A3A] dark:text-[#ececef]">
             {/* =========================================================
                 BACKGROUND
             ========================================================== */}
@@ -79,7 +79,7 @@ export function SimulatorSection() {
 
                 {/* Large background word */}
 
-                <span className="absolute -bottom-24 right-[-4%] select-none font-black uppercase leading-none tracking-[-0.12em] text-[#3A3A3A]/[0.025] text-[18rem] sm:text-[27rem] rtl:left-[-4%] rtl:right-auto">
+                <span className="absolute -bottom-24 right-[-4%] select-none font-black uppercase leading-none tracking-[-0.12em] text-[#3A3A3A]/[0.025] dark:text-white/[0.025] text-[18rem] sm:text-[27rem] rtl:left-[-4%] rtl:right-auto">
                     SIM
                 </span>
 
@@ -123,7 +123,7 @@ export function SimulatorSection() {
                     </div>
 
                     <div className="lg:col-span-3 lg:col-start-10">
-                        <p className="border-l-2 border-[#F47822] pl-5 text-sm leading-6 text-[#3A3A3A]/45 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-5">
+                        <p className="border-l-2 border-[#F47822] pl-5 text-sm leading-6 text-[#3A3A3A]/45 dark:text-white/45 rtl:border-l-0 rtl:border-r-2 rtl:pl-0 rtl:pr-5">
                             {t("landingPage.simulator.description")}
                         </p>
                     </div>
@@ -138,7 +138,7 @@ export function SimulatorSection() {
                         OUTER GLASS FRAME
                     ================================================== */}
 
-                    <div className="relative rounded-[34px] border border-[#3A3A3A]/[0.07] bg-white/55 p-2.5 shadow-[0_30px_90px_rgba(58,58,58,0.08)] backdrop-blur-xl sm:p-3">
+                    <div className="relative rounded-[34px] border border-[#3A3A3A]/[0.07] dark:border-white/[0.07] bg-white/55 p-2.5 shadow-[0_30px_90px_rgba(58,58,58,0.08)] backdrop-blur-xl sm:p-3">
                         {/* Top reflection */}
 
                         <div
@@ -367,7 +367,7 @@ export function SimulatorSection() {
                     HOW IT WORKS
                 ====================================================== */}
 
-                <div className="mt-10 border-y border-[#3A3A3A]/10 xl:mt-12">
+                <div className="mt-10 border-y border-[#3A3A3A]/10 dark:border-white/10 xl:mt-12">
                     <div className="grid sm:grid-cols-3">
                         {stepItems.map((step, index) => {
                             const Icon = stepIcons[index % stepIcons.length];
@@ -396,11 +396,11 @@ export function SimulatorSection() {
                 <div className="mt-6 flex sm:justify-end">
                     <Link
                         to="/simulator"
-                        className="group inline-flex items-center gap-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]"
+                        className="group inline-flex items-center gap-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A] dark:text-[#ececef]"
                     >
                         {t("landingPage.simulator.explore")}
 
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3A3A3A]/10 bg-white/60 transition-all duration-300 group-hover:border-[#F47822] group-hover:bg-[#F47822] group-hover:text-white">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white/60 transition-all duration-300 group-hover:border-[#F47822] group-hover:bg-[#F47822] group-hover:text-white">
                             <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
                         </span>
                     </Link>
@@ -418,7 +418,7 @@ export function SimulatorSection() {
 
             <div
                 aria-hidden="true"
-                className="absolute bottom-0 right-0 h-[2px] w-[10%] bg-[#3A3A3A]/10 rtl:left-0 rtl:right-auto"
+                className="absolute bottom-0 right-0 h-[2px] w-[10%] bg-[#3A3A3A]/10 dark:bg-white/10 rtl:left-0 rtl:right-auto"
             />
         </LandingSection>
     );
@@ -484,24 +484,24 @@ function ProcessStep({
     icon: typeof Gauge;
 }) {
     return (
-        <div className="group border-b border-[#3A3A3A]/10 p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 sm:p-5 lg:p-6 rtl:sm:border-l rtl:sm:border-r-0 rtl:sm:last:border-l-0">
+        <div className="group border-b border-[#3A3A3A]/10 dark:border-white/10 p-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 sm:p-5 lg:p-6 rtl:sm:border-l rtl:sm:border-r-0 rtl:sm:last:border-l-0">
             <div className="flex items-start justify-between">
                 <span className="font-mono text-[9px] font-bold text-[#F47822]">
                     {number}
                 </span>
 
-                <span className="h-px w-10 bg-[#3A3A3A]/10 transition-all duration-300 group-hover:w-16 group-hover:bg-[#F47822]/40" />
+                <span className="h-px w-10 bg-[#3A3A3A]/10 dark:bg-white/10 transition-all duration-300 group-hover:w-16 group-hover:bg-[#F47822]/40" />
             </div>
 
-            <div className="mt-7 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-[#3A3A3A]/[0.05]">
+            <div className="mt-7 flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-[#1b1b20] shadow-sm ring-1 ring-[#3A3A3A]/[0.05]">
                 <Icon className="h-4 w-4 text-[#F47822]" />
             </div>
 
-            <h3 className="mt-4 text-xl font-black uppercase tracking-[-0.04em] text-[#3A3A3A]">
+            <h3 className="mt-4 text-xl font-black uppercase tracking-[-0.04em] text-[#3A3A3A] dark:text-[#ececef]">
                 {title}
             </h3>
 
-            <p className="mt-3 max-w-xs text-xs leading-6 text-[#3A3A3A]/40">
+            <p className="mt-3 max-w-xs text-xs leading-6 text-[#3A3A3A]/40 dark:text-white/40">
                 {description}
             </p>
         </div>

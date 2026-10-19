@@ -174,7 +174,7 @@ function Metric({
   return (
     <div className="border-b border-black/8 py-3 last:border-b-0">
       <div className="mb-1.5 flex items-center justify-between gap-3">
-        <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-black/40">
+        <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-black/40 dark:text-white/40">
           {label}
         </span>
 
@@ -192,7 +192,7 @@ function Metric({
         </span>
 
         {unit && (
-          <span className="text-[10px] font-medium uppercase text-black/35">
+          <span className="text-[10px] font-medium uppercase text-black/35 dark:text-white/35">
             {unit}
           </span>
         )}
@@ -216,7 +216,7 @@ function MentorMessage({
         "relative rounded-2xl border px-4 py-4 transition-all duration-500",
         active
           ? "border-[#F47822]/35 bg-[#F47822]/[0.06] shadow-[0_12px_35px_rgba(244,120,34,0.08)]"
-          : "border-black/8 bg-[#F7F7F7]",
+          : "border-black/8 bg-[#F7F7F7] dark:bg-[#101013]",
       ].join(" ")}
     >
       <div className="mb-3 flex items-center gap-2">
@@ -225,17 +225,17 @@ function MentorMessage({
         </div>
 
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/70">
+          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/70 dark:text-white/70">
             HBTronics Mentor
           </p>
 
-          <p className="text-[8px] uppercase tracking-[0.12em] text-black/30">
+          <p className="text-[8px] uppercase tracking-[0.12em] text-black/30 dark:text-white/30">
             {t("landingPage.mentor.mentorRole")}
           </p>
         </div>
       </div>
 
-      <div className="text-[12px] leading-5 text-black/65">{children}</div>
+      <div className="text-[12px] leading-5 text-black/65 dark:text-white/65">{children}</div>
     </div>
   );
 }
@@ -358,7 +358,7 @@ export default function AIMentorSection() {
     <LandingSection
       id="ai-mentor"
       sectionRef={sectionRef}
-      className="bg-[#E8E4DE]"
+      className="bg-[#E8E4DE] dark:bg-[#101013]"
     >
       {/* Background technical grid */}
       <div
@@ -402,7 +402,7 @@ export default function AIMentorSection() {
           </div>
 
           <div className="max-w-[390px] pb-1 lg:text-right rtl:lg:text-left">
-            <p className="text-[15px] leading-7 text-black/55">
+            <p className="text-[15px] leading-7 text-black/55 dark:text-white/55">
               {t("landingPage.mentor.description")}
             </p>
           </div>
@@ -411,7 +411,7 @@ export default function AIMentorSection() {
         {/* Main diagnostic workstation */}
         <div
           className={[
-            "relative overflow-hidden rounded-[34px] border border-black/10 bg-[#F7F7F7] shadow-[0_35px_100px_rgba(24,24,24,0.12)] transition-all duration-[1200ms] ease-out",
+            "relative overflow-hidden rounded-[34px] border border-black/10 dark:border-white/10 bg-[#F7F7F7] dark:bg-[#101013] shadow-[0_35px_100px_rgba(24,24,24,0.12)] transition-all duration-[1200ms] ease-out",
             visible
               ? "translate-y-0 opacity-100"
               : "translate-y-14 opacity-0",
@@ -423,20 +423,20 @@ export default function AIMentorSection() {
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
 
-                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.17em] text-black/55">
+                <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.17em] text-black/55 dark:text-white/55">
                   {t("landingPage.mentor.sessionLabel")}
                 </span>
               </div>
 
               <span className="hidden h-4 w-px bg-black/10 sm:block" />
 
-              <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-black/30 sm:block">
+              <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-black/30 dark:text-white/30 sm:block">
                 {t("landingPage.mentor.vehicleLabel")}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="hidden text-[9px] uppercase tracking-[0.14em] text-black/30 sm:block">
+              <span className="hidden text-[9px] uppercase tracking-[0.14em] text-black/30 dark:text-white/30 sm:block">
                 {t("landingPage.mentor.aiAssist")}
               </span>
 
@@ -455,7 +455,7 @@ export default function AIMentorSection() {
                   <div className="mb-2 flex items-center gap-2">
                     <Gauge className="h-4 w-4 text-[#F47822]" />
 
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-black/40">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-black/40 dark:text-white/40">
                       {t("landingPage.mentor.category")}
                     </span>
                   </div>
@@ -466,7 +466,7 @@ export default function AIMentorSection() {
                 </div>
 
                 <div className="hidden shrink-0 rounded-xl border border-[#F47822]/20 bg-[#F47822]/[0.06] px-3 py-2 text-right sm:block rtl:text-left">
-                  <span className="block font-mono text-[8px] uppercase tracking-[0.16em] text-black/35">
+                  <span className="block font-mono text-[8px] uppercase tracking-[0.16em] text-black/35 dark:text-white/35">
                     DTC
                   </span>
 
@@ -477,16 +477,16 @@ export default function AIMentorSection() {
               </div>
 
               {/* Complaint */}
-              <div className="mb-7 rounded-2xl border border-black/8 bg-[#ECE9E3] p-4">
+              <div className="mb-7 rounded-2xl border border-black/8 bg-[#ECE9E3] dark:bg-[#101013] p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <CircleHelp className="h-3.5 w-3.5 text-[#F47822]" />
 
-                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40 dark:text-white/40">
                     {t("landingPage.mentor.complaintLabel")}
                   </span>
                 </div>
 
-                <p className="max-w-[680px] text-[13px] leading-6 text-black/60">
+                <p className="max-w-[680px] text-[13px] leading-6 text-black/60 dark:text-white/60">
                   {t("landingPage.mentor.complaintText")}
                 </p>
               </div>
@@ -497,12 +497,12 @@ export default function AIMentorSection() {
                   <div className="flex items-center gap-2">
                     <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
 
-                    <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40 dark:text-white/40">
                       {t("landingPage.mentor.liveData")}
                     </span>
                   </div>
 
-                  <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-emerald-600">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">
                     {t("landingPage.mentor.connected")}
                   </span>
                 </div>
@@ -526,12 +526,12 @@ export default function AIMentorSection() {
                   <div className="flex items-center gap-2">
                     <Zap className="h-3.5 w-3.5 text-[#F47822]" />
 
-                    <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/40 dark:text-white/40">
                       {t("landingPage.mentor.signalTitle")}
                     </span>
                   </div>
 
-                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-black/25">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-black/25 dark:text-white/25">
                     {t("landingPage.mentor.channelLabel")}
                   </span>
                 </div>
@@ -541,7 +541,7 @@ export default function AIMentorSection() {
             </div>
 
             {/* Mentor side */}
-            <div className="bg-white p-5 sm:p-7">
+            <div className="bg-white dark:bg-[#1b1b20] p-5 sm:p-7">
               <div className="mb-7 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#181818] text-white">
@@ -553,7 +553,7 @@ export default function AIMentorSection() {
                       {t("landingPage.mentor.mentorTitle")}
                     </h3>
 
-                    <p className="text-[9px] uppercase tracking-[0.14em] text-black/30">
+                    <p className="text-[9px] uppercase tracking-[0.14em] text-black/30 dark:text-white/30">
                       {t("landingPage.mentor.mentorSub")}
                     </p>
                   </div>
@@ -562,7 +562,7 @@ export default function AIMentorSection() {
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
 
-                  <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-black/35">
+                  <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-black/35 dark:text-white/35">
                     {t("landingPage.mentor.online")}
                   </span>
                 </div>
@@ -592,20 +592,20 @@ export default function AIMentorSection() {
                         "group flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left transition-all duration-300 rtl:text-right",
                         isSelected
                           ? "border-[#F47822]/40 bg-[#F47822]/[0.06]"
-                          : "border-black/8 bg-white hover:border-[#F47822]/30 hover:bg-[#F47822]/[0.03]",
+                          : "border-black/8 bg-white dark:bg-[#1b1b20] hover:border-[#F47822]/30 hover:bg-[#F47822]/[0.03]",
                       ].join(" ")}
                     >
                       <span className="flex items-center gap-3">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F0EEEA] text-black/50 transition-colors group-hover:bg-[#F47822] group-hover:text-white">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F0EEEA] text-black/50 dark:text-white/50 transition-colors group-hover:bg-[#F47822] group-hover:text-white">
                           <Icon className="h-3.5 w-3.5" />
                         </span>
 
-                        <span className="text-[11px] font-medium text-black/65">
+                        <span className="text-[11px] font-medium text-black/65 dark:text-white/65">
                           {option.label}
                         </span>
                       </span>
 
-                      <ChevronRight className="h-3.5 w-3.5 text-black/25 transition-transform group-hover:translate-x-1 group-hover:text-[#F47822] rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
+                      <ChevronRight className="h-3.5 w-3.5 text-black/25 dark:text-white/25 transition-transform group-hover:translate-x-1 group-hover:text-[#F47822] rtl:-scale-x-100 rtl:group-hover:-translate-x-1 rtl:group-hover:translate-x-0" />
                     </button>
                   );
                 })}
@@ -622,14 +622,14 @@ export default function AIMentorSection() {
               >
                 <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.05] p-4">
                   <div className="mb-2 flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
 
-                    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-emerald-700">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400">
                       {t("landingPage.mentor.resultTitle")}
                     </span>
                   </div>
 
-                  <p className="text-[11px] leading-5 text-black/55">
+                  <p className="text-[11px] leading-5 text-black/55 dark:text-white/55">
                     {t("landingPage.mentor.resultText")}
                   </p>
                 </div>
@@ -638,7 +638,7 @@ export default function AIMentorSection() {
               {/* Progress */}
               <div className="mt-7">
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/35">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-black/35 dark:text-white/35">
                     {t("landingPage.mentor.progressLabel")}
                   </span>
 
@@ -663,8 +663,8 @@ export default function AIMentorSection() {
                         className={[
                           "text-[8px] uppercase leading-3 tracking-[0.08em]",
                           index <= activeStep
-                            ? "text-black/60"
-                            : "text-black/25",
+                            ? "text-black/60 dark:text-white/60"
+                            : "text-black/25 dark:text-white/25",
                         ].join(" ")}
                       >
                         {step}
@@ -682,27 +682,27 @@ export default function AIMentorSection() {
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-3.5 w-3.5 text-[#F47822]" />
 
-                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40 dark:text-white/40">
                   {t("landingPage.mentor.footerAsk")}
                 </span>
               </div>
 
-              <ChevronRight className="h-3 w-3 text-black/20 rtl:-scale-x-100" />
+              <ChevronRight className="h-3 w-3 text-black/20 dark:text-white/20 rtl:-scale-x-100" />
 
               <div className="flex items-center gap-2">
                 <ScanLine className="h-3.5 w-3.5 text-[#F47822]" />
 
-                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40 dark:text-white/40">
                   {t("landingPage.mentor.footerTest")}
                 </span>
               </div>
 
-              <ChevronRight className="h-3 w-3 text-black/20 rtl:-scale-x-100" />
+              <ChevronRight className="h-3 w-3 text-black/20 dark:text-white/20 rtl:-scale-x-100" />
 
               <div className="flex items-center gap-2">
                 <Check className="h-3.5 w-3.5 text-[#F47822]" />
 
-                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40">
+                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-black/40 dark:text-white/40">
                   {t("landingPage.mentor.footerUnderstand")}
                 </span>
               </div>
@@ -734,7 +734,7 @@ export default function AIMentorSection() {
                 {item.label}
               </span>
 
-              <p className="text-sm leading-6 text-black/50">
+              <p className="text-sm leading-6 text-black/50 dark:text-white/50">
                 {item.text}
               </p>
             </div>

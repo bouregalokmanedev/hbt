@@ -61,7 +61,7 @@ function SectionHeading({
                     {title}
                 </h2>
                 {hint ? (
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-white/40">{hint}</p>
                 ) : null}
             </div>
         </div>
@@ -71,7 +71,7 @@ function SectionHeading({
 function EmptyState({ text }: { text: string }) {
     return (
         <p
-            className="rounded-2xl border border-dashed border-[#E6E6E6] dark:border-white/10 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400"
+            className="rounded-2xl border border-dashed border-[#E6E6E6] dark:border-white/10 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400 dark:text-white/40"
             data-testid="billing-empty"
         >
             {text}
@@ -223,7 +223,7 @@ export function BillingPage() {
 
     return (
         <div className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6" data-testid="billing-page">
-            <section className="rounded-3xl border border-[#E6E6E6] bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20] sm:p-8">
+            <section className="rounded-3xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20] sm:p-8">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F47822]">
@@ -232,7 +232,7 @@ export function BillingPage() {
                         <h1 className="mt-2 text-2xl font-bold text-hbt-dark dark:text-white">
                             {t("billing.title")}
                         </h1>
-                        <p className="mt-1.5 max-w-xl text-sm text-slate-500 dark:text-slate-400">
+                        <p className="mt-1.5 max-w-xl text-sm text-slate-500 dark:text-slate-400 dark:text-white/40">
                             {t("billing.description")}
                         </p>
                     </div>
@@ -241,7 +241,7 @@ export function BillingPage() {
                             <Receipt className="h-5 w-5" />
                         </div>
                         <div>
-                            <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                            <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-white/40">
                                 {t("billing.totalsPaid")}
                             </p>
                             <p className="mt-0.5 text-lg font-bold leading-none text-hbt-dark dark:text-white">
@@ -258,7 +258,7 @@ export function BillingPage() {
 
                 {error ? (
                     <div
-                        className="mt-5 flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
+                        className="mt-5 flex items-center gap-2 rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
                         role="alert"
                         data-testid="billing-error"
                     >
@@ -268,7 +268,7 @@ export function BillingPage() {
             </section>
 
             {/* Subscription */}
-            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
                 <SectionHeading
                     icon={<FileText className="h-4 w-4" />}
                     title={t("billing.subscription.title")}
@@ -286,7 +286,7 @@ export function BillingPage() {
                                 >
                                     {activeSubscription.status}
                                 </span>
-                                <span className="text-xs text-slate-500 dark:text-slate-400">
+                                <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-white/40">
                                     {activeSubscription.current_period_ends_at
                                         ? t("billing.subscription.renews", {
                                               date: formatDate(activeSubscription.current_period_ends_at),
@@ -303,7 +303,7 @@ export function BillingPage() {
                         </div>
                     ) : (
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-white/40">
                                 {t("billing.subscription.none")}
                             </p>
                             <Link
@@ -318,7 +318,7 @@ export function BillingPage() {
             </section>
 
             {/* Orders */}
-            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
                 <SectionHeading
                     icon={<Package className="h-4 w-4" />}
                     title={t("billing.orders.title")}
@@ -338,7 +338,7 @@ export function BillingPage() {
                                     <p className="truncate text-sm font-semibold text-hbt-dark dark:text-white">
                                         {order.items.map((item) => item.title).join(", ") || t("billing.orders.itemFallback")}
                                     </p>
-                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-white/40">
                                         {formatDate(order.placed_at)} · {order.provider} ·{" "}
                                         {t(`billing.status.${order.status}`, { defaultValue: order.status })}
                                     </p>
@@ -374,7 +374,7 @@ export function BillingPage() {
             </section>
 
             {/* Invoices */}
-            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
                 <SectionHeading
                     icon={<Receipt className="h-4 w-4" />}
                     title={t("billing.invoices.title")}
@@ -394,7 +394,7 @@ export function BillingPage() {
                                     <p className="truncate text-sm font-semibold text-hbt-dark dark:text-white">
                                         {invoice.number ?? t("billing.invoices.numberFallback")}
                                     </p>
-                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-white/40">
                                         {t("billing.invoices.issued", {
                                             date: formatDate(invoice.issued_at ?? invoice.paid_at),
                                         })}{" "}
@@ -432,7 +432,7 @@ export function BillingPage() {
             </section>
 
             {/* Payment methods */}
-            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+            <section className="mt-6 rounded-3xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
                 <SectionHeading
                     icon={<CreditCard className="h-4 w-4" />}
                     title={t("billing.methods.title")}
@@ -455,7 +455,7 @@ export function BillingPage() {
                                             <p className="truncate text-sm font-semibold capitalize text-hbt-dark dark:text-white">
                                                 {methodLabel(method)}
                                             </p>
-                                            <p className="text-xs capitalize text-slate-500 dark:text-slate-400">
+                                            <p className="text-xs capitalize text-slate-500 dark:text-slate-400 dark:text-white/40">
                                                 {method.provider ?? method.type}
                                                 {method.exp_month && method.exp_year
                                                     ? ` · ${String(method.exp_month).padStart(2, "0")}/${method.exp_year}`
@@ -466,7 +466,7 @@ export function BillingPage() {
                                     <div className="flex flex-wrap items-center gap-2">
                                         {method.is_default ? (
                                             <span
-                                                className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
+                                                className="rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400"
                                                 data-testid={`method-default-chip-${method.id}`}
                                             >
                                                 {t("billing.methods.default")}
@@ -490,7 +490,7 @@ export function BillingPage() {
                                             type="button"
                                             onClick={() => void handleRemove(method)}
                                             disabled={methodActionId !== null}
-                                            className="rounded-full border border-red-200 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-50 dark:border-red-500/20 dark:text-red-400 dark:hover:bg-red-500/10"
+                                            className="rounded-full border border-red-200 dark:border-red-500/20 px-3 py-1 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10 disabled:opacity-50 dark:border-red-500/20 dark:text-red-400 dark:hover:bg-red-500/10"
                                             data-testid={`method-remove-${method.id}`}
                                         >
                                             {methodActionId === method.id ? (
@@ -510,21 +510,21 @@ export function BillingPage() {
                         className="rounded-2xl border border-dashed border-[#E6E6E6] p-4 dark:border-white/10"
                         data-testid="billing-method-form"
                     >
-                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-white/40">
                             {t("billing.methods.addTitle")}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-white/40">
                             {t("billing.methods.addNote")}
                         </p>
                         <div className="mt-3 grid grid-cols-2 gap-3">
-                            <label className="col-span-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            <label className="col-span-2 text-xs font-semibold text-slate-500 dark:text-slate-400 dark:text-white/40">
                                 {t("billing.methods.brand")}
                                 <select
                                     value={methodForm.brand}
                                     onChange={(event) =>
                                         setMethodForm((previous) => ({ ...previous, brand: event.target.value }))
                                     }
-                                    className="mt-1 w-full rounded-xl border border-[#E6E6E6] bg-white px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                                    className="mt-1 w-full rounded-xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                                     data-testid="method-brand"
                                 >
                                     <option value="visa">Visa</option>
@@ -540,7 +540,7 @@ export function BillingPage() {
                             ) : null}
                             {!isTamara && (
                             <>
-                            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 dark:text-white/40">
                                 {t("billing.methods.lastFour")}
                                 <input
                                     value={methodForm.last_four}
@@ -553,11 +553,11 @@ export function BillingPage() {
                                     inputMode="numeric"
                                     maxLength={4}
                                     placeholder="4242"
-                                    className="mt-1 w-full rounded-xl border border-[#E6E6E6] bg-white px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                                    className="mt-1 w-full rounded-xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                                     data-testid="method-last4"
                                 />
                             </label>
-                            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 dark:text-white/40">
                                 {t("billing.methods.expiry")}
                                 <div className="mt-1 flex gap-2">
                                     <input
@@ -571,7 +571,7 @@ export function BillingPage() {
                                         inputMode="numeric"
                                         maxLength={2}
                                         placeholder="12"
-                                        className="w-full rounded-xl border border-[#E6E6E6] bg-white px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                                        className="w-full rounded-xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                                         data-testid="method-exp-month"
                                     />
                                     <input
@@ -585,7 +585,7 @@ export function BillingPage() {
                                         inputMode="numeric"
                                         maxLength={4}
                                         placeholder="2030"
-                                        className="w-full rounded-xl border border-[#E6E6E6] bg-white px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                                        className="w-full rounded-xl border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] px-3 py-2 text-sm text-hbt-dark dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                                         data-testid="method-exp-year"
                                     />
                                 </div>

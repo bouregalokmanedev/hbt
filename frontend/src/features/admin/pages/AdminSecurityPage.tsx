@@ -91,9 +91,9 @@ export function AdminSecurityPage() {
           </div>
           <ShieldAlert className="h-5 w-5 text-[#F47822]" />
         </div>
-        {alerts.isLoading && <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("admin.security.alerts.checking")}</p>}
+        {alerts.isLoading && <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.security.alerts.checking")}</p>}
         {alerts.data && alerts.data.length === 0 && (
-          <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+          <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
             <Activity className="h-4 w-4" /> {t("admin.security.alerts.allClear")}
           </p>
         )}
@@ -102,15 +102,15 @@ export function AdminSecurityPage() {
             {alerts.data.map((alert, index) => (
               <li
                 key={`${alert.title}-${index}`}
-                className={`rounded-2xl border px-4 py-3 ${alert.severity === "critical" ? "border-red-200 bg-red-50" : alert.severity === "warning" ? "border-amber-200 bg-amber-50" : "border-[#3A3A3A]/10 bg-[#FCFCFC]"}`}
+                className={`rounded-2xl border px-4 py-3 ${alert.severity === "critical" ? "border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10" : alert.severity === "warning" ? "border-amber-200 bg-amber-50 dark:bg-amber-500/10" : "border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20]"}`}
               >
-                <p className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A]">
+                <p className="flex items-center gap-2 text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                   <CircleAlert
-                    className={`h-4 w-4 ${alert.severity === "critical" ? "text-red-500" : alert.severity === "warning" ? "text-amber-500" : "text-[#3A3A3A]/40"}`}
+                    className={`h-4 w-4 ${alert.severity === "critical" ? "text-red-500" : alert.severity === "warning" ? "text-amber-500" : "text-[#3A3A3A]/40 dark:text-white/40"}`}
                   />
                   {alert.title}
                 </p>
-                <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60">{alert.detail}</p>
+                <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60 dark:text-white/60">{alert.detail}</p>
               </li>
             ))}
           </ul>
@@ -136,7 +136,7 @@ export function AdminSecurityPage() {
               setAuthPage(1);
             }}
             placeholder={t("admin.security.auth.searchPh")}
-            className="h-10 min-w-[180px] flex-1 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs outline-none focus:border-[#F47822]"
+            className="h-10 min-w-[180px] flex-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs outline-none focus:border-[#F47822]"
           />
           <select
             value={authEvent}
@@ -144,7 +144,7 @@ export function AdminSecurityPage() {
               setAuthEvent(event.target.value);
               setAuthPage(1);
             }}
-            className="h-10 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
+            className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
           >
             <option value="">{t("admin.security.auth.allEvents")}</option>
             <option value="login.success">{t("admin.security.auth.loginSuccess")}</option>
@@ -158,7 +158,7 @@ export function AdminSecurityPage() {
               setAuthSuccess(event.target.value);
               setAuthPage(1);
             }}
-            className="h-10 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
+            className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
           >
             <option value="">{t("admin.security.auth.anyOutcome")}</option>
             <option value="true">{t("admin.security.auth.successful")}</option>
@@ -173,7 +173,7 @@ export function AdminSecurityPage() {
                 setAuthSuccess("");
                 setAuthPage(1);
               }}
-              className="h-10 rounded-xl border border-[#3A3A3A]/10 px-4 text-xs font-bold text-[#3A3A3A]/60"
+              className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60"
             >
               {t("admin.security.auth.clear")}
             </button>
@@ -181,12 +181,12 @@ export function AdminSecurityPage() {
         </div>
 
         {authLogs.isLoading ? (
-          <p className="mt-4 text-sm text-[#3A3A3A]/50">{t("admin.security.auth.loading")}</p>
+          <p className="mt-4 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.security.auth.loading")}</p>
         ) : authLogs.data ? (
           <>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[760px] text-left rtl:text-right">
-                <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+                <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
                   <tr>
                     <th className="pb-3">{t("admin.security.auth.headers.account")}</th>
                     <th className="pb-3">{t("admin.security.auth.headers.event")}</th>
@@ -197,19 +197,19 @@ export function AdminSecurityPage() {
                 </thead>
                 <tbody className="divide-y divide-[#3A3A3A]/7">
                   {authLogs.data.data.map((entry) => (
-                    <tr key={entry.id} className="hover:bg-[#FCFCFC]">
+                    <tr key={entry.id} className="hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                       <td className="py-3">
-                        <p className="text-xs font-bold text-[#3A3A3A]">{entry.email ?? "—"}</p>
-                        <p className="text-[11px] text-[#3A3A3A]/45">{entry.user?.name ?? entry.browser ?? ""}</p>
+                        <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{entry.email ?? "—"}</p>
+                        <p className="text-[11px] text-[#3A3A3A]/45 dark:text-white/45">{entry.user?.name ?? entry.browser ?? ""}</p>
                       </td>
-                      <td className="py-3 font-mono text-[11px] text-[#3A3A3A]/60">{entry.event}</td>
+                      <td className="py-3 font-mono text-[11px] text-[#3A3A3A]/60 dark:text-white/60">{entry.event}</td>
                       <td className="py-3">
-                        <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${entry.successful ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
+                        <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${entry.successful ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400"}`}>
                           {entry.successful ? t("admin.security.auth.success") : entry.failure_reason ?? t("admin.security.auth.failedFallback")}
                         </span>
                       </td>
-                      <td className="py-3 font-mono text-[11px] text-[#3A3A3A]/50">{entry.ip_address ?? "—"}</td>
-                      <td className="py-3 text-[11px] text-[#3A3A3A]/45">
+                      <td className="py-3 font-mono text-[11px] text-[#3A3A3A]/50 dark:text-white/50">{entry.ip_address ?? "—"}</td>
+                      <td className="py-3 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
                         {entry.created_at ? new Date(entry.created_at).toLocaleString(i18n.language) : "—"}
                       </td>
                     </tr>
@@ -243,7 +243,7 @@ export function AdminSecurityPage() {
               setSessionPage(1);
             }}
             placeholder={t("admin.security.sessions.searchPh")}
-            className="h-10 min-w-[180px] flex-1 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs outline-none focus:border-[#F47822]"
+            className="h-10 min-w-[180px] flex-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs outline-none focus:border-[#F47822]"
           />
           <select
             value={sessionActive}
@@ -251,7 +251,7 @@ export function AdminSecurityPage() {
               setSessionActive(event.target.value);
               setSessionPage(1);
             }}
-            className="h-10 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
+            className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
           >
             <option value="">{t("admin.security.sessions.allSessions")}</option>
             <option value="true">{t("admin.security.sessions.activeOnly")}</option>
@@ -260,18 +260,18 @@ export function AdminSecurityPage() {
         </div>
 
         {sessions.isLoading ? (
-          <p className="mt-4 text-sm text-[#3A3A3A]/50">{t("admin.security.sessions.loading")}</p>
+          <p className="mt-4 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.security.sessions.loading")}</p>
         ) : sessions.data ? (
           <>
             <ul className="mt-4 space-y-2">
               {sessions.data.data.map((session) => (
-                <li key={session.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-4 py-3">
-                  <span className={`h-2 w-2 shrink-0 rounded-full ${session.active ? "bg-emerald-500" : "bg-[#3A3A3A]/20"}`} />
+                <li key={session.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3">
+                  <span className={`h-2 w-2 shrink-0 rounded-full ${session.active ? "bg-emerald-500" : "bg-[#3A3A3A]/20 dark:bg-white/20"}`} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-bold text-[#3A3A3A]">
+                    <span className="block truncate text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                       {session.user?.name ?? t("admin.security.sessions.unknown")} · {session.user?.email ?? session.ip_address ?? "—"}
                     </span>
-                    <span className="mt-0.5 block truncate font-mono text-[10px] text-[#3A3A3A]/45">
+                    <span className="mt-0.5 block truncate font-mono text-[10px] text-[#3A3A3A]/45 dark:text-white/45">
                       {session.browser ?? "—"} · {session.platform ?? ""} · {session.ip_address ?? ""}
                     </span>
                   </span>
@@ -280,12 +280,12 @@ export function AdminSecurityPage() {
                       type="button"
                       disabled={revokedId === session.id}
                       onClick={() => void revoke(session.id)}
-                      className="shrink-0 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-100 disabled:opacity-60"
+                      className="shrink-0 rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 transition hover:bg-red-100 disabled:opacity-60"
                     >
                       {t("admin.security.sessions.revoke")}
                     </button>
                   ) : (
-                    <span className="shrink-0 rounded-full bg-[#3A3A3A]/5 px-2 py-1 text-[10px] font-bold text-[#3A3A3A]/45">
+                    <span className="shrink-0 rounded-full bg-[#3A3A3A]/5 dark:bg-white/5 px-2 py-1 text-[10px] font-bold text-[#3A3A3A]/45 dark:text-white/45">
                       {t("admin.security.sessions.ended")}
                     </span>
                   )}
@@ -314,20 +314,20 @@ function Kpi({
   tone: "red" | "green" | "brand" | "dark";
 }) {
   const tones = {
-    red: "bg-red-50 text-red-500",
-    green: "bg-emerald-50 text-emerald-600",
+    red: "bg-red-50 dark:bg-red-500/10 text-red-500",
+    green: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     brand: "bg-[#F47822]/10 text-[#F47822]",
-    dark: "bg-[#3A3A3A]/8 text-[#3A3A3A]",
+    dark: "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]",
   } as const;
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 bg-white px-4 py-3.5 shadow-[0_4px_14px_rgba(58,58,58,.04)]">
+    <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-3.5 shadow-[0_4px_14px_rgba(58,58,58,.04)]">
       <span className={`grid h-9 w-9 place-items-center rounded-xl ${tones[tone]}`}>
         <ShieldAlert className="h-4 w-4" />
       </span>
       <span>
-        <span className="block text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/42">{label}</span>
+        <span className="block text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/42 dark:text-white/42">{label}</span>
         <span className="mt-0.5 block text-lg font-bold leading-none">{value}</span>
-        <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/40">{hint}</span>
+        <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/40 dark:text-white/40">{hint}</span>
       </span>
     </div>
   );

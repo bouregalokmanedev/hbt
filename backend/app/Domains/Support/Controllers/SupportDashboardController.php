@@ -4,7 +4,9 @@ namespace App\Domains\Support\Controllers;
 
 use App\Domains\Support\Enums\TicketStatus;
 use App\Domains\Support\Models\SupportTicket;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -86,5 +88,93 @@ final class SupportDashboardController extends Controller
                 'my_queue' => $myQueue,
             ],
         ]);
+    }
+
+    /**
+     * Per-agent performance for the team leaderboard: open load, resolved
+     * this month, average first-response (hours) and CSAT. Sorted by resolved
+     * desc so the top of the list is the most productive agent.
+     */
+    public function agents(): JsonResponse
+    {
+        $staff = User::query()
+            ->whereHas('roles', fn ($roles) => $roles->whereIn('name', [
+                UserRole::SUPPORT->value,
+                UserRole::ADMIN->value,
+                UserRole::SUPER_ADMIN->value,
+            ]))
+            ->with('roles:id,name')
+            ->get();
+
+        $monthStart = now()->startOfMonth();
+
+        $rows = $staff->map(function (User $agent) use ($monthStart): array {
+            $assigned = SupportTicket::query()->where('assigned_to', $agent->id);
+
+            $open = (clone $assigned)
+                ->whereIn('status', [TicketStatus::OPEN->value, TicketStatus::PENDING->value])
+                ->count();
+
+            $resolvedMonth = (clone $assigned)
+                ->where('status', TicketStatus::RESOLVED->value)
+                ->where('resolved_at', '>=', $monthStart)
+                ->count();
+
+            $csat = (clone $assigned)
+                ->whereNotNull('rating')
+                ->selectRaw('COALESCE(AVG(rating), 0) AS average, COUNT(*) AS count')
+                ->first();
+
+            $firstResponseHours = $this->averageFirstResponseHours($agent->id);
+
+            return [
+                'id' => $agent->uuid,
+                'name' => $agent->full_name,
+                'email' => $agent->email,
+                'roles' => $agent->roles->pluck('name')->all(),
+                'open' => $open,
+                'resolved_month' => $resolvedMonth,
+                'csat_average' => round((float) ($csat->average ?? 0), 2),
+                'csat_count' => (int) ($csat->count ?? 0),
+                'avg_first_response_hours' => $firstResponseHours,
+            ];
+        })->filter(fn (array $row) => $row['open'] > 0 || $row['resolved_month'] > 0 || $row['csat_count'] > 0)
+            ->sortByDesc('resolved_month')
+            ->values();
+
+        return response()->json(['data' => $rows]);
+    }
+
+    /**
+     * Average hours between ticket creation and the agent's first non-internal
+     * reply, across the agent's assigned tickets that got a reply. Agents who
+     * never replied report null (rendered as "—").
+     */
+    private function averageFirstResponseHours(int $agentId): ?float
+    {
+        $tickets = SupportTicket::query()
+            ->where('assigned_to', $agentId)
+            ->with('replies')
+            ->get();
+
+        $durations = $tickets->map(function (SupportTicket $ticket) use ($agentId): ?float {
+            $first = $ticket->replies
+                ->where('user_id', $agentId)
+                ->where('internal', false)
+                ->sortBy('created_at')
+                ->first();
+
+            if (! $first || ! $ticket->created_at) {
+                return null;
+            }
+
+            return $ticket->created_at->diffInSeconds($first->created_at) / 3600;
+        })->filter()->values();
+
+        if ($durations->isEmpty()) {
+            return null;
+        }
+
+        return round($durations->avg(), 1);
     }
 }

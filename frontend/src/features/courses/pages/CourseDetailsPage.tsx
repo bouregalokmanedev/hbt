@@ -580,7 +580,7 @@ export function CourseDetailsPage() {
                     <button
                       type="button"
                       onClick={() => setShowAllReviews((value) => !value)}
-                      className="mt-2 inline-flex w-fit items-center rounded-xl border border-[#F47822]/20 bg-[#FFF8F4] dark:bg-[#F47822]/[0.08] px-4 py-2.5 text-sm font-bold text-[#D96319] transition hover:border-[#F47822]/40 hover:bg-[#FDEEE5]"
+                      className="mt-2 inline-flex w-fit items-center rounded-xl border border-[#F47822]/20 bg-[#FFF8F4] dark:bg-[#F47822]/[0.08] px-4 py-2.5 text-sm font-bold text-[#D96319] dark:text-[#F9A16C] transition hover:border-[#F47822]/40 hover:bg-[#FDEEE5] dark:bg-[#F47822]/15"
                     >
                       {showAllReviews
                         ? t("courseDetails.page.showFewer")
@@ -633,12 +633,12 @@ export function CourseDetailsPage() {
                     className="mt-3 w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-[#F47822]"
                   />
                   {reviewError && (
-                    <p role="alert" className="mt-2 text-xs font-semibold text-red-600">
+                    <p role="alert" className="mt-2 text-xs font-semibold text-red-600 dark:text-red-400">
                       {reviewError}
                     </p>
                   )}
                   {reviewSent && (
-                    <p className="mt-2 text-xs font-semibold text-emerald-600">
+                    <p className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                       {t("courseDetails.page.reviewThanks")}
                     </p>
                   )}

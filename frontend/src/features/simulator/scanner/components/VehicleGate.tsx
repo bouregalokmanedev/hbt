@@ -73,7 +73,7 @@ function coverageTone(kind: GateKind): string {
     if (kind === "ready") return "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300";
     if (kind === "download") return "bg-amber-500/15 text-amber-700 dark:bg-amber-300/20 dark:text-amber-300";
     if (kind === "coming") return "bg-[#F47822]/10 text-[#F47822]";
-    return "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40";
+    return "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40";
 }
 
 function formatRemaining(ms: number): string {
@@ -105,7 +105,7 @@ function VehicleCard({
     const badgeKey =
         kind === "ready" ? "ok" : kind === "download" ? "avail" : "none";
     return (
-        <div className="rounded-[20px] border border-[#3A3A3A]/10 bg-white p-4 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 dark:border-white/10 dark:bg-[#1b1b20]">
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                     <p className="truncate text-sm font-black text-[#3A3A3A] dark:text-white">{vehicle.name}</p>
@@ -124,7 +124,7 @@ function VehicleCard({
                     disabled
                     aria-disabled
                     title={t("simulator.scannerLab.gate.blockedTool", { tool: toolLabel })}
-                    className="mt-3 inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#3A3A3A]/20 bg-[#3A3A3A]/[.04] px-4 py-2.5 text-xs font-black text-[#3A3A3A]/45 dark:border-white/15 dark:bg-white/[0.04] dark:text-white/45"
+                    className="mt-3 inline-flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#3A3A3A]/20 dark:border-white/20 bg-[#3A3A3A]/[.04] dark:bg-white/[.04] px-4 py-2.5 text-xs font-black text-[#3A3A3A]/45 dark:border-white/15 dark:bg-white/[0.04] dark:text-white/45"
                 >
                     <Lock className="h-4 w-4" />
                     {t("simulator.scannerLab.gate.locked")}
@@ -168,14 +168,14 @@ function CategoryCard({
 }) {
     const { t } = useTranslation();
     return (
-        <section className="flex min-w-0 flex-col rounded-[22px] border border-[#3A3A3A]/10 bg-[#F8F9FB] p-3 dark:border-white/10 dark:bg-white/[0.03]">
+        <section className="flex min-w-0 flex-col rounded-[22px] border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F9FB] p-3 dark:border-white/10 dark:bg-white/[0.03]">
             <header className="mb-3 flex items-center justify-between gap-2 px-1">
                 <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[10px] font-black uppercase tracking-wider ${coverageTone(kind)}`}>
                     {kind === "none" ? <Lock className="h-3 w-3" /> : kind === "download" ? <Download className="h-3 w-3" /> : kind === "ready" ? <CheckCircle2 className="h-3 w-3" /> : <Car className="h-3 w-3" />}
                     {t(titleKey)}
                 </span>
                 {typeof count === "number" && (
-                    <span className="rounded-full bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/50 ring-1 ring-[#3A3A3A]/10 dark:bg-white/[0.06] dark:text-white/50 dark:ring-white/10">
+                    <span className="rounded-full bg-white dark:bg-[#1b1b20] px-2 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/50 dark:text-white/50 ring-1 ring-[#3A3A3A]/10 dark:bg-white/[0.06] dark:text-white/50 dark:ring-white/10">
                         {count}
                     </span>
                 )}
@@ -203,7 +203,7 @@ function ComingSoonCard() {
             : formatRemaining(remaining);
 
     return (
-        <div className="flex flex-1 flex-col items-center justify-center rounded-[20px] border border-dashed border-[#F47822]/30 bg-white p-5 text-center dark:border-[#F47822]/30 dark:bg-[#1b1b20]">
+        <div className="flex flex-1 flex-col items-center justify-center rounded-[20px] border border-dashed border-[#F47822]/30 bg-white dark:bg-[#1b1b20] p-5 text-center dark:border-[#F47822]/30 dark:bg-[#1b1b20]">
             <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#F47822]/10">
                 <Car className="h-5 w-5 text-[#F47822]" />
             </div>
@@ -223,7 +223,7 @@ function ComingSoonCard() {
             </button>
             <p
                 dir="ltr"
-                className="mt-2 rounded-full bg-[#3A3A3A]/[.06] px-2.5 py-1 font-mono text-[11px] font-bold tabular-nums text-[#3A3A3A]/60 dark:bg-white/[0.06] dark:text-white/60"
+                className="mt-2 rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2.5 py-1 font-mono text-[11px] font-bold tabular-nums text-[#3A3A3A]/60 dark:bg-white/[0.06] dark:text-white/60"
                 aria-label={t("simulator.scannerLab.gate.countdownAria", { time: label })}
             >
                 {label}
@@ -328,7 +328,7 @@ export function VehicleGate({
 
     return (
         <div className="space-y-4">
-            <div className="rounded-[20px] border border-[#3A3A3A]/10 bg-white p-6 text-center dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 text-center dark:border-white/10 dark:bg-[#1b1b20]">
                 <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#F47822]/10">
                     <Car className="h-6 w-6 text-[#F47822]" />
                 </div>
@@ -343,7 +343,7 @@ export function VehicleGate({
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                 <CategoryCard kind="ready" titleKey="simulator.scannerLab.gate.ok" count={buckets.ready.length}>
                     {buckets.ready.length === 0 ? (
-                        <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-xs text-[#3A3A3A]/45 dark:border-white/15 dark:text-white/45">
+                        <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-xs text-[#3A3A3A]/45 dark:border-white/15 dark:text-white/45">
                             {emptyCopy("ready")}
                         </p>
                     ) : (
@@ -363,7 +363,7 @@ export function VehicleGate({
 
                 <CategoryCard kind="download" titleKey="simulator.scannerLab.gate.avail" count={buckets.download.length}>
                     {buckets.download.length === 0 ? (
-                        <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-xs text-[#3A3A3A]/45 dark:border-white/15 dark:text-white/45">
+                        <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-xs text-[#3A3A3A]/45 dark:border-white/15 dark:text-white/45">
                             {emptyCopy("download")}
                         </p>
                     ) : (
@@ -383,7 +383,7 @@ export function VehicleGate({
 
                 <CategoryCard kind="none" titleKey="simulator.scannerLab.gate.none" count={buckets.none.length}>
                     {buckets.none.length === 0 ? (
-                        <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 p-4 text-center text-xs text-[#3A3A3A]/45 dark:border-white/15 dark:text-white/45">
+                        <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-4 text-center text-xs text-[#3A3A3A]/45 dark:border-white/15 dark:text-white/45">
                             {emptyCopy("none")}
                         </p>
                     ) : (

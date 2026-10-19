@@ -15,6 +15,8 @@ vi.mock("../api/supportDesk.api", () => ({
         resolve: vi.fn(),
         close: vi.fn(),
         escalate: vi.fn(),
+        cannedReplies: vi.fn().mockResolvedValue([]),
+        setTags: vi.fn(),
     },
 }));
 

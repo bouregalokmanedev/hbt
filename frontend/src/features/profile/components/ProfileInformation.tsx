@@ -206,8 +206,8 @@ export function ProfileInformation({
     const hasPhone = Boolean(user.phone);
 
     const badgeClass = phoneVerified
-        ? "inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700"
-        : "inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-700";
+        ? "inline-flex items-center gap-1 rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400"
+        : "inline-flex items-center gap-1 rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400";
     const badgeLabel = phoneVerified
         ? t("profilePage.info.verified")
         : t("profilePage.info.notVerified");
@@ -392,8 +392,8 @@ export function ProfileInformation({
                         <span
                             className={
                                 user.email_verified_at
-                                    ? "absolute end-3 top-1/2 -translate-y-1/2 rounded-md bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700"
-                                    : "absolute end-3 top-1/2 -translate-y-1/2 rounded-md bg-amber-50 px-2 py-1 text-[11px] font-semibold text-amber-700"
+                                    ? "absolute end-3 top-1/2 -translate-y-1/2 rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400"
+                                    : "absolute end-3 top-1/2 -translate-y-1/2 rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-400"
                             }
                         >
                             {user.email_verified_at
@@ -531,8 +531,8 @@ export function ProfileInformation({
                                 <p
                                     className={
                                         phoneVerified
-                                            ? "mt-1.5 text-[11px] font-medium text-emerald-700"
-                                            : "mt-1.5 text-[11px] font-medium text-[#3A3A3A]/55"
+                                            ? "mt-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400"
+                                            : "mt-1.5 text-[11px] font-medium text-[#3A3A3A]/55 dark:text-white/55"
                                     }
                                 >
                                     {otpNotice}
@@ -682,7 +682,7 @@ export function ProfileInformation({
                                 "profilePage.info.phoneVerify.cancel",
                             )}
                             onClick={closeOtp}
-                            className="shrink-0 rounded-lg p-1.5 text-[#3A3A3A]/45 transition hover:bg-[#3A3A3A]/5 dark:text-white/45 dark:hover:bg-white/5"
+                            className="shrink-0 rounded-lg p-1.5 text-[#3A3A3A]/45 dark:text-white/45 transition hover:bg-[#3A3A3A]/5 dark:text-white/45 dark:hover:bg-white/5"
                         >
                             <X className="h-4 w-4" />
                         </button>
@@ -790,7 +790,7 @@ export function ProfileInformation({
                     {otpError && (
                         <p
                             role="alert"
-                            className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-medium text-red-600"
+                            className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-2.5 text-xs font-medium text-red-600 dark:text-red-400"
                         >
                             {otpError}
                         </p>

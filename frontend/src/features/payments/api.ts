@@ -6,6 +6,7 @@ export interface CheckoutPayload {
   items: Array<{ course_id: string }>;
   provider?: string;
   currency?: string;
+  coupon_code?: string;
 }
 
 export interface CheckoutResult {
@@ -38,6 +39,11 @@ export async function authedFetch<T>(path: string, init: RequestInit = {}): Prom
 
 export const checkoutApi = {
   create: (payload: CheckoutPayload) => authedFetch<CheckoutResult>("/v1/checkout", { method: "POST", body: JSON.stringify(payload) }),
+  validateCoupon: (code: string, courseIds: string[]) =>
+    authedFetch<{ id: string; name: string; type: string; value: number; estimated_amount: number }>("/v1/discounts/validate", {
+      method: "POST",
+      body: JSON.stringify({ code, course_ids: courseIds }),
+    }),
   getOrder: (id: string) =>
     authedFetch<{
       id: string;

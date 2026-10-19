@@ -283,6 +283,7 @@ export interface InstructorQuizQuestion {
     position: number;
     points: number;
     required: boolean;
+    explanation?: string | null;
     options: InstructorQuizOption[];
 }
 

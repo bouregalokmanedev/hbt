@@ -1,14 +1,21 @@
 import {
     ArrowUpRight,
+    Check,
     ChevronRight,
+    Loader2,
     Mail,
+    Send,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
 
+import { useState } from "react";
+
 import { useTranslation } from "react-i18next";
 
 import { openCookieConsent } from "@/features/cookies/consent";
+import { visitorId } from "@/features/marketing/tracking";
+import { env } from "@/config/env";
 
 
 /* =============================================================
@@ -18,6 +25,34 @@ import { openCookieConsent } from "@/features/cookies/consent";
 export function Footer() {
     const { t } = useTranslation();
     const year = new Date().getFullYear();
+    const [newsletterEmail, setNewsletterEmail] = useState("");
+    const [newsletterState, setNewsletterState] = useState<"idle" | "sending" | "done" | "error">("idle");
+
+    const subscribeNewsletter = async (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!newsletterEmail.trim() || newsletterState === "sending") return;
+        setNewsletterState("sending");
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const response = await fetch(`${env.apiUrl}/v1/leads/capture`, {
+                method: "POST",
+                headers: { Accept: "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: newsletterEmail.trim(),
+                    source: "footer",
+                    visitor_id: visitorId(),
+                    utm_source: params.get("utm_source"),
+                    utm_medium: params.get("utm_medium"),
+                    utm_campaign: params.get("utm_campaign"),
+                }),
+            });
+            if (!response.ok) throw new Error("subscribe failed");
+            setNewsletterState("done");
+            setNewsletterEmail("");
+        } catch {
+            setNewsletterState("error");
+        }
+    };
 
     return (
         <footer className="site-footer-ar relative overflow-hidden bg-[#181818] text-white">
@@ -427,6 +462,48 @@ export function Footer() {
                         >
                             {t("siteFooter.stripDesc")}
                         </p>
+
+                        {newsletterState === "done" ? (
+                            <p className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 px-3.5 py-2.5 text-xs font-bold text-emerald-400">
+                                <Check className="h-3.5 w-3.5" />
+                                {t("siteFooter.newsletterDone")}
+                            </p>
+                        ) : (
+                            <form onSubmit={subscribeNewsletter} className="mt-3 flex max-w-sm gap-2">
+                                <input
+                                    type="email"
+                                    required
+                                    value={newsletterEmail}
+                                    onChange={(event) => {
+                                        setNewsletterEmail(event.target.value);
+                                        if (newsletterState === "error") setNewsletterState("idle");
+                                    }}
+                                    placeholder={t("siteFooter.newsletterPh")}
+                                    aria-label={t("siteFooter.newsletterPh")}
+                                    className="h-10 min-w-0 flex-1 rounded-xl border border-white/15 bg-white/[0.06] px-3.5 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-[#F47822]/60"
+                                />
+
+                                <button
+                                    type="submit"
+                                    disabled={newsletterState === "sending"}
+                                    className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-[#F47822] px-4 text-xs font-bold text-white transition hover:bg-[#E96D18] disabled:opacity-60"
+                                >
+                                    {newsletterState === "sending" ? (
+                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                    ) : (
+                                        <Send className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                                    )}
+
+                                    {t("siteFooter.newsletterCta")}
+                                </button>
+                            </form>
+                        )}
+
+                        {newsletterState === "error" && (
+                            <p role="alert" className="mt-2 text-[11px] font-semibold text-red-400">
+                                {t("siteFooter.newsletterFail")}
+                            </p>
+                        )}
 
                     </div>
 

@@ -50,7 +50,7 @@ export function LessonFeedback({
           <h2 className="text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("lessonPlayer.feedback.title")}</h2>
         </div>
       </div>
-      <p className="mt-4 text-sm text-gray-500">
+      <p className="mt-4 text-sm text-gray-500 dark:text-white/55">
         {t("lessonPlayer.feedback.desc")}
       </p>
       <div className="mt-6 flex items-center gap-1">
@@ -67,7 +67,7 @@ export function LessonFeedback({
           </button>
         ))}
         {rating === 0 && !sent && (
-          <span className="ms-2 text-xs text-gray-400">
+          <span className="ms-2 text-xs text-gray-400 dark:text-white/40">
             {t("lessonPlayer.feedback.ratingHint")}
           </span>
         )}
@@ -79,7 +79,7 @@ export function LessonFeedback({
         className="mt-5 min-h-32 w-full rounded-2xl border border-gray-100 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#232329] p-4 text-sm outline-none transition focus:border-[#F47822]/50 focus:ring-4 focus:ring-[#F47822]/10"
       />
       <div className="mt-4 flex items-center justify-between gap-3">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-gray-400 dark:text-white/40">
           {t("lessonPlayer.feedback.privacy")}
         </span>
         <button
@@ -93,7 +93,7 @@ export function LessonFeedback({
         </button>
       </div>
       {error && (
-        <p role="alert" className="mt-4 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-semibold text-red-600">
+        <p role="alert" className="mt-4 rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400">
           {error}
         </p>
       )}

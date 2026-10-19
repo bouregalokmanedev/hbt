@@ -21,10 +21,10 @@ export function AuthShell({ children }: AuthShellProps) {
   return (
     <main
       dir={isArabic ? "rtl" : "ltr"}
-      className="h-[100dvh] w-full overflow-hidden bg-[#F3F3F3]"
+      className="h-[100dvh] w-full overflow-hidden bg-[#F3F3F3] dark:bg-[#101013]"
     >
       <div className="flex h-full w-full items-center justify-center p-0 sm:p-4 lg:p-6">
-        <div className="relative flex h-full w-full overflow-hidden bg-[#F7F7F7] shadow-none sm:h-[min(900px,calc(100dvh-2rem))] sm:max-w-[1440px] sm:rounded-[28px] sm:shadow-[0_24px_80px_rgba(58,58,58,0.12)] lg:h-[min(860px,calc(100dvh-3rem))]">
+        <div className="relative flex h-full w-full overflow-hidden bg-[#F7F7F7] dark:bg-[#101013] shadow-none sm:h-[min(900px,calc(100dvh-2rem))] sm:max-w-[1440px] sm:rounded-[28px] sm:shadow-[0_24px_80px_rgba(58,58,58,0.12)] lg:h-[min(860px,calc(100dvh-3rem))]">
           {/* =====================================================
                         BRAND PANEL
                     ===================================================== */}
@@ -81,7 +81,7 @@ export function AuthShell({ children }: AuthShellProps) {
                         RIGHT SIDE
                     ===================================================== */}
 
-          <section className="relative flex h-full min-w-0 flex-1 flex-col bg-[#F7F7F7]">
+          <section className="relative flex h-full min-w-0 flex-1 flex-col bg-[#F7F7F7] dark:bg-[#101013]">
             {/* Language switch */}
             <div className="absolute right-5 top-5 z-30 sm:right-7 sm:top-7 rtl:left-5 rtl:right-auto sm:rtl:left-7">
               <AuthLanguageSwitch />

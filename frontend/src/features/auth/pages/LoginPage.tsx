@@ -112,6 +112,13 @@ export function LoginPage() {
   };
   const [mfaCode, setMfaCode] = useState("");
   const [lastLoginEmail, setLastLoginEmail] = useState("");
+  /*
+   * Once the learner abandons the challenge ("Use a different account"),
+   * latch it so no lingering two-factor store error, rehydrating
+   * sessionStorage key, or late-resolving login() 423 can snap the form
+   * back to the six-digit input. Only a brand-new login attempt clears it.
+   */
+  const mfaAbandonedRef = useRef(false);
   const [resending, setResending] = useState(false);
   const [resentNote, setResentNote] = useState(false);
   const [resendFailed, setResendFailed] = useState(false);
@@ -123,11 +130,14 @@ export function LoginPage() {
   const [verificationCooldown, setVerificationCooldown] = useState(0);
   const challengeEmail =
     mfaEmail ||
-    (lastLoginEmail && error?.toLowerCase().includes("two-factor")
+    (!mfaAbandonedRef.current &&
+    lastLoginEmail &&
+    error?.toLowerCase().includes("two-factor")
       ? lastLoginEmail
       : null);
 
   useEffect(() => {
+    if (mfaAbandonedRef.current) return;
     if (lastLoginEmail && error?.toLowerCase().includes("two-factor")) {
       setMfaEmail(lastLoginEmail);
       setMfaCode("");
@@ -137,6 +147,7 @@ export function LoginPage() {
   // Recover a challenge that hit sessionStorage after this instance mounted
   // (e.g. store error landed before the 423 catch wrote the email).
   useEffect(() => {
+    if (mfaAbandonedRef.current) return;
     if (mfaEmail || !error?.toLowerCase().includes("two-factor")) return;
     try {
       const stored = sessionStorage.getItem("hbt:mfa-email");
@@ -202,6 +213,8 @@ export function LoginPage() {
   };
 
   const onSubmit = async (values: LoginForm) => {
+    // A genuine new attempt re-arms the challenge flow.
+    mfaAbandonedRef.current = false;
     clearError();
     setVerificationResent(false);
     setVerificationResendFailed(false);
@@ -235,7 +248,7 @@ export function LoginPage() {
        * We intentionally don't navigate
        * when authentication fails.
        */
-      if (isMfaChallenge(caught)) {
+      if (isMfaChallenge(caught) && !mfaAbandonedRef.current) {
         setMfaEmail(values.email.trim());
         clearError();
       }
@@ -292,10 +305,10 @@ export function LoginPage() {
         {challengeEmail ? (
           <form onSubmit={submitMfa} className="space-y-4">
             <div className="rounded-2xl border border-[#F47822]/20 bg-[#F47822]/5 p-4">
-              <p className="text-sm font-bold text-[#3A3A3A]">
+              <p className="text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                 {t.login.mfaTitle}
               </p>
-              <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60">
+              <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60 dark:text-white/60">
                 {t.login.mfaDescription.replace("{{email}}", challengeEmail)}
               </p>
             </div>
@@ -328,18 +341,19 @@ export function LoginPage() {
               {resending ? t.login.mfaResending : t.login.mfaResend}
             </button>
             {resentNote && (
-              <p role="status" className="text-center text-xs font-semibold text-emerald-600">
+              <p role="status" className="text-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 {t.login.mfaResent}
               </p>
             )}
             {resendFailed && (
-              <p role="alert" className="text-center text-xs font-semibold text-red-600">
+              <p role="alert" className="text-center text-xs font-semibold text-red-600 dark:text-red-400">
                 {t.login.mfaResendFail}
               </p>
             )}
             <button
               type="button"
               onClick={() => {
+                mfaAbandonedRef.current = true;
                 setMfaEmail(null);
                 setMfaCode("");
                 setLastLoginEmail("");
@@ -347,14 +361,14 @@ export function LoginPage() {
                 setResendFailed(false);
                 clearError();
               }}
-              className="w-full text-xs font-semibold text-[#3A3A3A]/55 transition hover:text-[#F47822]"
+              className="w-full text-xs font-semibold text-[#3A3A3A]/55 dark:text-white/55 transition hover:text-[#F47822]"
             >
               {t.login.mfaDifferentAccount}
             </button>
             {error && (
               <div
                 role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
               >
                 {error}
               </div>
@@ -396,10 +410,10 @@ export function LoginPage() {
             />
 
             <div className="flex items-center justify-between gap-4">
-              <label className="flex items-center gap-2 text-xs text-[#3A3A3A]/60">
+              <label className="flex items-center gap-2 text-xs text-[#3A3A3A]/60 dark:text-white/60">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-[#3A3A3A]/20 accent-[#F47822]"
+                  className="h-4 w-4 rounded border-[#3A3A3A]/20 dark:border-white/20 accent-[#F47822]"
                   {...register("remember")}
                 />
 
@@ -417,7 +431,7 @@ export function LoginPage() {
             {verificationNote === "verified" && (
               <div
                 role="status"
-                className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
+                className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-700 dark:text-emerald-400"
               >
                 {t.login.emailVerified}
               </div>
@@ -426,7 +440,7 @@ export function LoginPage() {
             {verificationNote === "invalid" && (
               <div
                 role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
               >
                 {t.login.verifyLinkInvalid}
               </div>
@@ -435,7 +449,7 @@ export function LoginPage() {
             {bannerMessage && (
               <div
                 role="alert"
-                className="space-y-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                className="space-y-2 rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
               >
                 <p>{bannerMessage}</p>
 
@@ -454,7 +468,7 @@ export function LoginPage() {
                       type="button"
                       onClick={() => void resendVerificationEmail()}
                       disabled={verificationResending || verificationCooldown > 0}
-                      className="block w-full rounded-lg border border-[#F47822]/30 bg-white px-3 py-2 text-xs font-semibold text-[#F47822] transition hover:bg-[#FFF8F4] disabled:cursor-not-allowed disabled:opacity-60"
+                      className="block w-full rounded-lg border border-[#F47822]/30 bg-white dark:bg-[#1b1b20] px-3 py-2 text-xs font-semibold text-[#F47822] transition hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {verificationCooldown > 0
                         ? `${t.errors.resendVerificationWait} ${verificationCooldown}s`
@@ -464,13 +478,13 @@ export function LoginPage() {
                     </button>
 
                     {verificationResent && (
-                      <p role="status" className="text-xs font-semibold text-emerald-600">
+                      <p role="status" className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                         {t.errors.resendVerificationSent}
                       </p>
                     )}
 
                     {verificationResendFailed && (
-                      <p role="alert" className="text-xs font-semibold text-red-600">
+                      <p role="alert" className="text-xs font-semibold text-red-600 dark:text-red-400">
                         {t.errors.resendVerificationFailed}
                       </p>
                     )}
@@ -490,26 +504,26 @@ export function LoginPage() {
         )}
 
         <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-[#3A3A3A]/10" />
+          <div className="h-px flex-1 bg-[#3A3A3A]/10 dark:bg-white/10" />
 
-          <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#3A3A3A]/35">
+          <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#3A3A3A]/35 dark:text-white/35">
             OR
           </span>
 
-          <div className="h-px flex-1 bg-[#3A3A3A]/10" />
+          <div className="h-px flex-1 bg-[#3A3A3A]/10 dark:bg-white/10" />
         </div>
 
         <button
           type="button"
           onClick={handleGoogleAuth}
-          className="flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-[#3A3A3A]/10 bg-white text-sm font-medium text-[#3A3A3A] transition hover:bg-[#F3F3F3] focus:outline-none focus:ring-4 focus:ring-[#F47822]/10"
+          className="flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-sm font-medium text-[#3A3A3A] transition hover:bg-[#F3F3F3] dark:bg-[#101013] focus:outline-none focus:ring-4 focus:ring-[#F47822]/10"
         >
           <GoogleIcon />
 
           <span>{t.common.continueWithGoogle}</span>
         </button>
 
-        <div className="mt-5 text-center text-sm text-[#3A3A3A]/60">
+        <div className="mt-5 text-center text-sm text-[#3A3A3A]/60 dark:text-white/60">
           {t.common.noAccount}{" "}
           <Link
             to={`/register${next ? `?next=${encodeURIComponent(next)}` : ""}`}
@@ -568,7 +582,7 @@ function OtpInput({
 
   return (
     <div>
-      <p className="mb-2 text-xs font-semibold text-[#3A3A3A]/65">
+      <p className="mb-2 text-xs font-semibold text-[#3A3A3A]/65 dark:text-white/65">
         {label}
       </p>
       <div className="flex gap-2 sm:gap-3" dir="ltr">
@@ -598,11 +612,11 @@ function OtpInput({
               event.preventDefault();
               updateDigit(index, event.clipboardData.getData("text"));
             }}
-            className="h-14 min-w-0 flex-1 rounded-xl border border-[#3A3A3A]/12 bg-white text-center text-xl font-bold text-[#3A3A3A] outline-none transition-all duration-200 focus:border-[#F47822] focus:bg-[#FFF8F4] focus:ring-4 focus:ring-[#F47822]/10 disabled:cursor-not-allowed disabled:opacity-60"
+            className="h-14 min-w-0 flex-1 rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] text-center text-xl font-bold text-[#3A3A3A] outline-none transition-all duration-200 focus:border-[#F47822] focus:bg-[#FFF8F4] dark:bg-[#F47822]/10 focus:ring-4 focus:ring-[#F47822]/10 disabled:cursor-not-allowed disabled:opacity-60"
           />
         ))}
       </div>
-      <p className="mt-2 text-[11px] text-[#3A3A3A]/45">
+      <p className="mt-2 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
         {hint}
       </p>
     </div>

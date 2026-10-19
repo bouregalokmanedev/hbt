@@ -248,7 +248,7 @@ export function DashboardNavbar({ onMenuClick }: DashboardNavbarProps) {
                 "grid h-9 w-9 place-items-center rounded-xl border shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all",
                 customizing
                   ? "border-[#F47822]/50 bg-[#F47822] text-white"
-                  : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:bg-[#F47822]/[0.08]",
+                  : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/60 dark:text-white/60 hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:bg-[#F47822]/[0.08]",
               ].join(" ")}
             >
               <SlidersHorizontal className="h-4 w-4" />

@@ -31,17 +31,17 @@ export function InstructorStats({ data }: InstructorStatsProps) {
                 const isOrange = stat.tone === "orange";
 
                 return (
-                    <article key={stat.label} className="group rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(58,58,58,.09)]">
+                    <article key={stat.label} className="group rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(58,58,58,.09)]">
                         <div className="flex items-start justify-between gap-3">
                             <div>
-                                <p className="text-xs font-medium text-[#3A3A3A]/48">{stat.label}</p>
-                                <p className="mt-2 text-3xl font-semibold tracking-tight text-[#3A3A3A]">{stat.value}</p>
+                                <p className="text-xs font-medium text-[#3A3A3A]/48 dark:text-white/48">{stat.label}</p>
+                                <p className="mt-2 text-3xl font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">{stat.value}</p>
                             </div>
                             <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${isOrange ? "bg-[#F47822]/10 text-[#F47822]" : "bg-[#3A3A3A] text-white"}`}>
                                 <Icon className="h-4.5 w-4.5" />
                             </span>
                         </div>
-                        <p className="mt-4 border-t border-[#3A3A3A]/7 pt-3 text-[11px] leading-4 text-[#3A3A3A]/45">{stat.detail}</p>
+                        <p className="mt-4 border-t border-[#3A3A3A]/7 dark:border-white/7 pt-3 text-[11px] leading-4 text-[#3A3A3A]/45 dark:text-white/45">{stat.detail}</p>
                     </article>
                 );
             })}

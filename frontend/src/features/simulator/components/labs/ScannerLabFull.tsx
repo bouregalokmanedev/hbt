@@ -481,7 +481,7 @@ function ScannerLab({
 
     if (unavailable) {
         return (
-            <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 bg-white p-8 text-center dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-8 text-center dark:border-white/10 dark:bg-[#1b1b20]">
                 <div>
                     <p className="text-sm font-black text-[#3A3A3A] dark:text-white">{t("simulator.scannerLab.vehicleGoneTitle")}</p>
                     <p className="mx-auto mt-1 max-w-sm text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{t("simulator.scannerLab.vehicleGoneDesc")}</p>
@@ -498,7 +498,7 @@ function ScannerLab({
     }
     if (!engine || !state || !labData) {
         return (
-            <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
                 <div className="flex items-center gap-3 text-sm font-bold text-[#3A3A3A]/50 dark:text-white/50">
                     <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#F47822]/25 border-t-[#F47822]" />
                     {t("simulator.scannerLab.loadingBench")}
@@ -518,9 +518,9 @@ function ScannerLab({
     );
 
     return (
-        <div className="overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="overflow-hidden rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
             {completeNotice && (
-                <div className="flex items-start gap-3 border-b border-emerald-200/80 bg-emerald-50 px-4 py-3 shadow-[0_8px_24px_rgba(16,185,129,0.12)] dark:border-emerald-500/30 dark:bg-emerald-500/15">
+                <div className="flex items-start gap-3 border-b border-emerald-200/80 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 shadow-[0_8px_24px_rgba(16,185,129,0.12)] dark:border-emerald-500/30 dark:bg-emerald-500/15">
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-500 text-white">
                         <CheckCircle2 className="h-5 w-5" />
                     </span>
@@ -675,7 +675,7 @@ function SessionProgressStrip({
     onJump: (id: string) => void;
 }) {
     return (
-        <div className="border-b border-[#3A3A3A]/8 bg-[#FCFCFC] px-4 py-2.5 dark:border-white/8 dark:bg-white/[0.02]">
+        <div className="border-b border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-2.5 dark:border-white/8 dark:bg-white/[0.02]">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span className="font-mono text-[10px] font-black uppercase tracking-[0.16em] text-[#3A3A3A]/45 dark:text-white/45">
                     {t("simulator.scannerLab.progress.title")}
@@ -689,7 +689,7 @@ function SessionProgressStrip({
                             className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-mono text-[10px] font-black uppercase tracking-wide transition ${
                                 step.done
                                     ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
-                                    : "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/50 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:bg-white/[0.06] dark:text-white/50"
+                                    : "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/50 dark:text-white/50 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:bg-white/[0.06] dark:text-white/50"
                             }`}
                         >
                             {step.done ? (
@@ -750,7 +750,7 @@ function ReportLockedView({
                     {missing.map((step) => (
                         <li
                             key={step.id}
-                            className="flex items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 py-2 text-xs font-bold text-[#3A3A3A]/60 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/60"
+                            className="flex items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-3 py-2 text-xs font-bold text-[#3A3A3A]/60 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/60"
                         >
                             <span className="grid h-4 w-4 place-items-center rounded-full border border-current text-[9px]">
                                 {steps.findIndex((s) => s.id === step.id) + 1}
@@ -805,7 +805,7 @@ function DashboardView({
                             { label: t("simulator.scannerLab.dash.os"), value: `HB-OS 4.2.1 · ${t("simulator.scannerLab.dash.updates", { n: 3 })}`, live: false },
                             { label: t("simulator.scannerLab.dash.coverage"), value: "142 brands · 2026.7", live: false },
                         ].map((chip) => (
-                            <div key={chip.label} className="rounded-2xl border border-[#3A3A3A]/10 bg-white px-4 py-2.5 dark:border-white/10 dark:bg-[#1b1b20]">
+                            <div key={chip.label} className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2.5 dark:border-white/10 dark:bg-[#1b1b20]">
                                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">{chip.label}</p>
                                 <p className="mt-1 flex items-center gap-1.5 font-mono text-[13px] font-bold text-[#3A3A3A] dark:text-white">
                                     {chip.live && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />}
@@ -821,7 +821,7 @@ function DashboardView({
                 <div
                     aria-disabled="true"
                     data-testid="intelligent-diagnostics-disabled"
-                    className="rounded-[20px] border border-dashed border-[#3A3A3A]/15 bg-[#0f1115]/60 p-6 text-start text-white/50 shadow-none dark:border-white/10"
+                    className="rounded-[20px] border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-[#0f1115]/60 p-6 text-start text-white/50 shadow-none dark:border-white/10"
                 >
                     <div className="flex items-start justify-between">
                         <Cloud className="h-7 w-7 text-white/30" />
@@ -849,11 +849,11 @@ function DashboardView({
                 <button
                     type="button"
                     onClick={onOpenRoutines}
-                    className="group rounded-[20px] border border-[#3A3A3A]/10 bg-white p-6 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-[#F47822]/30 dark:border-white/10 dark:bg-[#1b1b20]"
+                    className="group rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-[#F47822]/30 dark:border-white/10 dark:bg-[#1b1b20]"
                 >
                     <div className="flex items-start justify-between">
                         <RefreshCcw className="h-7 w-7 text-[#2563eb]" />
-                        <span className="rounded-md border border-[#3A3A3A]/15 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                        <span className="rounded-md border border-[#3A3A3A]/15 dark:border-white/15 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                             {t("simulator.scannerLab.dash.routines", { n: ROUTINES.length })}
                         </span>
                     </div>
@@ -931,7 +931,7 @@ function DashboardView({
                         {t("simulator.scannerLab.dash.viewAll")}
                     </Link>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+                <div className="mt-3 flex flex-wrap items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
                     <span className="flex items-center gap-2 font-mono text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                         <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                         {t("simulator.scannerLab.statusbar.connected")}
@@ -940,7 +940,7 @@ function DashboardView({
                         <button
                             type="button"
                             onClick={() => onOpenWorkspace("network")}
-                            className="rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white"
+                            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white"
                         >
                             {t("simulator.scannerLab.statusbar.coverage")}
                         </button>
@@ -954,7 +954,7 @@ function DashboardView({
                     </span>
                 </div>
                 {recent.length === 0 ? (
-                    <p className="mt-3 rounded-2xl border border-dashed border-[#3A3A3A]/15 bg-white p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
+                    <p className="mt-3 rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
                         {t("simulator.scannerLab.dash.noSessions")}
                     </p>
                 ) : (
@@ -966,7 +966,7 @@ function DashboardView({
                                 <Link
                                     key={session.id}
                                     to={session.status === "in_progress" ? `/diagnostics/attempts/${session.id}` : `/diagnostics/attempts/${session.id}/result`}
-                                    className="group flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 bg-white p-4 transition hover:border-[#F47822]/30 hover:shadow-sm dark:border-white/10 dark:bg-[#1b1b20]"
+                                    className="group flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 transition hover:border-[#F47822]/30 hover:shadow-sm dark:border-white/10 dark:bg-[#1b1b20]"
                                 >
                                     <span className="h-10 w-1 shrink-0 rounded-full bg-red-500" />
                                     <span className="min-w-0 flex-1">
@@ -981,7 +981,7 @@ function DashboardView({
                                             <span className="block font-mono text-[9px] font-bold uppercase tracking-wider text-[#3A3A3A]/40 dark:text-white/40">{t("simulator.scannerLab.dtc")}</span>
                                         </span>
                                     )}
-                                    <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/25 transition group-hover:translate-x-0.5 group-hover:text-[#F47822] rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+                                    <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/25 dark:text-white/25 transition group-hover:translate-x-0.5 group-hover:text-[#F47822] rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
                                 </Link>
                             );
                         })}
@@ -1014,7 +1014,7 @@ function FunctionCard({
                     </span>
                 )}
                 {locked && (
-                    <span className="shrink-0 rounded-md bg-[#3A3A3A]/[.06] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40">
+                    <span className="shrink-0 rounded-md bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40">
                         <Lock className="h-3 w-3" />
                     </span>
                 )}
@@ -1023,10 +1023,10 @@ function FunctionCard({
             <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">{desc}</p>
         </>
     );
-    const cls = `rounded-[20px] border bg-white p-5 text-start transition dark:bg-[#1b1b20] ${
+    const cls = `rounded-[20px] border bg-white dark:bg-[#1b1b20] p-5 text-start transition dark:bg-[#1b1b20] ${
         locked
-            ? "cursor-not-allowed border-dashed border-[#3A3A3A]/15 opacity-80 dark:border-white/15"
-            : "border-[#3A3A3A]/10 hover:-translate-y-0.5 hover:border-[#F47822]/30 hover:shadow-[0_10px_28px_rgba(0,0,0,0.08)] dark:border-white/10"
+            ? "cursor-not-allowed border-dashed border-[#3A3A3A]/15 dark:border-white/15 opacity-80 dark:border-white/15"
+            : "border-[#3A3A3A]/10 dark:border-white/10 hover:-translate-y-0.5 hover:border-[#F47822]/30 hover:shadow-[0_10px_28px_rgba(0,0,0,0.08)] dark:border-white/10"
     }`;
     if (to) {
         return <Link to={to} className={cls}>{inner}</Link>;
@@ -1056,29 +1056,29 @@ function RoutinesView({
             <button
                 type="button"
                 onClick={onBack}
-                className="group inline-flex w-fit items-center gap-2 rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-sm font-bold text-[#3A3A3A]/60 shadow-sm transition-all hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                className="group inline-flex w-fit items-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-sm font-bold text-[#3A3A3A]/60 dark:text-white/60 shadow-sm transition-all hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
             >
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-[#3A3A3A]/[.05] transition-colors group-hover:bg-[#F47822]/10 dark:bg-white/[0.06]">
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-[#3A3A3A]/[.05] dark:bg-white/[.05] transition-colors group-hover:bg-[#F47822]/10 dark:bg-white/[0.06]">
                     <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
                 </span>
                 {t("simulator.scannerLab.back")}
             </button>
-            <div className="rounded-[20px] border border-[#3A3A3A]/10 bg-white p-6 dark:border-white/10 dark:bg-[#1b1b20]">
+            <div className="rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 dark:border-white/10 dark:bg-[#1b1b20]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h3 className="text-lg font-black text-[#3A3A3A] dark:text-white">{t("simulator.scannerLab.dash.reset")}</h3>
                         <p className="mt-1 text-sm text-[#3A3A3A]/55 dark:text-white/55">{t("simulator.scannerLab.dash.resetDesc")}</p>
                     </div>
-                    <span className="rounded-md border border-[#3A3A3A]/15 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                    <span className="rounded-md border border-[#3A3A3A]/15 dark:border-white/15 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                         {t("simulator.scannerLab.dash.routines", { n: ROUTINES.length })}
                     </span>
                 </div>
                 <ul className="mt-5 grid gap-2 sm:grid-cols-2">
                     {ROUTINES.map((name, i) => (
-                        <li key={name} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/[.07] bg-[#F8F7F6] px-4 py-3 dark:border-white/[0.07] dark:bg-white/[0.03]">
+                        <li key={name} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/[.07] dark:border-white/[.07] bg-[#F8F7F6] px-4 py-3 dark:border-white/[0.07] dark:bg-white/[0.03]">
                             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#F47822]/10 font-mono text-[11px] font-black text-[#F47822]">{String(i + 1).padStart(2, "0")}</span>
                             <span className="min-w-0 flex-1 truncate text-sm font-bold text-[#3A3A3A] dark:text-white">{name}</span>
-                            <span className="shrink-0 rounded-md bg-[#3A3A3A]/[.06] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40">
+                            <span className="shrink-0 rounded-md bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40">
                                 {t("simulator.scannerLab.dash.soon")}
                             </span>
                         </li>
@@ -1151,18 +1151,18 @@ function WorkspaceView(props: {
             <button
                 type="button"
                 onClick={onBack}
-                className="group inline-flex w-fit items-center gap-2 rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-sm font-bold text-[#3A3A3A]/60 shadow-sm transition-all hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                className="group inline-flex w-fit items-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-sm font-bold text-[#3A3A3A]/60 dark:text-white/60 shadow-sm transition-all hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
             >
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-[#3A3A3A]/[.05] transition-colors group-hover:bg-[#F47822]/10 dark:bg-white/[0.06]">
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-[#3A3A3A]/[.05] dark:bg-white/[.05] transition-colors group-hover:bg-[#F47822]/10 dark:bg-white/[0.06]">
                     <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
                 </span>
                 {t("simulator.scannerLab.back")}
             </button>
-            <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 flex flex-wrap items-center gap-4 dark:border-white/8 dark:bg-[#1b1b20]">
+            <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 flex flex-wrap items-center gap-4 dark:border-white/8 dark:bg-[#1b1b20]">
                 <span className="rounded-full bg-[#0f1115] px-4 py-2 text-xs font-bold text-white">{vehicleTitle}</span>
                 <span className="text-sm text-[#3A3A3A]/50 dark:text-white/50" dir="ltr">{vehicleMeta}</span>
                 <span className="ml-auto flex items-center gap-3 text-sm font-bold">
-                    <span className={`h-2.5 w-2.5 rounded-full ${engineState.livePlay ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-[#3A3A3A]/20"}`} /> <span dir="ltr" className="tabular-nums">VBAT {engineState.live.VBAT?.value.toFixed(2) ?? "—"}V</span>
+                    <span className={`h-2.5 w-2.5 rounded-full ${engineState.livePlay ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-[#3A3A3A]/20 dark:bg-white/20"}`} /> <span dir="ltr" className="tabular-nums">VBAT {engineState.live.VBAT?.value.toFixed(2) ?? "—"}V</span>
                     <button onClick={() => engine.toggleLive()} className="rounded-full bg-[#F47822] px-3 py-1.5 text-white text-xs font-bold hover:bg-[#df6817]">{engineState.livePlay ? t("simulator.scannerLab.live") : t("simulator.scannerLab.paused")}</button>
                 </span>
                 <button onClick={() => { resetClearedCodes(vehicleKey); engine.startScan(); }} disabled={engineState.scanning} className="rounded-full bg-[#3A3A3A] px-4 py-2 text-sm font-black text-white disabled:opacity-40 hover:bg-black">{engineState.scanning ? `${t("simulator.scannerLab.scanning")} ${engineState.scanIdx}/21` : t("simulator.scannerLab.fullScan")}</button>
@@ -1274,15 +1274,15 @@ function WorkspaceView(props: {
             )}
             {tab === "graph" && <SignalGraph engine={engine} signals={plotted} onSignals={setPlotted} />}
             {tab === "tree" && (
-                <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                     <p className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{t("simulator.scannerLab.treeTitle", { n: treeSteps.length })} {engineState.treeStep + 1}/{treeSteps.length}</p>
                     <p className="mt-2 text-[11px] leading-5 text-[#3A3A3A]/55 dark:text-white/55">{t("simulator.scannerLab.treeHelp")}</p>
                     {engineState.treeFeedback && (
                         <p
                             className={`mt-3 rounded-xl border px-4 py-2.5 text-xs font-bold ${
                                 engineState.treeFeedback.ok
-                                    ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
-                                    : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
+                                    ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+                                    : "border-amber-200 bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
                             }`}
                         >
                             {!engineState.treeFeedback.ok
@@ -1293,7 +1293,7 @@ function WorkspaceView(props: {
                         </p>
                     )}
                     {engineState.treeFinished && (
-                        <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-black text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                        <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-2.5 text-xs font-black text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
                             {t("simulator.scannerLab.treeFinished")}
                         </p>
                     )}
@@ -1304,11 +1304,11 @@ function WorkspaceView(props: {
                             const failed = done && record?.verdict === "fail";
                             const active = i === engineState.treeStep && !engineState.treeFinished;
                             return (
-                                <div key={step.id} className={`rounded-xl border p-4 ${failed ? "border-red-300 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10" : active ? "border-[#F47822] bg-[#FFF7ED] shadow-sm dark:bg-[#F47822]/[0.07]" : done ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/10" : "border-[#3A3A3A]/8 bg-[#FCFCFC] dark:border-white/8 dark:bg-white/[0.03]"}`}>
+                                <div key={step.id} className={`rounded-xl border p-4 ${failed ? "border-red-300 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10" : active ? "border-[#F47822] bg-[#FFF7ED] shadow-sm dark:bg-[#F47822]/[0.07]" : done ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/10" : "border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:border-white/8 dark:bg-white/[0.03]"}`}>
                                     <div className="flex items-center gap-3">
-                                        <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-black ${failed ? "bg-red-500 text-white" : done ? "bg-emerald-500 text-white" : active ? "bg-[#F47822] text-white" : "bg-white border border-[#3A3A3A]/10 text-[#3A3A3A]/30 dark:bg-white/10 dark:border-white/10 dark:text-white/40"}`}>{done ? "✓" : i + 1}</span>
+                                        <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-black ${failed ? "bg-red-500 text-white" : done ? "bg-emerald-500 text-white" : active ? "bg-[#F47822] text-white" : "bg-white dark:bg-[#1b1b20] border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/30 dark:bg-white/10 dark:border-white/10 dark:text-white/40"}`}>{done ? "✓" : i + 1}</span>
                                         <span className="flex-1 text-sm font-bold leading-5 text-[#3A3A3A] dark:text-white">{step.label}</span>
-                                        <span className="hidden sm:inline font-mono text-xs font-bold text-[#3A3A3A]/40 px-2 py-1 rounded-full bg-white border border-[#3A3A3A]/10 dark:bg-white/10 dark:border-white/10 dark:text-white/50" dir="ltr">{step.expected}</span>
+                                        <span className="hidden sm:inline font-mono text-xs font-bold text-[#3A3A3A]/40 dark:text-white/40 px-2 py-1 rounded-full bg-white dark:bg-[#1b1b20] border border-[#3A3A3A]/10 dark:bg-white/10 dark:border-white/10 dark:text-white/50" dir="ltr">{step.expected}</span>
                                     </div>
                                     {active && (
                                         <div className="mt-3 flex flex-wrap items-center gap-2 pl-10">
@@ -1320,18 +1320,18 @@ function WorkspaceView(props: {
                                                     <button onClick={() => engine.treeVerdict(false)} className="rounded-full bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700">{t("simulator.scannerLab.judgeFail")}</button>
                                                 </>
                                             )}
-                                            <span dir="ltr" className="rounded-full bg-white border border-[#3A3A3A]/10 px-3 py-1 font-mono text-xs font-bold text-[#3A3A3A] dark:bg-white/10 dark:border-white/10 dark:text-white">{engineState.treeMeasured ? step.measure : "—"}</span>
+                                            <span dir="ltr" className="rounded-full bg-white dark:bg-[#1b1b20] border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1 font-mono text-xs font-bold text-[#3A3A3A] dark:bg-white/10 dark:border-white/10 dark:text-white">{engineState.treeMeasured ? step.measure : "—"}</span>
                                         </div>
                                     )}
                                 </div>
                             );
                         })}
                     </div>
-                    <div className="mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm dark:bg-emerald-500/10 dark:border-emerald-500/20"><CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" /><span className="text-emerald-800 font-medium dark:text-emerald-300">{t("simulator.scannerLab.gradedNote")}</span></div>
+                    <div className="mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 px-3 py-2 text-sm dark:bg-emerald-500/10 dark:border-emerald-500/20"><CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" /><span className="text-emerald-800 font-medium dark:text-emerald-300">{t("simulator.scannerLab.gradedNote")}</span></div>
                 </div>
             )}
             {tab === "training" && (
-                <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{trainingSession?.title ?? t("simulator.scannerLab.trainingTitle")}</p>
                         <p className="font-mono text-[11px] font-bold text-[#3A3A3A]/45 dark:text-white/45" dir="ltr">
@@ -1356,14 +1356,14 @@ function WorkspaceView(props: {
                             />
                         ))}
                     </div>
-                    <div className="mt-4 rounded-xl bg-[#FFF7ED] p-4 text-sm leading-6 text-[#3A3A3A]/70 border border-[#F47822]/10 dark:bg-[#F47822]/[0.07] dark:text-white/70">{trainingDesc}</div>
+                    <div className="mt-4 rounded-xl bg-[#FFF7ED] p-4 text-sm leading-6 text-[#3A3A3A]/70 dark:text-white/70 border border-[#F47822]/10 dark:bg-[#F47822]/[0.07] dark:text-white/70">{trainingDesc}</div>
                     {engineState.tFinished ? (
                         <div className="mt-4 space-y-4">
                             <div
                                 className={`rounded-xl border px-4 py-3 text-sm font-bold ${
                                     engineState.tScore && engineState.tScore.accuracy >= 70
-                                        ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
-                                        : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
+                                        ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+                                        : "border-amber-200 bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
                                 }`}
                             >
                                 {t("simulator.scannerLab.trainingResult.sessionComplete", {
@@ -1377,7 +1377,7 @@ function WorkspaceView(props: {
                                     { label: t("simulator.scannerLab.trainingResult.process"), value: engineState.tScore?.process },
                                     { label: t("simulator.scannerLab.trainingResult.time"), value: engineState.tScore?.time },
                                 ].map((s) => (
-                                    <div key={s.label} className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3 text-center dark:border-white/10 dark:bg-white/[0.03]">
+                                    <div key={s.label} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3 text-center dark:border-white/10 dark:bg-white/[0.03]">
                                         <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{s.label}</p>
                                         <p dir="ltr" className="mt-1 font-mono text-lg font-black text-[#3A3A3A] dark:text-white">{s.value ?? "—"}</p>
                                     </div>
@@ -1403,12 +1403,12 @@ function WorkspaceView(props: {
                             )}
                             {engineState.tAnswer === null ? (
                                 <div className="mt-4 flex flex-wrap gap-2">
-                                    <button onClick={() => engine.trainingPrev()} disabled={engineState.tStep === 0} className="rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-xs font-bold hover:bg-[#FCFCFC] disabled:opacity-40 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white dark:hover:bg-white/10">{t("simulator.scannerLab.prev")}</button>
+                                    <button onClick={() => engine.trainingPrev()} disabled={engineState.tStep === 0} className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-bold hover:bg-[#FCFCFC] dark:bg-[#1b1b20] disabled:opacity-40 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white dark:hover:bg-white/10">{t("simulator.scannerLab.prev")}</button>
                                     {!stepHasQa && (
                                         <button onClick={() => engine.trainingCompleteStep()} className="rounded-full bg-[#3A3A3A] px-4 py-2 text-xs font-bold text-white hover:bg-black">{t("simulator.scannerLab.trainingResult.markComplete")}</button>
                                     )}
                                     <button onClick={() => engine.trainingNext()} disabled={engineState.tStep >= trainingTotal - 1} className="rounded-full bg-[#3A3A3A] px-4 py-2 text-xs font-bold text-white hover:bg-black disabled:opacity-40">{t("simulator.scannerLab.nextStep")}</button>
-                                    <button onClick={() => engine.useTrainingHint()} className="rounded-full border border-dashed border-[#3A3A3A]/20 px-4 py-2 text-xs font-bold hover:bg-[#FCFCFC] dark:border-white/20 dark:text-white dark:hover:bg-white/10">{t("simulator.scannerLab.hint")} · {t("simulator.scannerLab.trainingResult.hintsUsed", { n: engineState.tHints })}</button>
+                                    <button onClick={() => engine.useTrainingHint()} className="rounded-full border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-4 py-2 text-xs font-bold hover:bg-[#FCFCFC] dark:border-white/20 dark:text-white dark:hover:bg-white/10">{t("simulator.scannerLab.hint")} · {t("simulator.scannerLab.trainingResult.hintsUsed", { n: engineState.tHints })}</button>
                                 </div>
                             ) : (
                                 <div className="mt-4 space-y-3">
@@ -1424,10 +1424,10 @@ function WorkspaceView(props: {
                                                 disabled
                                                 className={`rounded-xl border p-4 text-left text-sm font-bold transition ${
                                                     uiIdx === stepCorrect
-                                                        ? "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                                                        ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
                                                         : uiIdx === engineState.tAnswer
-                                                          ? "border-red-300 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
-                                                          : "border-[#3A3A3A]/10 bg-white opacity-50 dark:border-white/10 dark:bg-[#1b1b20]"
+                                                          ? "border-red-300 bg-red-50 dark:bg-red-500/10 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
+                                                          : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] opacity-50 dark:border-white/10 dark:bg-[#1b1b20]"
                                                 }`}
                                             >
                                                 {opt}
@@ -1435,7 +1435,7 @@ function WorkspaceView(props: {
                                         ))}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
-                                        <button onClick={() => engine.trainingPrev()} disabled={engineState.tStep === 0} className="rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-xs font-bold hover:bg-[#FCFCFC] disabled:opacity-40 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white dark:hover:bg-white/10">{t("simulator.scannerLab.prev")}</button>
+                                        <button onClick={() => engine.trainingPrev()} disabled={engineState.tStep === 0} className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-bold hover:bg-[#FCFCFC] dark:bg-[#1b1b20] disabled:opacity-40 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white dark:hover:bg-white/10">{t("simulator.scannerLab.prev")}</button>
                                         <button
                                             onClick={() => engine.trainingNext()}
                                             disabled={engineState.tStep >= trainingTotal - 1}
@@ -1460,7 +1460,7 @@ function WorkspaceView(props: {
                                         <button
                                             key={`${opt}-${uiIdx}`}
                                             onClick={() => engine.submitTraining(uiIdx)}
-                                            className="rounded-xl border border-[#3A3A3A]/10 bg-white p-4 text-left text-sm font-bold transition hover:border-[#F47822]/30 hover:bg-[#FFFBF7] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                                            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4 text-left text-sm font-bold transition hover:border-[#F47822]/30 hover:bg-[#FFFBF7] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                                         >
                                             {opt}
                                         </button>

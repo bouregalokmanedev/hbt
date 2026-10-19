@@ -51,7 +51,7 @@ function SectionCard({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
-            className={`rounded-[24px] border border-[#3A3A3A]/10 bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-12px_rgba(16,24,40,0.08)] dark:border-white/10 dark:bg-[#1b1b20] ${className}`}
+            className={`rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-12px_rgba(16,24,40,0.08)] dark:border-white/10 dark:bg-[#1b1b20] ${className}`}
         >
             {children}
         </motion.section>
@@ -70,7 +70,7 @@ function StatCard({
     hint: string;
 }) {
     return (
-        <div className="group relative overflow-hidden rounded-[20px] border border-[#3A3A3A]/8 bg-[#FCFCFC] p-5 transition hover:border-[#F47822]/25 hover:shadow-[0_8px_20px_-12px_rgba(244,120,34,0.35)] dark:border-white/8 dark:bg-[#232329]">
+        <div className="group relative overflow-hidden rounded-[20px] border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] p-5 transition hover:border-[#F47822]/25 hover:shadow-[0_8px_20px_-12px_rgba(244,120,34,0.35)] dark:border-white/8 dark:bg-[#232329]">
             <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[#F47822]/[0.06] blur-xl transition group-hover:bg-[#F47822]/[0.12]" />
             <div className="relative grid h-9 w-9 place-items-center rounded-xl bg-[#F47822]/10">
                 <Icon className="h-4.5 w-4.5 text-[#F47822]" />
@@ -105,7 +105,7 @@ function IntakeField({
             className={`rounded-2xl border p-3.5 ${
                 ok
                     ? "border-emerald-200/80 bg-emerald-50 dark:border-emerald-500/25 dark:bg-emerald-500/10"
-                    : "border-[#3A3A3A]/8 bg-[#FCFCFC] dark:border-white/8 dark:bg-[#232329]"
+                    : "border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:border-white/8 dark:bg-[#232329]"
             }`}
         >
             <p
@@ -218,13 +218,13 @@ export function DiagnosticBriefingPage() {
         return (
             <main className="min-h-full bg-[#F8F7F6] p-8 dark:bg-[#101013]">
                 <div className="mx-auto max-w-[960px]">
-                    <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 dark:border-red-500/25 dark:bg-red-500/10">
+                    <div className="rounded-[24px] border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-6 dark:border-red-500/25 dark:bg-red-500/10">
                         <p className="text-sm font-black text-red-800 dark:text-red-300">
                             {error ?? t("diagnostics.briefing.notFound")}
                         </p>
                         <Link
                             to="/diagnostics"
-                            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-xs font-black text-red-700 shadow-sm ring-1 ring-red-200 hover:bg-red-100 dark:bg-white/10 dark:text-red-300 dark:ring-red-500/30 dark:hover:bg-white/15"
+                            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-black text-red-700 dark:text-red-400 shadow-sm ring-1 ring-red-200 hover:bg-red-100 dark:bg-white/10 dark:text-red-300 dark:ring-red-500/30 dark:hover:bg-white/15"
                         >
                             <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" />
                             {t("diagnostics.briefing.back")}
@@ -246,12 +246,12 @@ export function DiagnosticBriefingPage() {
                 >
                     <Link
                         to="/diagnostics"
-                        className="group inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-xs font-black text-[#3A3A3A]/60 shadow-sm transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                        className="group inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-black text-[#3A3A3A]/60 dark:text-white/60 shadow-sm transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
                     >
                         <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:translate-x-0.5" />
                         {t("diagnostics.briefing.back")}
                     </Link>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300">
                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                         {t("diagnostics.card.available")}
                     </span>
@@ -262,7 +262,7 @@ export function DiagnosticBriefingPage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                    className="mt-4 overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 bg-white shadow-[0_12px_40px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#1b1b20]"
+                    className="mt-4 overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_12px_40px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#1b1b20]"
                 >
                     <div className="grid lg:grid-cols-[1.15fr_0.85fr]">
                         <div className="relative overflow-hidden bg-[#0f1115] p-7 text-white sm:p-8">
@@ -317,7 +317,7 @@ export function DiagnosticBriefingPage() {
                         </div>
 
                         {/* Vehicle intake */}
-                        <div className="border-t border-[#3A3A3A]/8 bg-white p-6 dark:border-white/8 dark:bg-[#1b1b20] sm:p-7 lg:border-s lg:border-t-0">
+                        <div className="border-t border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-6 dark:border-white/8 dark:bg-[#1b1b20] sm:p-7 lg:border-s lg:border-t-0">
                             <div className="flex items-center justify-between gap-2">
                                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#3A3A3A]/40 dark:text-white/40">
                                     {t("diagnostics.briefing.intake")}
@@ -389,7 +389,7 @@ export function DiagnosticBriefingPage() {
                             <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#3A3A3A]/40 dark:text-white/40">
                                 {t("diagnostics.briefing.toolsRequired")}
                             </p>
-                            <span className="rounded-full bg-[#3A3A3A]/[0.06] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-wider text-[#3A3A3A]/50 dark:bg-white/[0.07] dark:text-white/50">
+                            <span className="rounded-full bg-[#3A3A3A]/[0.06] dark:bg-white/[0.06] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-wider text-[#3A3A3A]/50 dark:bg-white/[0.07] dark:text-white/50">
                                 {toolsToShow.length} / 5
                             </span>
                         </div>
@@ -433,7 +433,7 @@ export function DiagnosticBriefingPage() {
                                 </p>
                             </div>
                         </div>
-                        <span className="rounded-full border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider text-[#3A3A3A]/50 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/50">
+                        <span className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-wider text-[#3A3A3A]/50 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/50">
                             {scenario.steps.length} {t("diagnostics.card.steps")}
                         </span>
                     </div>
@@ -452,7 +452,7 @@ export function DiagnosticBriefingPage() {
                                 <span className="relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#F47822] text-[11px] font-black text-white shadow-[0_4px_12px_rgba(244,120,34,0.35)]">
                                     {i + 1}
                                 </span>
-                                <div className="min-w-0 flex-1 rounded-2xl border border-[#3A3A3A]/6 bg-[#FCFCFC] p-4 transition hover:border-[#F47822]/25 dark:border-white/6 dark:bg-[#232329]">
+                                <div className="min-w-0 flex-1 rounded-2xl border border-[#3A3A3A]/6 dark:border-white/6 bg-[#FCFCFC] dark:bg-[#1b1b20] p-4 transition hover:border-[#F47822]/25 dark:border-white/6 dark:bg-[#232329]">
                                     <div className="flex flex-wrap items-start justify-between gap-2">
                                         <p className="min-w-0 text-sm font-bold leading-5 text-[#3A3A3A] dark:text-[#ececef]">
                                             {step.title}
@@ -461,7 +461,7 @@ export function DiagnosticBriefingPage() {
                                             className={`shrink-0 rounded-full px-2.5 py-0.5 font-mono text-[9px] font-black uppercase tracking-wider ${
                                                 step.is_required
                                                     ? "bg-[#F47822]/10 text-[#F47822]"
-                                                    : "bg-[#3A3A3A]/[0.06] text-[#3A3A3A]/45 dark:bg-white/[0.07] dark:text-white/45"
+                                                    : "bg-[#3A3A3A]/[0.06] dark:bg-white/[0.06] text-[#3A3A3A]/45 dark:bg-white/[0.07] dark:text-white/45"
                                             }`}
                                         >
                                             {step.is_required
@@ -475,7 +475,7 @@ export function DiagnosticBriefingPage() {
                                         </p>
                                     ) : null}
                                     <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                                        <span className="inline-flex rounded-full border border-[#3A3A3A]/10 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/45 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/45">
+                                        <span className="inline-flex rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/45 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/45">
                                             {step.action_type}
                                         </span>
                                         {step.tool ? (
@@ -524,7 +524,7 @@ export function DiagnosticBriefingPage() {
                             ].map((item) => (
                                 <div
                                     key={item.title}
-                                    className="rounded-2xl border border-[#3A3A3A]/6 bg-[#FCFCFC] p-3.5 text-center transition hover:border-[#F47822]/25 dark:border-white/6 dark:bg-[#232329]"
+                                    className="rounded-2xl border border-[#3A3A3A]/6 dark:border-white/6 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3.5 text-center transition hover:border-[#F47822]/25 dark:border-white/6 dark:bg-[#232329]"
                                 >
                                     <div className="mx-auto grid h-8 w-8 place-items-center rounded-xl bg-[#3A3A3A]/[0.06] dark:bg-white/[0.07]">
                                         <item.icon className="h-4 w-4 text-[#3A3A3A]/50 dark:text-white/50" />
@@ -570,11 +570,11 @@ export function DiagnosticBriefingPage() {
             </div>
 
             {/* Sticky action bar — always available (mobile + desktop) */}
-            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#3A3A3A]/10 bg-white/90 px-4 py-3 shadow-[0_-8px_30px_rgba(16,24,40,0.08)] backdrop-blur-md dark:border-white/10 dark:bg-[#1b1b20]/90 lg:hidden">
+            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#3A3A3A]/10 dark:border-white/10 bg-white/90 px-4 py-3 shadow-[0_-8px_30px_rgba(16,24,40,0.08)] backdrop-blur-md dark:border-white/10 dark:bg-[#1b1b20]/90 lg:hidden">
                 <div className="mx-auto flex max-w-[1040px] items-center gap-3">
                     <Link
                         to="/diagnostics"
-                        className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl border border-[#3A3A3A]/12 px-4 py-3 text-xs font-black text-[#3A3A3A]/65 transition hover:border-[#3A3A3A]/30 hover:text-[#3A3A3A] dark:border-white/12 dark:text-white/65 dark:hover:text-white"
+                        className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl border border-[#3A3A3A]/12 dark:border-white/12 px-4 py-3 text-xs font-black text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#3A3A3A]/30 dark:border-white/30 hover:text-[#3A3A3A] dark:border-white/12 dark:text-white/65 dark:hover:text-white"
                     >
                         <ChevronLeft className="h-4 w-4 rtl:-scale-x-100" />
                         <span className="hidden sm:inline">{t("diagnostics.briefing.back")}</span>

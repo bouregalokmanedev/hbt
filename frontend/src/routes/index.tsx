@@ -25,6 +25,9 @@ import {
     supportRoutes,
 } from "./support.routes";
 import {
+    marketingRoutes,
+} from "./marketing.routes";
+import {
     adminRoutes,
 } from "./admin.routes";
 
@@ -35,6 +38,7 @@ export const router =
         ...dashboardRoutes,
         ...instructorRoutes,
         ...supportRoutes,
+        ...marketingRoutes,
         ...adminRoutes,
         {
             path: "*",

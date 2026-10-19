@@ -101,7 +101,7 @@ export function WiringView({
     );
 
     return (
-        <div className="flex h-full min-h-0 flex-col rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="flex h-full min-h-0 flex-col rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
             <div className="flex items-center justify-between gap-2">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#1F6AE1]">
                     {t("simulator.dmmLab.bench.wiringTitle")}
@@ -114,7 +114,7 @@ export function WiringView({
                         className={`rounded-lg border px-2 py-1 text-[10px] font-bold transition ${
                             showArt
                                 ? "border-[#1F6AE1] text-[#1F6AE1]"
-                                : "border-[#3A3A3A]/15 text-[#3A3A3A]/55 hover:text-[#3A3A3A] dark:border-white/15 dark:text-white/55"
+                                : "border-[#3A3A3A]/15 dark:border-white/15 text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A] dark:border-white/15 dark:text-white/55"
                         }`}
                     >
                         {t("simulator.dmmLab.bench.showPart")}
@@ -123,7 +123,7 @@ export function WiringView({
                         type="button"
                         onClick={() => setZoom((z) => Math.max(0.6, +(z - 0.15).toFixed(2)))}
                         aria-label={t("simulator.dmmLab.bench.zoomOut")}
-                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60"
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60"
                     >
                         <Minus className="h-3.5 w-3.5" />
                     </button>
@@ -131,7 +131,7 @@ export function WiringView({
                         type="button"
                         onClick={() => setZoom((z) => Math.min(1.8, +(z + 0.15).toFixed(2)))}
                         aria-label={t("simulator.dmmLab.bench.zoomIn")}
-                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60"
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60"
                     >
                         <Plus className="h-3.5 w-3.5" />
                     </button>
@@ -142,7 +142,7 @@ export function WiringView({
                             engine.clearProbes();
                         }}
                         aria-label={t("simulator.dmmLab.bench.zoomReset")}
-                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60"
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60"
                     >
                         <Maximize2 className="h-3.5 w-3.5" />
                     </button>
@@ -150,7 +150,7 @@ export function WiringView({
             </div>
 
             {showArt && (
-                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 bg-[#F8F9FB] px-3 py-2 dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#F8F9FB] px-3 py-2 dark:border-white/10 dark:bg-white/[0.03]">
                     <ComponentArt sym={comp.sym} className="h-14 w-20 shrink-0 text-[#3A3A3A] dark:text-white" />
                     <div className="min-w-0">
                         <p className="truncate text-xs font-black text-[#3A3A3A] dark:text-white">{comp.name}</p>

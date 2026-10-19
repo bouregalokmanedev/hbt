@@ -88,7 +88,7 @@ export function SkillGapCard({
         return (
             <section
                 data-testid="skill-gap-clear"
-                className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-500/20 dark:bg-emerald-500/[0.07]"
+                className="rounded-3xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 p-6 dark:border-emerald-500/20 dark:bg-emerald-500/[0.07]"
             >
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -106,7 +106,7 @@ export function SkillGapCard({
     return (
         <section data-testid="sharpen-card" className="rounded-3xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                     <AlertTriangle className="h-5 w-5" />
                 </div>
                 <div className="flex-1">

@@ -6,6 +6,7 @@ import { adminRoutes } from "@/routes/admin.routes";
 import { authRoutes } from "@/routes/auth.routes";
 import { dashboardRoutes } from "@/routes/dashboard.routes";
 import { instructorRoutes } from "@/routes/instructor.routes";
+import { marketingRoutes } from "@/routes/marketing.routes";
 import { publicRoutes } from "@/routes/public.routes";
 import { supportRoutes } from "@/routes/support.routes";
 
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
             ...dashboardRoutes,
             ...instructorRoutes,
             ...supportRoutes,
+            ...marketingRoutes,
             ...adminRoutes,
 
             {

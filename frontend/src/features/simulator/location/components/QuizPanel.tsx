@@ -34,9 +34,9 @@ export function QuizPanel({
   const ss = String(state.qElapsed % 60).padStart(2, "0");
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
-      <div className="flex items-center justify-between gap-2 border-b border-[#3A3A3A]/8 p-4 dark:border-white/8">
-        <span dir="ltr" className="inline-flex items-center gap-2 rounded-xl bg-[#3A3A3A]/[0.05] px-3 py-2 font-mono text-xs font-bold text-[#3A3A3A]/60 dark:bg-white/[0.06] dark:text-white/60">
+    <aside className="flex w-80 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <div className="flex items-center justify-between gap-2 border-b border-[#3A3A3A]/8 dark:border-white/8 p-4 dark:border-white/8">
+        <span dir="ltr" className="inline-flex items-center gap-2 rounded-xl bg-[#3A3A3A]/[0.05] dark:bg-white/[0.05] px-3 py-2 font-mono text-xs font-bold text-[#3A3A3A]/60 dark:bg-white/[0.06] dark:text-white/60">
           {tr("location.quiz.time", "TIME")}
           <span className="font-mono text-sm font-black tabular-nums text-[#3A3A3A] dark:text-white">{mm}:{ss}</span>
         </span>
@@ -77,7 +77,7 @@ export function QuizPanel({
             {trc("location.quiz.instruction", "Pick the correct hotspot.")}
           </p>
           {state.qTries > 0 ? (
-            <p className="mt-2 rounded-xl bg-red-50 px-2.5 py-1.5 text-sm font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">
+            <p className="mt-2 rounded-xl bg-red-50 dark:bg-red-500/10 px-2.5 py-1.5 text-sm font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">
               {trc("location.quiz.wrong", "Wrong — try again.")}
             </p>
           ) : null}

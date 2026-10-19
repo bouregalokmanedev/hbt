@@ -49,15 +49,15 @@ export function RouteError() {
     }
 
     return (
-        <main className="grid min-h-screen place-items-center bg-[#FAFAFA] px-6">
-            <div className="w-full max-w-md rounded-3xl border border-[#3A3A3A]/10 bg-white p-8 text-center shadow-[0_16px_45px_rgba(58,58,58,0.12)]">
-                <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-red-50">
+        <main className="grid min-h-screen place-items-center bg-[#FAFAFA] dark:bg-[#1b1b20] px-6">
+            <div className="w-full max-w-md rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-8 text-center shadow-[0_16px_45px_rgba(58,58,58,0.12)]">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-red-50 dark:bg-red-500/10">
                     <AlertTriangle className="h-6 w-6 text-red-500" />
                 </div>
-                <h1 className="mt-5 text-xl font-bold text-[#3A3A3A]">
+                <h1 className="mt-5 text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("errors.somethingWentWrong")}
                 </h1>
-                <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/55">
+                <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/55 dark:text-white/55">
                     {t("errors.tryAgainBody")}
                 </p>
                 <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
@@ -72,7 +72,7 @@ export function RouteError() {
                     <button
                         type="button"
                         onClick={() => navigate("/")}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 px-5 py-2.5 text-sm font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-5 py-2.5 text-sm font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                     >
                         <Home className="h-4 w-4" />
                         {t("errors.backHome")}

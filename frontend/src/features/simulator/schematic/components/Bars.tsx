@@ -9,12 +9,12 @@ const VIEWS: WorkspaceView[] = ["schematic", "circuit"];
 /** Top bar — brand + search + mode pills + layers + print/export. Matches platform header language. */
 export function TopBar({ engine, state, t }: { engine: SchematicWorkspaceEngine; state: WorkspaceState; t: any }) {
     return (
-        <div className="flex h-[52px] shrink-0 items-center gap-2 border-b border-[#3A3A3A]/10 bg-white px-3 dark:border-white/10 dark:bg-[#1b1b20] sm:gap-3 sm:px-4">
+        <div className="flex h-[52px] shrink-0 items-center gap-2 border-b border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 dark:border-white/10 dark:bg-[#1b1b20] sm:gap-3 sm:px-4">
             <button
                 type="button"
                 onClick={() => engine.toggleDrawer()}
                 aria-label={t("controls.menu")}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] text-[#3A3A3A]/70 transition hover:border-[#B85708]/20 hover:text-[#B85708] dark:border-white/10 dark:bg-white/[0.06] dark:text-white/70 lg:hidden"
+                className="grid h-9 w-9 place-items-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#B85708]/20 hover:text-[#B85708] dark:border-white/10 dark:bg-white/[0.06] dark:text-white/70 lg:hidden"
             >
                 <Menu className="h-4 w-4" />
             </button>
@@ -27,14 +27,14 @@ export function TopBar({ engine, state, t }: { engine: SchematicWorkspaceEngine;
             <button
                 type="button"
                 onClick={() => engine.openSearch()}
-                className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 text-start transition hover:border-[#B85708]/20 hover:bg-white dark:border-white/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.08] md:max-w-[320px]"
+                className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-3 text-start transition hover:border-[#B85708]/20 hover:bg-white dark:border-white/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.08] md:max-w-[320px]"
             >
                 <Search className="h-4 w-4 shrink-0 text-[#3A3A3A]/40 dark:text-white/40" />
                 <span className="hidden truncate text-sm font-medium text-[#3A3A3A]/50 dark:text-white/50 sm:inline">{t("search.button")}</span>
-                <span className="ms-auto hidden rounded-md border border-[#3A3A3A]/10 bg-white px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/40 dark:border-white/10 dark:bg-white/10 dark:text-white/40 sm:inline">⌘K</span>
+                <span className="ms-auto hidden rounded-md border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/40 dark:border-white/10 dark:bg-white/10 dark:text-white/40 sm:inline">⌘K</span>
             </button>
             <div className="flex-1 sm:hidden" />
-            <div className="flex items-center rounded-xl bg-[#3A3A3A]/[.06] p-1 dark:bg-white/[0.07]">
+            <div className="flex items-center rounded-xl bg-[#3A3A3A]/[.06] dark:bg-white/[.06] p-1 dark:bg-white/[0.07]">
                 {MODES.map((m) => (
                     <button
                         key={m}
@@ -45,7 +45,7 @@ export function TopBar({ engine, state, t }: { engine: SchematicWorkspaceEngine;
                             "rounded-lg px-2.5 py-1.5 text-xs font-black capitalize transition sm:px-3",
                             state.mode === m
                                 ? "bg-[#B85708] text-white shadow-sm"
-                                : "text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:text-white/60 dark:hover:text-white",
+                                : "text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:text-white/60 dark:hover:text-white",
                         )}
                     >
                         {t(`mode.${m}`)}
@@ -60,20 +60,20 @@ export function TopBar({ engine, state, t }: { engine: SchematicWorkspaceEngine;
                     "hidden h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition sm:inline-flex",
                     state.showLayers
                         ? "border-[#B85708]/20 bg-[#B85708]/10 text-[#B85708]"
-                        : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 hover:border-[#B85708]/20 hover:text-[#B85708] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60",
+                        : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/60 dark:text-white/60 hover:border-[#B85708]/20 hover:text-[#B85708] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60",
                 )}
             >
                 <Layers className="h-3.5 w-3.5" />
                 {t("layers.title")}
-                <span className={clsx("ms-1 hidden rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold lg:inline", state.showLayers ? "bg-[#B85708] text-white" : "bg-[#3A3A3A]/10 text-[#3A3A3A]/60 dark:bg-white/10")}>
+                <span className={clsx("ms-1 hidden rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold lg:inline", state.showLayers ? "bg-[#B85708] text-white" : "bg-[#3A3A3A]/10 dark:bg-white/10 text-[#3A3A3A]/60 dark:bg-white/10")}>
                     {engine.layersOnCount()}
                 </span>
             </button>
-            <button type="button" disabled aria-disabled className="hidden h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-bold text-[#3A3A3A]/25 dark:border-white/10 dark:bg-[#1b1b20] sm:inline-flex">
+            <button type="button" disabled aria-disabled className="hidden h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-bold text-[#3A3A3A]/25 dark:border-white/10 dark:bg-[#1b1b20] sm:inline-flex">
                 <Printer className="h-3.5 w-3.5" />
                 {t("controls.print")}
             </button>
-            <button type="button" disabled aria-disabled className="hidden h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-bold text-[#3A3A3A]/25 dark:border-white/10 dark:bg-[#1b1b20] sm:inline-flex">
+            <button type="button" disabled aria-disabled className="hidden h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-bold text-[#3A3A3A]/25 dark:border-white/10 dark:bg-[#1b1b20] sm:inline-flex">
                 <Download className="h-3.5 w-3.5" />
                 {t("controls.export")}
             </button>
@@ -102,7 +102,7 @@ export function SubBar({
     const progress = isTrace ? engine.traceProgress() : 0;
 
     return (
-        <div className="flex min-h-[44px] flex-wrap items-center gap-2 border-b border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 dark:border-white/10 dark:bg-[#232329] sm:gap-3 sm:px-4">
+        <div className="flex min-h-[44px] flex-wrap items-center gap-2 border-b border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 dark:border-white/10 dark:bg-[#232329] sm:gap-3 sm:px-4">
             <div className="hidden min-w-0 items-center gap-2 truncate text-sm text-[#3A3A3A]/50 dark:text-white/50 md:flex">
                 <LayoutGrid className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/30 dark:text-white/30" />
                 <span className="truncate">{t("systems.engine")}</span>
@@ -113,7 +113,7 @@ export function SubBar({
                 <span className="shrink-0 rounded-full border border-[#B85708]/20 bg-[#B85708]/10 px-2 py-0.5 font-mono text-[10px] font-black uppercase text-[#B85708]">{t("sheet")}</span>
             </div>
             <span className="hidden h-5 w-px bg-[#3A3A3A]/10 dark:bg-white/10 md:block" />
-            <div className="flex items-center rounded-xl bg-[#3A3A3A]/[.06] p-1 dark:bg-white/[0.07]">
+            <div className="flex items-center rounded-xl bg-[#3A3A3A]/[.06] dark:bg-white/[.06] p-1 dark:bg-white/[0.07]">
                 {VIEWS.map((v) => (
                     <button
                         key={v}
@@ -122,7 +122,7 @@ export function SubBar({
                         aria-current={state.view === v ? "page" : undefined}
                         className={clsx(
                             "rounded-lg px-3 py-1.5 text-xs font-bold capitalize transition",
-                            state.view === v ? "bg-white text-[#3A3A3A] shadow-sm dark:bg-[#1b1b20] dark:text-white" : "text-[#3A3A3A]/50 hover:text-[#3A3A3A] dark:text-white/50",
+                            state.view === v ? "bg-white dark:bg-[#1b1b20] text-[#3A3A3A] shadow-sm dark:bg-[#1b1b20] dark:text-white" : "text-[#3A3A3A]/50 dark:text-white/50 hover:text-[#3A3A3A] dark:text-white/50",
                         )}
                     >
                         {t(`view.${v}`)}
@@ -131,7 +131,7 @@ export function SubBar({
             </div>
             <div className="hidden items-center gap-2 lg:flex">
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/30 dark:text-white/30">{t("layout.label")}</span>
-                <div className="flex items-center rounded-xl bg-[#3A3A3A]/[.06] p-1 dark:bg-white/[0.07]">
+                <div className="flex items-center rounded-xl bg-[#3A3A3A]/[.06] dark:bg-white/[.06] p-1 dark:bg-white/[0.07]">
                     {(["a", "b", "c"] as const).map((l) => (
                         <button
                             key={l}
@@ -141,7 +141,7 @@ export function SubBar({
                             aria-current={layout === l ? "true" : undefined}
                             className={clsx(
                                 "grid h-7 w-7 place-items-center rounded-lg text-xs font-black uppercase transition",
-                                layout === l ? "bg-white text-[#B85708] shadow-sm dark:bg-[#1b1b20]" : "text-[#3A3A3A]/40 hover:text-[#3A3A3A] dark:text-white/40",
+                                layout === l ? "bg-white dark:bg-[#1b1b20] text-[#B85708] shadow-sm dark:bg-[#1b1b20]" : "text-[#3A3A3A]/40 dark:text-white/40 hover:text-[#3A3A3A] dark:text-white/40",
                             )}
                         >
                             {l}
@@ -151,7 +151,7 @@ export function SubBar({
             </div>
 
             {isTrace ? (
-                <div className="flex w-full items-center gap-2 rounded-xl border border-[#B85708]/20 bg-white px-3 py-2 dark:border-[#B85708]/20 dark:bg-[#1b1b20] md:w-auto">
+                <div className="flex w-full items-center gap-2 rounded-xl border border-[#B85708]/20 bg-white dark:bg-[#1b1b20] px-3 py-2 dark:border-[#B85708]/20 dark:bg-[#1b1b20] md:w-auto">
                     <span className="hidden font-mono text-[10px] font-black uppercase tracking-wide text-[#B85708] sm:inline">{t("trace.kicker")}</span>
                     <div className="flex items-center gap-1 overflow-x-auto">
                         {engine.traces().map((tr) => (
@@ -162,7 +162,7 @@ export function SubBar({
                                 aria-current={state.trace === tr.id ? "true" : undefined}
                                 className={clsx(
                                     "shrink-0 rounded-lg px-2.5 py-1 text-xs font-bold transition",
-                                    state.trace === tr.id ? "bg-[#B85708] text-white" : "bg-[#3A3A3A]/[.06] text-[#3A3A3A]/60 hover:bg-[#3A3A3A]/10 dark:bg-white/10 dark:text-white/60",
+                                    state.trace === tr.id ? "bg-[#B85708] text-white" : "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/60 dark:text-white/60 hover:bg-[#3A3A3A]/10 dark:bg-white/10 dark:text-white/60",
                                 )}
                             >
                                 {tc(tr.labelId)}
@@ -188,7 +188,7 @@ export function SubBar({
             ) : null}
 
             <div className="ms-auto hidden items-center gap-2 text-xs font-bold text-[#3A3A3A]/40 dark:text-white/40 sm:flex">
-                <span className="rounded-full bg-white px-2.5 py-1 font-mono text-[11px] dark:bg-[#1b1b20]">{t("layers.count", { n: engine.layersOnCount() })}</span>
+                <span className="rounded-full bg-white dark:bg-[#1b1b20] px-2.5 py-1 font-mono text-[11px] dark:bg-[#1b1b20]">{t("layers.count", { n: engine.layersOnCount() })}</span>
             </div>
         </div>
     );

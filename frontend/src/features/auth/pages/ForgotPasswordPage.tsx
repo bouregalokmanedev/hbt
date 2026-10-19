@@ -139,7 +139,7 @@ export function ForgotPasswordPage() {
 
                         <Link
                             to="/login"
-                            className="mt-5 text-center text-sm font-medium text-[#3A3A3A]/60 transition hover:text-[#F47822]"
+                            className="mt-5 text-center text-sm font-medium text-[#3A3A3A]/60 dark:text-white/60 transition hover:text-[#F47822]"
                         >
                             ←{" "}
                             {

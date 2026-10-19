@@ -15,11 +15,11 @@ export function AuthHeader({
                 {eyebrow}
             </p>
 
-            <h1 className="text-2xl font-semibold tracking-tight text-[#3A3A3A] sm:text-[30px]">
+            <h1 className="text-2xl font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef] sm:text-[30px]">
                 {title}
             </h1>
 
-            <p className="mt-2 max-w-md text-sm leading-6 text-[#3A3A3A]/60">
+            <p className="mt-2 max-w-md text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">
                 {description}
             </p>
         </header>

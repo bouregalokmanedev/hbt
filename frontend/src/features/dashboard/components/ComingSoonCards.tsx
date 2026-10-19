@@ -85,7 +85,7 @@ function HomeworkCard() {
         <section
             aria-disabled="true"
             data-testid="homework-card"
-            className="group relative block min-h-[230px] cursor-not-allowed overflow-hidden rounded-3xl border border-dashed border-[#3A3A3A]/12 bg-[#FAFAFA] p-6 opacity-70 shadow-[0_8px_24px_rgba(58,58,58,0.04)] sm:p-7 dark:border-white/10 dark:bg-[#16161a] select-none"
+            className="group relative block min-h-[230px] cursor-not-allowed overflow-hidden rounded-3xl border border-dashed border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] p-6 opacity-70 shadow-[0_8px_24px_rgba(58,58,58,0.04)] sm:p-7 dark:border-white/10 dark:bg-[#16161a] select-none"
         >
             {/* Decorative gradient */}
             <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#F47822]/6 blur-3xl rtl:-left-16 rtl:right-auto" />

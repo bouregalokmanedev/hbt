@@ -25,7 +25,7 @@ export function LessonResources({ media }: { media: LessonMedia[] }) {
         {t("lessonPlayer.resources.desc")}
       </p>
       {documents.length === 0 && images.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#232329] p-8 text-center text-sm text-gray-500">
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#232329] p-8 text-center text-sm text-gray-500 dark:text-white/55">
           {t("lessonPlayer.resources.empty")}
         </div>
       ) : (
@@ -44,7 +44,7 @@ export function LessonResources({ media }: { media: LessonMedia[] }) {
               <span className="min-w-0 flex-1 truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                 {item.original_name}
               </span>
-              <ExternalLink className="h-4 w-4 text-gray-400" />
+              <ExternalLink className="h-4 w-4 text-gray-400 dark:text-white/40" />
             </a>
           ))}
           {images.map((item) => (

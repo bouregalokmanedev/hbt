@@ -59,6 +59,7 @@ type CourseItem = {
     accent: string;
     language: string | null;
     priceLabel: string | null;
+    badge: string | null;
 };
 
 /* Same duration convention as the catalog CourseCard. */
@@ -95,7 +96,7 @@ export function CoursesSection() {
 
     const courseItems = t("landingPage.courses.items", {
         returnObjects: true,
-    }) as Omit<CourseItem, "key" | "language" | "priceLabel">[];
+    }) as Omit<CourseItem, "key" | "language" | "priceLabel" | "badge">[];
 
     const staticCourses: CourseItem[] = courseItems.map((item, index) => ({
         ...item,
@@ -103,6 +104,7 @@ export function CoursesSection() {
         image: artworkFor(index, courseItems.length),
         language: null,
         priceLabel: null,
+        badge: null,
     })) as CourseItem[];
 
     /* ------------------------------------------------------------
@@ -112,6 +114,7 @@ export function CoursesSection() {
     ------------------------------------------------------------ */
 
     const [remoteCourses, setRemoteCourses] = useState<Course[] | null>(null);
+    const [featured, setFeatured] = useState<Array<{ course_id: string; badge_label: string | null }>>([]);
 
     useEffect(() => {
         let cancelled = false;
@@ -131,6 +134,19 @@ export function CoursesSection() {
                 /* Keep the static items. */
             });
 
+        // Merchandising feed curated in the marketing workspace. Empty or
+        // failed feed keeps the default catalog order — zero regression.
+        fetch(`${import.meta.env.VITE_API_URL}/v1/featured`)
+            .then((response) => (response.ok ? response.json() : null))
+            .then((payload: { data?: Array<{ course_id: string; badge_label: string | null }> } | null) => {
+                if (!cancelled && Array.isArray(payload?.data)) {
+                    setFeatured(payload.data);
+                }
+            })
+            .catch(() => {
+                /* Keep the default order. */
+            });
+
         return () => {
             cancelled = true;
         };
@@ -143,11 +159,21 @@ export function CoursesSection() {
     };
 
     /* Artwork, accents, levels, categories and lessons stay merged
-       by index exactly like before; only the live fields swap in. */
+       by index exactly like before; only the live fields swap in.
+       When the marketing workspace features courses, they lead in
+       feed order and carry their badge labels. */
+
+    const badgeByCourse = new Map(featured.map((entry) => [String(entry.course_id), entry.badge_label ?? null]));
+
+    const orderedRemote = (remoteCourses ?? []).slice().sort((a, b) => {
+        const aRank = featured.findIndex((entry) => String(entry.course_id) === String(a.id));
+        const bRank = featured.findIndex((entry) => String(entry.course_id) === String(b.id));
+        return (aRank === -1 ? Number.MAX_SAFE_INTEGER : aRank) - (bRank === -1 ? Number.MAX_SAFE_INTEGER : bRank);
+    });
 
     const courses: (CourseItem & { image: string })[] =
         remoteCourses !== null && remoteCourses.length > 0
-            ? remoteCourses.map((remote, index) => {
+            ? orderedRemote.map((remote, index) => {
                   const base =
                       courseItems[index % courseItems.length];
 
@@ -171,6 +197,7 @@ export function CoursesSection() {
                       lessons: base.lessons,
                       accent: base.accent,
                       image: artworkFor(index, remoteCourses.length),
+                      badge: badgeByCourse.get(String(remote.id)) ?? null,
                       language: remote.language ?? null,
                       priceLabel: remote.is_free
                           ? t("catalogPage.card.free")
@@ -262,7 +289,7 @@ export function CoursesSection() {
         <LandingSection
             id="courses"
             sectionRef={sectionRef}
-            className="bg-[#F4F3F0] text-[#181818]"
+            className="bg-[#F4F3F0] dark:bg-[#101013] text-[#181818]"
         >
             {/* =====================================================
                 BACKGROUND SYSTEM
@@ -412,7 +439,7 @@ export function CoursesSection() {
                                     rtl:pr-5
                                 "
                             >
-                                <p className="text-sm leading-7 text-[#181818]/55 sm:text-base">
+                                <p className="text-sm leading-7 text-[#181818]/55 dark:text-white/55 sm:text-base">
                                     {t("landingPage.courses.description")}
                                 </p>
                             </div>
@@ -454,7 +481,7 @@ export function CoursesSection() {
                                     </p>
                                 </div>
 
-                                <div className="font-mono text-[8px] text-[#181818]/25 lg:mt-5">
+                                <div className="font-mono text-[8px] text-[#181818]/25 dark:text-white/25 lg:mt-5">
                                     {String(safeActive + 1).padStart(
                                         2,
                                         "0",
@@ -508,7 +535,7 @@ export function CoursesSection() {
                                                             bg-white/45
                                                             text-[#181818]
                                                             hover:border-[#F47822]/25
-                                                            hover:bg-white
+                                                            hover:bg-white dark:hover:bg-white/10
                                                           `
                                                 }
                                             `}
@@ -523,7 +550,7 @@ export function CoursesSection() {
                                                         ${
                                                             isActive
                                                                 ? "text-[#F47822]"
-                                                                : "text-[#181818]/25"
+                                                                : "text-[#181818]/25 dark:text-white/25"
                                                         }
                                                     `}
                                                 >
@@ -540,7 +567,7 @@ export function CoursesSection() {
                                                         ${
                                                             isActive
                                                                 ? "text-[#F47822]"
-                                                                : "text-[#181818]/15 group-hover:text-[#F47822]"
+                                                                : "text-[#181818]/15 dark:text-white/15 group-hover:text-[#F47822]"
                                                         }
                                                     `}
                                                 />
@@ -557,7 +584,7 @@ export function CoursesSection() {
                                                     ${
                                                         isActive
                                                             ? "text-white"
-                                                            : "text-[#181818]/65"
+                                                            : "text-[#181818]/65 dark:text-white/65"
                                                     }
                                                 `}
                                             >
@@ -574,7 +601,7 @@ export function CoursesSection() {
                                                     ${
                                                         isActive
                                                             ? "text-white/35"
-                                                            : "text-[#181818]/25"
+                                                            : "text-[#181818]/25 dark:text-white/25"
                                                     }
                                                 `}
                                             >
@@ -619,11 +646,11 @@ export function CoursesSection() {
                                         justify-center
                                         rounded-xl
                                         border
-                                        border-[#181818]/10
+                                        border-[#181818]/10 dark:border-white/10
                                         bg-white/50
                                         transition-all
                                         hover:border-[#F47822]/30
-                                        hover:bg-white
+                                        hover:bg-white dark:hover:bg-white/10
                                     "
                                     aria-label={t("landingPage.courses.prevCourse")}
                                 >
@@ -675,7 +702,7 @@ export function CoursesSection() {
                             <div className="flex items-center gap-2 border-b border-[#181818]/[0.07] px-5 py-3 sm:px-7">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
 
-                                <span className="font-mono text-[7px] font-bold uppercase tracking-[0.2em] text-[#181818]/35">
+                                <span className="font-mono text-[7px] font-bold uppercase tracking-[0.2em] text-[#181818]/35 dark:text-white/35">
                                     {t("landingPage.courses.activeModule")}
                                 </span>
                             </div>
@@ -740,6 +767,12 @@ export function CoursesSection() {
                                         <div className="flex flex-wrap items-end justify-between gap-5">
                                             <div>
                                                 <div className="mb-3 flex flex-wrap items-center gap-2">
+                                                    {active.badge && (
+                                                        <span className="rounded-full bg-[#F47822] px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-white shadow-[0_4px_14px_rgba(244,120,34,.4)]">
+                                                            {active.badge}
+                                                        </span>
+                                                    )}
+
                                                     <span className="rounded-full border border-[#F47822]/40 bg-[#F47822]/15 px-3 py-1 font-mono text-[7px] font-bold uppercase tracking-[0.15em] text-[#F47822] backdrop-blur-md">
                                                         {active.accent}
                                                     </span>
@@ -792,7 +825,7 @@ export function CoursesSection() {
 
                                 <div className="grid grid-cols-2 divide-x divide-[#181818]/[0.07] sm:grid-cols-3 rtl:divide-x-reverse">
                                     <div className="p-5 sm:p-6">
-                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30">
+                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30 dark:text-white/30">
                                             {t("landingPage.courses.lessonsLabel")}
                                         </span>
 
@@ -809,7 +842,7 @@ export function CoursesSection() {
                                     </div>
 
                                     <div className="p-5 sm:p-6">
-                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30">
+                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30 dark:text-white/30">
                                             {t("landingPage.courses.durationLabel")}
                                         </span>
 
@@ -823,7 +856,7 @@ export function CoursesSection() {
                                     </div>
 
                                     <div className="col-span-2 p-5 sm:col-span-1 sm:p-6">
-                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30">
+                                        <span className="font-mono text-[7px] font-bold uppercase tracking-[0.16em] text-[#181818]/30 dark:text-white/30">
                                             {t("landingPage.courses.difficultyLabel")}
                                         </span>
 
@@ -909,7 +942,7 @@ export function CoursesSection() {
                                     gap-2
                                     rounded-full
                                     border
-                                    border-[#181818]/10
+                                    border-[#181818]/10 dark:border-white/10
                                     bg-white/60
                                     px-4
                                     py-2.5
@@ -943,7 +976,7 @@ export function CoursesSection() {
                                             ${
                                                 safeActive === index
                                                     ? "w-7 bg-[#F47822]"
-                                                    : "w-1.5 bg-[#181818]/15"
+                                                    : "w-1.5 bg-[#181818]/15 dark:bg-white/15"
                                             }
                                         `}
                                     />
@@ -989,7 +1022,7 @@ export function CoursesSection() {
                         flex-col
                         gap-4
                         border-t
-                        border-[#181818]/10
+                        border-[#181818]/10 dark:border-white/10
                         pt-6
                         sm:flex-row
                         sm:items-center
@@ -997,7 +1030,7 @@ export function CoursesSection() {
                         lg:mt-12
                     "
                 >
-                    <p className="max-w-xl text-sm leading-6 text-[#181818]/50">
+                    <p className="max-w-xl text-sm leading-6 text-[#181818]/50 dark:text-white/50">
                         {t("landingPage.courses.description")}
                     </p>
 

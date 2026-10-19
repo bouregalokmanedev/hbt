@@ -62,7 +62,7 @@ export function ScannerView() {
         </div>
 
         <div className="p-5">
-          {screen === "workstation" ? <Workstation go={setScreen} /> : null}
+          {screen === "workstation" ? <Workstation go={setScreen} onAssistant={() => setAiOpen(true)} /> : null}
           {screen === "dashboard" ? <Dashboard t={t} volts={state.volts} /> : null}
           {screen === "select" ? <VehicleSelect t={t} /> : null}
           {screen === "overview" ? <Overview t={t} onScan={() => setScreen("scan")} /> : null}

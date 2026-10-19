@@ -62,7 +62,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#3A3A3A]/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#3A3A3A]/60 dark:bg-white/60 p-4 backdrop-blur-sm animate-in fade-in duration-200"
             role="dialog"
             aria-modal="true"
             aria-labelledby="verification-popup-title"
@@ -70,7 +70,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                 if (event.target === event.currentTarget) onClose();
             }}
         >
-            <section className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl animate-in zoom-in-95 fade-in duration-200">
+            <section className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white dark:bg-[#1b1b20] shadow-2xl animate-in zoom-in-95 fade-in duration-200">
                 {/* Brand top strip */}
                 <div className={`h-1.5 w-full ${isSuccess ? "bg-[#F47822]" : "bg-red-500"}`} />
                 <div
@@ -84,7 +84,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                     type="button"
                     onClick={onClose}
                     aria-label={t("verifyPage.popup.closeLabel")}
-                    className="absolute end-4 top-4 rounded-lg p-1.5 text-[#3A3A3A]/45 transition hover:bg-[#F3F3F3] hover:text-[#3A3A3A]"
+                    className="absolute end-4 top-4 rounded-lg p-1.5 text-[#3A3A3A]/45 dark:text-white/45 transition hover:bg-[#F3F3F3] dark:bg-[#101013] hover:text-[#3A3A3A]"
                 >
                     <X className="h-5 w-5" />
                 </button>
@@ -109,26 +109,26 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                     </p>
                     <h2
                         id="verification-popup-title"
-                        className="mt-2 text-xl font-bold leading-snug text-[#3A3A3A]"
+                        className="mt-2 text-xl font-bold leading-snug text-[#3A3A3A] dark:text-[#ececef]"
                     >
                         {isSuccess ? t("verifyPage.popup.authenticMsg") : t("verifyPage.popup.notAuthentic")}
                     </h2>
 
                     {isSuccess ? (
-                        <div className="mt-5 rounded-2xl border border-[#3A3A3A]/10 bg-[#F7F7F7] p-4 text-start">
+                        <div className="mt-5 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F7F7F7] dark:bg-[#101013] p-4 text-start">
                             <div className="flex items-start gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F47822]/10">
                                     <Award className="h-5 w-5 text-[#F47822]" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-bold text-[#3A3A3A]">
+                                    <p className="truncate text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                         {state.certificate.course_title}
                                     </p>
-                                    <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/60">
+                                    <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("verifyPage.result.awardedTo")}{" "}
                                         {state.certificate.recipient_name}
                                     </p>
-                                    <p className="mt-1 text-[11px] text-[#3A3A3A]/50">
+                                    <p className="mt-1 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                                         {t("verifyPage.result.issued")}{" "}
                                         {formatDate(state.certificate.issued_at)}
                                     </p>
@@ -137,7 +137,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                             <button
                                 type="button"
                                 onClick={() => void handleCopy()}
-                                className="mt-3 flex w-full items-center justify-between gap-2 rounded-xl border border-dashed border-[#3A3A3A]/15 bg-white px-3 py-2 font-mono text-[11px] font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#3A3A3A]"
+                                className="mt-3 flex w-full items-center justify-between gap-2 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-3 py-2 font-mono text-[11px] font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#3A3A3A]"
                                 title={t("verifyPage.popup.copyTitle")}
                             >
                                 <span className="truncate">{state.certificate.certificate_number}</span>
@@ -148,7 +148,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                             </button>
                         </div>
                     ) : (
-                        <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#3A3A3A]/60">{state.message}</p>
+                        <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">{state.message}</p>
                     )}
 
                     <div className="mt-6 grid gap-2">
@@ -166,7 +166,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                             onClick={onClose}
                             className={`inline-flex w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-bold transition ${
                                 isSuccess && onViewDetails
-                                    ? "border border-[#3A3A3A]/10 bg-white text-[#3A3A3A] hover:bg-[#F3F3F3]"
+                                    ? "border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A] hover:bg-[#F3F3F3] dark:bg-[#101013]"
                                     : isSuccess
                                       ? "bg-[#F47822] px-5 py-3 text-white shadow-[0_8px_20px_rgba(244,120,34,.25)] hover:bg-[#E96D18]"
                                       : "bg-[#3A3A3A] text-white hover:bg-[#2f2f2f]"
@@ -176,7 +176,7 @@ export function VerificationPopup({ state, onClose, onViewDetails }: Verificatio
                         </button>
                     </div>
 
-                    <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.18em] text-[#3A3A3A]/35">
+                    <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.18em] text-[#3A3A3A]/35 dark:text-white/35">
                         {t("verifyPage.popup.systemTag")}
                     </p>
                 </div>

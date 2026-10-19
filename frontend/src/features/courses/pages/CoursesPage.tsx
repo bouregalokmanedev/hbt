@@ -134,7 +134,7 @@ export function CoursesPage() {
       ====================================================== */}
       <section className="px-5 py-10 sm:px-8 sm:py-14">
         <div className="mx-auto max-w-[1280px]">
-          <div className="mb-8 flex flex-col gap-5 border-b border-[#3A3A3A]/10 pb-6 sm:flex-row sm:items-end sm:justify-between dark:border-white/10">
+          <div className="mb-8 flex flex-col gap-5 border-b border-[#3A3A3A]/10 dark:border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between dark:border-white/10">
             <div>
               <div className="mb-3 flex items-center gap-3">
                 <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
@@ -158,7 +158,7 @@ export function CoursesPage() {
             </div>
 
             {!isLoading && !error && courses.length > 0 && (
-              <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#1b1b20]">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-3 dark:border-white/10 dark:bg-[#1b1b20]">
                 <span className="text-2xl font-bold text-[#F47822]">
                   {String(courses.length).padStart(2, "0")}
                 </span>
@@ -172,7 +172,7 @@ export function CoursesPage() {
           <div className="relative lg:ps-10">
             <div
               aria-hidden="true"
-              className="absolute start-0 top-0 bottom-0 hidden w-px bg-[#3A3A3A]/10 lg:block dark:bg-white/10"
+              className="absolute start-0 top-0 bottom-0 hidden w-px bg-[#3A3A3A]/10 dark:bg-white/10 lg:block dark:bg-white/10"
             >
               <div className="absolute start-0 top-0 h-24 w-px bg-[#F47822]" />
             </div>
@@ -198,7 +198,7 @@ export function CoursesPage() {
                 <CourseGrid courses={coursesWithEnrollment} />
 
                 {pagination && (
-                  <div className="border-t border-[#3A3A3A]/10 pt-8 dark:border-white/10">
+                  <div className="border-t border-[#3A3A3A]/10 dark:border-white/10 pt-8 dark:border-white/10">
                     <div className="mb-5 flex items-center justify-between gap-4">
                       <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/40 dark:text-white/40">
                         {t("catalogPage.results.index")}
@@ -226,7 +226,7 @@ export function CoursesPage() {
       {/* =====================================================
           STATEMENT
       ====================================================== */}
-      <section className="relative overflow-hidden border-t border-[#3A3A3A]/10 bg-white px-5 py-16 sm:px-8 sm:py-20 dark:border-white/10 dark:bg-[#1b1b20]">
+      <section className="relative overflow-hidden border-t border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-5 py-16 sm:px-8 sm:py-20 dark:border-white/10 dark:bg-[#1b1b20]">
         <div className="mx-auto max-w-[1280px]">
           <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-7">

@@ -49,8 +49,8 @@ export function AuthInput({
                 className={[
                     "relative m-0 h-14 min-w-0 rounded-xl border p-0 transition-all duration-200",
                     "focus-within:border-2 focus-within:border-[#F47822]",
-                    "has-[input:disabled]:cursor-not-allowed has-[input:disabled]:bg-[#F3F3F3] has-[input:disabled]:opacity-70",
-                    error ? "border-red-400" : "border-[#3A3A3A]/10",
+                    "has-[input:disabled]:cursor-not-allowed has-[input:disabled]:bg-[#F3F3F3] dark:bg-[#101013] has-[input:disabled]:opacity-70",
+                    error ? "border-red-400" : "border-[#3A3A3A]/10 dark:border-white/10",
                 ].join(" ")}
             >
                 <legend
@@ -94,7 +94,7 @@ export function AuthInput({
                             : "1rem",
                     }}
                     className={[
-                        "pointer-events-none absolute z-10 text-sm leading-none text-[#3A3A3A]/45 transition-[top,transform,font-size,color,inset-inline-start] duration-300 ease-out",
+                        "pointer-events-none absolute z-10 text-sm leading-none text-[#3A3A3A]/45 dark:text-white/45 transition-[top,transform,font-size,color,inset-inline-start] duration-300 ease-out",
                         isFloating
                             ? "-top-1 -translate-y-1/2 text-[15px] font-semibold text-[#F47822]"
                             : "top-1/2 -translate-y-1/2",

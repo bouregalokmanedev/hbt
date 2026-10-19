@@ -113,8 +113,66 @@
 }
 
 
+/* =========================================================
+   LANDING HERO
+   ========================================================= */
+
+/* Headline drops in from above while fading up. */
+@keyframes hero-drop-in {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -30px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.animate-hero-drop-in {
+    animation: hero-drop-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* Scanner settles in after the headline and buttons have landed. */
+@keyframes hero-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-hero-fade-in {
+    animation: hero-fade-in 1s ease-out 0.9s both;
+}
+
+
+/* Idle hover for the scanner. Runs on its own layer so it never fights
+   the scroll-driven transform on the parent. */
+@keyframes hero-float {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(0, -18px, 0);
+    }
+}
+
+.animate-hero-float {
+    animation: hero-float 7s ease-in-out infinite;
+    will-change: transform;
+}
+
+
 @media (prefers-reduced-motion: reduce) {
-    .animate-landing-marquee {
+    .animate-landing-marquee,
+    .animate-hero-float {
         animation: none;
     }
 }

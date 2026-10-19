@@ -42,12 +42,12 @@ export function TicketTrackPage() {
     };
 
     return (
-        <div className="bg-white">
-            <section className="border-b border-[#3A3A3A]/8 bg-gradient-to-b from-[#FFF8F4] to-white">
+        <div className="bg-white dark:bg-[#1b1b20]">
+            <section className="border-b border-[#3A3A3A]/8 dark:border-white/8 bg-gradient-to-b from-[#FFF8F4] to-white">
                 <div className="mx-auto max-w-2xl px-5 py-14 text-center">
                     <Link
                         to="/help"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3A3A3A]/50 transition hover:text-[#F47822]"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3A3A3A]/50 dark:text-white/50 transition hover:text-[#F47822]"
                     >
                         <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
                         {t("help.backToHelp")}
@@ -55,19 +55,19 @@ export function TicketTrackPage() {
                     <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[#F47822]">
                         {t("help.track.eyebrow")}
                     </p>
-                    <h1 className="mt-3 text-3xl font-black tracking-tight text-[#3A3A3A]">
+                    <h1 className="mt-3 text-3xl font-black tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                         {t("help.track.title")}
                     </h1>
-                    <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#3A3A3A]/60">
+                    <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">
                         {t("help.track.subtitle")}
                     </p>
 
                     <form
                         onSubmit={(event) => void submit(event)}
-                        className="mx-auto mt-8 max-w-md space-y-3 rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 text-start shadow-sm"
+                        className="mx-auto mt-8 max-w-md space-y-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 text-start shadow-sm"
                     >
                         <label className="block">
-                            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/45">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/45 dark:text-white/45">
                                 {t("help.track.reference")}
                             </span>
                             <input
@@ -75,11 +75,11 @@ export function TicketTrackPage() {
                                 onChange={(event) => setReference(event.target.value)}
                                 required
                                 placeholder={t("help.track.referencePh")}
-                                className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-sm outline-none transition focus:border-[#F47822] focus:ring-4 focus:ring-[#F47822]/10"
+                                className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-sm outline-none transition focus:border-[#F47822] focus:ring-4 focus:ring-[#F47822]/10"
                             />
                         </label>
                         <label className="block">
-                            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/45">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/45 dark:text-white/45">
                                 {t("help.track.email")}
                             </span>
                             <input
@@ -88,7 +88,7 @@ export function TicketTrackPage() {
                                 onChange={(event) => setEmail(event.target.value)}
                                 required
                                 placeholder={t("help.track.emailPh")}
-                                className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-sm outline-none transition focus:border-[#F47822] focus:ring-4 focus:ring-[#F47822]/10"
+                                className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-sm outline-none transition focus:border-[#F47822] focus:ring-4 focus:ring-[#F47822]/10"
                             />
                         </label>
                         <button
@@ -102,7 +102,7 @@ export function TicketTrackPage() {
                                 : t("help.track.submit")}
                         </button>
                         {state.kind === "error" && (
-                            <p role="alert" className="rounded-xl bg-red-50 px-4 py-2.5 text-xs text-red-600">
+                            <p role="alert" className="rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-2.5 text-xs text-red-600 dark:text-red-400">
                                 {state.message}
                             </p>
                         )}
@@ -148,15 +148,15 @@ function TrackResult({ ticket }: { ticket: SupportTicket }) {
     };
 
     return (
-        <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-6 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">
                         {t("help.track.found")}
                     </p>
-                    <h2 className="mt-2 text-lg font-black text-[#3A3A3A]">{ticket.subject}</h2>
+                    <h2 className="mt-2 text-lg font-black text-[#3A3A3A] dark:text-[#ececef]">{ticket.subject}</h2>
                 </div>
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/10 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]">
                     <span className={`h-2 w-2 rounded-full ${dotColors[ticket.status] ?? dotColors.closed}`} />
                     {ticket.status}
                 </span>
@@ -178,16 +178,16 @@ function TrackResult({ ticket }: { ticket: SupportTicket }) {
             </dl>
 
             {(ticket.status === "resolved" || ticket.status === "closed") && (
-                <p className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-xs font-semibold text-emerald-700">
+                <p className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-4 py-2.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                     <CircleCheck className="h-4 w-4" />
                     {t("help.track.closedNote")}
                 </p>
             )}
 
-            <div className="mt-6 flex flex-wrap gap-3 border-t border-[#3A3A3A]/8 pt-5">
+            <div className="mt-6 flex flex-wrap gap-3 border-t border-[#3A3A3A]/8 dark:border-white/8 pt-5">
                 <Link
                     to="/help"
-                    className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                 >
                     <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                     {t("help.backToHelp")}
@@ -207,10 +207,10 @@ function TrackResult({ ticket }: { ticket: SupportTicket }) {
 function TrackField({ label, value }: { label: string; value: string }) {
     return (
         <div>
-            <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/40">
+            <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">
                 {label}
             </dt>
-            <dd className="mt-1 text-sm font-bold text-[#3A3A3A]">{value}</dd>
+            <dd className="mt-1 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{value}</dd>
         </div>
     );
 }
@@ -225,12 +225,12 @@ function TrackHint({
     body: string;
 }) {
     return (
-        <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5">
+        <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5">
             <div className="flex items-center gap-2">
                 {icon}
-                <p className="text-xs font-bold text-[#3A3A3A]">{title}</p>
+                <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{title}</p>
             </div>
-            <p className="mt-2 text-[11px] leading-5 text-[#3A3A3A]/55">{body}</p>
+            <p className="mt-2 text-[11px] leading-5 text-[#3A3A3A]/55 dark:text-white/55">{body}</p>
         </div>
     );
 }

@@ -46,6 +46,9 @@ class RegisterRequest extends BaseApiRequest
 
             // Invite code carried by ?ref= on the signup link.
             'ref' => ['nullable', 'string', 'max:16'],
+            // Anonymous visitor id from the browser (localStorage). Links
+            // pre-signup analytics and captured leads to the new account.
+            'visitor_id' => ['nullable', 'uuid'],
         ];
     }
 

@@ -36,6 +36,10 @@ class StripePaymentGateway implements PaymentGatewayInterface
         $intent = $stripe->paymentIntents->create([
             'amount' => $data->amount,
             'currency' => strtolower($data->currency),
+            // Dynamic payment methods. Stripe no longer accepts an explicit
+            // payment_method_types list here, so which methods actually
+            // surface (cards, Apple Pay, Google Pay, ...) is controlled from
+            // the Stripe Dashboard -> Settings -> Payment methods.
             'automatic_payment_methods' => ['enabled' => true],
             'metadata' => ['order_id' => $data->orderId, 'idempotency_key' => $data->idempotencyKey],
         ], [

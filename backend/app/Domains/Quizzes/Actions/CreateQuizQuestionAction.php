@@ -18,6 +18,7 @@ final class CreateQuizQuestionAction
             'position' => $data->position,
             'points' => $data->points,
             'required' => $data->required,
+            'explanation' => $data->explanation,
         ]);
     }
 }

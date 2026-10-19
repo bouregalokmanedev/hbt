@@ -43,13 +43,13 @@ export function InstructorRevenuePage() {
       <AdminPanel>
         <h2 className="font-semibold">{t("instructor.revenue.perCourse")}</h2>
         {data.courses.length === 0 ? (
-          <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("instructor.revenue.noSales")}</p>
+          <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.revenue.noSales")}</p>
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {data.courses.map((c) => (
-              <div key={c.id} className="rounded-xl bg-[#FCFCFC] p-4">
+              <div key={c.id} className="rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] p-4">
                 <p className="text-sm font-bold">{c.title}</p>
-                <p className="mt-1 text-xs text-[#3A3A3A]/50">
+                <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                   {t("instructor.revenue.salesCount", { count: c.sales, price: c.price, currency: data.currency })}
                 </p>
               </div>
@@ -61,15 +61,15 @@ export function InstructorRevenuePage() {
       <AdminPanel>
         <h2 className="font-semibold">{t("instructor.revenue.payouts")}</h2>
         {data.payouts.length === 0 ? (
-          <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("instructor.revenue.noPayouts")}</p>
+          <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.revenue.noPayouts")}</p>
         ) : (
           <ul className="mt-4 space-y-2">
             {data.payouts.map((p) => (
-              <li key={p.id} className="flex items-center justify-between gap-3 rounded-xl bg-[#FCFCFC] px-4 py-3">
+              <li key={p.id} className="flex items-center justify-between gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3">
                 <span className="text-xs font-bold">
                   {p.period ?? "—"} · {p.amount.toLocaleString()} {p.currency}
                 </span>
-                <span className={`rounded-full px-2 py-1 text-[10px] font-bold capitalize ${p.status === "paid" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{p.status}</span>
+                <span className={`rounded-full px-2 py-1 text-[10px] font-bold capitalize ${p.status === "paid" ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400"}`}>{p.status}</span>
               </li>
             ))}
           </ul>

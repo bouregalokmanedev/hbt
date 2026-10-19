@@ -149,7 +149,7 @@ export default function VisionSection() {
 
             <LandingSection
                 id="our-way"
-                className="bg-white text-[#3A3A3A]"
+                className="bg-white dark:bg-[#1b1b20] text-[#3A3A3A]"
             >
                 <div
                     aria-hidden="true"
@@ -189,7 +189,7 @@ export default function VisionSection() {
                                     delay={Math.min(index, 3) * 90}
                                 >
                                 <div
-                                    className="group relative h-full overflow-hidden rounded-3xl border border-[#3A3A3A]/10 bg-[#F7F6F4] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/40 hover:bg-white hover:shadow-[0_24px_50px_rgba(244,120,34,0.12)]"
+                                    className="group relative h-full overflow-hidden rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F7F6F4] dark:bg-[#1b1b20] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/40 hover:bg-white dark:hover:bg-white/10 hover:shadow-[0_24px_50px_rgba(244,120,34,0.12)]"
                                 >
                                     <div className="flex items-center justify-between">
                                         <span
@@ -201,7 +201,7 @@ export default function VisionSection() {
 
                                         <Icon
                                             size={20}
-                                            className="text-[#3A3A3A]/25 transition-colors duration-300 group-hover:text-[#F47822]"
+                                            className="text-[#3A3A3A]/25 dark:text-white/25 transition-colors duration-300 group-hover:text-[#F47822]"
                                         />
                                     </div>
 
@@ -209,7 +209,7 @@ export default function VisionSection() {
                                         {step.title}
                                     </h3>
 
-                                    <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/60">
+                                    <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">
                                         {step.text}
                                     </p>
 

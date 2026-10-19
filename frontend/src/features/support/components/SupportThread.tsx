@@ -94,7 +94,7 @@ export function SupportThread({
       <div className="max-h-[420px] space-y-2.5 overflow-y-auto p-5">
         {thread.isLoading && <p className="text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("support.loadingConv")}</p>}
         {!thread.isLoading && (thread.data?.replies.length ?? 0) === 0 && (
-          <p className="rounded-2xl bg-[#F7F7F7] px-4 py-6 text-center text-xs leading-5 text-[#3A3A3A]/55 dark:bg-[#101013] dark:text-white/55">
+          <p className="rounded-2xl bg-[#F7F7F7] dark:bg-[#101013] px-4 py-6 text-center text-xs leading-5 text-[#3A3A3A]/55 dark:bg-[#101013] dark:text-white/55">
             {t("support.threadEmpty")}
           </p>
         )}

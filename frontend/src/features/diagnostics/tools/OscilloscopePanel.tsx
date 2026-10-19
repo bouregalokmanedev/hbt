@@ -41,7 +41,7 @@ function ScopeKnob({ label, value, options, onChange }: { label: string; value: 
             >
                 <span className="absolute inset-[6px] rounded-full bg-[#0f1115] border border-white/5" />
                 <motion.span animate={{ rotate: angle }} transition={{ type: "spring", stiffness: 380, damping: 26 }} className="absolute h-7 w-[3px] origin-bottom rounded-full bg-[#F47822] shadow-[0_0_6px_rgba(244,120,34,0.7)]" style={{ top: "10px" }} />
-                <span className="absolute h-2 w-2 rounded-full bg-white shadow" style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
+                <span className="absolute h-2 w-2 rounded-full bg-white dark:bg-[#1b1b20] shadow" style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
             </button>
             <span className="rounded-full bg-[#3A3A3A] px-2 py-0.5 font-mono text-[11px] font-bold text-white">{value}</span>
         </div>

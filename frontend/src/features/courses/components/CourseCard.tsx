@@ -74,7 +74,7 @@ export function CourseCard({ course, enrollment = null }: CourseCardProps) {
   return (
     <article
       data-testid="course-card"
-      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#3A3A3A]/10 bg-white shadow-[0_10px_36px_rgba(58,58,58,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/35 hover:shadow-[0_20px_50px_rgba(244,120,34,0.14)] focus-within:ring-2 focus-within:ring-[#F47822]/35 dark:border-white/10 dark:bg-[#1b1b20] dark:hover:border-[#F47822]/40"
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_10px_36px_rgba(58,58,58,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/35 hover:shadow-[0_20px_50px_rgba(244,120,34,0.14)] focus-within:ring-2 focus-within:ring-[#F47822]/35 dark:border-white/10 dark:bg-[#1b1b20] dark:hover:border-[#F47822]/40"
     >
       <Link
         to={`/courses/${course.id}`}
@@ -158,7 +158,7 @@ export function CourseCard({ course, enrollment = null }: CourseCardProps) {
           </div>
 
           {/* Hover arrow */}
-          <div className="absolute bottom-3 end-3 flex h-10 w-10 translate-y-2 items-center justify-center rounded-full bg-white text-[#3A3A3A] opacity-0 shadow-xl transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-[#1b1b20] dark:text-white">
+          <div className="absolute bottom-3 end-3 flex h-10 w-10 translate-y-2 items-center justify-center rounded-full bg-white dark:bg-[#1b1b20] text-[#3A3A3A] opacity-0 shadow-xl transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 dark:bg-[#1b1b20] dark:text-white">
             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
           </div>
         </div>
@@ -218,7 +218,7 @@ export function CourseCard({ course, enrollment = null }: CourseCardProps) {
               </span>
             </div>
 
-            <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#3A3A3A]/8 pt-4 dark:border-white/8">
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#3A3A3A]/8 dark:border-white/8 pt-4 dark:border-white/8">
               <div className="min-w-0">
                 {course.is_free ? (
                   <span className="text-sm font-bold text-[#F47822]">
@@ -230,7 +230,7 @@ export function CourseCard({ course, enrollment = null }: CourseCardProps) {
                       {priceLabel}
                     </span>
                     {hasDiscount && (
-                      <span className="text-[11px] text-[#3A3A3A]/40 line-through dark:text-white/40">
+                      <span className="text-[11px] text-[#3A3A3A]/40 dark:text-white/40 line-through dark:text-white/40">
                         {course.price} {course.currency}
                       </span>
                     )}

@@ -126,7 +126,7 @@ export function AdminDashboardPage() {
     [t("admin.dashboard.pipeline.published"), courses.published, "bg-emerald-500"],
     [t("admin.dashboard.pipeline.awaitingReview"), courses.review, "bg-amber-400"],
     [t("admin.dashboard.pipeline.draft"), courses.draft, "bg-slate-400"],
-    [t("admin.dashboard.pipeline.archived"), courses.archived, "bg-[#3A3A3A]/30"],
+    [t("admin.dashboard.pipeline.archived"), courses.archived, "bg-[#3A3A3A]/30 dark:bg-white/30"],
   ] as const;
   const healthStatus = health.data?.status;
   const statusTone = !healthStatus
@@ -312,31 +312,31 @@ export function AdminDashboardPage() {
           {health.isLoading ? (
             <div className="mt-6 space-y-2">
               {[0, 1, 2].map((row) => (
-                <div key={row} className="h-11 animate-pulse rounded-2xl bg-[#3A3A3A]/6" />
+                <div key={row} className="h-11 animate-pulse rounded-2xl bg-[#3A3A3A]/6 dark:bg-white/6" />
               ))}
             </div>
           ) : health.isError || !health.data ? (
-            <p className="mt-6 rounded-2xl bg-red-50 px-4 py-3.5 text-sm text-red-700" role="alert">
+            <p className="mt-6 rounded-2xl bg-red-50 dark:bg-red-500/10 px-4 py-3.5 text-sm text-red-700 dark:text-red-400" role="alert">
               {t("admin.dashboard.health.unavailable")}
             </p>
           ) : (
             <>
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Status value={health.data.status} />
-                <span className="text-sm text-[#3A3A3A]/55">
+                <span className="text-sm text-[#3A3A3A]/55 dark:text-white/55">
                   {t("admin.dashboard.health.checkedAt", { time: when(health.data.checked_at) })}
                 </span>
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {Object.entries(health.data.checks).map(([name, check]) => (
-                  <div key={name} className="rounded-2xl bg-[#F7F7F8] px-4 py-3.5">
+                  <div key={name} className="rounded-2xl bg-[#F7F7F8] dark:bg-[#101013] px-4 py-3.5">
                     <div className="flex items-center justify-between gap-3">
-                      <p className="min-w-0 truncate text-sm font-semibold text-[#3A3A3A]">
+                      <p className="min-w-0 truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                         {name.replaceAll("_", " ")}
                       </p>
                       <Status value={check.status} />
                     </div>
-                    <p className="mt-1 truncate text-xs text-[#3A3A3A]/50">
+                    <p className="mt-1 truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                       {check.driver ?? check.connection ?? t("admin.dashboard.health.checksFallback")}
                     </p>
                   </div>
@@ -347,7 +347,7 @@ export function AdminDashboardPage() {
         </AdminPanel>
 
         {governance ? (
-          <AdminPanel className="border-[#F47822]/20 bg-[#FFFDFB]" data-testid="admin-dashboard-governance">
+          <AdminPanel className="border-[#F47822]/20 bg-[#FFFDFB] dark:bg-[#1b1b20]" data-testid="admin-dashboard-governance">
             <PanelHead
               eyebrow={t("admin.dashboard.governance.eyebrow")}
               title={t("admin.dashboard.governance.title")}
@@ -372,15 +372,15 @@ export function AdminDashboardPage() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <Link
                 to="/admin/support"
-                className="flex items-center gap-3 rounded-2xl bg-[#F7F7F8] px-4 py-3.5 transition hover:bg-[#FFF1E8]"
+                className="flex items-center gap-3 rounded-2xl bg-[#F7F7F8] dark:bg-[#101013] px-4 py-3.5 transition hover:bg-[#FFF1E8] dark:bg-[#1b1b20]"
               >
                 <LifeBuoy className="h-4 w-4 shrink-0 text-[#F47822]" />
-                <span className="flex-1 text-sm font-medium text-[#3A3A3A]/75">
+                <span className="flex-1 text-sm font-medium text-[#3A3A3A]/75 dark:text-white/75">
                   {t("admin.dashboard.governance.escalatedTickets")}
                 </span>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-bold ${
-                    governance.escalations > 0 ? "bg-[#F47822] text-white" : "bg-[#3A3A3A]/8 text-[#3A3A3A]/60"
+                    governance.escalations > 0 ? "bg-[#F47822] text-white" : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/60 dark:text-white/60"
                   }`}
                 >
                   {governance.escalations}
@@ -388,15 +388,15 @@ export function AdminDashboardPage() {
               </Link>
               <Link
                 to="/admin/commerce"
-                className="flex items-center gap-3 rounded-2xl bg-[#F7F7F8] px-4 py-3.5 transition hover:bg-[#FFF1E8]"
+                className="flex items-center gap-3 rounded-2xl bg-[#F7F7F8] dark:bg-[#101013] px-4 py-3.5 transition hover:bg-[#FFF1E8] dark:bg-[#1b1b20]"
               >
                 <Webhook className="h-4 w-4 shrink-0 text-[#F47822]" />
-                <span className="flex-1 text-sm font-medium text-[#3A3A3A]/75">
+                <span className="flex-1 text-sm font-medium text-[#3A3A3A]/75 dark:text-white/75">
                   {t("admin.dashboard.governance.failedWebhooks")}
                 </span>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-bold ${
-                    governance.failed_webhooks > 0 ? "bg-red-500 text-white" : "bg-[#3A3A3A]/8 text-[#3A3A3A]/60"
+                    governance.failed_webhooks > 0 ? "bg-red-500 text-white" : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/60 dark:text-white/60"
                   }`}
                 >
                   {governance.failed_webhooks}
@@ -406,32 +406,32 @@ export function AdminDashboardPage() {
 
             {governance.recent_privileged_actions.length > 0 && (
               <div className="mt-5">
-                <p className="text-[11px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/55">
+                <p className="text-[11px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/55 dark:text-white/55">
                   {t("admin.dashboard.governance.recentActions")}
                 </p>
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                   {governance.recent_privileged_actions.map((action, index) => (
                     <li
                       key={`${action.event}-${index}`}
-                      className="truncate rounded-xl bg-[#F7F7F8] px-3.5 py-2.5 text-xs"
+                      className="truncate rounded-xl bg-[#F7F7F8] dark:bg-[#101013] px-3.5 py-2.5 text-xs"
                     >
-                      <span className="font-semibold text-[#3A3A3A]">{action.event}</span>
-                      <span className="text-[#3A3A3A]/50"> · {action.subject}</span>
+                      <span className="font-semibold text-[#3A3A3A] dark:text-[#ececef]">{action.event}</span>
+                      <span className="text-[#3A3A3A]/50 dark:text-white/50"> · {action.subject}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
 
-            <div className="mt-5 border-t border-[#3A3A3A]/8 pt-4">
-              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/55">
+            <div className="mt-5 border-t border-[#3A3A3A]/8 dark:border-white/8 pt-4">
+              <p className="text-[11px] font-bold uppercase tracking-[.14em] text-[#3A3A3A]/55 dark:text-white/55">
                 {t("admin.dashboard.governance.modules")}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {modules.map((module) => (
                   <span
                     key={module}
-                    className="rounded-full bg-[#3A3A3A]/6 px-3 py-1.5 text-[11px] font-semibold capitalize text-[#3A3A3A]/65"
+                    className="rounded-full bg-[#3A3A3A]/6 dark:bg-white/6 px-3 py-1.5 text-[11px] font-semibold capitalize text-[#3A3A3A]/65 dark:text-white/65"
                   >
                     {module}
                   </span>
@@ -446,18 +446,18 @@ export function AdminDashboardPage() {
                 <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#F47822]">
                   {t("admin.dashboard.trust.eyebrow")}
                 </p>
-                <h2 className="mt-1.5 text-lg font-semibold text-[#3A3A3A] sm:text-xl">
+                <h2 className="mt-1.5 text-lg font-semibold text-[#3A3A3A] dark:text-[#ececef] sm:text-xl">
                   {t("admin.dashboard.trust.title")}
                 </h2>
               </div>
               <Activity className="h-5 w-5 text-[#F47822]" />
             </div>
-            <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60">{t("admin.dashboard.trust.description")}</p>
+            <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">{t("admin.dashboard.trust.description")}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {modules.map((module) => (
                 <span
                   key={module}
-                  className="rounded-full bg-[#3A3A3A]/6 px-3 py-1.5 text-[11px] font-semibold capitalize text-[#3A3A3A]/65"
+                  className="rounded-full bg-[#3A3A3A]/6 dark:bg-white/6 px-3 py-1.5 text-[11px] font-semibold capitalize text-[#3A3A3A]/65 dark:text-white/65"
                 >
                   {module}
                 </span>
@@ -511,7 +511,7 @@ export function AdminDashboardPage() {
                   />
                 ))}
               </div>
-              <p className="mt-2.5 text-xs font-semibold text-[#3A3A3A]/55">
+              <p className="mt-2.5 text-xs font-semibold text-[#3A3A3A]/55 dark:text-white/55">
                 {t("admin.dashboard.commerce.trend")}
               </p>
               <div className="mt-5 grid grid-cols-2 gap-3">
@@ -586,7 +586,7 @@ export function AdminDashboardPage() {
                 <StatCell label={t("admin.dashboard.security.suspended")} value={num(security.data.suspended_accounts)} />
                 <StatCell label={t("admin.dashboard.security.adminActions")} value={num(security.data.admin_actions_24h)} />
               </div>
-              <p className="mt-4 text-xs leading-5 text-[#3A3A3A]/55">
+              <p className="mt-4 text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">
                 {t("admin.dashboard.security.weekLine", {
                   failed: security.data.failed_logins_7d ?? 0,
                   locked: security.data.potentially_locked_accounts ?? 0,
@@ -647,31 +647,31 @@ export function AdminDashboardPage() {
                 icon={Ticket}
                 action={<SectionLink to="/admin/support">{t("admin.dashboard.support.open")}</SectionLink>}
               />
-              <div className="mt-6 flex items-center justify-between rounded-2xl bg-[#FFF8F4] px-4 py-3.5">
-                <span className="text-sm font-medium text-[#3A3A3A]/70">{t("admin.dashboard.support.total")}</span>
+              <div className="mt-6 flex items-center justify-between rounded-2xl bg-[#FFF8F4] dark:bg-[#F47822]/10 px-4 py-3.5">
+                <span className="text-sm font-medium text-[#3A3A3A]/70 dark:text-white/70">{t("admin.dashboard.support.total")}</span>
                 <strong className="text-2xl font-semibold text-[#F47822]">
                   {nf.format(tickets.data.meta.total)}
                 </strong>
               </div>
               {tickets.data.data.length === 0 ? (
-                <p className="mt-4 text-sm text-[#3A3A3A]/55">{t("admin.dashboard.support.empty")}</p>
+                <p className="mt-4 text-sm text-[#3A3A3A]/55 dark:text-white/55">{t("admin.dashboard.support.empty")}</p>
               ) : (
                 <ul className="mt-4 divide-y divide-[#3A3A3A]/8">
                   {tickets.data.data.slice(0, 4).map((ticket) => (
                     <li key={ticket.id} className="flex items-center justify-between gap-3 py-3 first:pt-0">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-[#3A3A3A]">{ticket.subject}</p>
-                        <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/50">
+                        <p className="truncate text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">{ticket.subject}</p>
+                        <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                           {ticket.user} · {ticket.category}
                         </p>
                       </div>
                       <span
                         className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                           ticket.overdue
-                            ? "bg-red-50 text-red-700"
+                            ? "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400"
                             : ticket.priority === "high" || ticket.priority === "urgent"
                               ? "bg-[#FFF1E8] text-[#C25609]"
-                              : "bg-[#3A3A3A]/6 text-[#3A3A3A]/65"
+                              : "bg-[#3A3A3A]/6 dark:bg-white/6 text-[#3A3A3A]/65 dark:text-white/65"
                         }`}
                       >
                         {ticket.overdue ? t("admin.dashboard.support.overdue") : ticket.priority}
@@ -697,18 +697,18 @@ export function AdminDashboardPage() {
                 action={<SectionLink to="/admin/activity">{t("admin.dashboard.activityFeed.open")}</SectionLink>}
               />
               {activity.data.data.length === 0 ? (
-                <p className="mt-6 text-sm text-[#3A3A3A]/55">{t("admin.dashboard.activityFeed.empty")}</p>
+                <p className="mt-6 text-sm text-[#3A3A3A]/55 dark:text-white/55">{t("admin.dashboard.activityFeed.empty")}</p>
               ) : (
                 <ul className="mt-5 divide-y divide-[#3A3A3A]/8">
                   {activity.data.data.map((entry) => (
                     <li key={entry.id} className="flex items-start justify-between gap-3 py-3 first:pt-0">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-[#3A3A3A]">{entry.event}</p>
-                        <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/50">
+                        <p className="truncate text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">{entry.event}</p>
+                        <p className="mt-0.5 truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                           {entry.actor?.name ?? t("admin.dashboard.activityFeed.system")} · {entry.target.type}
                         </p>
                       </div>
-                      <span className="shrink-0 text-xs text-[#3A3A3A]/50">{when(entry.occurred_at)}</span>
+                      <span className="shrink-0 text-xs text-[#3A3A3A]/50 dark:text-white/50">{when(entry.occurred_at)}</span>
                     </li>
                   ))}
                 </ul>
@@ -758,9 +758,9 @@ export function AdminDashboardPage() {
                 background: `conic-gradient(#F47822 ${Math.round((courses.published / courseTotal) * 100)}%, #F1F1F1 0)`,
               }}
             >
-              <div className="grid h-[106px] w-[106px] place-items-center rounded-full bg-white text-center shadow-inner">
+              <div className="grid h-[106px] w-[106px] place-items-center rounded-full bg-white dark:bg-[#1b1b20] text-center shadow-inner">
                 <strong className="text-3xl font-semibold">{courses.total}</strong>
-                <span className="text-[11px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/55">
+                <span className="text-[11px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/55 dark:text-white/55">
                   {t("admin.dashboard.catalog.courses")}
                 </span>
               </div>
@@ -769,13 +769,13 @@ export function AdminDashboardPage() {
               {pipeline.map(([label, value, color]) => (
                 <div
                   key={label}
-                  className="rounded-2xl bg-[#F7F7F8] px-4 py-3 transition-colors hover:bg-[#FFF8F4]"
+                  className="rounded-2xl bg-[#F7F7F8] px-4 py-3 transition-colors hover:bg-[#FFF8F4] dark:bg-[#F47822]/10"
                 >
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-[#3A3A3A]/70">{label}</span>
-                    <strong className="text-[#3A3A3A]">{value}</strong>
+                    <span className="font-medium text-[#3A3A3A]/70 dark:text-white/70">{label}</span>
+                    <strong className="text-[#3A3A3A] dark:text-[#ececef]">{value}</strong>
                   </div>
-                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[#3A3A3A]/8">
+                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[#3A3A3A]/8 dark:bg-white/8">
                     <div
                       className={`h-full rounded-full ${color}`}
                       style={{ width: `${Math.round((value / courseTotal) * 100)}%` }}
@@ -786,11 +786,11 @@ export function AdminDashboardPage() {
             </div>
           </div>
         </AdminPanel>
-        <AdminPanel className="border-[#F47822]/18 bg-[#FFF8F4]">
+        <AdminPanel className="border-[#F47822]/18 bg-[#FFF8F4] dark:bg-[#F47822]/10">
           <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#F47822]">
             {t("admin.dashboard.focus.eyebrow")}
           </p>
-          <h2 className="mt-1.5 text-lg font-semibold text-[#3A3A3A] sm:text-xl">
+          <h2 className="mt-1.5 text-lg font-semibold text-[#3A3A3A] dark:text-[#ececef] sm:text-xl">
             {t("admin.dashboard.focus.title")}
           </h2>
           <div className="mt-5 space-y-3">
@@ -839,12 +839,12 @@ function PanelHead({
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex gap-3.5">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#FFF1E8] text-[#F47822]">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#FFF1E8] dark:bg-[#1b1b20] text-[#F47822]">
           <Icon className="h-5 w-5" />
         </span>
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#F47822]">{eyebrow}</p>
-          <h2 className="mt-1 text-lg font-semibold text-[#3A3A3A] sm:text-xl">{title}</h2>
+          <h2 className="mt-1 text-lg font-semibold text-[#3A3A3A] dark:text-[#ececef] sm:text-xl">{title}</h2>
         </div>
       </div>
       {action}
@@ -854,28 +854,28 @@ function PanelHead({
 
 function StatCell({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="rounded-2xl bg-[#F7F7F8] px-4 py-3.5">
-      <p className="text-xs font-semibold leading-5 text-[#3A3A3A]/65">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight text-[#3A3A3A]">{value}</p>
-      {sub && <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/55">{sub}</p>}
+    <div className="rounded-2xl bg-[#F7F7F8] dark:bg-[#101013] px-4 py-3.5">
+      <p className="text-xs font-semibold leading-5 text-[#3A3A3A]/65 dark:text-white/65">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">{value}</p>
+      {sub && <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{sub}</p>}
     </div>
   );
 }
 
 function CardSkeleton() {
-  return <div className="h-32 animate-pulse rounded-2xl bg-[#3A3A3A]/6" />;
+  return <div className="h-32 animate-pulse rounded-2xl bg-[#3A3A3A]/6 dark:bg-white/6" />;
 }
 
 function PanelSkeleton() {
-  return <div className="h-64 animate-pulse rounded-2xl bg-[#3A3A3A]/6" />;
+  return <div className="h-64 animate-pulse rounded-2xl bg-[#3A3A3A]/6 dark:bg-white/6" />;
 }
 
 function LevelRow({ label, value, dot }: { label: string; value: number; dot: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-[#F7F7F8] px-4 py-3">
+    <div className="flex items-center gap-3 rounded-2xl bg-[#F7F7F8] dark:bg-[#101013] px-4 py-3">
       <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${dot}`} />
-      <span className="text-sm font-medium text-[#3A3A3A]/70">{label}</span>
-      <strong className="ms-auto text-lg font-semibold text-[#3A3A3A]">{value}</strong>
+      <span className="text-sm font-medium text-[#3A3A3A]/70 dark:text-white/70">{label}</span>
+      <strong className="ms-auto text-lg font-semibold text-[#3A3A3A] dark:text-[#ececef]">{value}</strong>
     </div>
   );
 }
@@ -884,9 +884,9 @@ function LinkRow({ label, value, to, warn = false }: { label: string; value: num
   return (
     <Link
       to={to}
-      className="flex items-center justify-between gap-3 rounded-2xl bg-[#F7F7F8] px-4 py-3 transition-colors hover:bg-[#FFF1E8]"
+      className="flex items-center justify-between gap-3 rounded-2xl bg-[#F7F7F8] dark:bg-[#101013] px-4 py-3 transition-colors hover:bg-[#FFF1E8] dark:bg-[#1b1b20]"
     >
-      <span className="text-sm font-medium text-[#3A3A3A]/70">{label}</span>
+      <span className="text-sm font-medium text-[#3A3A3A]/70 dark:text-white/70">{label}</span>
       <strong className={`text-base font-semibold ${warn ? "text-[#F47822]" : "text-[#3A3A3A]"}`}>{value}</strong>
     </Link>
   );
@@ -936,16 +936,16 @@ function Focus({
   return (
     <Link
       to={href}
-      className="group flex items-center gap-3.5 rounded-2xl border border-[#F47822]/12 bg-white px-4 py-3.5 shadow-[0_4px_12px_rgba(58,58,58,.03)] transition-colors hover:border-[#F47822]/35 hover:bg-[#FFFDFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35"
+      className="group flex items-center gap-3.5 rounded-2xl border border-[#F47822]/12 bg-white dark:bg-[#1b1b20] px-4 py-3.5 shadow-[0_4px_12px_rgba(58,58,58,.03)] transition-colors hover:border-[#F47822]/35 hover:bg-[#FFFDFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35"
     >
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#FFF1E8] text-[#F47822] transition-colors group-hover:bg-[#F47822] group-hover:text-white">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#FFF1E8] dark:bg-[#1b1b20] text-[#F47822] transition-colors group-hover:bg-[#F47822] group-hover:text-white">
         <Icon className="h-5 w-5" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold text-[#3A3A3A]">{label}</span>
-        <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/55">{value}</span>
+        <span className="block text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{label}</span>
+        <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/55 dark:text-white/55">{value}</span>
       </span>
-      <span className="text-[#3A3A3A]/35 transition group-hover:text-[#F47822] rtl:-scale-x-100">→</span>
+      <span className="text-[#3A3A3A]/35 dark:text-white/35 transition group-hover:text-[#F47822] rtl:-scale-x-100">→</span>
     </Link>
   );
 }

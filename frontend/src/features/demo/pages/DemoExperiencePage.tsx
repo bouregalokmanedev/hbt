@@ -75,10 +75,10 @@ function LabCard({
       data-testid={`demo-lab-${labId}`}
       aria-disabled={!unlocked}
       className={[
-        "group relative w-full overflow-hidden rounded-[22px] border bg-white p-5 text-start transition-all dark:bg-[#1b1b20]",
+        "group relative w-full overflow-hidden rounded-[22px] border bg-white dark:bg-[#1b1b20] p-5 text-start transition-all dark:bg-[#1b1b20]",
         unlocked
-          ? "border-[#3A3A3A]/10 hover:-translate-y-0.5 hover:border-[#F47822]/40 hover:shadow-[0_12px_28px_rgba(244,120,34,.12)] dark:border-white/10"
-          : "border-[#3A3A3A]/10 opacity-95 dark:border-white/10",
+          ? "border-[#3A3A3A]/10 dark:border-white/10 hover:-translate-y-0.5 hover:border-[#F47822]/40 hover:shadow-[0_12px_28px_rgba(244,120,34,.12)] dark:border-white/10"
+          : "border-[#3A3A3A]/10 dark:border-white/10 opacity-95 dark:border-white/10",
       ].join(" ")}
     >
       <div className="flex items-start justify-between gap-3">
@@ -93,7 +93,7 @@ function LabCard({
             {t("demo.labs.free")}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#3A3A3A]/[.06] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#3A3A3A]/50 dark:bg-white/[0.07] dark:text-white/50">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#3A3A3A]/50 dark:bg-white/[0.07] dark:text-white/50">
             <Lock className="h-3 w-3" />
             {t("demo.labs.locked")}
           </span>
@@ -101,7 +101,7 @@ function LabCard({
       </div>
       <p className="mt-4 flex items-center gap-2 text-base font-black text-[#3A3A3A] dark:text-white">
         {label}
-        <span className="rounded-md bg-[#3A3A3A]/[.06] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40">
+        <span className="rounded-md bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#3A3A3A]/40 dark:bg-white/[0.07] dark:text-white/40">
           {meta.tag}
         </span>
       </p>
@@ -180,7 +180,7 @@ function ScenarioWorkspace({
 
   if (!step) {
     return (
-      <div className="rounded-[24px] border border-[#3A3A3A]/10 bg-white p-6 text-sm text-[#3A3A3A]/60 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60">
+      <div className="rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 text-sm text-[#3A3A3A]/60 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60">
         {t("demo.scenarios.noSteps")}
       </div>
     );
@@ -189,9 +189,9 @@ function ScenarioWorkspace({
   return (
     <div
       data-testid="demo-scenario-workspace"
-      className="overflow-hidden rounded-[24px] border border-[#3A3A3A]/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#1b1b20]"
+      className="overflow-hidden rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-sm dark:border-white/10 dark:bg-[#1b1b20]"
     >
-      <header className="border-b border-[#3A3A3A]/8 px-5 py-4 dark:border-white/8">
+      <header className="border-b border-[#3A3A3A]/8 dark:border-white/8 px-5 py-4 dark:border-white/8">
         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">
           {t("demo.scenarios.workstation")}
         </p>
@@ -206,7 +206,7 @@ function ScenarioWorkspace({
         </p>
       </header>
 
-      <div className="flex items-center gap-2 overflow-x-auto border-b border-[#3A3A3A]/8 px-4 py-3 dark:border-white/8">
+      <div className="flex items-center gap-2 overflow-x-auto border-b border-[#3A3A3A]/8 dark:border-white/8 px-4 py-3 dark:border-white/8">
         {scenario.steps.map((s, i) => {
           const unlocked = isDemoStepUnlocked(scenarioIndex, i);
           const done = answered.has(s.id);
@@ -233,10 +233,10 @@ function ScenarioWorkspace({
                   done
                     ? "border-emerald-500 bg-emerald-500 text-white"
                     : !unlocked
-                      ? "border-[#3A3A3A]/10 bg-[#F3F3F3] text-[#3A3A3A]/30 dark:border-white/10 dark:bg-white/[0.04]"
+                      ? "border-[#3A3A3A]/10 dark:border-white/10 bg-[#F3F3F3] dark:bg-[#101013] text-[#3A3A3A]/30 dark:border-white/10 dark:bg-white/[0.04]"
                       : active
                         ? "border-[#F47822] bg-[#F47822] text-white shadow-[0_0_0_4px_rgba(244,120,34,0.12)]"
-                        : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/40 dark:border-white/10 dark:bg-[#1b1b20]",
+                        : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/40 dark:border-white/10 dark:bg-[#1b1b20]",
                 ].join(" ")}
               >
                 {!unlocked ? <Lock className="h-3 w-3" /> : done ? <Check className="h-3.5 w-3.5" /> : i + 1}
@@ -270,7 +270,7 @@ function ScenarioWorkspace({
               placeholder={step.findingPlaceholder}
               rows={3}
               data-testid="demo-finding"
-              className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 py-2.5 text-sm outline-none transition focus:border-[#F47822] dark:border-white/10 dark:bg-[#232329] dark:text-white"
+              className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 py-2.5 text-sm outline-none transition focus:border-[#F47822] dark:border-white/10 dark:bg-[#232329] dark:text-white"
             />
           </label>
 
@@ -283,7 +283,7 @@ function ScenarioWorkspace({
                 setFinding("");
                 setNote(null);
               }}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/70"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/70"
             >
               <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
               {t("demo.scenarios.prev")}
@@ -310,13 +310,13 @@ function ScenarioWorkspace({
             </button>
           </div>
           {note && (
-            <p role="status" className="mt-3 text-xs font-semibold text-emerald-600">
+            <p role="status" className="mt-3 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               {note}
             </p>
           )}
         </div>
 
-        <aside className="rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] p-4 dark:border-white/8 dark:bg-white/[0.03]">
+        <aside className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] p-4 dark:border-white/8 dark:bg-white/[0.03]">
           <p className="text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
             {t("demo.scenarios.complaint")}
           </p>
@@ -391,7 +391,7 @@ export function DemoExperiencePage() {
       <DemoRegisterModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <section className="relative overflow-hidden border-b border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
         <div className="absolute inset-0 bg-gradient-to-br from-[#F47822]/[0.07] via-transparent to-[#3A3A3A]/[0.04]" aria-hidden />
         <div className="relative mx-auto max-w-[1200px] px-5 py-12 sm:px-8 sm:py-16">
           <p className="inline-flex items-center gap-2 rounded-full bg-[#F47822]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#F47822]">
@@ -401,7 +401,7 @@ export function DemoExperiencePage() {
           <h1 className="mt-4 max-w-2xl text-3xl font-black leading-tight text-[#3A3A3A] sm:text-4xl dark:text-white">
             {t("demo.hero.title")}
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-[#3A3A3A]/60 sm:text-base dark:text-white/60">
+          <p className="mt-3 max-w-xl text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60 sm:text-base dark:text-white/60">
             {t("demo.hero.desc")}
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -409,7 +409,7 @@ export function DemoExperiencePage() {
               <Trophy className="h-3.5 w-3.5 text-[#F47822]" />
               {t("demo.hero.unlockedLabs", { count: unlockedLabCount, total: DEMO_LABS.length })}
             </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-xs font-bold text-[#3A3A3A]/70 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/70">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-bold text-[#3A3A3A]/70 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/70">
               <MonitorPlay className="h-3.5 w-3.5 text-[#F47822]" />
               {stage === 0 ? t("demo.hero.guestMode") : t("demo.hero.registeredMode")}
             </span>
@@ -455,7 +455,7 @@ export function DemoExperiencePage() {
 
           <div id="demo-simulator-bench" className="mt-6 scroll-mt-24">
             {activeLab === "scanner" && (
-              <div className="rounded-[24px] border border-[#3A3A3A]/10 bg-[#F8F7F6] p-4 dark:border-white/10 dark:bg-white/[0.02] sm:p-5">
+              <div className="rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] p-4 dark:border-white/10 dark:bg-white/[0.02] sm:p-5">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/45 dark:text-white/45">
                     {t("demo.labs.scannerBench")}
@@ -468,7 +468,7 @@ export function DemoExperiencePage() {
               </div>
             )}
             {activeLab === "schematic" && (
-              <div className="rounded-[24px] border border-[#3A3A3A]/10 bg-[#F8F7F6] p-4 dark:border-white/10 dark:bg-white/[0.02] sm:p-5">
+              <div className="rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] p-4 dark:border-white/10 dark:bg-white/[0.02] sm:p-5">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/45 dark:text-white/45">
                     {t("demo.labs.schematicBench")}
@@ -481,7 +481,7 @@ export function DemoExperiencePage() {
               </div>
             )}
             {activeLab && !isDemoLabUnlocked(activeLab) && (
-              <div className="rounded-[24px] border border-dashed border-[#F47822]/40 bg-white p-8 text-center dark:bg-[#1b1b20]">
+              <div className="rounded-[24px] border border-dashed border-[#F47822]/40 bg-white dark:bg-[#1b1b20] p-8 text-center dark:bg-[#1b1b20]">
                 <Lock className="mx-auto h-8 w-8 text-[#F47822]" />
                 <p className="mt-3 text-sm font-bold text-[#3A3A3A] dark:text-white">{t("demo.labs.lockedTitle")}</p>
                 <button
@@ -494,7 +494,7 @@ export function DemoExperiencePage() {
               </div>
             )}
             {!activeLab && !activeScenario && (
-              <div className="rounded-[24px] border border-dashed border-[#3A3A3A]/15 bg-white p-8 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
+              <div className="rounded-[24px] border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-8 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
                 {t("demo.labs.pickLab")}
               </div>
             )}
@@ -523,9 +523,9 @@ export function DemoExperiencePage() {
                   data-testid={`demo-scenario-${index}`}
                   onClick={() => openScenario(index)}
                   className={[
-                    "rounded-[22px] border bg-white p-5 text-start transition dark:bg-[#1b1b20]",
+                    "rounded-[22px] border bg-white dark:bg-[#1b1b20] p-5 text-start transition dark:bg-[#1b1b20]",
                     unlocked
-                      ? "border-[#3A3A3A]/10 hover:-translate-y-0.5 hover:border-[#F47822]/40 dark:border-white/10"
+                      ? "border-[#3A3A3A]/10 dark:border-white/10 hover:-translate-y-0.5 hover:border-[#F47822]/40 dark:border-white/10"
                       : "border-[#3A3A3A]/10 dark:border-white/10",
                   ].join(" ")}
                 >
@@ -538,7 +538,7 @@ export function DemoExperiencePage() {
                         {t("demo.scenarios.open")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#3A3A3A]/[.06] px-2 py-0.5 text-[10px] font-black uppercase text-[#3A3A3A]/50 dark:bg-white/[0.07] dark:text-white/50">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2 py-0.5 text-[10px] font-black uppercase text-[#3A3A3A]/50 dark:bg-white/[0.07] dark:text-white/50">
                         <Lock className="h-3 w-3" />
                         {t("demo.scenarios.locked")}
                       </span>
@@ -575,7 +575,7 @@ export function DemoExperiencePage() {
         <section
           id="demo-mentor"
           aria-labelledby="demo-mentor-title"
-          className="overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 bg-[#3A3A3A] p-6 text-white sm:p-8 dark:border-white/10"
+          className="overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-[#3A3A3A] p-6 text-white sm:p-8 dark:border-white/10"
         >
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-xl">

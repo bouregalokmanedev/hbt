@@ -6,9 +6,10 @@ use App\Domains\Quizzes\Actions\SubmitQuizAttemptAction;
 use App\Domains\Quizzes\DTOs\SubmitQuizAttemptData;
 use App\Domains\Quizzes\Enums\QuizAttemptStatus;
 use App\Domains\Quizzes\Enums\QuizQuestionType;
-use App\Domains\Quizzes\Enums\QuizStatus;
 use App\Domains\Quizzes\Models\Quiz;
 use App\Domains\Quizzes\Models\QuizAttempt;
+use App\Domains\Quizzes\Models\QuizAttemptAnswer;
+use App\Domains\Quizzes\Models\QuizAttemptAnswerOption;
 use App\Domains\Quizzes\Models\QuizQuestion;
 use App\Domains\Quizzes\Models\QuizQuestionOption;
 use App\Models\User;
@@ -951,6 +952,158 @@ class SubmitQuizAttemptActionTest extends TestCase
         $this->assertDatabaseCount(
             'quiz_attempt_answer_options',
             1
+        );
+    }
+
+    public function test_autosaved_drafts_are_replaced_by_graded_rows(): void
+    {
+        $quiz = Quiz::factory()->create([
+            'pass_percentage' => 70,
+        ]);
+
+        $question = QuizQuestion::factory()->create([
+            'quiz_id' => $quiz->id,
+            'type' => QuizQuestionType::SINGLE_CHOICE,
+            'points' => 10,
+            'required' => true,
+            'position' => 1,
+        ]);
+
+        $correctOption = QuizQuestionOption::factory()->create([
+            'quiz_question_id' => $question->id,
+            'is_correct' => true,
+            'position' => 1,
+        ]);
+
+        $wrongOption = QuizQuestionOption::factory()->create([
+            'quiz_question_id' => $question->id,
+            'is_correct' => false,
+            'position' => 2,
+        ]);
+
+        $attempt = QuizAttempt::factory()->create([
+            'quiz_id' => $quiz->id,
+            'user_id' => $this->user->id,
+            'status' => QuizAttemptStatus::IN_PROGRESS,
+        ]);
+
+        // A draft saved for the wrong option while the attempt was running.
+        $draft = QuizAttemptAnswer::create([
+            'attempt_id' => $attempt->id,
+            'question_id' => $question->id,
+            'is_correct' => null,
+            'points_earned' => null,
+        ]);
+
+        QuizAttemptAnswerOption::create([
+            'answer_id' => $draft->id,
+            'option_id' => $wrongOption->id,
+        ]);
+
+        $result = $this->action->execute(
+            $attempt,
+            new SubmitQuizAttemptData([
+                $question->id => [$correctOption->id],
+            ]),
+        );
+
+        $this->assertDatabaseCount('quiz_attempt_answers', 1);
+        $this->assertDatabaseCount('quiz_attempt_answer_options', 1);
+
+        $graded = QuizAttemptAnswer::query()
+            ->where('attempt_id', $attempt->id)
+            ->first();
+
+        $this->assertTrue((bool) $graded->is_correct);
+        $this->assertSame(10, $graded->points_earned);
+        $this->assertSame(
+            [$correctOption->id],
+            $graded->selectedOptions()->pluck('option_id')->all()
+        );
+
+        $this->assertSame(10, $result->score);
+        $this->assertTrue($result->passed);
+    }
+
+    public function test_submit_succeeds_inside_the_expiry_grace_window(): void
+    {
+        $quiz = Quiz::factory()->create([
+            'pass_percentage' => 70,
+            'time_limit' => 10,
+        ]);
+
+        $question = QuizQuestion::factory()->create([
+            'quiz_id' => $quiz->id,
+            'type' => QuizQuestionType::SINGLE_CHOICE,
+            'points' => 10,
+            'required' => true,
+            'position' => 1,
+        ]);
+
+        $correctOption = QuizQuestionOption::factory()->create([
+            'quiz_question_id' => $question->id,
+            'is_correct' => true,
+            'position' => 1,
+        ]);
+
+        $attempt = QuizAttempt::factory()->create([
+            'quiz_id' => $quiz->id,
+            'user_id' => $this->user->id,
+            'status' => QuizAttemptStatus::IN_PROGRESS,
+            'started_at' => now()->subMinutes(10),
+            'expires_at' => now()->subSeconds(5),
+        ]);
+
+        $result = $this->action->execute(
+            $attempt,
+            new SubmitQuizAttemptData([
+                $question->id => [$correctOption->id],
+            ]),
+        );
+
+        $this->assertSame(
+            QuizAttemptStatus::SUBMITTED,
+            $result->status
+        );
+    }
+
+    public function test_submit_fails_after_the_expiry_grace_window(): void
+    {
+        $quiz = Quiz::factory()->create([
+            'pass_percentage' => 70,
+            'time_limit' => 10,
+        ]);
+
+        $question = QuizQuestion::factory()->create([
+            'quiz_id' => $quiz->id,
+            'type' => QuizQuestionType::SINGLE_CHOICE,
+            'points' => 10,
+            'required' => true,
+            'position' => 1,
+        ]);
+
+        $correctOption = QuizQuestionOption::factory()->create([
+            'quiz_question_id' => $question->id,
+            'is_correct' => true,
+            'position' => 1,
+        ]);
+
+        $attempt = QuizAttempt::factory()->create([
+            'quiz_id' => $quiz->id,
+            'user_id' => $this->user->id,
+            'status' => QuizAttemptStatus::IN_PROGRESS,
+            'started_at' => now()->subMinutes(10),
+            'expires_at' => now()->subSeconds(60),
+        ]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('This quiz attempt has expired.');
+
+        $this->action->execute(
+            $attempt,
+            new SubmitQuizAttemptData([
+                $question->id => [$correctOption->id],
+            ]),
         );
     }
 }

@@ -32,7 +32,7 @@ export function LocationLabFull({ sessionId = null }: { sessionId?: string | nul
                         removeVehicleItem(LOCATION_VEHICLE_KEY);
                         setVehicleId(null);
                     }}
-                    className="rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-xs font-bold text-[#3A3A3A]/60 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60"
+                    className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-xs font-bold text-[#3A3A3A]/60 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60"
                 >
                     {t("simulator.lab.vehicleGate.switch", { defaultValue: "Switch vehicle" }) as string} · {vehicleId}
                 </button>

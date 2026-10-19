@@ -86,24 +86,24 @@ export function AdminCommercePage() {
       />
 
       {notice && (
-        <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
           {notice}
         </div>
       )}
       {actionError && (
-        <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div role="alert" className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           {actionError}
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1.5 rounded-2xl bg-white p-1.5 shadow-[0_4px_14px_rgba(58,58,58,.05)]">
+      <div className="flex flex-wrap gap-1.5 rounded-2xl bg-white dark:bg-[#1b1b20] p-1.5 shadow-[0_4px_14px_rgba(58,58,58,.05)]">
         {tabs.map((entry) => (
           <button
             key={entry.id}
             type="button"
             onClick={() => setTab(entry.id)}
             className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
-              tab === entry.id ? "bg-[#3A3A3A] text-white shadow" : "text-[#3A3A3A]/55 hover:text-[#3A3A3A]"
+              tab === entry.id ? "bg-[#3A3A3A] text-white shadow" : "text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A]"
             }`}
           >
             {entry.icon}
@@ -162,7 +162,7 @@ function OverviewTab() {
             />
           ))}
         </div>
-        <div className="mt-2 flex items-center justify-between text-[10px] font-semibold text-[#3A3A3A]/40">
+        <div className="mt-2 flex items-center justify-between text-[10px] font-semibold text-[#3A3A3A]/40 dark:text-white/40">
           <span>{data.revenue_14d[0]?.date ?? ""}</span>
           <span>{data.revenue_14d[data.revenue_14d.length - 1]?.date ?? ""}</span>
         </div>
@@ -172,20 +172,20 @@ function OverviewTab() {
         <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">{t("admin.commerce.overview.latestTag")}</p>
         <h2 className="mt-2 text-lg font-semibold">{t("admin.commerce.overview.recentTx")}</h2>
         {data.recent_transactions.length === 0 ? (
-          <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("admin.commerce.overview.emptyTx")}</p>
+          <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.overview.emptyTx")}</p>
         ) : (
           <ul className="mt-4 space-y-2">
             {data.recent_transactions.map((transaction) => (
-              <li key={transaction.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-4 py-3">
+              <li key={transaction.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3">
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-bold text-[#3A3A3A]">
+                  <span className="block truncate text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {transaction.user ?? t("admin.commerce.overview.unknown")} · {transaction.course ?? transaction.kind}
                   </span>
-                  <span className="mt-0.5 block font-mono text-[10px] text-[#3A3A3A]/45">
+                  <span className="mt-0.5 block font-mono text-[10px] text-[#3A3A3A]/45 dark:text-white/45">
                     {transaction.provider_ref ?? transaction.id.slice(0, 8)}
                   </span>
                 </span>
-                <span className="text-xs font-bold text-[#3A3A3A]">{money(transaction.amount, transaction.currency, locale)}</span>
+                <span className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{money(transaction.amount, transaction.currency, locale)}</span>
                 <StatusPill status={transaction.status} />
               </li>
             ))}
@@ -222,7 +222,7 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
             setStatus(event.target.value);
             setPage(1);
           }}
-          className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-semibold capitalize text-[#3A3A3A]/70 outline-none transition focus:border-[#F47822]"
+          className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-semibold capitalize text-[#3A3A3A]/70 dark:text-white/70 outline-none transition focus:border-[#F47822]"
         >
           <option value="">{t("admin.commerce.transactions.allStatuses")}</option>
           {["pending", "succeeded", "failed", "refunded", "disputed"].map((entry) => (
@@ -235,7 +235,7 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
 
       <div className="mt-6 overflow-x-auto">
         <table className="w-full min-w-[860px] text-left rtl:text-right">
-          <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+          <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
             <tr>
               <th className="pb-3">{t("admin.commerce.transactions.headers.customer")}</th>
               <th className="pb-3">{t("admin.commerce.transactions.headers.item")}</th>
@@ -246,12 +246,12 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
           </thead>
           <tbody className="divide-y divide-[#3A3A3A]/7">
             {data.data.map((transaction) => (
-              <tr key={transaction.id} className="transition hover:bg-[#FCFCFC]">
+              <tr key={transaction.id} className="transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                 <td className="py-4">
                   <p className="text-sm font-semibold">{transaction.user ?? "—"}</p>
-                  <p className="font-mono text-[10px] text-[#3A3A3A]/45">{transaction.provider_ref ?? transaction.id.slice(0, 8)}</p>
+                  <p className="font-mono text-[10px] text-[#3A3A3A]/45 dark:text-white/45">{transaction.provider_ref ?? transaction.id.slice(0, 8)}</p>
                 </td>
-                <td className="max-w-[220px] truncate py-4 text-xs text-[#3A3A3A]/60">
+                <td className="max-w-[220px] truncate py-4 text-xs text-[#3A3A3A]/60 dark:text-white/60">
                   {transaction.course ?? transaction.kind}
                 </td>
                 <td className="py-4 text-xs font-bold">{money(transaction.amount, transaction.currency, locale)}</td>
@@ -272,7 +272,7 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
                         <button
                           type="button"
                           onClick={() => onDone(() => adminApi.failTransaction(transaction.id), t("admin.commerce.notices.failTransaction"))}
-                          className="rounded-lg bg-[#3A3A3A]/5 px-3 py-2 text-xs font-bold text-[#3A3A3A]/60 transition hover:bg-red-50 hover:text-red-600"
+                          className="rounded-lg bg-[#3A3A3A]/5 dark:bg-white/5 px-3 py-2 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-600 dark:text-red-400"
                         >
                           {t("admin.commerce.transactions.fail")}
                         </button>
@@ -285,7 +285,7 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
                           setRefundingId(transaction.id);
                           setReason("");
                         }}
-                        className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-100"
+                        className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs font-bold text-red-600 dark:text-red-400 transition hover:bg-red-100"
                       >
                         {t("admin.commerce.transactions.refund")}
                       </button>
@@ -297,7 +297,7 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
                         value={reason}
                         onChange={(event) => setReason(event.target.value)}
                         placeholder={t("admin.commerce.transactions.reasonPh")}
-                        className="h-9 w-44 rounded-lg border border-[#3A3A3A]/10 px-2.5 text-xs outline-none focus:border-[#F47822]"
+                        className="h-9 w-44 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2.5 text-xs outline-none focus:border-[#F47822]"
                       />
                       <button
                         type="button"
@@ -316,7 +316,7 @@ function TransactionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, su
             ))}
             {data.data.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-10 text-center text-sm text-[#3A3A3A]/45">
+                <td colSpan={5} className="py-10 text-center text-sm text-[#3A3A3A]/45 dark:text-white/45">
                   {t("admin.commerce.transactions.empty")}
                 </td>
               </tr>
@@ -357,7 +357,7 @@ function SubscriptionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, s
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">{t("admin.commerce.subscriptions.privileged")}</p>
             <h2 className="mt-1 text-base font-bold">{t("admin.commerce.subscriptions.grantTitle")}</h2>
-            <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("admin.commerce.subscriptions.grantDesc")}</p>
+            <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.subscriptions.grantDesc")}</p>
           </div>
           <button
             type="button"
@@ -389,7 +389,7 @@ function SubscriptionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, s
             setStatus(event.target.value);
             setPage(1);
           }}
-          className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-semibold capitalize text-[#3A3A3A]/70 outline-none transition focus:border-[#F47822]"
+          className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-semibold capitalize text-[#3A3A3A]/70 dark:text-white/70 outline-none transition focus:border-[#F47822]"
         >
           <option value="">{t("admin.commerce.subscriptions.allStatuses")}</option>
           {["pending", "trial", "active", "past_due", "cancelled", "expired"].map((entry) => (
@@ -401,7 +401,7 @@ function SubscriptionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, s
 
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[760px] text-left rtl:text-right">
-            <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+            <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
               <tr>
                 <th className="pb-3">{t("admin.commerce.subscriptions.headers.subscriber")}</th>
                 <th className="pb-3">{t("admin.commerce.subscriptions.headers.plan")}</th>
@@ -412,16 +412,16 @@ function SubscriptionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, s
             </thead>
             <tbody className="divide-y divide-[#3A3A3A]/7">
               {data.data.map((subscription) => (
-                <tr key={subscription.id} className="transition hover:bg-[#FCFCFC]">
+                <tr key={subscription.id} className="transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                   <td className="py-4">
                     <p className="text-sm font-semibold">{subscription.user ?? "—"}</p>
-                    <p className="text-xs text-[#3A3A3A]/45">{subscription.email ?? ""}</p>
+                    <p className="text-xs text-[#3A3A3A]/45 dark:text-white/45">{subscription.email ?? ""}</p>
                   </td>
-                  <td className="py-4 text-xs text-[#3A3A3A]/60">{subscription.plan ?? "—"}</td>
+                  <td className="py-4 text-xs text-[#3A3A3A]/60 dark:text-white/60">{subscription.plan ?? "—"}</td>
                   <td className="py-4">
                     <StatusPill status={subscription.status} />
                   </td>
-                  <td className="py-4 text-xs text-[#3A3A3A]/50">
+                  <td className="py-4 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                     {subscription.current_period_ends_at ? new Date(subscription.current_period_ends_at).toLocaleDateString(locale) : "—"}
                   </td>
                   <td className="py-4 text-right rtl:text-left">
@@ -429,7 +429,7 @@ function SubscriptionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, s
                       <button
                         type="button"
                         onClick={() => onDone(() => adminApi.cancelSubscription(subscription.id), t("admin.commerce.notices.cancelSubscription"))}
-                        className="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-100"
+                        className="rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs font-bold text-red-600 dark:text-red-400 transition hover:bg-red-100"
                       >
                         {t("admin.commerce.subscriptions.cancelAction")}
                       </button>
@@ -439,7 +439,7 @@ function SubscriptionsTab({ onDone }: { onDone: (work: () => Promise<unknown>, s
               ))}
               {data.data.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-sm text-[#3A3A3A]/45">
+                  <td colSpan={5} className="py-10 text-center text-sm text-[#3A3A3A]/45 dark:text-white/45">
                     {t("admin.commerce.subscriptions.empty")}
                   </td>
                 </tr>
@@ -495,7 +495,7 @@ function GrantSubscriptionForm({
   };
 
   return (
-    <div className="mt-4 grid gap-2.5 rounded-2xl bg-[#FCFCFC] p-4">
+    <div className="mt-4 grid gap-2.5 rounded-2xl bg-[#FCFCFC] dark:bg-[#1b1b20] p-4">
       <div className="grid gap-2.5 sm:grid-cols-[1fr_auto]">
         <input
           value={email}
@@ -504,23 +504,23 @@ function GrantSubscriptionForm({
             setResolvedUuid(null);
           }}
           placeholder={t("admin.commerce.grant.emailPh")}
-          className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-sm outline-none transition focus:border-[#F47822]"
+          className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-sm outline-none transition focus:border-[#F47822]"
         />
         <button
           type="button"
           disabled={resolving || !email.trim()}
           onClick={() => void lookup()}
-          className="h-11 rounded-xl border border-[#3A3A3A]/10 px-4 text-xs font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-50"
+          className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-50"
         >
           {resolving ? t("admin.commerce.grant.lookingUp") : t("admin.commerce.grant.findAccount")}
         </button>
       </div>
-      {lookupError && <p className="text-xs font-semibold text-red-600">{lookupError}</p>}
-      {resolvedUuid && <p className="text-xs font-semibold text-emerald-700">{t("admin.commerce.grant.foundHint")}</p>}
+      {lookupError && <p className="text-xs font-semibold text-red-600 dark:text-red-400">{lookupError}</p>}
+      {resolvedUuid && <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{t("admin.commerce.grant.foundHint")}</p>}
       <select
         value={planId}
         onChange={(event) => setPlanId(event.target.value)}
-        className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-semibold outline-none transition focus:border-[#F47822]"
+        className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-semibold outline-none transition focus:border-[#F47822]"
       >
         <option value="">{t("admin.commerce.grant.selectPlan")}</option>
         {plans.map((plan) => (
@@ -578,7 +578,7 @@ function PlansTab({ onDone }: { onDone: (work: () => Promise<unknown>, success: 
             <PlanCard key={plan.id} planId={plan.id} onDone={onDone} />
           ))}
           {plans.data.length === 0 && (
-            <p className="text-sm text-[#3A3A3A]/50">{t("admin.commerce.plans.empty")}</p>
+            <p className="text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.plans.empty")}</p>
           )}
         </div>
       </AdminPanel>
@@ -601,16 +601,16 @@ function PlanCard({
   if (!plan) return null;
 
   return (
-    <div className="rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] p-4">
+    <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] p-4">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="flex items-center gap-2 text-sm font-bold text-[#3A3A3A]">
+          <p className="flex items-center gap-2 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
             {plan.name}
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${plan.active ? "bg-emerald-50 text-emerald-700" : "bg-[#3A3A3A]/8 text-[#3A3A3A]/50"}`}>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${plan.active ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/50 dark:text-white/50"}`}>
               {plan.active ? t("admin.commerce.plans.active") : t("admin.commerce.plans.hidden")}
             </span>
           </p>
-          <p className="mt-1 text-xs text-[#3A3A3A]/50">
+          <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">
             {plan.price.toLocaleString(locale)} {plan.currency} / {plan.interval} · {t("admin.commerce.plans.subscribers", { count: plan.subscribers })}
           </p>
         </div>
@@ -618,14 +618,14 @@ function PlanCard({
           <button
             type="button"
             onClick={() => setEditing((open) => !open)}
-            className="rounded-lg border border-[#3A3A3A]/10 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]/65 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+            className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#F47822]/40 hover:text-[#F47822]"
           >
             {editing ? t("admin.commerce.plans.close") : t("admin.commerce.plans.edit")}
           </button>
           <button
             type="button"
             onClick={() => onDone(() => adminApi.deletePlan(plan.id), t("admin.commerce.notices.planDeleted"))}
-            className="rounded-lg px-3 py-1.5 text-[11px] font-bold text-red-600 transition hover:bg-red-50"
+            className="rounded-lg px-3 py-1.5 text-[11px] font-bold text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:bg-red-500/10"
           >
             {t("admin.commerce.plans.delete")}
           </button>
@@ -666,10 +666,10 @@ function PlanForm({
   const [trial, setTrial] = useState(initial?.trial_days ?? 0);
   const [active, setActive] = useState(initial?.active ?? true);
   const [description, setDescription] = useState("");
-  const inputClass = "h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs outline-none transition focus:border-[#F47822]";
+  const inputClass = "h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs outline-none transition focus:border-[#F47822]";
 
   return (
-    <div className="mt-4 grid gap-2.5 rounded-2xl bg-[#FCFCFC] p-4">
+    <div className="mt-4 grid gap-2.5 rounded-2xl bg-[#FCFCFC] dark:bg-[#1b1b20] p-4">
       <div className="grid gap-2.5 sm:grid-cols-2">
         <input value={name} onChange={(event) => setName(event.target.value)} placeholder={t("admin.commerce.plans.form.namePh")} className={inputClass} />
         <input value={description} onChange={(event) => setDescription(event.target.value)} placeholder={t("admin.commerce.plans.form.descPh")} className={inputClass} />
@@ -684,7 +684,7 @@ function PlanForm({
         </select>
         <input type="number" min={0} value={trial} onChange={(event) => setTrial(Number(event.target.value))} placeholder={t("admin.commerce.plans.form.trialPh")} className={inputClass} />
       </div>
-      <label className="flex items-center gap-2 text-xs font-semibold text-[#3A3A3A]/70">
+      <label className="flex items-center gap-2 text-xs font-semibold text-[#3A3A3A]/70 dark:text-white/70">
         <input type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} className="h-4 w-4 rounded accent-[#F47822]" />
         {t("admin.commerce.plans.form.visible")}
       </label>
@@ -731,16 +731,16 @@ function RefundsTab() {
       <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">{t("admin.commerce.refunds.tag")}</p>
       <h2 className="mt-1 text-base font-bold">{t("admin.commerce.refunds.titleCount", { count: data.meta.total })}</h2>
       {data.data.length === 0 ? (
-        <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("admin.commerce.refunds.empty")}</p>
+        <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.refunds.empty")}</p>
       ) : (
         <ul className="mt-4 space-y-2">
           {data.data.map((refund) => (
-            <li key={refund.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-4 py-3">
+            <li key={refund.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3">
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-bold text-[#3A3A3A]">
+                <span className="block truncate text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                   {refund.user ?? "—"} · {money(refund.amount, refund.currency, locale)}
                 </span>
-                <span className="mt-0.5 block truncate text-[11px] text-[#3A3A3A]/50">
+                <span className="mt-0.5 block truncate text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                   {refund.reason ?? t("admin.commerce.refunds.noReason")} · {refund.created_at ? new Date(refund.created_at).toLocaleDateString(locale) : "—"}
                 </span>
               </span>
@@ -774,7 +774,7 @@ function PayoutsTab({ onDone }: { onDone: (work: () => Promise<unknown>, success
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">{t("admin.commerce.payouts.tag")}</p>
             <h2 className="mt-1 text-base font-bold">{t("admin.commerce.payouts.recordTitle")}</h2>
-            <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("admin.commerce.payouts.recordDesc")}</p>
+            <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.payouts.recordDesc")}</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -794,11 +794,11 @@ function PayoutsTab({ onDone }: { onDone: (work: () => Promise<unknown>, success
           </div>
         </div>
         {formOpen && (
-          <div className="mt-4 grid gap-2.5 rounded-2xl bg-[#FCFCFC] p-4 sm:grid-cols-[1fr_140px_140px_auto]">
+          <div className="mt-4 grid gap-2.5 rounded-2xl bg-[#FCFCFC] dark:bg-[#1b1b20] p-4 sm:grid-cols-[1fr_140px_140px_auto]">
             <select
               value={instructorId}
               onChange={(event) => setInstructorId(event.target.value)}
-              className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
+              className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs font-semibold outline-none focus:border-[#F47822]"
             >
               <option value="">{t("admin.commerce.payouts.selectInstructor")}</option>
               {(instructors.data?.data ?? []).map((entry) => (
@@ -813,13 +813,13 @@ function PayoutsTab({ onDone }: { onDone: (work: () => Promise<unknown>, success
               value={amount}
               onChange={(event) => setAmount(Number(event.target.value))}
               placeholder={t("admin.commerce.payouts.amountPh")}
-              className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs outline-none focus:border-[#F47822]"
+              className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs outline-none focus:border-[#F47822]"
             />
             <input
               value={period}
               onChange={(event) => setPeriod(event.target.value)}
               placeholder={t("admin.commerce.payouts.periodPh")}
-              className="h-11 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-xs outline-none focus:border-[#F47822]"
+              className="h-11 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs outline-none focus:border-[#F47822]"
             />
             <button
               type="button"
@@ -843,16 +843,16 @@ function PayoutsTab({ onDone }: { onDone: (work: () => Promise<unknown>, success
         <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">{t("admin.commerce.payouts.historyTag")}</p>
         <h2 className="mt-1 text-base font-bold">{t("admin.commerce.payouts.historyTitle", { count: data.meta.total })}</h2>
         {data.data.length === 0 ? (
-          <p className="mt-3 text-sm text-[#3A3A3A]/50">{t("admin.commerce.payouts.empty")}</p>
+          <p className="mt-3 text-sm text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.payouts.empty")}</p>
         ) : (
           <ul className="mt-4 space-y-2">
             {data.data.map((payout) => (
-              <li key={payout.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-4 py-3">
+              <li key={payout.id} className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3">
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-bold text-[#3A3A3A]">
+                  <span className="block truncate text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {payout.instructor ?? "—"} · {money(payout.amount, payout.currency, locale)}
                   </span>
-                  <span className="mt-0.5 block text-[11px] text-[#3A3A3A]/50">
+                  <span className="mt-0.5 block text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                     {payout.period ?? t("admin.commerce.payouts.noPeriod")} · {payout.note ?? ""}
                   </span>
                 </span>
@@ -885,10 +885,10 @@ function OrdersTab() {
   return (
     <AdminPanel>
       <h2 className="font-semibold">{t("admin.commerce.orders.title")}</h2>
-      <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("admin.commerce.orders.desc")}</p>
+      <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.orders.desc")}</p>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[720px] text-left rtl:text-right">
-          <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+          <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
             <tr>
               <th className="pb-3">{t("admin.commerce.orders.headers.order")}</th>
               <th className="pb-3">{t("admin.commerce.orders.headers.customer")}</th>
@@ -898,7 +898,7 @@ function OrdersTab() {
           </thead>
           <tbody className="divide-y divide-[#3A3A3A]/7">
             {list.data.data.map((o) => (
-              <tr key={o.id} className="hover:bg-[#FCFCFC]">
+              <tr key={o.id} className="hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                 <td className="py-3 font-mono text-xs">{o.id.slice(0, 8)}</td>
                 <td className="py-3 text-xs">{o.user ?? o.email ?? "—"}</td>
                 <td className="py-3">
@@ -927,10 +927,10 @@ function InvoicesTab() {
   return (
     <AdminPanel>
       <h2 className="font-semibold">{t("admin.commerce.invoices.title")}</h2>
-      <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("admin.commerce.invoices.desc")}</p>
+      <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.invoices.desc")}</p>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[720px] text-left rtl:text-right">
-          <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+          <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
             <tr>
               <th className="pb-3">{t("admin.commerce.invoices.headers.number")}</th>
               <th className="pb-3">{t("admin.commerce.invoices.headers.customer")}</th>
@@ -940,7 +940,7 @@ function InvoicesTab() {
           </thead>
           <tbody className="divide-y divide-[#3A3A3A]/7">
             {list.data.data.map((inv) => (
-              <tr key={inv.id} className="hover:bg-[#FCFCFC]">
+              <tr key={inv.id} className="hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                 <td className="py-3 font-mono text-xs">{inv.number ?? inv.id.slice(0, 8)}</td>
                 <td className="py-3 text-xs">{inv.user ?? "—"}</td>
                 <td className="py-3">
@@ -951,7 +951,7 @@ function InvoicesTab() {
             ))}
             {list.data.data.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-sm text-[#3A3A3A]/40">
+                <td colSpan={4} className="py-8 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">
                   {t("admin.commerce.invoices.empty")}
                 </td>
               </tr>
@@ -975,10 +975,10 @@ function WebhooksTab({ onDone }: { onDone: (work: () => Promise<unknown>, succes
   return (
     <AdminPanel>
       <h2 className="font-semibold">{t("admin.commerce.webhooks.title")}</h2>
-      <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("admin.commerce.webhooks.desc")}</p>
+      <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.webhooks.desc")}</p>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full min-w-[760px] text-left rtl:text-right">
-          <thead className="border-b border-[#3A3A3A]/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40">
+          <thead className="border-b border-[#3A3A3A]/8 dark:border-white/8 text-[10px] font-bold uppercase tracking-[.13em] text-[#3A3A3A]/40 dark:text-white/40">
             <tr>
               <th className="pb-3">{t("admin.commerce.webhooks.headers.provider")}</th>
               <th className="pb-3">{t("admin.commerce.webhooks.headers.event")}</th>
@@ -988,7 +988,7 @@ function WebhooksTab({ onDone }: { onDone: (work: () => Promise<unknown>, succes
           </thead>
           <tbody className="divide-y divide-[#3A3A3A]/7">
             {list.data.data.map((ev) => (
-              <tr key={ev.id} className="hover:bg-[#FCFCFC]">
+              <tr key={ev.id} className="hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
                 <td className="py-3 text-xs font-bold capitalize">{ev.provider}</td>
                 <td className="py-3 font-mono text-[11px]">{ev.event_type}</td>
                 <td className="py-3">
@@ -1009,7 +1009,7 @@ function WebhooksTab({ onDone }: { onDone: (work: () => Promise<unknown>, succes
             ))}
             {list.data.data.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-sm text-[#3A3A3A]/40">
+                <td colSpan={4} className="py-8 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">
                   {t("admin.commerce.webhooks.empty")}
                 </td>
               </tr>
@@ -1033,17 +1033,17 @@ function FailedPaymentsTab() {
   return (
     <AdminPanel>
       <h2 className="font-semibold">{t("admin.commerce.failed.title")}</h2>
-      <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("admin.commerce.failed.desc")}</p>
+      <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("admin.commerce.failed.desc")}</p>
       {list.data.data.length === 0 ? (
-        <p className="mt-4 text-sm text-[#3A3A3A]/40">{t("admin.commerce.failed.empty")}</p>
+        <p className="mt-4 text-sm text-[#3A3A3A]/40 dark:text-white/40">{t("admin.commerce.failed.empty")}</p>
       ) : (
         <ul className="mt-4 space-y-2">
           {list.data.data.map((p) => (
-            <li key={p.id} className="rounded-xl bg-[#FCFCFC] px-4 py-3">
+            <li key={p.id} className="rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3">
               <p className="text-xs font-bold">
                 {p.user ?? "—"} · {money(p.amount, p.currency, locale)}
               </p>
-              <p className="mt-1 text-[11px] text-red-600">
+              <p className="mt-1 text-[11px] text-red-600 dark:text-red-400">
                 {p.failure_code ?? t("admin.commerce.failed.failedFallback")} — {p.failure_message ?? t("admin.commerce.failed.noDetails")}
               </p>
             </li>
@@ -1066,17 +1066,17 @@ function Kpi({
   tone: "green" | "brand" | "red" | "dark" | "amber";
 }) {
   const tones: Record<string, string> = {
-    green: "bg-emerald-50 text-emerald-600",
+    green: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     brand: "bg-[#F47822]/10 text-[#F47822]",
-    red: "bg-red-50 text-red-500",
-    dark: "bg-[#3A3A3A]/8 text-[#3A3A3A]",
-    amber: "bg-amber-50 text-amber-600",
+    red: "bg-red-50 dark:bg-red-500/10 text-red-500",
+    dark: "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]",
+    amber: "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400",
   };
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 bg-white px-4 py-3.5 shadow-[0_4px_14px_rgba(58,58,58,.04)]">
+    <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-3.5 shadow-[0_4px_14px_rgba(58,58,58,.04)]">
       <span className={`grid h-9 w-9 place-items-center rounded-xl ${tones[tone]}`}>{icon}</span>
       <span>
-        <span className="block text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/42">{label}</span>
+        <span className="block text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/42 dark:text-white/42">{label}</span>
         <span className="mt-0.5 block text-lg font-bold leading-none">{value}</span>
       </span>
     </div>
@@ -1085,19 +1085,19 @@ function Kpi({
 
 function StatusPill({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    succeeded: "bg-emerald-50 text-emerald-700",
-    paid: "bg-emerald-50 text-emerald-700",
-    completed: "bg-emerald-50 text-emerald-700",
-    active: "bg-emerald-50 text-emerald-700",
-    pending: "bg-amber-50 text-amber-700",
-    past_due: "bg-amber-50 text-amber-700",
-    failed: "bg-red-50 text-red-600",
-    refunded: "bg-[#3A3A3A]/8 text-[#3A3A3A]/60",
-    cancelled: "bg-[#3A3A3A]/8 text-[#3A3A3A]/60",
-    disputed: "bg-red-50 text-red-600",
+    succeeded: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    paid: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    completed: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    active: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    pending: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    past_due: "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    failed: "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400",
+    refunded: "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/60 dark:text-white/60",
+    cancelled: "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/60 dark:text-white/60",
+    disputed: "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400",
   };
   return (
-    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold capitalize ${styles[status] ?? "bg-[#3A3A3A]/8 text-[#3A3A3A]/60"}`}>
+    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold capitalize ${styles[status] ?? "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/60 dark:text-white/60"}`}>
       {status.replace("_", " ")}
     </span>
   );

@@ -25,7 +25,7 @@ export function SignalGraph({ engine, signals, onSignals }: { engine: ScannerEng
     const colorOf = (id: string) => SIGNAL_COLORS[PARAMS.findIndex((p) => p.id === id) % SIGNAL_COLORS.length];
 
     return (
-        <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
             <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
                     {t("simulator.scannerLab.graph.title")}
@@ -33,7 +33,7 @@ export function SignalGraph({ engine, signals, onSignals }: { engine: ScannerEng
                 <button
                     type="button"
                     onClick={() => engine.toggleLive()}
-                    className="ms-auto inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 px-3 py-1.5 text-[11px] font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white"
+                    className="ms-auto inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1.5 text-[11px] font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white"
                 >
                     {snap.livePlay ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                     {snap.livePlay ? t("simulator.scannerLab.graph.pause") : t("simulator.scannerLab.graph.play")}
@@ -47,7 +47,7 @@ export function SignalGraph({ engine, signals, onSignals }: { engine: ScannerEng
                             key={p.id}
                             type="button"
                             onClick={() => onSignals(on ? visible.filter((x) => x !== p.id) : [...visible, p.id])}
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] font-bold transition ${on ? "border-[#3A3A3A]/15 text-[#3A3A3A] dark:border-white/15 dark:text-white" : "border-[#3A3A3A]/10 text-[#3A3A3A]/35 dark:border-white/10 dark:text-white/35"}`}
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] font-bold transition ${on ? "border-[#3A3A3A]/15 dark:border-white/15 text-[#3A3A3A] dark:border-white/15 dark:text-white" : "border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/35 dark:border-white/10 dark:text-white/35"}`}
                         >
                             <span className="h-2 w-2 rounded-full" style={{ background: on ? colorOf(p.id) : "currentColor", opacity: on ? 1 : 0.35 }} />
                             {p.id}
@@ -56,7 +56,7 @@ export function SignalGraph({ engine, signals, onSignals }: { engine: ScannerEng
                 })}
             </div>
             {shown.length === 0 ? (
-                <p className="mt-4 rounded-xl border border-dashed border-[#3A3A3A]/15 p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                <p className="mt-4 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                     {t("simulator.scannerLab.graph.noSignals")}
                 </p>
             ) : (

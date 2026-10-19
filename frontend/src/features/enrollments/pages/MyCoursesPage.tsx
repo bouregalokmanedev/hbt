@@ -81,7 +81,7 @@ export function MyCoursesPage() {
             {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="h-56 animate-pulse rounded-3xl bg-white shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:bg-[#1b1b20]"
+                className="h-56 animate-pulse rounded-3xl bg-white dark:bg-[#1b1b20] shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:bg-[#1b1b20]"
               />
             ))}
           </div>
@@ -125,7 +125,7 @@ export function MyCoursesPage() {
     return (
       <main className="min-h-full bg-[#F3F3F3] dark:bg-[#101013]" data-testid="my-courses-empty">
         <div className="mx-auto w-full max-w-[1280px] px-5 py-6 sm:px-8 sm:py-8">
-          <div className="rounded-[32px] border border-dashed border-[#3A3A3A]/15 bg-white px-6 py-16 text-center dark:border-white/15 dark:bg-[#1b1b20]">
+          <div className="rounded-[32px] border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-6 py-16 text-center dark:border-white/15 dark:bg-[#1b1b20]">
             <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F47822]/10">
               <BookOpen className="h-7 w-7 text-[#F47822]" />
             </span>
@@ -233,7 +233,7 @@ export function MyCoursesPage() {
                   "inline-flex h-10 items-center gap-2 rounded-full border px-4 text-xs font-bold transition-all",
                   active
                     ? "border-[#F47822]/40 bg-[#F47822]/12 text-[#F47822] shadow-[0_0_0_1px_rgba(244,120,34,0.12)]"
-                    : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/55 hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/55",
+                    : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/55 dark:text-white/55 hover:border-[#F47822]/30 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/55",
                 ].join(" ")}
               >
                 {filter.label}
@@ -242,7 +242,7 @@ export function MyCoursesPage() {
                     "grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[10px] font-bold",
                     active
                       ? "bg-[#F47822] text-white"
-                      : "bg-[#3A3A3A]/8 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60",
+                      : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60",
                   ].join(" ")}
                 >
                   {filter.count}
@@ -255,7 +255,7 @@ export function MyCoursesPage() {
         {/* Grid */}
         {filteredEnrollments.length === 0 ? (
           <div
-            className="rounded-3xl border border-dashed border-[#3A3A3A]/15 bg-white px-6 py-12 text-center dark:border-white/15 dark:bg-[#1b1b20]"
+            className="rounded-3xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-6 py-12 text-center dark:border-white/15 dark:bg-[#1b1b20]"
             data-testid="my-courses-filter-empty"
           >
             <p className="text-sm text-[#3A3A3A]/55 dark:text-white/55">
@@ -351,7 +351,7 @@ function EnrollmentCard({
   return (
     <article
       data-testid="my-courses-card"
-      className="group overflow-hidden rounded-3xl border border-[#3A3A3A]/10 bg-white shadow-[0_10px_36px_rgba(58,58,58,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/35 hover:shadow-[0_20px_50px_rgba(244,120,34,0.12)] dark:border-white/10 dark:bg-[#1b1b20]"
+      className="group overflow-hidden rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_10px_36px_rgba(58,58,58,0.06)] transition-all duration-300 hover:-translate-y-1 hover:border-[#F47822]/35 hover:shadow-[0_20px_50px_rgba(244,120,34,0.12)] dark:border-white/10 dark:bg-[#1b1b20]"
     >
       <div className="grid sm:grid-cols-[160px_1fr]">
         {/* Visual */}

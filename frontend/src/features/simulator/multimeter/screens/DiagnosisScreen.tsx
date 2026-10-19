@@ -129,7 +129,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                         <button
                             type="button"
                             onClick={() => setPhotoOpen((v) => !v)}
-                            className="rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
+                            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
                         >
                             {photoOpen ? t("simulator.dmmLab.bench.hidePhoto") : t("simulator.dmmLab.bench.showPhoto")}
                         </button>
@@ -138,7 +138,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                         type="button"
                         onClick={() => setMuted(sfx.toggleMute())}
                         aria-pressed={muted}
-                        className="rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
+                        className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:text-white"
                     >
                         {muted ? t("simulator.dmmLab.bench.sfxOff") : t("simulator.dmmLab.bench.sfxOn")}
                     </button>
@@ -162,7 +162,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                                             ? "border-[#1F6AE1] bg-[#FBFDFF] shadow-sm dark:bg-[#1F6AE1]/[.07]"
                                             : isDone
                                               ? "border-emerald-200 bg-emerald-50/60 dark:border-emerald-500/20 dark:bg-emerald-500/[0.07]"
-                                              : "border-[#3A3A3A]/10 opacity-70 dark:border-white/10"
+                                              : "border-[#3A3A3A]/10 dark:border-white/10 opacity-70 dark:border-white/10"
                                     }`}
                                 >
                                     <div className="flex items-center gap-3">
@@ -172,7 +172,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                                                     ? "bg-emerald-500 text-white"
                                                     : active
                                                       ? "bg-[#1F6AE1] text-white"
-                                                      : "bg-[#3A3A3A]/10 text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50"
+                                                      : "bg-[#3A3A3A]/10 dark:bg-white/10 text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50"
                                             }`}
                                         >
                                             {isDone ? "✓" : i + 1}
@@ -195,7 +195,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                                     {active && (
                                         <div className="mt-3 space-y-3">
                                             {s.table && engine.measurementReady() && (
-                                                <table className="w-full min-w-0 overflow-hidden rounded-xl border border-[#3A3A3A]/10 text-xs dark:border-white/10">
+                                                <table className="w-full min-w-0 overflow-hidden rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 text-xs dark:border-white/10">
                                                     <thead>
                                                         <tr className="bg-[#0f1115] text-white">
                                                             {s.table.head.map((h) => (
@@ -218,21 +218,21 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                                                     </tbody>
                                                 </table>
                                             )}
-                                            <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+                                            <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
                                                 <p className="text-[10px] font-bold uppercase tracking-wide text-[#1F6AE1]">
                                                     {t("simulator.dmmLab.bench.yourMeasurement")}
                                                 </p>
                                                 <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] font-bold">
-                                                    <span className={placement.modeOk ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                                                    <span className={placement.modeOk ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                                         ✓ {t("simulator.dmmLab.bench.guideDialDone")}
                                                     </span>
-                                                    <span className={placement.jackOk ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                                                    <span className={placement.jackOk ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                                         ✓ {t("simulator.dmmLab.bench.guideJackDone")}
                                                     </span>
-                                                    <span className={placement.redOk && !!state.red ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                                                    <span className={placement.redOk && !!state.red ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                                         ✓ {t("simulator.dmmLab.bench.guideRedDone")}
                                                     </span>
-                                                    <span className={placement.blackOk && !!state.black ? "text-emerald-600" : "text-[#3A3A3A]/50 dark:text-white/50"}>
+                                                    <span className={placement.blackOk && !!state.black ? "text-emerald-600 dark:text-emerald-400" : "text-[#3A3A3A]/50 dark:text-white/50"}>
                                                         ✓ {t("simulator.dmmLab.bench.guideBlackDone")}
                                                     </span>
                                                 </div>
@@ -247,7 +247,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                                                     <button
                                                         type="button"
                                                         onClick={() => engine.answer(false)}
-                                                        className="rounded-xl border border-[#3A3A3A]/10 bg-white px-4 py-2 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:bg-transparent dark:text-white"
+                                                        className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 dark:border-white/10 dark:bg-transparent dark:text-white"
                                                     >
                                                         {t("simulator.dmmLab.noFault")}
                                                     </button>
@@ -255,7 +255,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                                                         type="button"
                                                         onClick={() => engine.useHint()}
                                                         disabled={state.hintUsed}
-                                                        className="rounded-xl border border-dashed border-[#3A3A3A]/20 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60 transition hover:text-[#3A3A3A] disabled:opacity-40 dark:text-white/60"
+                                                        className="rounded-xl border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:text-[#3A3A3A] disabled:opacity-40 dark:text-white/60"
                                                     >
                                                         {t("simulator.dmmLab.hintSoft")}
                                                     </button>
@@ -271,7 +271,7 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
 
                 {/* Stage: component art + wiring */}
                 <section className="min-w-0 space-y-3">
-                    <div className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 bg-white p-3 dark:border-white/10 dark:bg-[#1b1b20]">
+                    <div className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
                         <ComponentArt sym={comp.sym} className="h-16 w-24 shrink-0" />
                         <div className="min-w-0">
                             <p className="truncate text-sm font-black text-[#3A3A3A] dark:text-white">{comp.name}</p>
@@ -324,17 +324,17 @@ export function DiagnosisScreen({ engine }: { engine: MeterProcedureEngine }) {
                     role="status"
                     className={`rounded-xl border px-4 py-2.5 text-xs font-bold ${
                         state.feedback.tone === "good"
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+                            ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
                             : state.feedback.tone === "bad"
-                              ? "border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300"
-                              : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
+                              ? "border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300"
+                              : "border-amber-200 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
                     }`}
                 >
                     {feedbackText ?? state.feedback.kind}
                 </p>
             )}
             {state.finished && (
-                <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <p className="rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm font-black text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
                     {state.feedback?.kind === "found" ? t("simulator.dmmLab.bench.finishedFound") : t("simulator.dmmLab.bench.finishedClear")} ·{" "}
                     {t("simulator.dmmLab.score")} {state.score} / 100
                 </p>

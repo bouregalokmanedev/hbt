@@ -11,7 +11,7 @@ interface StaffHubOverviewPageProps {
   hubBase: string;
 }
 
-const ROLE_ORDER = ["Super Admin", "Admin", "Support", "Instructor"];
+const ROLE_ORDER = ["Super Admin", "Admin", "Sales", "Support", "Instructor"];
 
 function groupByRole(members: StaffRoomMember[]): { role: string; members: StaffRoomMember[] }[] {
   const buckets = new Map<string, StaffRoomMember[]>();
@@ -118,10 +118,10 @@ export function StaffHubOverviewPage({ hubBase }: StaffHubOverviewPageProps) {
           </label>
 
           {publish.isError && (
-            <p className="text-xs font-medium text-red-600">{t("staffHub.news.sendError")}</p>
+            <p className="text-xs font-medium text-red-600 dark:text-red-400">{t("staffHub.news.sendError")}</p>
           )}
           {publish.isSuccess && (
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
               <CheckCircle2 className="h-4 w-4" />
               {t("staffHub.news.sentOk", { count: publish.data?.delivery?.delivered ?? 0 })}
             </p>
@@ -159,9 +159,9 @@ export function StaffHubOverviewPage({ hubBase }: StaffHubOverviewPageProps) {
             </span>
           </div>
 
-          {room.isLoading && <p className="mt-4 text-xs text-[#3A3A3A]/50">{t("staffHub.roster.loading")}</p>}
+          {room.isLoading && <p className="mt-4 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("staffHub.roster.loading")}</p>}
           {room.isError && (
-            <p className="mt-4 text-xs font-medium text-red-600">{t("staffHub.roster.error")}</p>
+            <p className="mt-4 text-xs font-medium text-red-600 dark:text-red-400">{t("staffHub.roster.error")}</p>
           )}
 
           <div className="mt-5 space-y-4">

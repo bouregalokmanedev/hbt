@@ -61,7 +61,9 @@ export function ProfileHeader({
               ? "instructor"
               : roles.includes("Support")
                 ? "support"
-                : "student";
+                : roles.includes("Sales")
+                  ? "sales"
+                  : "student";
 
     const fileInputRef =
         useRef<HTMLInputElement>(null);
@@ -241,9 +243,50 @@ export function ProfileHeader({
                     }}
                 />
 
+                {/* Sales covers trade the ECU sketch for a growth chart — the
+                    role's own story, rising pipeline and closed deals. */}
+                {coverRole === "sales" && (
+                    <div
+                        className="pointer-events-none absolute end-[8%] top-[18%] opacity-[0.05]"
+                        aria-hidden
+                    >
+                        <svg
+                            width="140"
+                            height="95"
+                            viewBox="0 0 140 95"
+                            fill="none"
+                        >
+                            <path
+                                d="M12 83H130"
+                                stroke="white"
+                                strokeWidth="2"
+                            />
+                            <rect x="22" y="62" width="14" height="21" fill="white" />
+                            <rect x="48" y="50" width="14" height="33" fill="white" />
+                            <rect x="74" y="56" width="14" height="27" fill="white" />
+                            <rect x="100" y="34" width="14" height="49" fill="white" />
+                            <path
+                                d="M16 40L46 30L74 36L118 10"
+                                stroke="white"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                            <path
+                                d="M98 10H120V32"
+                                stroke="white"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </div>
+                )}
+
                 {/* Extremely subtle automotive details */}
 
-                <div className="pointer-events-none absolute right-[8%] top-[20%] opacity-[0.025]">
+                {coverRole !== "sales" && (
+                <div className="pointer-events-none absolute end-[8%] top-[20%] opacity-[0.025]">
 
                     <svg
                         width="130"
@@ -295,6 +338,7 @@ export function ProfileHeader({
                     </svg>
 
                 </div>
+                )}
 
                 {/* Diagnostic waveform */}
 
@@ -566,7 +610,7 @@ export function ProfileHeader({
 
                                 </span>
 
-                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/25 transition group-hover:text-[#F47822] rtl:-scale-x-100" />
+                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/25 dark:text-white/25 transition group-hover:text-[#F47822] rtl:-scale-x-100" />
 
                             </button>
 
@@ -608,7 +652,7 @@ export function ProfileHeader({
 
                                 </span>
 
-                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/25 transition group-hover:text-[#F47822] rtl:-scale-x-100" />
+                                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/25 dark:text-white/25 transition group-hover:text-[#F47822] rtl:-scale-x-100" />
 
                             </button>
 
@@ -621,9 +665,9 @@ export function ProfileHeader({
                                     className="group flex w-full items-center gap-3 px-3.5 py-3 text-start transition hover:bg-red-50 dark:hover:bg-red-500/5"
                                 >
 
-                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3A3A3A]/5 transition group-hover:bg-red-50 dark:bg-white/5 dark:group-hover:bg-red-500/10">
+                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3A3A3A]/5 dark:bg-white/5 transition group-hover:bg-red-50 dark:bg-white/5 dark:group-hover:bg-red-500/10">
 
-                                        <X className="h-4 w-4 text-[#3A3A3A]/55 transition group-hover:text-red-500 dark:text-white/55" />
+                                        <X className="h-4 w-4 text-[#3A3A3A]/55 dark:text-white/55 transition group-hover:text-red-500 dark:text-white/55" />
 
                                     </span>
 
@@ -639,7 +683,7 @@ export function ProfileHeader({
 
                                     </span>
 
-                                    <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/25 transition group-hover:text-red-500 rtl:-scale-x-100" />
+                                    <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/25 dark:text-white/25 transition group-hover:text-red-500 rtl:-scale-x-100" />
 
                                 </button>
                             )}
@@ -649,7 +693,7 @@ export function ProfileHeader({
                         {avatarError && (
                             <p
                                 role="alert"
-                                className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-medium text-red-600"
+                                className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-2.5 text-xs font-medium text-red-600 dark:text-red-400"
                             >
                                 {avatarError}
                             </p>
@@ -753,7 +797,7 @@ export function ProfileHeader({
                                                 className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
                                                     gen.hat === option.id
                                                         ? "border-[#F47822] bg-[#F47822]/10 text-[#F47822]"
-                                                        : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/55 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#232329] dark:text-white/55"
+                                                        : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/55 dark:text-white/55 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#232329] dark:text-white/55"
                                                 }`}
                                             >
                                                 {t(option.labelKey)}
@@ -827,7 +871,7 @@ export function ProfileHeader({
                                                 className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
                                                     gen.shirt === option.id
                                                         ? "border-[#F47822] bg-[#F47822]/10 text-[#F47822]"
-                                                        : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/55 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#232329] dark:text-white/55"
+                                                        : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/55 dark:text-white/55 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#232329] dark:text-white/55"
                                                 }`}
                                             >
                                                 {t(option.labelKey)}
@@ -849,7 +893,7 @@ export function ProfileHeader({
                         {avatarError && (
                             <p
                                 role="alert"
-                                className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-medium text-red-600"
+                                className="mt-3 rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-2.5 text-xs font-medium text-red-600 dark:text-red-400"
                             >
                                 {avatarError}
                             </p>
@@ -860,7 +904,7 @@ export function ProfileHeader({
                             <button
                                 type="button"
                                 onClick={() => setGen(randomAvatarOptions())}
-                                className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-[#3A3A3A]/10 px-4 text-xs font-bold text-[#3A3A3A]/65 transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/65 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                                className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/65 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
                             >
                                 <Shuffle className="h-4 w-4" />
                                 {t("profilePage.header.shuffle")}

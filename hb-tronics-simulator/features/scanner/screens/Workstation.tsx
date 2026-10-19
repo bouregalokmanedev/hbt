@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import { HERO_PANELS, FUNCTION_MODULES, RECENT_SESSIONS, META_CARDS } from "../data/workstation";
+import { DevicePanel } from "../components/DevicePanel";
 import type { ScannerScreen } from "./types";
 
 /**
@@ -10,7 +11,7 @@ import type { ScannerScreen } from "./types";
  * Faithful reconstruction of the original Scanner landing. Structure is data-driven
  * (data/workstation.ts); learner-facing prose is Class-C (content.scanner.ws.*).
  */
-export function Workstation({ go }: { go: (s: ScannerScreen) => void }) {
+export function Workstation({ go, onAssistant }: { go: (s: ScannerScreen) => void; onAssistant?: () => void }) {
   const tc = useTranslations("content");
   const w = (k: string) => tc(`scanner.ws.${k}`);
 
@@ -67,6 +68,9 @@ export function Workstation({ go }: { go: (s: ScannerScreen) => void }) {
           </button>
         ))}
       </div>
+
+      {/* Diagnostic tablet: device art with functional home-screen buttons */}
+      <DevicePanel go={go} onAssistant={onAssistant} />
 
       {/* Function grid */}
       <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">

@@ -25,12 +25,12 @@ export function SupportNavbar({ onMenuClick }: { onMenuClick: () => void }) {
     };
 
     return (
-        <header className="sticky top-0 z-30 flex h-[72px] items-center border-b border-[#3A3A3A]/8 bg-white/85 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-[72px] items-center border-b border-[#3A3A3A]/8 dark:border-white/8 bg-white/85 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
             <button
                 type="button"
                 onClick={onMenuClick}
                 aria-label={t("supportDesk.nav.openAria")}
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A]/5 lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#3A3A3A]/5 dark:bg-white/5 lg:hidden"
             >
                 <Menu className="h-5 w-5" />
             </button>
@@ -40,7 +40,7 @@ export function SupportNavbar({ onMenuClick }: { onMenuClick: () => void }) {
                     onClick={handleLanguageSwitch}
                     aria-label={isArabic ? t("supportDesk.nav.switchToEnglish") : t("supportDesk.nav.switchToArabic")}
                     title={isArabic ? t("supportDesk.nav.switchToEnglish") : t("supportDesk.nav.switchToArabic")}
-                    className="flex h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-2.5 text-[#3A3A3A]/60 shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] hover:text-[#F47822]"
+                    className="flex h-9 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-[#3A3A3A]/60 dark:text-white/60 shadow-[0_4px_12px_rgba(58,58,58,.04)] transition-all hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822]"
                 >
                     <Globe className="h-4 w-4" />
                     <span className="text-[11px] font-bold">
@@ -50,7 +50,7 @@ export function SupportNavbar({ onMenuClick }: { onMenuClick: () => void }) {
                 <Link
                     to="/"
                     aria-label={t("supportDesk.nav.homeAria")}
-                    className="grid h-9 w-9 place-items-center rounded-xl border border-[#F47822]/18 bg-[#FFF8F4] text-[#F47822] transition hover:-translate-y-0.5 hover:bg-[#F47822] hover:text-white"
+                    className="grid h-9 w-9 place-items-center rounded-xl border border-[#F47822]/18 bg-[#FFF8F4] dark:bg-[#F47822]/10 text-[#F47822] transition hover:-translate-y-0.5 hover:bg-[#F47822] hover:text-white"
                 >
                     <Home className="h-4 w-4" />
                 </Link>

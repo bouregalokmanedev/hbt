@@ -23,7 +23,7 @@ const KIND_META: Record<
 > = {
   hint: {
     icon: Lightbulb,
-    tone: "bg-amber-500/15 text-amber-600 border-amber-500/25 dark:text-amber-400",
+    tone: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/25 dark:text-amber-400",
   },
   quiz: {
     icon: ListChecks,
@@ -32,7 +32,7 @@ const KIND_META: Record<
   guide: {
     icon: BookOpenCheck,
     tone:
-      "bg-emerald-500/15 text-emerald-600 border-emerald-500/25 dark:text-emerald-400",
+      "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 dark:text-emerald-400",
   },
   weakSpot: {
     icon: Target,
@@ -127,7 +127,7 @@ export function MentorShowcaseLoop() {
     <section
       aria-labelledby="mentor-showcase"
       data-testid="mentor-showcase"
-      className="rounded-[28px] border border-[#3A3A3A]/10 bg-white p-6 sm:p-8 dark:border-white/10 dark:bg-[#1b1b20]"
+      className="rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 sm:p-8 dark:border-white/10 dark:bg-[#1b1b20]"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -158,7 +158,7 @@ export function MentorShowcaseLoop() {
                 className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] transition ${
                   active
                     ? KindMeta.tone
-                    : "border-[#3A3A3A]/10 bg-[#F8F7F6] text-[#3A3A3A]/40 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/35"
+                    : "border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] text-[#3A3A3A]/40 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/35"
                 }`}
               >
                 <KindIconDot className="h-3 w-3" />
@@ -170,7 +170,7 @@ export function MentorShowcaseLoop() {
       </div>
 
       <div
-        className="mt-6 overflow-hidden rounded-[22px] border border-[#3A3A3A]/10 bg-[#141414] dark:border-white/10"
+        className="mt-6 overflow-hidden rounded-[22px] border border-[#3A3A3A]/10 dark:border-white/10 bg-[#141414] dark:border-white/10"
         data-testid="mentor-showcase-chat"
       >
         <div className="flex items-center justify-between border-b border-white/8 px-4 py-3 sm:px-5">

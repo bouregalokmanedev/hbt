@@ -283,7 +283,7 @@ export function ReportScreen({
                 <h3 className="text-lg font-black text-[#3A3A3A] dark:text-white">
                     {t("simulator.scannerLab.reportScreen.title")}
                 </h3>
-                <p className="mt-4 rounded-2xl border border-dashed border-[#3A3A3A]/15 bg-white p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
+                <p className="mt-4 rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
                     {t("simulator.scannerLab.reportScreen.empty")}
                 </p>
             </div>
@@ -315,7 +315,7 @@ export function ReportScreen({
                     <button
                         type="button"
                         onClick={() => window.print()}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white"
                     >
                         <Printer className="h-3.5 w-3.5" />
                         {t("simulator.scannerLab.reportScreen.print")}
@@ -331,8 +331,8 @@ export function ReportScreen({
                 </div>
             </div>
 
-            <div className="mt-4 rounded-[20px] border border-[#3A3A3A]/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3A3A3A]/8 pb-4 dark:border-white/8">
+            <div className="mt-4 rounded-[20px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-sm dark:border-white/10 dark:bg-[#1b1b20]">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3A3A3A]/8 dark:border-white/8 pb-4 dark:border-white/8">
                     <div>
                         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#F47822]">
                             HB TRONICS · {t("simulator.scannerLab.reportScreen.title")}
@@ -407,7 +407,7 @@ export function ReportScreen({
                             mono: true,
                         },
                     ].map((row) => (
-                        <div key={row.label} className="rounded-xl bg-[#3A3A3A]/[.04] p-3 dark:bg-white/[0.05]">
+                        <div key={row.label} className="rounded-xl bg-[#3A3A3A]/[.04] dark:bg-white/[.04] p-3 dark:bg-white/[0.05]">
                             <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/40 dark:text-white/40">
                                 {row.label}
                             </dt>
@@ -425,7 +425,7 @@ export function ReportScreen({
                         </p>
                         <ul className="mt-2 space-y-1.5">
                             {steps.map((entry, i) => (
-                                <li key={`${entry.label}-${i}`} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 bg-[#FCFCFC] px-3 py-2 text-sm dark:border-white/8 dark:bg-white/[0.03]">
+                                <li key={`${entry.label}-${i}`} className="flex items-center gap-3 rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 text-sm dark:border-white/8 dark:bg-white/[0.03]">
                                     <span className={`h-2 w-2 shrink-0 rounded-full ${entry.ok ? "bg-emerald-500" : "bg-red-500"}`} />
                                     <span className="min-w-0 flex-1 truncate font-semibold text-[#3A3A3A] dark:text-white">{contentText(entry.label)}</span>
                                     <span className={`shrink-0 font-mono text-[10px] font-black uppercase ${entry.ok ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>
@@ -444,7 +444,7 @@ export function ReportScreen({
                                 {t("simulator.scannerLab.reportScreen.dtcTitle")}
                             </p>
                             {faultDtcs.length === 0 ? (
-                                <p className="mt-2 rounded-xl border border-dashed border-[#3A3A3A]/15 px-3 py-3 text-xs text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                                <p className="mt-2 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-3 py-3 text-xs text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                                     {t("simulator.scannerLab.reportScreen.noDtcs")}
                                 </p>
                             ) : (
@@ -465,7 +465,7 @@ export function ReportScreen({
                                                     <td className="max-w-[220px] truncate px-3 py-2 font-semibold text-[#3A3A3A] dark:text-white">{d.desc}</td>
                                                     <td dir="ltr" className="px-3 py-2 font-mono text-[#3A3A3A]/60 dark:text-white/60">{d.ecu}</td>
                                                     <td className="px-3 py-2">
-                                                        <span className="rounded-full bg-[#3A3A3A]/[.06] px-2 py-0.5 font-mono text-[10px] font-bold uppercase dark:bg-white/[0.07]">{d.status}</span>
+                                                        <span className="rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2 py-0.5 font-mono text-[10px] font-bold uppercase dark:bg-white/[0.07]">{d.status}</span>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -479,20 +479,20 @@ export function ReportScreen({
                                 {t("simulator.scannerLab.reportScreen.measurements")}
                             </p>
                             {faultNodes.length === 0 && faultPids.length === 0 ? (
-                                <p className="mt-2 rounded-xl border border-dashed border-[#3A3A3A]/15 px-3 py-3 text-xs text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                                <p className="mt-2 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-3 py-3 text-xs text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                                     {t("simulator.scannerLab.reportScreen.allHealthy")}
                                 </p>
                             ) : (
                                 <ul className="mt-2 space-y-1.5">
                                     {faultNodes.map((n) => (
-                                        <li key={n.id} className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs dark:border-red-500/20 dark:bg-red-500/10">
+                                        <li key={n.id} className="flex items-center gap-3 rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs dark:border-red-500/20 dark:bg-red-500/10">
                                             <span dir="ltr" className="font-mono font-black text-[#3A3A3A] dark:text-white">{n.id}</span>
                                             <span className="min-w-0 flex-1 truncate font-semibold text-red-700 dark:text-red-300">{n.name}</span>
                                             <span className="font-mono text-[10px] font-black uppercase text-red-600 dark:text-red-400">{n.status} · {n.dtc} DTC</span>
                                         </li>
                                     ))}
                                     {faultPids.map((p) => (
-                                        <li key={p.id} className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs dark:border-amber-500/20 dark:bg-amber-500/10">
+                                        <li key={p.id} className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-xs dark:border-amber-500/20 dark:bg-amber-500/10">
                                             <span dir="ltr" className="font-mono font-black text-[#3A3A3A] dark:text-white">{p.id}</span>
                                             <span className="min-w-0 flex-1 truncate font-semibold text-amber-800 dark:text-amber-300">{p.name}</span>
                                             <span dir="ltr" className="font-mono text-[10px] font-black text-amber-700 dark:text-amber-400">{p.base} {p.unit}</span>
@@ -524,7 +524,7 @@ export function ReportScreen({
                                             <tr key={n.id}>
                                                 <td dir="ltr" className="px-3 py-2 font-mono font-black text-[#3A3A3A] dark:text-white">{n.id}</td>
                                                 <td className="px-3 py-2">
-                                                    <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${n.status === "fault" ? "bg-red-500/10 text-red-600" : n.status === "warn" ? "bg-amber-500/15 text-amber-700" : "bg-emerald-500/10 text-emerald-700"}`}>{n.status}</span>
+                                                    <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${n.status === "fault" ? "bg-red-500/10 text-red-600 dark:text-red-400" : n.status === "warn" ? "bg-amber-500/15 text-amber-700 dark:text-amber-400" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"}`}>{n.status}</span>
                                                 </td>
                                                 <td dir="ltr" className="px-3 py-2 font-mono text-[#3A3A3A]/60 dark:text-white/60">{n.dtc}</td>
                                             </tr>

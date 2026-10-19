@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Activity, Car, CheckCircle2, ChevronDown, ChevronLeft, FlaskConical, Gauge, Pencil, Plus, Search, ShieldCheck, Trash2, X, XCircle } from "lucide-react";
+import { AlertCircle, Activity, Car, CheckCircle2, ChevronDown, ChevronLeft, FlaskConical, Gauge, Pencil, Plus, ScanLine, Search, ShieldCheck, Trash2, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
 import {
     simulatorBuilderApi,
@@ -11,6 +12,7 @@ import {
 import { getInstructorSimulatorAnalytics } from "../api/instructorApi";
 import { FaultCodeLibraryPicker } from "../components/FaultCodeLibraryPicker";
 import { SimulatorActivityTab } from "../components/SimulatorActivityTab";
+import { LabBuilderCard } from "../components/lab-builder/LabBuilderCard";
 import {
     FAULT_LIBRARY,
     libraryEntryById,
@@ -25,11 +27,11 @@ import { SCH_COMPONENTS, SCH_WIRES, SCH_TRACES } from "@/features/simulator/sche
 type Tab = "vehicles" | "variants" | "review" | "activity";
 
 const STATUS_STYLES: Record<string, string> = {
-    draft: "border-[#3A3A3A]/15 bg-[#3A3A3A]/[.07] text-[#3A3A3A]/65",
+    draft: "border-[#3A3A3A]/15 dark:border-white/15 bg-[#3A3A3A]/[.07] dark:bg-white/[.07] text-[#3A3A3A]/65 dark:text-white/65",
     submitted: "border-amber-500/25 bg-amber-500/15 text-amber-700 dark:text-amber-300",
     published: "border-emerald-500/25 bg-emerald-500/12 text-emerald-700 dark:text-emerald-300",
     rejected: "border-red-500/25 bg-red-500/12 text-red-700 dark:text-red-300",
-    archived: "border-[#3A3A3A]/12 bg-[#3A3A3A]/[.08] text-[#3A3A3A]/45",
+    archived: "border-[#3A3A3A]/12 dark:border-white/12 bg-[#3A3A3A]/[.08] dark:bg-white/[.08] text-[#3A3A3A]/45 dark:text-white/45",
 };
 
 export interface TrainingStepDraft {
@@ -160,6 +162,7 @@ function sessionsToManifest(sessions: TrainingSessionDraft[]): Record<string, un
 export function InstructorSimulatorPage() {
     const { t, i18n } = useTranslation();
     const queryClient = useQueryClient();
+    const location = useLocation();
     const [tab, setTab] = useState<Tab>("vehicles");
     const [variantId, setVariantId] = useState<string | null>(null);
     const [showVehicleForm, setShowVehicleForm] = useState(false);
@@ -170,6 +173,14 @@ export function InstructorSimulatorPage() {
     const [viewingPack, setViewingPack] = useState<SimFaultPack | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [vehicleQuery, setVehicleQuery] = useState("");
+
+    // Deep-link support: the scanner lab builder (diagnostics) hands off a
+    // freshly created vehicle straight into the fault-variants tab.
+    useEffect(() => {
+        const state = location.state as { tab?: Tab; variantId?: string } | null;
+        if (state?.tab) setTab(state.tab);
+        if (state?.variantId) setVariantId(state.variantId);
+    }, [location.state]);
 
     const vehicles = useQuery({
         queryKey: ["instructor", "simulator", "vehicles"],
@@ -266,7 +277,7 @@ export function InstructorSimulatorPage() {
     );
 
     return (
-        <main className="min-h-full bg-[#F8F7F6] p-4 sm:p-6" data-testid="instructor-simulator-page">
+        <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013] p-4 sm:p-6" data-testid="instructor-simulator-page">
             <div className="mx-auto max-w-[1200px] space-y-5">
                 <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#2E2E2E] via-[#3A3A3A] to-[#2A2A2A] px-5 py-7 text-white shadow-[0_20px_50px_rgba(58,58,58,.18)] sm:px-8 sm:py-8">
                     <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -303,9 +314,35 @@ export function InstructorSimulatorPage() {
                     </div>
                 </section>
 
+                <section
+                    aria-label={t("instructor.simulator.labBuilders.title")}
+                    data-testid="lab-builders"
+                    className="rounded-[28px] border border-[#3A3A3A]/10 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.06)] dark:border-white/10 dark:bg-[#1b1b20]"
+                >
+                    <div className="flex flex-wrap items-end justify-between gap-2">
+                        <div>
+                            <p className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[.18em] text-[#F47822]">
+                                <ScanLine className="h-3.5 w-3.5" />
+                                {t("instructor.simulator.labBuilders.title")}
+                            </p>
+                            <p className="mt-1 text-sm text-[#3A3A3A]/55 dark:text-white/50">{t("instructor.simulator.labBuilders.subtitle")}</p>
+                        </div>
+                    </div>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <LabBuilderCard
+                            testId="lab-card-scanner"
+                            to="/instructor/simulator/scanner"
+                            title={t("instructor.simulator.labBuilders.scannerTitle")}
+                            description={t("instructor.simulator.labBuilders.scannerDesc")}
+                            image="/assets/simulator/detail-V1.png"
+                            icon={ScanLine}
+                        />
+                    </div>
+                </section>
+
                 <nav
                     aria-label={t("instructor.simulator.title")}
-                    className="inline-flex w-full flex-wrap gap-1 rounded-2xl border border-[#3A3A3A]/10 bg-white p-1.5 shadow-[0_10px_30px_rgba(58,58,58,.06)]"
+                    className="inline-flex w-full flex-wrap gap-1 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1.5 shadow-[0_10px_30px_rgba(58,58,58,.06)]"
                     data-testid="simulator-tabs"
                 >
                     {(["vehicles", "variants", "review", "activity"] as const).map((id) => {
@@ -328,7 +365,7 @@ export function InstructorSimulatorPage() {
                                 className={`group inline-flex h-10 items-center gap-2 rounded-xl px-4 text-xs font-black transition ${
                                     active
                                         ? "bg-gradient-to-r from-[#F47822] to-[#ff8f45] text-white shadow-[0_8px_18px_rgba(244,120,34,.28)]"
-                                        : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/[.06] hover:text-[#3A3A3A]"
+                                        : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/[.06] dark:bg-white/[.06] hover:text-[#3A3A3A]"
                                 }`}
                             >
                                 {id === "vehicles" && <Car className="h-3.5 w-3.5" />}
@@ -351,7 +388,7 @@ export function InstructorSimulatorPage() {
                 </nav>
 
                 {error && (
-                    <p role="alert" data-testid="simulator-error" className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+                    <p role="alert" data-testid="simulator-error" className="flex items-center gap-2 rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
                         <AlertCircle className="h-4 w-4 shrink-0" />
                         {error}
                     </p>
@@ -359,17 +396,17 @@ export function InstructorSimulatorPage() {
 
                 {tab === "vehicles" && (
                     <section className="space-y-4" data-testid="simulator-vehicles">
-                        <div className="rounded-[28px] border border-[#3A3A3A]/8 bg-white p-4 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-5">
+                        <div className="rounded-[28px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-4 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-5">
                             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                                 <div className="flex items-center gap-3">
                                     <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
                                         <Car className="h-5 w-5" />
                                     </span>
                                     <div>
-                                        <p className="text-xs font-bold uppercase tracking-[.14em] text-[#3A3A3A]/40">
+                                        <p className="text-xs font-bold uppercase tracking-[.14em] text-[#3A3A3A]/40 dark:text-white/40">
                                             {t("instructor.simulator.tabs.vehicles")}
                                         </p>
-                                        <p className="mt-0.5 text-[11px] text-[#3A3A3A]/45">
+                                        <p className="mt-0.5 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
                                             {vehicles.isPending
                                                 ? "…"
                                                 : t("instructor.simulator.vehicles.variantsCount", { count: vehicleCount })}
@@ -378,21 +415,21 @@ export function InstructorSimulatorPage() {
                                 </div>
                                 <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center lg:justify-end lg:flex-none">
                                     <label className="relative block w-full sm:max-w-xs">
-                                        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/35" />
+                                        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3A3A3A]/35 dark:text-white/35" />
                                         <input
                                             type="search"
                                             value={vehicleQuery}
                                             onChange={(e) => setVehicleQuery(e.target.value)}
                                             placeholder={t("instructor.simulator.vehicles.search")}
                                             data-testid="simulator-vehicle-search"
-                                            className="h-11 w-full rounded-xl border border-[#3A3A3A]/12 bg-[#FCFCFC] ps-10 pe-9 text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/35 focus:border-[#F47822]/40 focus:bg-white focus:ring-2 focus:ring-[#F47822]/15"
+                                            className="h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FCFCFC] dark:bg-[#1b1b20] ps-10 pe-9 text-sm text-[#3A3A3A] outline-none transition placeholder:text-[#3A3A3A]/35 dark:text-white/35 focus:border-[#F47822]/40 focus:bg-white dark:focus:bg-[#1b1b20] focus:ring-2 focus:ring-[#F47822]/15"
                                         />
                                         {vehicleQuery && (
                                             <button
                                                 type="button"
                                                 onClick={() => setVehicleQuery("")}
                                                 aria-label={t("instructor.simulator.vehicles.clearSearch")}
-                                                className="absolute end-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[#3A3A3A]/40 transition hover:bg-[#3A3A3A]/8 hover:text-[#3A3A3A]"
+                                                className="absolute end-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-full text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-[#3A3A3A]/8 dark:bg-white/8 hover:text-[#3A3A3A]"
                                             >
                                                 <X className="h-3.5 w-3.5" />
                                             </button>
@@ -439,17 +476,17 @@ export function InstructorSimulatorPage() {
                         {vehicles.isPending && (
                             <div className="space-y-3">
                                 {[0, 1].map((row) => (
-                                    <div key={row} className="h-36 animate-pulse rounded-[28px] border border-[#3A3A3A]/8 bg-white" />
+                                    <div key={row} className="h-36 animate-pulse rounded-[28px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20]" />
                                 ))}
                             </div>
                         )}
 
                         {!vehicles.isPending && (vehicles.data?.length ?? 0) === 0 && (
-                            <div className="rounded-[28px] border border-dashed border-[#3A3A3A]/15 bg-white p-10 text-center">
+                            <div className="rounded-[28px] border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-10 text-center">
                                 <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#F47822]/10 text-[#F47822]">
                                     <Car className="h-7 w-7" />
                                 </span>
-                                <p className="mt-4 text-sm font-bold text-[#3A3A3A]">
+                                <p className="mt-4 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                     {t("instructor.simulator.vehicles.noVehicles")}
                                 </p>
                                 <button
@@ -464,15 +501,15 @@ export function InstructorSimulatorPage() {
                         )}
 
                         {!vehicles.isPending && hasQuery && visibleVariantCount === 0 && (
-                            <div className="rounded-[28px] border border-dashed border-[#3A3A3A]/15 bg-white p-8 text-center">
-                                <Search className="mx-auto h-7 w-7 text-[#3A3A3A]/25" />
-                                <p className="mt-3 text-sm font-bold text-[#3A3A3A]">
+                            <div className="rounded-[28px] border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-8 text-center">
+                                <Search className="mx-auto h-7 w-7 text-[#3A3A3A]/25 dark:text-white/25" />
+                                <p className="mt-3 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                     {t("instructor.simulator.vehicles.noMatch")}
                                 </p>
                                 <button
                                     type="button"
                                     onClick={() => setVehicleQuery("")}
-                                    className="mt-3 rounded-xl border border-[#3A3A3A]/12 px-4 py-2 text-xs font-black text-[#3A3A3A]/65 transition hover:border-[#F47822]/35 hover:text-[#F47822]"
+                                    className="mt-3 rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 px-4 py-2 text-xs font-black text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#F47822]/35 hover:text-[#F47822]"
                                 >
                                     {t("instructor.simulator.vehicles.clearSearch")}
                                 </button>
@@ -484,18 +521,18 @@ export function InstructorSimulatorPage() {
                             return (
                                 <article
                                     key={make.id}
-                                    className="overflow-hidden rounded-[28px] border border-[#3A3A3A]/8 bg-white shadow-[0_10px_30px_rgba(58,58,58,.045)]"
+                                    className="overflow-hidden rounded-[28px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-[0_10px_30px_rgba(58,58,58,.045)]"
                                 >
-                                    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3A3A3A]/8 bg-gradient-to-r from-[#FFF8F4] to-white px-5 py-4 sm:px-6">
+                                    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3A3A3A]/8 dark:border-white/8 bg-gradient-to-r from-[#FFF8F4] to-white px-5 py-4 sm:px-6">
                                         <div className="flex items-center gap-3">
                                             <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#F47822] text-white shadow-[0_6px_16px_rgba(244,120,34,.25)]">
                                                 <Car className="h-5 w-5" />
                                             </span>
                                             <div>
-                                                <h2 className="text-base font-black tracking-tight text-[#3A3A3A]">
+                                                <h2 className="text-base font-black tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                                                     {make.name}
                                                 </h2>
-                                                <p className="mt-0.5 text-[11px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/40">
+                                                <p className="mt-0.5 text-[11px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/40 dark:text-white/40">
                                                     {t("instructor.simulator.vehicles.modelsCount", { count: make.models.length })}
                                                     {" · "}
                                                     {t("instructor.simulator.vehicles.variantsCount", { count: makeVariantCount })}
@@ -516,11 +553,11 @@ export function InstructorSimulatorPage() {
                                         {make.models.map((model) => (
                                             <div key={model.id} className="px-5 py-4 sm:px-6">
                                                 <div className="mb-3 flex items-center gap-2">
-                                                    <span className="rounded-md bg-[#3A3A3A]/[.07] px-2 py-1 text-[10px] font-black uppercase tracking-[.14em] text-[#3A3A3A]/50">
+                                                    <span className="rounded-md bg-[#3A3A3A]/[.07] dark:bg-white/[.07] px-2 py-1 text-[10px] font-black uppercase tracking-[.14em] text-[#3A3A3A]/50 dark:text-white/50">
                                                         {model.name}
                                                     </span>
-                                                    <span className="h-px flex-1 bg-[#3A3A3A]/[.08]" />
-                                                    <span className="text-[10px] font-bold text-[#3A3A3A]/35">
+                                                    <span className="h-px flex-1 bg-[#3A3A3A]/[.08] dark:bg-white/[.08]" />
+                                                    <span className="text-[10px] font-bold text-[#3A3A3A]/35 dark:text-white/35">
                                                         {model.variants.length}
                                                     </span>
                                                 </div>
@@ -539,7 +576,7 @@ export function InstructorSimulatorPage() {
                                                                 className={`group overflow-hidden rounded-2xl border transition ${
                                                                     expanded
                                                                         ? "border-[#F47822]/45 bg-[#FFFBF8] shadow-[0_8px_22px_rgba(244,120,34,.1)]"
-                                                                        : "border-[#3A3A3A]/10 bg-[#FCFCFC] hover:border-[#F47822]/35 hover:bg-white hover:shadow-[0_8px_20px_rgba(58,58,58,.06)]"
+                                                                        : "border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] hover:border-[#F47822]/35 hover:bg-white dark:hover:bg-white/10 hover:shadow-[0_8px_20px_rgba(58,58,58,.06)]"
                                                                 }`}
                                                             >
                                                                 <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
@@ -553,7 +590,7 @@ export function InstructorSimulatorPage() {
                                                                         data-testid={`vehicle-open-${variant.id}`}
                                                                     >
                                                                         <div className="flex flex-wrap items-center gap-2">
-                                                                            <span className="text-sm font-black text-[#3A3A3A] group-hover:text-[#F47822]">
+                                                                            <span className="text-sm font-black text-[#3A3A3A] dark:text-[#ececef] group-hover:text-[#F47822]">
                                                                                 {variant.name}
                                                                             </span>
                                                                             <span className="rounded-full bg-[#F47822]/12 px-2 py-0.5 font-mono text-[10px] font-bold text-[#F47822]">
@@ -565,7 +602,7 @@ export function InstructorSimulatorPage() {
                                                                                 className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
                                                                                     custom
                                                                                         ? "bg-[#8B5CF6]/12 text-[#7C3AED]"
-                                                                                        : "bg-[#3A3A3A]/[.07] text-[#3A3A3A]/50"
+                                                                                        : "bg-[#3A3A3A]/[.07] dark:bg-white/[.07] text-[#3A3A3A]/50 dark:text-white/50"
                                                                                 }`}
                                                                             >
                                                                                 {custom
@@ -575,7 +612,7 @@ export function InstructorSimulatorPage() {
                                                                         </div>
                                                                         <p
                                                                             dir="ltr"
-                                                                            className="mt-1 truncate font-mono text-[11px] text-[#3A3A3A]/50"
+                                                                            className="mt-1 truncate font-mono text-[11px] text-[#3A3A3A]/50 dark:text-white/50"
                                                                         >
                                                                             {[make.name, model.name]
                                                                                 .join(" · ")}
@@ -593,7 +630,7 @@ export function InstructorSimulatorPage() {
                                                                                 setDetailsId(expanded ? null : variant.id)
                                                                             }
                                                                             aria-expanded={expanded}
-                                                                            className="inline-flex h-9 items-center gap-1 rounded-lg border border-[#3A3A3A]/12 bg-white px-3 text-[11px] font-black text-[#3A3A3A]/65 transition hover:border-[#3A3A3A]/25 hover:text-[#3A3A3A]"
+                                                                            className="inline-flex h-9 items-center gap-1 rounded-lg border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 text-[11px] font-black text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#3A3A3A]/25 dark:border-white/25 hover:text-[#3A3A3A]"
                                                                         >
                                                                             <Gauge className="h-3.5 w-3.5" />
                                                                             {expanded
@@ -615,7 +652,7 @@ export function InstructorSimulatorPage() {
                                                                                     modelName: model.name,
                                                                                 })
                                                                             }
-                                                                            className="grid h-9 w-9 place-items-center rounded-lg border border-[#3A3A3A]/12 bg-white text-[#3A3A3A]/65 transition hover:border-[#F47822]/35 hover:text-[#F47822]"
+                                                                            className="grid h-9 w-9 place-items-center rounded-lg border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#F47822]/35 hover:text-[#F47822]"
                                                                         >
                                                                             <Pencil className="h-3.5 w-3.5" />
                                                                         </button>
@@ -639,7 +676,7 @@ export function InstructorSimulatorPage() {
                                                                                         );
                                                                                     }
                                                                                 }}
-                                                                                className="grid h-9 w-9 place-items-center rounded-lg border border-red-200 bg-white text-red-600 transition hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
+                                                                                className="grid h-9 w-9 place-items-center rounded-lg border border-red-200 dark:border-red-500/20 bg-white dark:bg-[#1b1b20] text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
                                                                             >
                                                                                 <Trash2 className="h-3.5 w-3.5" />
                                                                             </button>
@@ -659,7 +696,7 @@ export function InstructorSimulatorPage() {
                                                                 </div>
 
                                                                 {expanded && (
-                                                                    <div className="border-t border-[#F47822]/15 bg-white px-4 py-4 sm:px-5">
+                                                                    <div className="border-t border-[#F47822]/15 bg-white dark:bg-[#1b1b20] px-4 py-4 sm:px-5">
                                                                         <dl className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                                                                             {(
                                                                                 [
@@ -717,14 +754,14 @@ export function InstructorSimulatorPage() {
                                                                             ).map(([k, v]) => (
                                                                                 <div
                                                                                     key={k}
-                                                                                    className="rounded-xl border border-[#3A3A3A]/8 bg-[#FCFCFC] px-3 py-2"
+                                                                                    className="rounded-xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2"
                                                                                 >
-                                                                                    <dt className="text-[10px] font-bold uppercase tracking-[.08em] text-[#3A3A3A]/40">
+                                                                                    <dt className="text-[10px] font-bold uppercase tracking-[.08em] text-[#3A3A3A]/40 dark:text-white/40">
                                                                                         {k}
                                                                                     </dt>
                                                                                     <dd
                                                                                         dir="ltr"
-                                                                                        className="mt-0.5 font-mono text-xs font-bold text-[#3A3A3A]"
+                                                                                        className="mt-0.5 font-mono text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]"
                                                                                     >
                                                                                         {v}
                                                                                     </dd>
@@ -732,7 +769,7 @@ export function InstructorSimulatorPage() {
                                                                             ))}
                                                                         </dl>
                                                                         <div className="mt-3">
-                                                                            <p className="text-[10px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/40">
+                                                                            <p className="text-[10px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/40 dark:text-white/40">
                                                                                 {t("instructor.simulator.vehicles.coverage")}
                                                                             </p>
                                                                             <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -741,12 +778,12 @@ export function InstructorSimulatorPage() {
                                                                                         const value = coverage[tool] ?? "—";
                                                                                         const tone =
                                                                                             value === "ok"
-                                                                                                ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-700"
+                                                                                                ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                                                                                                 : value === "avail"
                                                                                                   ? "border-[#F47822]/25 bg-[#F47822]/10 text-[#F47822]"
                                                                                                   : value === "none"
-                                                                                                    ? "border-red-500/25 bg-red-500/10 text-red-600"
-                                                                                                    : "border-[#3A3A3A]/12 bg-[#3A3A3A]/[.06] text-[#3A3A3A]/50";
+                                                                                                    ? "border-red-500/25 bg-red-500/10 text-red-600 dark:text-red-400"
+                                                                                                    : "border-[#3A3A3A]/12 dark:border-white/12 bg-[#3A3A3A]/[.06] dark:bg-white/[.06] text-[#3A3A3A]/50 dark:text-white/50";
                                                                                         return (
                                                                                             <span
                                                                                                 key={tool}
@@ -775,15 +812,15 @@ export function InstructorSimulatorPage() {
                 )}
 
                 {tab === "variants" && (
-                    <section className="rounded-[28px] border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6" data-testid="simulator-variants">
+                    <section className="rounded-[28px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6" data-testid="simulator-variants">
                         <VariantPicker
                             onPick={(id) => setVariantId(id)}
                             activeId={variantId}
                         />
                         {variantId && (
                             <div className="mt-5">
-                                <div className="relative z-10 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#3A3A3A]/8 bg-white px-4 py-3 shadow-sm">
-                                    <p className="text-xs font-bold uppercase tracking-[.14em] text-[#3A3A3A]/40">
+                                <div className="relative z-10 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-3 shadow-sm">
+                                    <p className="text-xs font-bold uppercase tracking-[.14em] text-[#3A3A3A]/40 dark:text-white/40">
                                         {t("instructor.simulator.variants.faultSetup")}
                                     </p>
                                     <button
@@ -821,7 +858,7 @@ export function InstructorSimulatorPage() {
                                 )}
                                 <ul className="mt-4 space-y-2.5">
                                     {packs.isPending && (
-                                        <li className="h-24 animate-pulse rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC]" />
+                                        <li className="h-24 animate-pulse rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20]" />
                                     )}
                                     {packs.data?.map((pack) => {
                                         const manifestEntry = Array.isArray(pack.manifest) ? (pack.manifest[0] as Record<string, unknown>) : null;
@@ -830,16 +867,16 @@ export function InstructorSimulatorPage() {
                                         return (
                                             <li
                                                 key={pack.id}
-                                                className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-4 py-3.5 transition hover:border-[#F47822]/30 hover:shadow-[0_8px_20px_rgba(58,58,58,.06)]"
+                                                className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-4 py-3.5 transition hover:border-[#F47822]/30 hover:shadow-[0_8px_20px_rgba(58,58,58,.06)]"
                                             >
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="truncate font-mono text-sm font-black text-[#3A3A3A]" dir="ltr">
+                                                    <p className="truncate font-mono text-sm font-black text-[#3A3A3A] dark:text-[#ececef]" dir="ltr">
                                                         {pack.code} · v{pack.version}{" "}
-                                                        <span className="ms-2 rounded-full border border-[#3A3A3A]/10 bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#3A3A3A]/60">
+                                                        <span className="ms-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-[#3A3A3A]/60 dark:text-white/60">
                                                             {toolName(toolLabel)}
                                                         </span>
                                                     </p>
-                                                    <p className="mt-0.5 font-mono text-[11px] text-[#3A3A3A]/45" dir="ltr">
+                                                    <p className="mt-0.5 font-mono text-[11px] text-[#3A3A3A]/45 dark:text-white/45" dir="ltr">
                                                         {itemCount}{" "}
                                                         {toolLabel === "Multimeter"
                                                             ? t("instructor.simulator.builder.countProcedures")
@@ -861,7 +898,7 @@ export function InstructorSimulatorPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setViewingPack(pack)}
-                                                        className="rounded-lg border border-[#3A3A3A]/12 bg-white px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 transition hover:border-[#3A3A3A]/25 hover:text-[#3A3A3A]"
+                                                        className="rounded-lg border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#3A3A3A]/25 dark:border-white/25 hover:text-[#3A3A3A]"
                                                     >
                                                         {t("instructor.simulator.builder.edit")}
                                                     </button>
@@ -872,7 +909,7 @@ export function InstructorSimulatorPage() {
                                                                 setEditingPack(pack);
                                                                 setShowPackForm(true);
                                                             }}
-                                                            className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/12 px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 transition hover:border-[#F47822]/35 hover:text-[#F47822]"
+                                                            className="inline-flex items-center gap-1 rounded-lg border border-[#3A3A3A]/12 dark:border-white/12 px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/35 hover:text-[#F47822]"
                                                         >
                                                             <Pencil className="h-3 w-3" />
                                                             {t("instructor.simulator.variants.edit")}
@@ -894,7 +931,7 @@ export function InstructorSimulatorPage() {
                                                                         void mutate(() => simulatorBuilderApi.destroyPack(pack.id));
                                                                     }
                                                                 }}
-                                                                className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-[11px] font-black text-red-600 transition hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
+                                                                className="inline-flex items-center gap-1 rounded-lg border border-red-200 dark:border-red-500/20 px-3 py-1.5 text-[11px] font-black text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10"
                                                             >
                                                                 <Trash2 className="h-3 w-3" />
                                                                 {t("instructor.simulator.variants.delete")}
@@ -909,7 +946,7 @@ export function InstructorSimulatorPage() {
                                                                     void mutate(() => simulatorBuilderApi.archivePack(pack.id));
                                                                 }
                                                             }}
-                                                            className="rounded-lg border border-[#3A3A3A]/12 px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 transition hover:border-[#3A3A3A]/25 hover:text-[#3A3A3A]"
+                                                            className="rounded-lg border border-[#3A3A3A]/12 dark:border-white/12 px-3 py-1.5 text-[11px] font-black text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#3A3A3A]/25 dark:border-white/25 hover:text-[#3A3A3A]"
                                                         >
                                                             {t("instructor.simulator.variants.archive")}
                                                         </button>
@@ -928,9 +965,9 @@ export function InstructorSimulatorPage() {
                                         );
                                     })}
                                     {packs.data?.length === 0 && (
-                                        <li className="rounded-2xl border border-dashed border-[#3A3A3A]/15 p-8 text-center">
-                                            <FlaskConical className="mx-auto h-7 w-7 text-[#3A3A3A]/25" />
-                                            <p className="mt-3 text-sm font-bold text-[#3A3A3A]">{t("instructor.simulator.variants.noVariants")}</p>
+                                        <li className="rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 p-8 text-center">
+                                            <FlaskConical className="mx-auto h-7 w-7 text-[#3A3A3A]/25 dark:text-white/25" />
+                                            <p className="mt-3 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.variants.noVariants")}</p>
                                         </li>
                                     )}
                                 </ul>
@@ -943,14 +980,14 @@ export function InstructorSimulatorPage() {
                                     >
                                         <div
                                             onClick={(e) => e.stopPropagation()}
-                                            className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]"
+                                            className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]"
                                         >
-                                            <div className="flex items-center justify-between gap-3 border-b border-[#3A3A3A]/10 bg-[#F8F7F6] px-5 py-4 dark:border-white/10 dark:bg-white/[0.04]">
+                                            <div className="flex items-center justify-between gap-3 border-b border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-5 py-4 dark:border-white/10 dark:bg-white/[0.04]">
                                                 <div>
                                                     <p className="font-mono text-sm font-black text-[#3A3A3A] dark:text-[#F7F7F7]" dir="ltr">
                                                         {viewingPack.code} · v{viewingPack.version}
                                                     </p>
-                                                    <p className="mt-0.5 text-xs text-[#3A3A3A]/50">
+                                                    <p className="mt-0.5 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                                         {statusLabel(viewingPack.status)} · {t("instructor.simulator.builder.entries", { n: Array.isArray(viewingPack.manifest) ? viewingPack.manifest.length : 0 })}
                                                     </p>
                                                 </div>
@@ -971,7 +1008,7 @@ export function InstructorSimulatorPage() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setViewingPack(null)}
-                                                        className="rounded-xl border border-[#3A3A3A]/12 px-4 py-2 text-xs font-black text-[#3A3A3A]/70"
+                                                        className="rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 px-4 py-2 text-xs font-black text-[#3A3A3A]/70 dark:text-white/70"
                                                     >
                                                         {t("instructor.simulator.variants.cancel")}
                                                     </button>
@@ -998,21 +1035,21 @@ export function InstructorSimulatorPage() {
                         {review.isPending && (
                             <div className="space-y-3">
                                 {[0, 1].map((row) => (
-                                    <div key={row} className="h-32 animate-pulse rounded-[28px] border border-[#3A3A3A]/8 bg-white" />
+                                    <div key={row} className="h-32 animate-pulse rounded-[28px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20]" />
                                 ))}
                             </div>
                         )}
                         {review.data?.map((pack) => (
                             <article
                                 key={pack.id}
-                                className="rounded-[28px] border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6"
+                                className="rounded-[28px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6"
                             >
                                 <div className="flex flex-wrap items-center gap-3">
                                     <div className="min-w-0 flex-1">
-                                        <p className="truncate font-mono text-sm font-black text-[#3A3A3A]" dir="ltr">
+                                        <p className="truncate font-mono text-sm font-black text-[#3A3A3A] dark:text-[#ececef]" dir="ltr">
                                             {pack.code} · v{pack.version}
                                         </p>
-                                        <p className="mt-0.5 text-xs text-[#3A3A3A]/50">
+                                        <p className="mt-0.5 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                                             {pack.variant?.name ?? pack.vehicle_variant_id} · {pack.variant?.engine_code ?? ""}
                                         </p>
                                     </div>
@@ -1026,13 +1063,13 @@ export function InstructorSimulatorPage() {
                                     <button
                                         type="button"
                                         onClick={() => void mutate(() => simulatorBuilderApi.rejectPack(pack.id))}
-                                        className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-red-200 px-4 text-xs font-black text-red-600 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
+                                        className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-red-200 dark:border-red-500/20 px-4 text-xs font-black text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
                                     >
                                         <XCircle className="h-4 w-4" /> {t("instructor.simulator.review.reject")}
                                     </button>
                                 </div>
-                                <details className="mt-4 rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] p-3">
-                                    <summary className="cursor-pointer font-mono text-[11px] font-bold text-[#3A3A3A]/60">
+                                <details className="mt-4 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3">
+                                    <summary className="cursor-pointer font-mono text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("instructor.simulator.review.manifestJson")}
                                     </summary>
                                     <pre dir="ltr" className="mt-2 max-h-56 overflow-auto rounded-xl bg-[#0f1115] p-3 font-mono text-[11px] leading-5 text-emerald-300">
@@ -1042,12 +1079,12 @@ export function InstructorSimulatorPage() {
                             </article>
                         ))}
                         {review.data?.length === 0 && (
-                            <div className="rounded-[28px] border border-dashed border-[#3A3A3A]/15 bg-white p-10 text-center">
+                            <div className="rounded-[28px] border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-10 text-center">
                                 <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#F47822]/10 text-[#F47822]">
                                     <ShieldCheck className="h-7 w-7" />
                                 </span>
-                                <p className="mt-4 text-sm font-bold text-[#3A3A3A]">{t("instructor.simulator.review.queueClear")}</p>
-                                <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("instructor.simulator.review.queueClearDesc")}</p>
+                                <p className="mt-4 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.review.queueClear")}</p>
+                                <p className="mt-1 text-xs text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.review.queueClearDesc")}</p>
                             </div>
                         )}
                     </section>
@@ -1074,13 +1111,13 @@ function VariantPicker({ onPick, activeId }: { onPick: (id: string) => void; act
         }
     }
     return (
-        <label className="block rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] p-4 text-xs font-bold text-[#3A3A3A]">
+        <label className="block rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] p-4 text-xs font-bold text-[#3A3A3A]">
             {t("instructor.simulator.variants.selectVehicle")}
             <select
                 value={activeId ?? ""}
                 onChange={(e) => onPick(e.target.value)}
                 data-testid="simulator-vehicle-picker"
-                className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/12 bg-white px-3 text-sm font-normal text-[#3A3A3A] shadow-sm transition focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20"
+                className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 text-sm font-normal text-[#3A3A3A] shadow-sm transition focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20"
             >
                 <option value="">{t("instructor.simulator.variants.chooseVehicle")}</option>
                 {flat.map((v) => (
@@ -1155,8 +1192,8 @@ function VehicleForm({
         }
     };
     return (
-        <div className="rounded-[28px] border border-[#F47822]/25 bg-[#FFF8F4] p-5 shadow-[0_10px_28px_rgba(244,120,34,.08)]" data-testid="vehicle-form">
-            <p className="text-sm font-black text-[#3A3A3A]">
+        <div className="rounded-[28px] border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-5 shadow-[0_10px_28px_rgba(244,120,34,.08)]" data-testid="vehicle-form">
+            <p className="text-sm font-black text-[#3A3A3A] dark:text-[#ececef]">
                 {editing
                     ? t("instructor.simulator.vehicleForm.editTitle", {
                           make: initial?.makeName ?? "",
@@ -1180,23 +1217,23 @@ function VehicleForm({
                         ["odometer_km", t("instructor.simulator.vehicleForm.odometerKm"), false],
                     ] as [string, string, boolean][]
                 ).map(([key, label, locked]) => (
-                    <label key={key} className="block text-xs font-bold text-[#3A3A3A]">
+                    <label key={key} className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                         {label}
                         <input
                             value={form[key as keyof typeof form] as string}
                             onChange={(e) => set(key, e.target.value)}
                             disabled={locked as boolean}
-                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 bg-white px-3 text-sm font-normal text-[#3A3A3A] shadow-sm transition focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 disabled:opacity-50"
+                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 text-sm font-normal text-[#3A3A3A] shadow-sm transition focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 disabled:opacity-50"
                         />
                     </label>
                 ))}
                 {COVERAGE_TOOLS.map((tool) => (
-                    <label key={tool} className="block text-xs font-bold capitalize text-[#3A3A3A]">
+                    <label key={tool} className="block text-xs font-bold capitalize text-[#3A3A3A] dark:text-[#ececef]">
                         {t("instructor.simulator.vehicleForm.coverage.label", { tool: tool.charAt(0).toUpperCase() + tool.slice(1) })}
                         <select
                             value={form.coverage[tool] ?? "avail"}
                             onChange={(e) => setCoverage(tool, e.target.value)}
-                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 bg-white px-3 text-sm font-normal text-[#3A3A3A] shadow-sm transition focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20"
+                            className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 text-sm font-normal text-[#3A3A3A] shadow-sm transition focus:border-[#F47822]/40 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20"
                         >
                             <option value="ok">{t("instructor.simulator.vehicleForm.coverage.ok")}</option>
                             <option value="avail">{t("instructor.simulator.vehicleForm.coverage.avail")}</option>
@@ -1216,7 +1253,7 @@ function VehicleForm({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-xl border border-[#3A3A3A]/12 px-5 py-2.5 text-xs font-black text-[#3A3A3A]/60 transition hover:border-[#3A3A3A]/25 hover:text-[#3A3A3A]"
+                    className="rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 px-5 py-2.5 text-xs font-black text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#3A3A3A]/25 dark:border-white/25 hover:text-[#3A3A3A]"
                 >
                     {t("instructor.simulator.vehicleForm.cancel")}
                 </button>
@@ -1502,33 +1539,33 @@ function DtcDossierEditor({ detail, onChange }: { detail: FaultDtcDetailDraft; o
 
     return (
         <div className="grid gap-3">
-            <label className="block text-xs font-bold text-[#3A3A3A]">
+            <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                 {t("instructor.simulator.packForm.dossierOverview")}
                 <textarea
                     value={detail.meaning}
                     onChange={(e) => set({ meaning: e.target.value })}
                     rows={3}
                     placeholder={t("instructor.simulator.packForm.dossierOverviewPh")}
-                    className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-xs font-normal"
+                    className="mt-1.5 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 text-xs font-normal"
                 />
             </label>
 
             <div>
-                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dossierCauses")}</p>
+                <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.dossierCauses")}</p>
                 <div className="mt-1.5 grid gap-2">
                     {detail.causes.map((c, i) => (
-                        <div key={i} className="grid gap-2 rounded-lg bg-[#3A3A3A]/[.03] p-2 sm:grid-cols-[1fr_1fr_80px_auto]">
+                        <div key={i} className="grid gap-2 rounded-lg bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-2 sm:grid-cols-[1fr_1fr_80px_auto]">
                             <input
                                 value={c.label}
                                 onChange={(e) => setCause(i, { label: e.target.value })}
                                 placeholder={t("instructor.simulator.packForm.causeLabel")}
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                             />
                             <input
                                 value={c.note}
                                 onChange={(e) => setCause(i, { note: e.target.value })}
                                 placeholder={t("instructor.simulator.packForm.causeNote")}
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                             />
                             <input
                                 value={c.pct}
@@ -1537,12 +1574,12 @@ function DtcDossierEditor({ detail, onChange }: { detail: FaultDtcDetailDraft; o
                                 dir="ltr"
                                 title={t("instructor.simulator.packForm.causePct")}
                                 placeholder="%"
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                             />
                             <button
                                 type="button"
                                 onClick={() => set({ causes: detail.causes.filter((_, j) => j !== i) })}
-                                className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                             >
                                 ✕
                             </button>
@@ -1552,41 +1589,41 @@ function DtcDossierEditor({ detail, onChange }: { detail: FaultDtcDetailDraft; o
                 <button
                     type="button"
                     onClick={() => set({ causes: [...detail.causes, { label: "", note: "", pct: "0" }] })}
-                    className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                    className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                 >
                     {t("instructor.simulator.packForm.addCause")}
                 </button>
             </div>
 
             <div>
-                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dossierLive")}</p>
+                <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.dossierLive")}</p>
                 <div className="mt-1.5 grid gap-2">
                     {detail.live.map((r, i) => (
-                        <div key={i} className="grid gap-2 rounded-lg bg-[#3A3A3A]/[.03] p-2 sm:grid-cols-[1fr_1fr_1fr_130px_auto]">
+                        <div key={i} className="grid gap-2 rounded-lg bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-2 sm:grid-cols-[1fr_1fr_1fr_130px_auto]">
                             <input
                                 value={r.k}
                                 onChange={(e) => setLive(i, { k: e.target.value })}
                                 placeholder={t("instructor.simulator.packForm.liveMeasurement")}
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                             />
                             <input
                                 value={r.spec}
                                 onChange={(e) => setLive(i, { spec: e.target.value })}
                                 placeholder={t("instructor.simulator.packForm.liveSpec")}
                                 dir="ltr"
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                             />
                             <input
                                 value={r.measured}
                                 onChange={(e) => setLive(i, { measured: e.target.value })}
                                 placeholder={t("instructor.simulator.packForm.liveMeasured")}
                                 dir="ltr"
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                             />
                             <select
                                 value={r.ok ? "in" : "out"}
                                 onChange={(e) => setLive(i, { ok: e.target.value === "in" })}
-                                className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
+                                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs font-bold"
                             >
                                 <option value="in">{t("instructor.simulator.packForm.liveInSpec")}</option>
                                 <option value="out">{t("instructor.simulator.packForm.liveOutSpec")}</option>
@@ -1594,7 +1631,7 @@ function DtcDossierEditor({ detail, onChange }: { detail: FaultDtcDetailDraft; o
                             <button
                                 type="button"
                                 onClick={() => set({ live: detail.live.filter((_, j) => j !== i) })}
-                                className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                             >
                                 ✕
                             </button>
@@ -1604,33 +1641,33 @@ function DtcDossierEditor({ detail, onChange }: { detail: FaultDtcDetailDraft; o
                 <button
                     type="button"
                     onClick={() => set({ live: [...detail.live, { k: "", spec: "", measured: "", ok: true }] })}
-                    className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                    className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                 >
                     {t("instructor.simulator.packForm.addLiveRow")}
                 </button>
             </div>
 
             <div className="grid gap-2">
-                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dossierRepair")}</p>
+                <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.dossierRepair")}</p>
                 <input
                     value={detail.decision}
                     onChange={(e) => set({ decision: e.target.value })}
                     placeholder={t("instructor.simulator.packForm.repairDecision")}
-                    className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs"
+                    className="h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs"
                 />
                 <textarea
                     value={detail.evidence}
                     onChange={(e) => set({ evidence: e.target.value })}
                     rows={2}
                     placeholder={t("instructor.simulator.packForm.repairEvidence")}
-                    className="w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-xs"
+                    className="w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 text-xs"
                 />
                 <textarea
                     value={detail.doNotStop}
                     onChange={(e) => set({ doNotStop: e.target.value })}
                     rows={2}
                     placeholder={t("instructor.simulator.packForm.repairDoNotStop")}
-                    className="w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2 text-xs"
+                    className="w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 text-xs"
                 />
             </div>
         </div>
@@ -1842,19 +1879,19 @@ export function PackForm({
     const patchSession = (index: number, patch: Partial<TrainingSessionDraft>) =>
         setSessions((list) => list.map((s, i) => (i === index ? { ...s, ...patch } : s)));
     return (
-        <div className="relative z-0 rounded-2xl border border-[#F47822]/25 bg-[#FFF8F4] p-5" data-testid="pack-form">
+        <div className="relative z-0 rounded-2xl border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-5" data-testid="pack-form">
             <div className="grid gap-3 sm:grid-cols-3">
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.simulator.packForm.code")}
-                    <input value={code} onChange={(e) => setCode(e.target.value)} placeholder={t("instructor.simulator.packForm.codePh")} dir="ltr" className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 font-mono text-sm font-normal" />
+                    <input value={code} onChange={(e) => setCode(e.target.value)} placeholder={t("instructor.simulator.packForm.codePh")} dir="ltr" className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 font-mono text-sm font-normal" />
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.simulator.packForm.version")}
-                    <input value={version} onChange={(e) => setVersion(e.target.value)} placeholder={t("instructor.simulator.packForm.versionPh")} dir="ltr" className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 font-mono text-sm font-normal" />
+                    <input value={version} onChange={(e) => setVersion(e.target.value)} placeholder={t("instructor.simulator.packForm.versionPh")} dir="ltr" className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 font-mono text-sm font-normal" />
                 </label>
-                <label className="block text-xs font-bold text-[#3A3A3A]">
+                <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("instructor.simulator.builder.lab")}
-                    <select value={tool} onChange={(e) => setTool(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 text-sm font-bold">
+                    <select value={tool} onChange={(e) => setTool(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-sm font-bold">
                         <option value="scanner">{t("instructor.simulator.activity.tools.scanner")}</option>
                         <option value="multimeter">{t("instructor.simulator.activity.tools.multimeter")}</option>
                         <option value="oscilloscope">{t("instructor.simulator.activity.tools.oscilloscope")}</option>
@@ -1864,13 +1901,13 @@ export function PackForm({
                 </label>
             </div>
             {tool === "scanner" && (
-                <div className="mt-4 inline-flex rounded-xl border border-[#3A3A3A]/10 bg-white p-1">
+                <div className="mt-4 inline-flex rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1">
                     {(["fault", "training"] as const).map((id) => (
                         <button
                             key={id}
                             type="button"
                             onClick={() => setEditorTab(id)}
-                            className={`rounded-lg px-4 py-2 text-xs font-black transition ${editorTab === id ? "bg-[#3A3A3A] text-white" : "text-[#3A3A3A]/55 hover:text-[#3A3A3A]"}`}
+                            className={`rounded-lg px-4 py-2 text-xs font-black transition ${editorTab === id ? "bg-[#3A3A3A] text-white" : "text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A]"}`}
                         >
                             {id === "fault" ? t("instructor.simulator.packForm.faultSetup") : t("instructor.simulator.packForm.trainingSessions", { count: sessions.length })}
                         </button>
@@ -1879,13 +1916,13 @@ export function PackForm({
             )}
             {tool === "scanner" && editorTab === "fault" ? (
                 <div className="mt-3 space-y-3">
-                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-white p-3">
-                        <label className="min-w-[200px] flex-1 text-xs font-bold text-[#3A3A3A]">
+                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3">
+                        <label className="min-w-[200px] flex-1 text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                             {t("instructor.simulator.packForm.faultLibrary", { count: FAULT_LIBRARY.length })}
                             <select
                                 value={libraryPick}
                                 onChange={(e) => setLibraryPick(e.target.value)}
-                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-normal"
+                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-normal"
                             >
                                 <option value="">{t("instructor.simulator.packForm.chooseFault")}</option>
                                 {FAULT_LIBRARY.map((entry) => (
@@ -1913,7 +1950,7 @@ export function PackForm({
                                 setFaults((list) => [...list, blankFaultEntry()]);
                                 setActiveFault(faults.length);
                             }}
-                            className="self-end rounded-xl border border-dashed border-[#3A3A3A]/20 px-4 py-2.5 text-xs font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                            className="self-end rounded-xl border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-4 py-2.5 text-xs font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                         >
                             {t("instructor.simulator.packForm.blankFault")}
                         </button>
@@ -1921,15 +1958,15 @@ export function PackForm({
                     {faults.map((fault, fi) => {
                         const faultEcus = fault.nodes.filter((n) => n.status === "fault").map((n) => n.id);
                         return (
-                            <div key={fault.key} className="rounded-xl border border-[#3A3A3A]/10 bg-white p-4">
+                            <div key={fault.key} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4">
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={() => setActiveFault(activeFault === fi ? null : fi)}
-                                        className="min-w-0 flex-1 truncate text-start text-sm font-black text-[#3A3A3A]"
+                                        className="min-w-0 flex-1 truncate text-start text-sm font-black text-[#3A3A3A] dark:text-[#ececef]"
                                     >
                                         {fault.title.trim() || t("instructor.simulator.variants.faultFallback", { index: fi + 1 })}
-                                        <span className="ms-2 font-mono text-[10px] font-bold text-[#3A3A3A]/45">
+                                        <span className="ms-2 font-mono text-[10px] font-bold text-[#3A3A3A]/45 dark:text-white/45">
                                             {t("instructor.simulator.variants.faultSummary", { ecus: fault.nodes.length, dtcs: fault.dtcs.length, pids: fault.pids.length })}
                                             {faultEcus.length > 0 && ` · ${faultEcus.join(", ")}`}
                                         </span>
@@ -1942,32 +1979,32 @@ export function PackForm({
                                                 setActiveFault(null);
                                             }
                                         }}
-                                        className="shrink-0 rounded-lg border border-red-200 px-3 py-1.5 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                        className="shrink-0 rounded-lg border border-red-200 dark:border-red-500/20 px-3 py-1.5 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                     >
                                         {t("instructor.simulator.packForm.delete")}
                                     </button>
                                 </div>
                                 {activeFault === fi && (
-                                    <div className="mt-3 space-y-4 border-t border-[#3A3A3A]/[.07] pt-3">
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                    <div className="mt-3 space-y-4 border-t border-[#3A3A3A]/[.07] dark:border-white/[.07] pt-3">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.simulator.packForm.faultTitle")}
                                             <input
                                                 value={fault.title}
                                                 onChange={(e) => patchFault(fi, { title: e.target.value })}
                                                 placeholder={t("instructor.simulator.packForm.faultTitlePh")}
-                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-normal"
+                                                className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-normal"
                                             />
                                         </label>
                                         <div>
-                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.ecus")}</p>
+                                            <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.ecus")}</p>
                                             <ul className="mt-2 space-y-2">
                                                 {fault.nodes.map((node, ni) => (
-                                                    <li key={ni} className="flex flex-wrap items-center gap-2 rounded-xl bg-[#3A3A3A]/[.03] p-2.5">
+                                                    <li key={ni} className="flex flex-wrap items-center gap-2 rounded-xl bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-2.5">
                                                         <select
                                                             value={node.id}
                                                             onChange={(e) => patchFault(fi, { nodes: fault.nodes.map((n, j) => (j === ni ? { ...n, id: e.target.value } : n)) })}
                                                             dir="ltr"
-                                                            className="h-9 min-w-[110px] flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs font-bold"
+                                                            className="h-9 min-w-[110px] flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs font-bold"
                                                         >
                                                             {NODES.map((n) => (
                                                                 <option key={n.id} value={n.id}>{n.id} · {n.name}</option>
@@ -1976,26 +2013,26 @@ export function PackForm({
                                                         <select
                                                             value={node.status}
                                                             onChange={(e) => patchFault(fi, { nodes: fault.nodes.map((n, j) => (j === ni ? { ...n, status: e.target.value as FaultNodeDraft["status"] } : n)) })}
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs font-bold"
                                                         >
                                                             {NODE_STATUSES.map((s) => (
                                                                 <option key={s} value={s}>{t(`instructor.simulator.builder.nodeStatus.${s}`)}</option>
                                                             ))}
                                                         </select>
-                                                        <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#3A3A3A]/60">
+                                                        <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                                             {t("instructor.simulator.packForm.dtcLabel")}
                                                             <input
                                                                 value={node.dtc}
                                                                 onChange={(e) => patchFault(fi, { nodes: fault.nodes.map((n, j) => (j === ni ? { ...n, dtc: e.target.value } : n)) })}
                                                                 inputMode="numeric"
                                                                 dir="ltr"
-                                                                className="h-9 w-16 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                                className="h-9 w-16 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                             />
                                                         </label>
                                                         <button
                                                             type="button"
                                                             onClick={() => patchFault(fi, { nodes: fault.nodes.filter((_, j) => j !== ni) })}
-                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                                         >
                                                             ✕
                                                         </button>
@@ -2005,14 +2042,14 @@ export function PackForm({
                                             <button
                                                 type="button"
                                                 onClick={() => patchFault(fi, { nodes: [...fault.nodes, { id: "ECM", status: "normal", dtc: "0" }] })}
-                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                                             >
                                                 {t("instructor.simulator.packForm.addEcu")}
                                             </button>
                                         </div>
                                         <div>
                                             <div className="relative flex items-center justify-between gap-2">
-                                                <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.faultCodes")}</p>
+                                                <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.faultCodes")}</p>
                                                 <FaultCodeLibraryPicker
                                                     onPick={(entry) =>
                                                         patchFault(fi, {
@@ -2033,25 +2070,25 @@ export function PackForm({
                                             </div>
                                             <ul className="mt-2 space-y-2">
                                                 {fault.dtcs.map((dtc, di) => (
-                                                    <li key={di} className="grid gap-2 rounded-xl bg-[#3A3A3A]/[.03] p-2.5 sm:grid-cols-[110px_1fr_110px_130px_110px_80px_auto]">
+                                                    <li key={di} className="grid gap-2 rounded-xl bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-2.5 sm:grid-cols-[110px_1fr_110px_130px_110px_80px_auto]">
                                                         <input
                                                             value={dtc.code}
                                                             onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, code: e.target.value.toUpperCase() } : d)) })}
                                                             placeholder="P0000"
                                                             dir="ltr"
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs font-bold"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs font-bold"
                                                         />
                                                         <input
                                                             value={dtc.desc}
                                                             onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, desc: e.target.value } : d)) })}
                                                             placeholder={t("instructor.simulator.packForm.description")}
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs"
                                                         />
                                                         <select
                                                             value={dtc.ecu}
                                                             onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, ecu: e.target.value } : d)) })}
                                                             dir="ltr"
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs font-bold"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs font-bold"
                                                         >
                                                             {NODES.map((n) => (
                                                                 <option key={n.id} value={n.id}>{n.id}</option>
@@ -2060,7 +2097,7 @@ export function PackForm({
                                                         <select
                                                             value={dtc.status}
                                                             onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, status: e.target.value as FaultDtcDraft["status"] } : d)) })}
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs font-bold"
                                                         >
                                                             {DTC_STATUSES.map((s) => (
                                                                 <option key={s} value={s}>{t(`instructor.simulator.builder.dtcStatus.${s.toLowerCase()}`)}</option>
@@ -2069,7 +2106,7 @@ export function PackForm({
                                                         <select
                                                             value={dtc.severity}
                                                             onChange={(e) => patchFault(fi, { dtcs: fault.dtcs.map((d, j) => (j === di ? { ...d, severity: e.target.value as FaultDtcDraft["severity"] } : d)) })}
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs font-bold"
                                                         >
                                                             {SEVERITIES.map((s) => (
                                                                 <option key={s} value={s}>{t(`instructor.simulator.builder.severity.${s}`)}</option>
@@ -2081,12 +2118,12 @@ export function PackForm({
                                                             inputMode="numeric"
                                                             dir="ltr"
                                                             title={t("instructor.simulator.packForm.countLabel")}
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                         />
                                                         <button
                                                             type="button"
                                                             onClick={() => patchFault(fi, { dtcs: fault.dtcs.filter((_, j) => j !== di) })}
-                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                                         >
                                                             ✕
                                                         </button>
@@ -2096,16 +2133,16 @@ export function PackForm({
                                             <button
                                                 type="button"
                                                 onClick={() => patchFault(fi, { dtcs: [...fault.dtcs, { code: "", desc: "", ecu: "ECM", status: "Stored", count: "1", severity: "medium" }] })}
-                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                                             >
                                                 {t("instructor.simulator.packForm.addDtc")}
                                             </button>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.dtcDossier")}</p>
-                                            <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">{t("instructor.simulator.packForm.dtcDossierHint")}</p>
+                                            <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.dtcDossier")}</p>
+                                            <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.packForm.dtcDossierHint")}</p>
                                             {fault.dtcs.filter((d) => d.code.trim()).length === 0 ? (
-                                                <p className="mt-2 text-[11px] text-[#3A3A3A]/50">
+                                                <p className="mt-2 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                                                     {t("instructor.simulator.packForm.dtcDossierEmpty")}
                                                 </p>
                                             ) : (
@@ -2114,17 +2151,17 @@ export function PackForm({
                                                         dtc.code.trim() ? (
                                                             <details
                                                                 key={`dossier-${di}`}
-                                                                className="overflow-hidden rounded-xl border border-[#3A3A3A]/10 bg-white"
+                                                                className="overflow-hidden rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20]"
                                                             >
-                                                                <summary className="flex cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-xs font-black text-[#3A3A3A] hover:bg-[#3A3A3A]/[.03]">
+                                                                <summary className="flex cursor-pointer select-none items-center gap-2 px-3 py-2.5 text-xs font-black text-[#3A3A3A] hover:bg-[#3A3A3A]/[.03] dark:bg-white/[.03]">
                                                                     <span dir="ltr" className="font-mono">
                                                                         {dtc.code.trim().toUpperCase()}
                                                                     </span>
                                                                     {dtc.desc && (
-                                                                        <span className="truncate font-normal text-[#3A3A3A]/60">{dtc.desc}</span>
+                                                                        <span className="truncate font-normal text-[#3A3A3A]/60 dark:text-white/60">{dtc.desc}</span>
                                                                     )}
                                                                 </summary>
-                                                                <div className="border-t border-[#3A3A3A]/10 p-3">
+                                                                <div className="border-t border-[#3A3A3A]/10 dark:border-white/10 p-3">
                                                                     <DtcDossierEditor
                                                                         detail={dtc.detail ?? blankDtcDetail()}
                                                                         onChange={(next) =>
@@ -2141,28 +2178,28 @@ export function PackForm({
                                             )}
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.liveValues")}</p>
+                                            <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.liveValues")}</p>
                                             <ul className="mt-2 space-y-2">
                                                 {fault.pids.map((pid, pi) => (
-                                                    <li key={pi} className="flex flex-wrap items-center gap-2 rounded-xl bg-[#3A3A3A]/[.03] p-2.5">
+                                                    <li key={pi} className="flex flex-wrap items-center gap-2 rounded-xl bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-2.5">
                                                         <select
                                                             value={pid.id}
                                                             onChange={(e) => patchFault(fi, { pids: fault.pids.map((p, j) => (j === pi ? { ...p, id: e.target.value } : p)) })}
                                                             dir="ltr"
-                                                            className="h-9 min-w-[150px] flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs font-bold"
+                                                            className="h-9 min-w-[150px] flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs font-bold"
                                                         >
                                                             {PARAMS.map((p) => (
                                                                 <option key={p.id} value={p.id}>{p.id} · {p.name}</option>
                                                             ))}
                                                         </select>
-                                                        <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#3A3A3A]/60">
+                                                        <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                                             {t("instructor.simulator.packForm.baseLabel")}
                                                             <input
                                                                 value={pid.base}
                                                                 onChange={(e) => patchFault(fi, { pids: fault.pids.map((p, j) => (j === pi ? { ...p, base: e.target.value } : p)) })}
                                                                 inputMode="decimal"
                                                                 dir="ltr"
-                                                                className="h-9 w-24 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                                className="h-9 w-24 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                             />
                                                         </label>
                                                         <button
@@ -2171,14 +2208,14 @@ export function PackForm({
                                                             aria-checked={pid.fault}
                                                             aria-label={t("instructor.simulator.packForm.faultFlag")}
                                                             onClick={() => patchFault(fi, { pids: fault.pids.map((p, j) => (j === pi ? { ...p, fault: !p.fault } : p)) })}
-                                                            className={`relative h-6 w-11 shrink-0 rounded-full transition ${pid.fault ? "bg-[#F47822]" : "bg-[#3A3A3A]/15"}`}
+                                                            className={`relative h-6 w-11 shrink-0 rounded-full transition ${pid.fault ? "bg-[#F47822]" : "bg-[#3A3A3A]/15 dark:bg-white/15"}`}
                                                         >
-                                                            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${pid.fault ? "start-[22px]" : "start-0.5"}`} />
+                                                            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white dark:bg-[#1b1b20] shadow transition-all ${pid.fault ? "start-[22px]" : "start-0.5"}`} />
                                                         </button>
                                                         <button
                                                             type="button"
                                                             onClick={() => patchFault(fi, { pids: fault.pids.filter((_, j) => j !== pi) })}
-                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                                         >
                                                             ✕
                                                         </button>
@@ -2188,44 +2225,44 @@ export function PackForm({
                                             <button
                                                 type="button"
                                                 onClick={() => patchFault(fi, { pids: [...fault.pids, { id: "RPM", base: "820", fault: false }] })}
-                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                                             >
                                                 {t("instructor.simulator.packForm.addPid")}
                                             </button>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.faultTree")}</p>
-                                            <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">{t("instructor.simulator.packForm.treeStepsHint")}</p>
+                                            <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.faultTree")}</p>
+                                            <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.packForm.treeStepsHint")}</p>
                                             {treeSteps.length === 0 && (
-                                                <p className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/15 px-3 py-2 text-[11px] text-[#3A3A3A]/45">
+                                                <p className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-3 py-2 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
                                                     {t("instructor.simulator.packForm.treeEmpty")}
                                                 </p>
                                             )}
                                             <ul className="mt-2 space-y-2">
                                                 {treeSteps.map((step, ti) => (
-                                                    <li key={ti} className="flex flex-wrap items-center gap-2 rounded-xl bg-[#3A3A3A]/[.03] p-2.5">
+                                                    <li key={ti} className="flex flex-wrap items-center gap-2 rounded-xl bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-2.5">
                                                         <span className="font-mono text-[10px] font-black uppercase text-[#F47822]">#{ti + 1}</span>
                                                         <input
                                                             value={step.label}
                                                             onChange={(e) => setTreeSteps((list) => list.map((s, j) => (j === ti ? { ...s, label: e.target.value, id: s.id || `step-${j + 1}` } : s)))}
                                                             placeholder={t("instructor.simulator.packForm.treeStepLabel")}
-                                                            className="h-9 min-w-[160px] flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs"
+                                                            className="h-9 min-w-[160px] flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs"
                                                         />
                                                         <input
                                                             value={step.measure}
                                                             onChange={(e) => setTreeSteps((list) => list.map((s, j) => (j === ti ? { ...s, measure: e.target.value } : s)))}
                                                             placeholder={t("instructor.simulator.packForm.treeMeasure")}
                                                             dir="ltr"
-                                                            className="h-9 w-24 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                            className="h-9 w-24 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                         />
                                                         <input
                                                             value={step.expected}
                                                             onChange={(e) => setTreeSteps((list) => list.map((s, j) => (j === ti ? { ...s, expected: e.target.value } : s)))}
                                                             placeholder={t("instructor.simulator.packForm.treeExpected")}
                                                             dir="ltr"
-                                                            className="h-9 w-28 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                            className="h-9 w-28 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                         />
-                                                        <label className="flex items-center gap-1 text-[11px] font-bold text-[#3A3A3A]/70">
+                                                        <label className="flex items-center gap-1 text-[11px] font-bold text-[#3A3A3A]/70 dark:text-white/70">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={!step.ok}
@@ -2234,7 +2271,7 @@ export function PackForm({
                                                             />
                                                             {t("instructor.simulator.packForm.treeOk")}
                                                         </label>
-                                                        <label className="flex items-center gap-1 text-[11px] font-bold text-[#3A3A3A]/70">
+                                                        <label className="flex items-center gap-1 text-[11px] font-bold text-[#3A3A3A]/70 dark:text-white/70">
                                                             <input
                                                                 type="checkbox"
                                                                 checked={step.terminal === true}
@@ -2246,7 +2283,7 @@ export function PackForm({
                                                         <button
                                                             type="button"
                                                             onClick={() => setTreeSteps((list) => list.filter((_, j) => j !== ti))}
-                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                                         >
                                                             ✕
                                                         </button>
@@ -2261,13 +2298,13 @@ export function PackForm({
                                                         { id: `step-${list.length + 1}`, label: "", measure: "—", expected: "—", ok: true },
                                                     ])
                                                 }
-                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                                                className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                                             >
                                                 {t("instructor.simulator.packForm.addTreeStep")}
                                             </button>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.adasFlags")}</p>
+                                            <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.adasFlags")}</p>
                                             <div className="mt-2 flex flex-wrap gap-1.5">
                                                 {fault.adasDone.map((done, ai) => (
                                                     <button
@@ -2277,7 +2314,7 @@ export function PackForm({
                                                         aria-checked={done}
                                                         aria-label={t("instructor.simulator.packForm.adasItem", { index: ai + 1 })}
                                                         onClick={() => patchFault(fi, { adasDone: fault.adasDone.map((d, j) => (j === ai ? !d : d)) })}
-                                                        className={`h-8 w-8 rounded-lg font-mono text-[11px] font-black transition ${done ? "bg-emerald-500 text-white" : "bg-[#3A3A3A]/10 text-[#3A3A3A]/40"}`}
+                                                        className={`h-8 w-8 rounded-lg font-mono text-[11px] font-black transition ${done ? "bg-emerald-500 text-white" : "bg-[#3A3A3A]/10 dark:bg-white/10 text-[#3A3A3A]/40 dark:text-white/40"}`}
                                                     >
                                                         {ai + 1}
                                                     </button>
@@ -2290,13 +2327,13 @@ export function PackForm({
                         );
                     })}
                     {faults.length === 0 && (
-                        <p className="rounded-xl border border-dashed border-[#3A3A3A]/15 bg-white p-5 text-center text-xs text-[#3A3A3A]/50">
+                        <p className="rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-5 text-center text-xs text-[#3A3A3A]/50 dark:text-white/50">
                             {t("instructor.simulator.variants.noVariants")}
                         </p>
                     )}
-                    {manifestError && <p role="alert" className="text-xs font-bold text-red-600">{manifestError}</p>}
-                    <details className="rounded-xl border border-[#3A3A3A]/10 bg-white p-3">
-                        <summary className="cursor-pointer font-mono text-[11px] font-bold text-[#3A3A3A]/60">{t("instructor.simulator.variants.previewManifest")}</summary>
+                    {manifestError && <p role="alert" className="text-xs font-bold text-red-600 dark:text-red-400">{manifestError}</p>}
+                    <details className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3">
+                        <summary className="cursor-pointer font-mono text-[11px] font-bold text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.simulator.variants.previewManifest")}</summary>
                         <pre dir="ltr" className="mt-2 max-h-48 overflow-auto rounded-lg bg-[#0f1115] p-3 font-mono text-[11px] leading-5 text-emerald-300">
                             {tool === "scanner" ? JSON.stringify(faultsToManifest(faults).entries, null, 2) : tool === "multimeter" ? JSON.stringify(mmProcedures, null, 2) : tool === "oscilloscope" ? JSON.stringify(scopeExercises, null, 2) : tool === "location" ? JSON.stringify(locComponents, null, 2) : JSON.stringify({ components: schComponents, wires: schWires }, null, 2)}
                         </pre>
@@ -2304,17 +2341,17 @@ export function PackForm({
                 </div>
             ) : tool === "multimeter" ? (
                 <div className="mt-4 space-y-3">
-                    <div className="rounded-xl border border-[#3A3A3A]/10 bg-white p-4">
+                    <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4">
                         <h4 className="text-sm font-black">{t("instructor.simulator.builder.mmTitle", { n: mmProcedures.length })}</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60 dark:text-white/60">
                             {t("instructor.simulator.builder.mmHint")}
                         </p>
                         <div className="mt-3 max-h-48 space-y-2 overflow-auto">
                             {(mmProcedures as Record<string, unknown>[]).map((proc, idx) => (
-                                <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] p-3">
+                                <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] dark:bg-[#101013] p-3">
                                     <span className="font-mono text-xs font-black">{String(proc.ref)}</span>
                                     <span className="flex-1 truncate text-sm font-bold">{String(proc.name)}</span>
-                                    <span className="rounded-full bg-[#3A3A3A]/10 px-2 py-0.5 font-mono text-[10px] text-[#3A3A3A]/60">
+                                    <span className="rounded-full bg-[#3A3A3A]/10 dark:bg-white/10 px-2 py-0.5 font-mono text-[10px] text-[#3A3A3A]/60 dark:text-white/60">
                                         {t("instructor.simulator.builder.stepsUnit", { n: Array.isArray(proc.steps) ? (proc.steps as unknown[]).length : 0 })}
                                     </span>
                                     <button
@@ -2330,19 +2367,19 @@ export function PackForm({
                                     <button
                                         type="button"
                                         onClick={() => setMmProcedures((l) => l.filter((_, i) => i !== idx))}
-                                        className="text-xs font-bold text-red-600"
+                                        className="text-xs font-bold text-red-600 dark:text-red-400"
                                     >
                                         {t("instructor.simulator.builder.remove")}
                                     </button>
                                 </div>
                             ))}
                             {mmProcedures.length === 0 && (
-                                <p className="rounded-xl border-2 border-dashed p-4 text-center text-sm text-[#3A3A3A]/40">{t("instructor.simulator.builder.noProcedures")}</p>
+                                <p className="rounded-xl border-2 border-dashed p-4 text-center text-sm text-[#3A3A3A]/40 dark:text-white/40">{t("instructor.simulator.builder.noProcedures")}</p>
                             )}
                         </div>
 
                         {/* Procedure draft editor */}
-                        <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] p-3 sm:grid-cols-3">
+                        <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] dark:bg-[#F47822]/10 p-3 sm:grid-cols-3">
                             <label className="block text-xs font-bold">
                                 {t("instructor.simulator.builder.ref")}{" "}
                                 <input
@@ -2350,7 +2387,7 @@ export function PackForm({
                                     onChange={(e) => setMmDraft((d) => ({ ...d, ref: e.target.value, code: e.target.value }))}
                                     placeholder="A1"
                                     dir="ltr"
-                                    className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm"
+                                    className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 font-mono text-sm"
                                 />
                             </label>
                             <label className="block text-xs font-bold sm:col-span-2">
@@ -2359,7 +2396,7 @@ export function PackForm({
                                     value={mmDraft.name}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, name: e.target.value }))}
                                     placeholder={t("instructor.simulator.builder.namePh")}
-                                    className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"
+                                    className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm"
                                 />
                             </label>
                             <label className="block text-xs font-bold">
@@ -2367,7 +2404,7 @@ export function PackForm({
                                 <input
                                     value={mmDraft.group}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, group: e.target.value }))}
-                                    className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"
+                                    className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm"
                                 />
                             </label>
                             <label className="block text-xs font-bold">
@@ -2375,7 +2412,7 @@ export function PackForm({
                                 <select
                                     value={mmDraft.sym}
                                     onChange={(e) => setMmDraft((d) => ({ ...d, sym: e.target.value }))}
-                                    className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"
+                                    className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm"
                                 >
                                     {["maf", "map", "inj", "motorpot", "coil", "knock", "ind", "hall", "pot2", "lambda", "ntc", "generic"].map((s) => (
                                         <option key={s} value={s}>
@@ -2399,16 +2436,16 @@ export function PackForm({
                                     }
                                     placeholder="1,2,3"
                                     dir="ltr"
-                                    className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm"
+                                    className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 font-mono text-sm"
                                 />
                             </label>
                         </div>
 
                         {/* Pin functions + ECU */}
                         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                            <div className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
-                                <p className="text-xs font-black text-[#3A3A3A]">{t("instructor.simulator.builder.pinFunctions")}</p>
-                                <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">{t("instructor.simulator.builder.pinFunctionsHint")}</p>
+                            <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3">
+                                <p className="text-xs font-black text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.builder.pinFunctions")}</p>
+                                <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.builder.pinFunctionsHint")}</p>
                                 <div className="mt-2 space-y-1.5">
                                     {mmDraft.pins.map((pin) => (
                                         <div key={pin} className="flex gap-2">
@@ -2421,9 +2458,9 @@ export function PackForm({
                                                     setMmDraft((d) => ({ ...d, pinFn: { ...d.pinFn, [pin]: e.target.value } }))
                                                 }
                                                 placeholder={t("instructor.simulator.builder.pinFnPh")}
-                                                className="h-8 flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs outline-none focus:border-[#F47822]"
+                                                className="h-8 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs outline-none focus:border-[#F47822]"
                                             />
-                                            <label className="flex items-center gap-1 text-[10px] font-bold text-[#3A3A3A]/60">
+                                            <label className="flex items-center gap-1 text-[10px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                                 <input
                                                     type="checkbox"
                                                     checked={mmDraft.supply.includes(pin)}
@@ -2441,11 +2478,11 @@ export function PackForm({
                                             </label>
                                         </div>
                                     ))}
-                                    {mmDraft.pins.length === 0 && <p className="text-[11px] text-[#3A3A3A]/40">{t("instructor.simulator.builder.addPinsFirst")}</p>}
+                                    {mmDraft.pins.length === 0 && <p className="text-[11px] text-[#3A3A3A]/40 dark:text-white/40">{t("instructor.simulator.builder.addPinsFirst")}</p>}
                                 </div>
                             </div>
-                            <div className="rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
-                                <p className="text-xs font-black text-[#3A3A3A]">{t("instructor.simulator.builder.ecuLink")}</p>
+                            <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3">
+                                <p className="text-xs font-black text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.builder.ecuLink")}</p>
                                 <div className="mt-2 grid grid-cols-2 gap-2">
                                     <label className="block text-[11px] font-bold">
                                         {t("instructor.simulator.builder.ecuCode")}
@@ -2453,7 +2490,7 @@ export function PackForm({
                                             value={mmDraft.ecu.code}
                                             onChange={(e) => setMmDraft((d) => ({ ...d, ecu: { ...d.ecu, code: e.target.value } }))}
                                             dir="ltr"
-                                            className="mt-1 h-8 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                            className="mt-1 h-8 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                         />
                                     </label>
                                     <label className="block text-[11px] font-bold">
@@ -2474,16 +2511,16 @@ export function PackForm({
                                             }
                                             placeholder="B20,B92"
                                             dir="ltr"
-                                            className="mt-1 h-8 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                            className="mt-1 h-8 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                         />
                                     </label>
                                 </div>
-                                <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/50">{t("instructor.simulator.builder.pinEcuLinks")}</p>
+                                <p className="mt-2 text-[11px] font-bold text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.builder.pinEcuLinks")}</p>
                                 <div className="mt-1 max-h-32 space-y-1 overflow-auto">
                                     {mmDraft.pins.map((pin) => (
                                         <div key={pin} className="flex items-center gap-2">
                                             <span className="w-8 font-mono text-[11px] font-black">{pin}</span>
-                                            <span className="text-[#3A3A3A]/30">→</span>
+                                            <span className="text-[#3A3A3A]/30 dark:text-white/30">→</span>
                                             <select
                                                 value={mmDraft.links[pin] ?? ""}
                                                 onChange={(e) =>
@@ -2494,7 +2531,7 @@ export function PackForm({
                                                         return { ...d, links };
                                                     })
                                                 }
-                                                className="h-7 flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-1.5 font-mono text-[11px]"
+                                                className="h-7 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-1.5 font-mono text-[11px]"
                                             >
                                                 <option value="">—</option>
                                                 {mmDraft.ecu.pins.map((ep) => (
@@ -2510,20 +2547,20 @@ export function PackForm({
                         </div>
 
                         {/* Measurement steps */}
-                        <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-3">
+                        <div className="mt-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-3">
                             <div className="flex items-center justify-between">
-                                <p className="text-xs font-black text-[#3A3A3A]">{t("instructor.simulator.builder.measurementSteps", { n: mmDraft.steps.length })}</p>
+                                <p className="text-xs font-black text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.builder.measurementSteps", { n: mmDraft.steps.length })}</p>
                                 <button
                                     type="button"
                                     onClick={() => setMmDraft((d) => ({ ...d, steps: [...d.steps, emptyMmStep()] }))}
-                                    className="rounded-lg border border-[#3A3A3A]/15 px-2.5 py-1 text-[11px] font-bold text-[#3A3A3A]/70"
+                                    className="rounded-lg border border-[#3A3A3A]/15 dark:border-white/15 px-2.5 py-1 text-[11px] font-bold text-[#3A3A3A]/70 dark:text-white/70"
                                 >
                                     {t("instructor.simulator.builder.addStep")}
                                 </button>
                             </div>
                             <div className="mt-2 space-y-2">
                                 {mmDraft.steps.map((step, si) => (
-                                    <div key={si} className="rounded-xl border border-[#3A3A3A]/10 bg-white p-2.5">
+                                    <div key={si} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-2.5">
                                         <div className="flex items-center gap-2">
                                             <span className="grid h-6 w-6 place-items-center rounded-full bg-[#1F6AE1] text-[10px] font-black text-white">
                                                 {si + 1}
@@ -2536,7 +2573,7 @@ export function PackForm({
                                                         steps: d.steps.map((st, i) => (i === si ? { ...st, mode: e.target.value } : st)),
                                                     }))
                                                 }
-                                                className="h-8 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs font-bold"
+                                                className="h-8 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs font-bold"
                                             >
                                                 {["VDC", "VAC", "OHM", "MA", "A", "HZ"].map((m) => (
                                                     <option key={m} value={m}>
@@ -2554,7 +2591,7 @@ export function PackForm({
                                                 }
                                                 placeholder={t("instructor.simulator.builder.redPh")}
                                                 dir="ltr"
-                                                className="h-8 w-24 rounded-lg border border-red-200 bg-red-50/50 px-2 font-mono text-xs"
+                                                className="h-8 w-24 rounded-lg border border-red-200 dark:border-red-500/20 bg-red-50/50 px-2 font-mono text-xs"
                                             />
                                             <input
                                                 value={step.black}
@@ -2571,13 +2608,13 @@ export function PackForm({
                                             <button
                                                 type="button"
                                                 onClick={() => setMmDraft((d) => ({ ...d, steps: d.steps.filter((_, i) => i !== si) }))}
-                                                className="ms-auto text-xs font-bold text-red-600"
+                                                className="ms-auto text-xs font-bold text-red-600 dark:text-red-400"
                                             >
                                                 ✕
                                             </button>
                                         </div>
                                         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
-                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60 sm:col-span-2">
+                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60 dark:text-white/60 sm:col-span-2">
                                                 {t("instructor.simulator.builder.spec")}
                                                 <input
                                                     value={step.spec}
@@ -2588,10 +2625,10 @@ export function PackForm({
                                                         }))
                                                     }
                                                     dir="ltr"
-                                                    className="mt-0.5 h-8 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                    className="mt-0.5 h-8 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                 />
                                             </label>
-                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60">
+                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                                 {t("instructor.simulator.builder.good")}
                                                 <input
                                                     value={step.good}
@@ -2605,7 +2642,7 @@ export function PackForm({
                                                     className="mt-0.5 h-8 w-full rounded-lg border border-emerald-200 bg-emerald-50/50 px-2 font-mono text-xs"
                                                 />
                                             </label>
-                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60">
+                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                                 {t("instructor.simulator.builder.bad")}
                                                 <input
                                                     value={step.bad}
@@ -2616,10 +2653,10 @@ export function PackForm({
                                                         }))
                                                     }
                                                     dir="ltr"
-                                                    className="mt-0.5 h-8 w-full rounded-lg border border-red-200 bg-red-50/50 px-2 font-mono text-xs"
+                                                    className="mt-0.5 h-8 w-full rounded-lg border border-red-200 dark:border-red-500/20 bg-red-50/50 px-2 font-mono text-xs"
                                                 />
                                             </label>
-                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60">
+                                            <label className="block text-[10px] font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                                 {t("instructor.simulator.builder.unit")}
                                                 <input
                                                     value={step.unit}
@@ -2630,14 +2667,14 @@ export function PackForm({
                                                         }))
                                                     }
                                                     dir="ltr"
-                                                    className="mt-0.5 h-8 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2 font-mono text-xs"
+                                                    className="mt-0.5 h-8 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 font-mono text-xs"
                                                 />
                                             </label>
                                         </div>
                                     </div>
                                 ))}
                                 {mmDraft.steps.length === 0 && (
-                                    <p className="rounded-lg border border-dashed p-3 text-center text-xs text-[#3A3A3A]/40">{t("instructor.simulator.builder.addStepEmpty")}</p>
+                                    <p className="rounded-lg border border-dashed p-3 text-center text-xs text-[#3A3A3A]/40 dark:text-white/40">{t("instructor.simulator.builder.addStepEmpty")}</p>
                                 )}
                             </div>
                         </div>
@@ -2678,7 +2715,7 @@ export function PackForm({
                                         setMmDraft(emptyMmProc());
                                         setMmEditIdx(null);
                                     }}
-                                    className="rounded-xl border border-[#3A3A3A]/15 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60"
+                                    className="rounded-xl border border-[#3A3A3A]/15 dark:border-white/15 px-4 py-2 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60"
                                 >
                                     {t("instructor.simulator.builder.cancelEdit")}
                                 </button>
@@ -2699,71 +2736,71 @@ export function PackForm({
                                 {t("instructor.simulator.builder.clear")}
                             </button>
                         </div>
-                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
+                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{manifestError}</p>}
                     </div>
                 </div>
             ) : tool === "oscilloscope" ? (
                 <div className="mt-4 space-y-3">
-                    <div className="rounded-xl border bg-white p-4">
+                    <div className="rounded-xl border bg-white dark:bg-[#1b1b20] p-4">
                         <h4 className="text-sm font-black">{t("instructor.simulator.builder.scopeTitle", { n: scopeExercises.length })}</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.simulator.builder.scopeHint")}</p>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.simulator.builder.scopeHint")}</p>
                         <div className="mt-3 max-h-40 space-y-2 overflow-auto">
                             {(scopeExercises as Record<string, unknown>[]).map((ex, idx) => (
-                                <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] p-3">
+                                <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] dark:bg-[#101013] p-3">
                                     <span className="font-mono text-xs font-black">{String(ex.id)}</span>
                                     <span className="flex-1 truncate text-sm font-bold">{String(ex.name)}</span>
-                                    <button type="button" onClick={() => setScopeExercises((l) => l.filter((_, i) => i !== idx))} className="text-xs font-bold text-red-600">{t("instructor.simulator.builder.remove")}</button>
+                                    <button type="button" onClick={() => setScopeExercises((l) => l.filter((_, i) => i !== idx))} className="text-xs font-bold text-red-600 dark:text-red-400">{t("instructor.simulator.builder.remove")}</button>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] p-3 sm:grid-cols-2">
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.id")} <input value={scopeDraft.id} onChange={(e) => setScopeDraft((d) => ({ ...d, id: e.target.value }))} placeholder="inj-custom" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">{t("instructor.simulator.packForm.code")} <input value={scopeDraft.code} onChange={(e) => setScopeDraft((d) => ({ ...d, code: e.target.value }))} placeholder="INJ-99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.name")} <input value={scopeDraft.name} onChange={(e) => setScopeDraft((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.namePhScope")} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm" /></label>
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.template")} <select value={scopeDraft.template} onChange={(e) => setScopeDraft((d) => ({ ...d, template: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm">{SCOPE_EXERCISES.map((s) => <option key={s.id} value={s.id}>{s.id} — {s.name}</option>)}</select></label>
+                        <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] dark:bg-[#F47822]/10 p-3 sm:grid-cols-2">
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.id")} <input value={scopeDraft.id} onChange={(e) => setScopeDraft((d) => ({ ...d, id: e.target.value }))} placeholder="inj-custom" className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.packForm.code")} <input value={scopeDraft.code} onChange={(e) => setScopeDraft((d) => ({ ...d, code: e.target.value }))} placeholder="INJ-99" className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.name")} <input value={scopeDraft.name} onChange={(e) => setScopeDraft((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.namePhScope")} className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.template")} <select value={scopeDraft.template} onChange={(e) => setScopeDraft((d) => ({ ...d, template: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm">{SCOPE_EXERCISES.map((s) => <option key={s.id} value={s.id}>{s.id} — {s.name}</option>)}</select></label>
                         </div>
                         <button type="button" onClick={() => { if (!scopeDraft.id.trim()) return; const tpl = SCOPE_EXERCISES.find((s) => s.id === scopeDraft.template) ?? SCOPE_EXERCISES[0]; const ex = { ...tpl, id: scopeDraft.id.trim(), code: scopeDraft.code.trim() || tpl.code, name: scopeDraft.name.trim() || tpl.name, faults: scopeDraft.faults.length ? scopeDraft.faults : tpl.faults }; setScopeExercises((l) => [...l, ex as unknown]); setScopeDraft({ id: "", code: "", name: "", template: "inj", period: "20", faults: ["open", "shortGnd"] }); }} className="mt-3 w-full rounded-xl bg-[#0E9F6E] px-4 py-2 text-xs font-black text-white">{t("instructor.simulator.builder.addExercise")}</button>
-                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
+                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{manifestError}</p>}
                     </div>
                 </div>
             ) : tool === "location" ? (
                 <div className="mt-4 space-y-3">
-                    <div className="rounded-xl border bg-white p-4">
+                    <div className="rounded-xl border bg-white dark:bg-[#1b1b20] p-4">
                         <h4 className="text-sm font-black">{t("instructor.simulator.builder.locTitle", { n: locComponents.length })}</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.simulator.builder.locHint")}</p>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.simulator.builder.locHint")}</p>
                         <div className="mt-3 max-h-40 space-y-1 overflow-auto">
                             {(locComponents as Record<string, unknown>[]).map((c, idx) => (
-                                <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] p-2">
+                                <div key={idx} className="flex items-center gap-2 rounded-xl bg-[#F8F7F6] dark:bg-[#101013] p-2">
                                     <span className="font-mono text-xs font-black">{String(c.key)}</span>
                                     <span className="flex-1 truncate text-xs">{String(c.name)}</span>
-                                    <button type="button" onClick={() => setLocComponents((l) => l.filter((_, i) => i !== idx))} className="text-xs font-bold text-red-600">✕</button>
+                                    <button type="button" onClick={() => setLocComponents((l) => l.filter((_, i) => i !== idx))} className="text-xs font-bold text-red-600 dark:text-red-400">✕</button>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] p-3 sm:grid-cols-2">
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.key")} <input value={locDraft.key} onChange={(e) => setLocDraft((d) => ({ ...d, key: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.ref")} <input value={locDraft.ref} onChange={(e) => setLocDraft((d) => ({ ...d, ref: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white px-2 font-mono text-sm" /></label>
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.name")} <input value={locDraft.name} onChange={(e) => setLocDraft((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.newSensorPh")} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm" /></label>
-                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.category")} <select value={locDraft.cat} onChange={(e) => setLocDraft((d) => ({ ...d, cat: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white px-2 text-sm"><option value="Sensors">{t("instructor.simulator.builder.catSensors")}</option><option value="Actuators">{t("instructor.simulator.builder.catActuators")}</option><option value="ECUs">{t("instructor.simulator.builder.catEcus")}</option><option value="Relays">{t("instructor.simulator.builder.catRelays")}</option><option value="Fuses">{t("instructor.simulator.builder.catFuses")}</option><option value="Ground points">{t("instructor.simulator.builder.catGround")}</option></select></label>
+                        <div className="mt-4 grid gap-2 rounded-xl bg-[#FFF8F4] dark:bg-[#F47822]/10 p-3 sm:grid-cols-2">
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.key")} <input value={locDraft.key} onChange={(e) => setLocDraft((d) => ({ ...d, key: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.ref")} <input value={locDraft.ref} onChange={(e) => setLocDraft((d) => ({ ...d, ref: e.target.value }))} placeholder="R99" className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 font-mono text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.name")} <input value={locDraft.name} onChange={(e) => setLocDraft((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.newSensorPh")} className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm" /></label>
+                            <label className="block text-xs font-bold">{t("instructor.simulator.builder.category")} <select value={locDraft.cat} onChange={(e) => setLocDraft((d) => ({ ...d, cat: e.target.value }))} className="mt-1 h-9 w-full rounded-xl border bg-white dark:bg-[#1b1b20] px-2 text-sm"><option value="Sensors">{t("instructor.simulator.builder.catSensors")}</option><option value="Actuators">{t("instructor.simulator.builder.catActuators")}</option><option value="ECUs">{t("instructor.simulator.builder.catEcus")}</option><option value="Relays">{t("instructor.simulator.builder.catRelays")}</option><option value="Fuses">{t("instructor.simulator.builder.catFuses")}</option><option value="Ground points">{t("instructor.simulator.builder.catGround")}</option></select></label>
                         </div>
                         <button type="button" onClick={() => { if (!locDraft.key.trim()) return; const comp = { key: locDraft.key.trim(), ref: locDraft.ref.trim() || locDraft.key.trim(), name: locDraft.name.trim() || locDraft.key.trim(), cat: locDraft.cat, kind: locDraft.kind, view: locDraft.view, oem: "", sys: "Engine", zone: "Bay", img: "", hot: { x: Number(locDraft.x) || 0, y: Number(locDraft.y) || 0, w: Number(locDraft.w) || 40, h: Number(locDraft.h) || 30, W: 1000, H: 636 } }; setLocComponents((l) => [...l, comp as unknown]); setLocDraft({ key: "", ref: "", name: "", cat: "Sensors", kind: "sensor", view: "sensors", x: "100", y: "100", w: "40", h: "30" }); }} className="mt-3 w-full rounded-xl bg-[#06B6D4] px-4 py-2 text-xs font-black text-white">{t("instructor.simulator.builder.addComponent")}</button>
-                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
+                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{manifestError}</p>}
                     </div>
                 </div>
             ) : tool === "schematic" ? (
                 <div className="mt-4 space-y-3">
-                    <div className="rounded-xl border bg-white p-4">
+                    <div className="rounded-xl border bg-white dark:bg-[#1b1b20] p-4">
                         <h4 className="text-sm font-black">{t("instructor.simulator.builder.schTitle", { n: schComponents.length, m: schWires.length })}</h4>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/60">{t("instructor.simulator.builder.schHint")}</p>
+                        <p className="mt-1 text-xs text-[#3A3A3A]/60 dark:text-white/60">{t("instructor.simulator.builder.schHint")}</p>
                         <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                            <div className="rounded-xl bg-[#F8F7F6] p-3">
+                            <div className="rounded-xl bg-[#F8F7F6] dark:bg-[#101013] p-3">
                                 <p className="text-xs font-black">{t("instructor.simulator.builder.componentsCount", { n: schComponents.length })}</p>
                                 <div className="mt-2 max-h-32 space-y-1 overflow-auto">
                                     {(schComponents as Record<string, unknown>[]).map((c, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 rounded-lg bg-white p-2">
+                                        <div key={idx} className="flex items-center gap-2 rounded-lg bg-white dark:bg-[#1b1b20] p-2">
                                             <span className="font-mono text-xs font-black">{String(c.key)}</span>
                                             <span className="flex-1 truncate text-xs">{String(c.name)}</span>
-                                            <button type="button" onClick={() => setSchComponents((l) => l.filter((_, i) => i !== idx))} className="text-xs text-red-600">✕</button>
+                                            <button type="button" onClick={() => setSchComponents((l) => l.filter((_, i) => i !== idx))} className="text-xs text-red-600 dark:text-red-400">✕</button>
                                         </div>
                                     ))}
                                 </div>
@@ -2774,14 +2811,14 @@ export function PackForm({
                                 <input value={schDraftComp.name} onChange={(e) => setSchDraftComp((d) => ({ ...d, name: e.target.value }))} placeholder={t("instructor.simulator.builder.componentNamePh")} className="mt-2 h-8 w-full rounded-lg border px-2 text-xs" />
                                 <button type="button" onClick={() => { if (!schDraftComp.key.trim()) return; setSchComponents((l) => [...l, { key: schDraftComp.key.trim(), code: schDraftComp.code.trim() || schDraftComp.key.trim(), name: schDraftComp.name.trim() || schDraftComp.key.trim(), type: schDraftComp.type, x: Number(schDraftComp.x) || 1000, y: Number(schDraftComp.y) || 700, w: Number(schDraftComp.w) || 80, h: Number(schDraftComp.h) || 40 } as unknown]); setSchDraftComp({ key: "", code: "", name: "", type: "sensor", x: "1000", y: "700", w: "80", h: "40" }); }} className="mt-2 w-full rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-black text-white">{t("instructor.simulator.builder.addComponentBtn")}</button>
                             </div>
-                            <div className="rounded-xl bg-[#F8F7F6] p-3">
+                            <div className="rounded-xl bg-[#F8F7F6] dark:bg-[#101013] p-3">
                                 <p className="text-xs font-black">{t("instructor.simulator.builder.wiresCount", { n: schWires.length })}</p>
                                 <div className="mt-2 max-h-32 space-y-1 overflow-auto">
                                     {(schWires as Record<string, unknown>[]).map((w, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 rounded-lg bg-white p-2">
+                                        <div key={idx} className="flex items-center gap-2 rounded-lg bg-white dark:bg-[#1b1b20] p-2">
                                             <span className="font-mono text-xs font-black">{String(w.ecuPin)}</span>
                                             <span className="flex-1 truncate text-xs">{String(w.target)}:{String(w.targetPin)}</span>
-                                            <button type="button" onClick={() => setSchWires((l) => l.filter((_, i) => i !== idx))} className="text-xs text-red-600">✕</button>
+                                            <button type="button" onClick={() => setSchWires((l) => l.filter((_, i) => i !== idx))} className="text-xs text-red-600 dark:text-red-400">✕</button>
                                         </div>
                                     ))}
                                 </div>
@@ -2792,18 +2829,18 @@ export function PackForm({
                                 <button type="button" onClick={() => { if (!schDraftWire.ecuPin.trim()) return; setSchWires((l) => [...l, { ecuPin: schDraftWire.ecuPin.trim(), ecuColour: schDraftWire.ecuColour, target: schDraftWire.target.trim(), targetPin: schDraftWire.targetPin, targetColour: schDraftWire.targetColour, connector: schDraftWire.connector, mismatch: schDraftWire.ecuColour !== schDraftWire.targetColour } as unknown]); }} className="mt-2 w-full rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-black text-white">{t("instructor.simulator.builder.addWireBtn")}</button>
                             </div>
                         </div>
-                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600">{manifestError}</p>}
+                        {manifestError && <p className="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{manifestError}</p>}
                     </div>
                 </div>
             ) : tool === "scanner" ? (
                 <div className="mt-3 space-y-3">
                     {sessions.map((session, si) => (
-                        <div key={si} className="rounded-xl border border-[#3A3A3A]/10 bg-white p-4">
+                        <div key={si} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-4">
                             <div className="flex items-center justify-between gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setActiveSession(activeSession === si ? null : si)}
-                                    className="min-w-0 flex-1 truncate text-start text-sm font-black text-[#3A3A3A]"
+                                    className="min-w-0 flex-1 truncate text-start text-sm font-black text-[#3A3A3A] dark:text-[#ececef]"
                                 >
                                     {session.title.trim() || t("instructor.simulator.packForm.sessionFallback", { index: si + 1 })} · {t("instructor.simulator.packForm.stepsCount", { count: session.steps.length })}
                                 </button>
@@ -2813,33 +2850,33 @@ export function PackForm({
                                         setSessions((list) => list.filter((_, i) => i !== si));
                                         setActiveSession(null);
                                     }}
-                                    className="shrink-0 rounded-lg border border-red-200 px-3 py-1.5 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                    className="shrink-0 rounded-lg border border-red-200 dark:border-red-500/20 px-3 py-1.5 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                 >
                                     {t("instructor.simulator.packForm.removeSession")}
                                 </button>
                             </div>
                             {activeSession === si && (
-                                <div className="mt-3 space-y-3 border-t border-[#3A3A3A]/[.07] pt-3">
+                                <div className="mt-3 space-y-3 border-t border-[#3A3A3A]/[.07] dark:border-white/[.07] pt-3">
                                     <div className="grid gap-3 sm:grid-cols-2">
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.simulator.packForm.sessionId")}
-                                            <input value={session.id} onChange={(e) => patchSession(si, { id: e.target.value })} placeholder={t("instructor.simulator.packForm.sessionIdPh")} dir="ltr" className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 font-mono text-xs font-normal" />
+                                            <input value={session.id} onChange={(e) => patchSession(si, { id: e.target.value })} placeholder={t("instructor.simulator.packForm.sessionIdPh")} dir="ltr" className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 font-mono text-xs font-normal" />
                                         </label>
-                                        <label className="block text-xs font-bold text-[#3A3A3A]">
+                                        <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                             {t("instructor.simulator.packForm.sessionTitle")}
-                                            <input value={session.title} onChange={(e) => patchSession(si, { title: e.target.value })} placeholder={t("instructor.simulator.packForm.sessionTitlePh")} className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-normal" />
+                                            <input value={session.title} onChange={(e) => patchSession(si, { title: e.target.value })} placeholder={t("instructor.simulator.packForm.sessionTitlePh")} className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-normal" />
                                         </label>
                                     </div>
-                                    <label className="block text-xs font-bold text-[#3A3A3A]">
+                                    <label className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                         {t("instructor.simulator.packForm.sessionDesc")}
-                                        <input value={session.description} onChange={(e) => patchSession(si, { description: e.target.value })} placeholder={t("instructor.simulator.packForm.sessionDescPh")} className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-xs font-normal" />
+                                        <input value={session.description} onChange={(e) => patchSession(si, { description: e.target.value })} placeholder={t("instructor.simulator.packForm.sessionDescPh")} className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-xs font-normal" />
                                     </label>
                                             <div>
-                                        <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.guidedSteps")}</p>
-                                        <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50">{t("instructor.simulator.packForm.stepsHint")}</p>
+                                        <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.guidedSteps")}</p>
+                                        <p className="mt-0.5 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.packForm.stepsHint")}</p>
                                         <ul className="mt-2 space-y-3">
                                             {session.steps.map((step, stepIdx) => (
-                                                <li key={stepIdx} className="rounded-xl bg-[#3A3A3A]/[.03] p-3">
+                                                <li key={stepIdx} className="rounded-xl bg-[#3A3A3A]/[.03] dark:bg-white/[.03] p-3">
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         <span className="font-mono text-[10px] font-black uppercase text-[#F47822]">#{stepIdx + 1}</span>
                                                         <input
@@ -2847,12 +2884,12 @@ export function PackForm({
                                                             onChange={(e) => patchSession(si, { steps: session.steps.map((st, j) => (j === stepIdx ? { ...st, id: e.target.value } : st)) })}
                                                             placeholder={t("instructor.simulator.packForm.stepId")}
                                                             dir="ltr"
-                                                            className="h-9 min-w-[100px] flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 font-mono text-xs"
+                                                            className="h-9 min-w-[100px] flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 font-mono text-xs"
                                                         />
                                                         <select
                                                             value={step.screen}
                                                             onChange={(e) => patchSession(si, { steps: session.steps.map((st, j) => (j === stepIdx ? { ...st, screen: e.target.value } : st)) })}
-                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 bg-white px-2 text-xs font-bold"
+                                                            className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 text-xs font-bold"
                                                         >
                                                             {TRAINING_SCREENS.map((screen) => (
                                                                 <option key={screen} value={screen}>{screen}</option>
@@ -2862,28 +2899,28 @@ export function PackForm({
                                                             value={step.label}
                                                             onChange={(e) => patchSession(si, { steps: session.steps.map((st, j) => (j === stepIdx ? { ...st, label: e.target.value } : st)) })}
                                                             placeholder={t("instructor.simulator.packForm.stepLabel")}
-                                                            className="h-9 min-w-[120px] flex-1 rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs"
+                                                            className="h-9 min-w-[120px] flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs"
                                                         />
                                                         <button
                                                             type="button"
                                                             onClick={() => patchSession(si, { steps: session.steps.filter((_, j) => j !== stepIdx) })}
-                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 hover:bg-red-50"
+                                                            className="rounded-lg px-2.5 py-2 text-[11px] font-black text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                                                         >
                                                             ✕
                                                         </button>
                                                     </div>
-                                                    <label className="mt-2 block text-[11px] font-bold text-[#3A3A3A]/70">
+                                                    <label className="mt-2 block text-[11px] font-bold text-[#3A3A3A]/70 dark:text-white/70">
                                                         {t("instructor.simulator.packForm.stepQuestion")}
                                                         <input
                                                             value={step.question}
                                                             onChange={(e) => patchSession(si, { steps: session.steps.map((st, j) => (j === stepIdx ? { ...st, question: e.target.value } : st)) })}
                                                             placeholder={t("instructor.simulator.packForm.stepQuestionPh")}
-                                                            className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 bg-white px-2.5 text-xs"
+                                                            className="mt-1 h-9 w-full rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 text-xs"
                                                         />
                                                     </label>
                                                     <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
                                                         {step.options.map((opt, oi) => (
-                                                            <label key={oi} className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 ${step.correctIndex === oi ? "border-emerald-300 bg-emerald-50" : "border-[#3A3A3A]/10 bg-white"}`}>
+                                                            <label key={oi} className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 ${step.correctIndex === oi ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-500/10" : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20]"}`}>
                                                                 <input
                                                                     type="radio"
                                                                     name={`step-correct-${si}-${stepIdx}`}
@@ -2906,16 +2943,16 @@ export function PackForm({
                                         <button
                                             type="button"
                                             onClick={() => patchSession(si, { steps: [...session.steps, { ...EMPTY_STEP, options: ["", "", "", ""] }] })}
-                                            className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                                            className="mt-2 rounded-lg border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-3 py-2 text-[11px] font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                                         >
                                             {t("instructor.simulator.packForm.addStep")}
                                         </button>
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold text-[#3A3A3A]">{t("instructor.simulator.packForm.diagnosisOptions")} <span className="font-normal text-[#3A3A3A]/50">{t("instructor.simulator.packForm.optionsFallbackHint")}</span></p>
+                                        <p className="text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("instructor.simulator.packForm.diagnosisOptions")} <span className="font-normal text-[#3A3A3A]/50 dark:text-white/50">{t("instructor.simulator.packForm.optionsFallbackHint")}</span></p>
                                         <div className="mt-2 grid gap-2 sm:grid-cols-2">
                                             {session.options.map((opt, oi) => (
-                                                <label key={oi} className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${session.correctIndex === oi ? "border-emerald-300 bg-emerald-50" : "border-[#3A3A3A]/10 bg-white"}`}>
+                                                <label key={oi} className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${session.correctIndex === oi ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-500/10" : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20]"}`}>
                                                     <input
                                                         type="radio"
                                                         name={`correct-${si}`}
@@ -2941,14 +2978,14 @@ export function PackForm({
                                             ["process", t("instructor.simulator.packForm.processWeight")],
                                             ["time", t("instructor.simulator.packForm.timeWeight")],
                                         ].map(([key, label]) => (
-                                            <label key={key} className="block text-xs font-bold text-[#3A3A3A]">
+                                            <label key={key} className="block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                                                 {label}
                                                 <input
                                                     value={session[key as keyof TrainingSessionDraft] as string}
                                                     onChange={(e) => patchSession(si, { [key]: e.target.value } as Partial<TrainingSessionDraft>)}
                                                     inputMode="numeric"
                                                     dir="ltr"
-                                                    className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 bg-white px-3 font-mono text-xs"
+                                                    className="mt-1.5 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 font-mono text-xs"
                                                 />
                                             </label>
                                         ))}
@@ -2963,7 +3000,7 @@ export function PackForm({
                             setSessions((list) => (list.length === 0 ? [blankSession()] : [...list, blankSession()]));
                             setActiveSession(sessions.length);
                         }}
-                        className="rounded-xl border border-dashed border-[#3A3A3A]/20 px-4 py-2.5 text-xs font-black text-[#3A3A3A]/60 hover:text-[#3A3A3A]"
+                        className="rounded-xl border border-dashed border-[#3A3A3A]/20 dark:border-white/20 px-4 py-2.5 text-xs font-black text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A]"
                     >
                         {sessions.length === 0 ? t("instructor.simulator.packForm.newSession") : t("instructor.simulator.packForm.newSession")}
                     </button>
@@ -2985,11 +3022,11 @@ export function PackForm({
                 <button type="button" onClick={() => void save()} className="rounded-xl bg-[#F47822] px-5 py-2.5 text-xs font-black text-white hover:bg-[#E96D18]">
                     {t("instructor.simulator.packForm.saveVariant")}
                 </button>
-                <button type="button" onClick={onClose} className="rounded-xl border border-[#3A3A3A]/10 px-5 py-2.5 text-xs font-black text-[#3A3A3A]/60">
+                <button type="button" onClick={onClose} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-5 py-2.5 text-xs font-black text-[#3A3A3A]/60 dark:text-white/60">
                     {t("instructor.simulator.packForm.cancel")}
                 </button>
             </div>
-            <p className="mt-3 flex items-center gap-1.5 text-[11px] text-[#3A3A3A]/50">
+            <p className="mt-3 flex items-center gap-1.5 text-[11px] text-[#3A3A3A]/50 dark:text-white/50">
                 <Car className="h-3.5 w-3.5" /> {t("instructor.simulator.packForm.draftNote")}
             </p>
         </div>

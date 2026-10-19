@@ -51,21 +51,21 @@ export function AdminDiagnosticsPage() {
 
             {analytics.data && (
                 <div className="grid gap-3 sm:grid-cols-4">
-                    <div className="rounded-2xl bg-white p-4 shadow-sm">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40">{t("admin.diagnostics.stats.scenarios")}</p>
-                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A]">{analytics.data.total_scenarios}</p>
+                    <div className="rounded-2xl bg-white dark:bg-[#1b1b20] p-4 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{t("admin.diagnostics.stats.scenarios")}</p>
+                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{analytics.data.total_scenarios}</p>
                     </div>
-                    <div className="rounded-2xl bg-white p-4 shadow-sm">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40">{t("admin.diagnostics.stats.attempts")}</p>
-                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A]">{analytics.data.total_attempts}</p>
+                    <div className="rounded-2xl bg-white dark:bg-[#1b1b20] p-4 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{t("admin.diagnostics.stats.attempts")}</p>
+                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{analytics.data.total_attempts}</p>
                     </div>
-                    <div className="rounded-2xl bg-white p-4 shadow-sm">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40">{t("admin.diagnostics.stats.avgScore")}</p>
-                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A]">{analytics.data.avg_score !== null ? `${analytics.data.avg_score}%` : "—"}</p>
+                    <div className="rounded-2xl bg-white dark:bg-[#1b1b20] p-4 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{t("admin.diagnostics.stats.avgScore")}</p>
+                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{analytics.data.avg_score !== null ? `${analytics.data.avg_score}%` : "—"}</p>
                     </div>
-                    <div className="rounded-2xl bg-white p-4 shadow-sm">
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40">{t("admin.diagnostics.stats.passRate")}</p>
-                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A]">{analytics.data.pass_rate !== null ? `${analytics.data.pass_rate}%` : "—"}</p>
+                    <div className="rounded-2xl bg-white dark:bg-[#1b1b20] p-4 shadow-sm">
+                        <p className="text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{t("admin.diagnostics.stats.passRate")}</p>
+                        <p className="mt-1 text-2xl font-bold text-[#3A3A3A] dark:text-[#ececef]">{analytics.data.pass_rate !== null ? `${analytics.data.pass_rate}%` : "—"}</p>
                     </div>
                 </div>
             )}
@@ -79,7 +79,7 @@ export function AdminDiagnosticsPage() {
                             setPage(1);
                         }}
                         placeholder={t("admin.diagnostics.searchPh")}
-                        className="h-10 min-w-52 flex-1 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm outline-none focus:border-[#F47822]"
+                        className="h-10 min-w-52 flex-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm outline-none focus:border-[#F47822]"
                     />
                     <select
                         value={status}
@@ -87,7 +87,7 @@ export function AdminDiagnosticsPage() {
                             setStatus(event.target.value);
                             setPage(1);
                         }}
-                        className="h-10 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 text-sm outline-none focus:border-[#F47822]"
+                        className="h-10 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 text-sm outline-none focus:border-[#F47822]"
                     >
                         <option value="">{t("admin.diagnostics.filters.allStatuses")}</option>
                         <option value="draft">{t("admin.diagnostics.filters.draft")}</option>
@@ -107,14 +107,14 @@ export function AdminDiagnosticsPage() {
                                     key={item.id}
                                     type="button"
                                     onClick={() => setSelectedId(item.id)}
-                                    className="flex w-full flex-wrap items-center gap-3 px-2 py-3.5 text-left transition hover:bg-[#FCFCFC] rtl:text-right"
+                                    className="flex w-full flex-wrap items-center gap-3 px-2 py-3.5 text-left transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20] rtl:text-right"
                                 >
                                     <Stethoscope className="h-4 w-4 shrink-0 text-[#F47822]" />
                                     <span className="min-w-0 flex-1">
-                                        <span className="block truncate text-sm font-semibold text-[#3A3A3A]">
+                                        <span className="block truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                             {item.title}
                                         </span>
-                                        <span className="mt-0.5 block text-xs text-[#3A3A3A]/45">
+                                        <span className="mt-0.5 block text-xs text-[#3A3A3A]/45 dark:text-white/45">
                                             v{item.version} · {item.course ?? t("admin.diagnostics.row.noCourse")} · {item.steps_count} {t("admin.diagnostics.row.steps")} ·{" "}
                                             {item.attempts_count} {t("admin.diagnostics.row.attempts")}
                                             {item.pass_rate !== null ? t("admin.diagnostics.row.passSuffix", { rate: item.pass_rate }) : ""}
@@ -183,29 +183,29 @@ function CreateScenarioPanel({ onClose, onCreated }: { onClose: () => void; onCr
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/60 p-5 backdrop-blur-sm">
-            <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/60 dark:bg-white/60 p-5 backdrop-blur-sm">
+            <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#1b1b20] p-6 shadow-2xl">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-[#3A3A3A]">{t("admin.diagnostics.create.title")}</h2>
-                    <button type="button" onClick={onClose} aria-label={t("admin.diagnostics.create.closeAria")} className="rounded-lg p-1.5 text-[#3A3A3A]/50 hover:bg-[#F7F7F7]">
+                    <h2 className="text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("admin.diagnostics.create.title")}</h2>
+                    <button type="button" onClick={onClose} aria-label={t("admin.diagnostics.create.closeAria")} className="rounded-lg p-1.5 text-[#3A3A3A]/50 dark:text-white/50 hover:bg-[#F7F7F7] dark:bg-[#101013]">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
                 <div className="mt-4 space-y-3">
                     <label className="block text-sm">
-                        <span className="font-semibold text-[#3A3A3A]/70">{t("admin.diagnostics.create.courseIdLabel")}</span>
+                        <span className="font-semibold text-[#3A3A3A]/70 dark:text-white/70">{t("admin.diagnostics.create.courseIdLabel")}</span>
                         <input
                             value={courseId}
                             onChange={(event) => setCourseId(event.target.value)}
                             placeholder={t("admin.diagnostics.create.courseIdPh")}
-                            className="mt-1 h-10 w-full rounded-xl border border-[#3A3A3A]/10 px-3 outline-none focus:border-[#F47822]"
+                            className="mt-1 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 outline-none focus:border-[#F47822]"
                         />
                     </label>
                     <input
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder={t("admin.diagnostics.create.searchCoursesPh")}
-                        className="h-9 w-full rounded-xl border border-[#3A3A3A]/10 px-3 text-sm outline-none focus:border-[#F47822]"
+                        className="h-9 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-sm outline-none focus:border-[#F47822]"
                     />
                     {picks.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
@@ -214,7 +214,7 @@ function CreateScenarioPanel({ onClose, onCreated }: { onClose: () => void; onCr
                                     key={course.id}
                                     type="button"
                                     onClick={() => setCourseId(course.id)}
-                                    className={`rounded-full border px-2.5 py-1 text-[11px] ${courseId === course.id ? "border-[#F47822] bg-[#F47822] text-white" : "border-[#3A3A3A]/15 bg-white text-[#3A3A3A]/70 hover:border-[#F47822]/40"}`}
+                                    className={`rounded-full border px-2.5 py-1 text-[11px] ${courseId === course.id ? "border-[#F47822] bg-[#F47822] text-white" : "border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/70 dark:text-white/70 hover:border-[#F47822]/40"}`}
                                 >
                                     {course.title}
                                 </button>
@@ -222,15 +222,15 @@ function CreateScenarioPanel({ onClose, onCreated }: { onClose: () => void; onCr
                         </div>
                     )}
                     <label className="block text-sm">
-                        <span className="font-semibold text-[#3A3A3A]/70">{t("admin.diagnostics.create.titleLabel")}</span>
+                        <span className="font-semibold text-[#3A3A3A]/70 dark:text-white/70">{t("admin.diagnostics.create.titleLabel")}</span>
                         <input
                             value={title}
                             onChange={(event) => setTitle(event.target.value)}
                             placeholder={t("admin.diagnostics.create.titlePh")}
-                            className="mt-1 h-10 w-full rounded-xl border border-[#3A3A3A]/10 px-3 outline-none focus:border-[#F47822]"
+                            className="mt-1 h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 outline-none focus:border-[#F47822]"
                         />
                     </label>
-                    {error && <p className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{error}</p>}
+                    {error && <p className="rounded-xl bg-red-50 dark:bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-400">{error}</p>}
                     <button
                         type="button"
                         disabled={busy || !courseId.trim() || !title.trim()}
@@ -287,8 +287,8 @@ function ScenarioDrawer({
     const isDraft = scenario?.status === "draft";
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/60 p-5 backdrop-blur-sm">
-            <div role="dialog" aria-modal="true" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3A3A3A]/60 dark:bg-white/60 p-5 backdrop-blur-sm">
+            <div role="dialog" aria-modal="true" className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white dark:bg-[#1b1b20] shadow-2xl">
                 <header className="sticky top-0 flex items-center justify-between gap-3 bg-[#3A3A3A] px-6 py-5 text-white">
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">
@@ -302,8 +302,8 @@ function ScenarioDrawer({
                 </header>
 
                 <div className="space-y-6 p-6">
-                    {detail.isError && <p className="text-sm text-red-700">{t("admin.diagnostics.drawer.loadFailed")}</p>}
-                    {error && <p className="rounded-xl bg-red-50 p-3 text-xs text-red-700">{error}</p>}
+                    {detail.isError && <p className="text-sm text-red-700 dark:text-red-400">{t("admin.diagnostics.drawer.loadFailed")}</p>}
+                    {error && <p className="rounded-xl bg-red-50 dark:bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-400">{error}</p>}
 
                     {scenario && (
                         <>
@@ -332,7 +332,7 @@ function ScenarioDrawer({
                                     type="button"
                                     disabled={busy}
                                     onClick={() => void run(() => adminApi.diagnosticLifecycle(scenario.id, "archive"))}
-                                    className="rounded-xl border border-[#3A3A3A]/15 px-4 py-2 text-xs font-bold text-[#3A3A3A]/70 disabled:opacity-50"
+                                    className="rounded-xl border border-[#3A3A3A]/15 dark:border-white/15 px-4 py-2 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70 disabled:opacity-50"
                                 >
                                     {t("admin.diagnostics.drawer.archive")}
                                 </button>
@@ -347,7 +347,7 @@ function ScenarioDrawer({
                             </section>
 
                             {!isDraft && (
-                                <p className="rounded-xl bg-[#F47822]/5 p-3 text-xs text-[#3A3A3A]/60">
+                                <p className="rounded-xl bg-[#F47822]/5 p-3 text-xs text-[#3A3A3A]/60 dark:text-white/60">
                                     {t("admin.diagnostics.drawer.immutableNote")}
                                 </p>
                             )}
@@ -371,8 +371,8 @@ function ScenarioDrawer({
                             <DrawerSection title={t("admin.diagnostics.drawer.grading", { count: scenario.scoring_criteria.length })}>
                                 <ul className="space-y-1.5">
                                     {scenario.scoring_criteria.map((criterion) => (
-                                        <li key={criterion.id} className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] px-3 py-2 text-xs">
-                                            <span className="text-[#3A3A3A]">
+                                        <li key={criterion.id} className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-3 py-2 text-xs">
+                                            <span className="text-[#3A3A3A] dark:text-[#ececef]">
                                                 <b>{criterion.key}</b> · {criterion.title} · {criterion.points} {t("admin.diagnostics.pointsUnit")} ·{" "}
                                                 {criterion.evaluation_type}
                                             </span>
@@ -381,7 +381,7 @@ function ScenarioDrawer({
                                                     type="button"
                                                     disabled={busy}
                                                     onClick={() => void run(() => adminApi.deleteDiagnosticCriterion(criterion.id))}
-                                                    className="font-bold text-red-600 disabled:opacity-40"
+                                                    className="font-bold text-red-600 dark:text-red-400 disabled:opacity-40"
                                                 >
                                                     {t("admin.diagnostics.drawer.delete")}
                                                 </button>
@@ -415,8 +415,8 @@ function ScenarioDrawer({
                             <DrawerSection title={t("admin.diagnostics.drawer.assignments", { count: scenario.assignments.length })}>
                                 <ul className="space-y-1.5">
                                     {scenario.assignments.map((assignment) => (
-                                        <li key={assignment.id} className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] px-3 py-2 text-xs">
-                                            <span className="text-[#3A3A3A]">
+                                        <li key={assignment.id} className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-3 py-2 text-xs">
+                                            <span className="text-[#3A3A3A] dark:text-[#ececef]">
                                                 {assignment.course?.title ?? assignment.id} · {t("admin.diagnostics.drawer.minLabel", { value: assignment.min_score })}
                                                 {assignment.max_attempts ? t("admin.diagnostics.drawer.maxSuffix", { value: assignment.max_attempts }) : ""}
                                             </span>
@@ -424,7 +424,7 @@ function ScenarioDrawer({
                                                 type="button"
                                                 disabled={busy}
                                                 onClick={() => void run(() => adminApi.deleteDiagnosticAssignment(assignment.id))}
-                                                className="font-bold text-red-600 disabled:opacity-40"
+                                                className="font-bold text-red-600 dark:text-red-400 disabled:opacity-40"
                                             >
                                                 {t("admin.diagnostics.drawer.remove")}
                                             </button>
@@ -444,7 +444,7 @@ function ScenarioDrawer({
 function DrawerSection({ title, children }: { title: string; children: React.ReactNode }) {
     return (
         <section>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-[#3A3A3A]/50">{title}</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wide text-[#3A3A3A]/50 dark:text-white/50">{title}</h3>
             <div className="mt-2">{children}</div>
         </section>
     );
@@ -462,12 +462,12 @@ function AddStepForm({ scenarioId, onDone }: { scenarioId: string; onDone: () =>
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 placeholder={t("admin.diagnostics.addStep.titlePh")}
-                className="h-9 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                className="h-9 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
             />
             <select
                 value={actionType}
                 onChange={(event) => setActionType(event.target.value)}
-                className="h-9 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
             >
                 {["inspect", "scan", "measure", "test", "identify", "diagnose", "repair"].map((action) => (
                     <option key={action} value={action}>
@@ -545,33 +545,33 @@ function AddCriterionForm({
     };
 
     return (
-        <div className="mt-2 space-y-2 rounded-xl border border-[#3A3A3A]/10 p-3">
+        <div className="mt-2 space-y-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 p-3">
             <div className="flex flex-wrap gap-2">
                 <input
                     value={key}
                     onChange={(event) => setKey(event.target.value)}
                     placeholder={t("admin.diagnostics.addCriterion.keyPh")}
-                    className="h-9 min-w-32 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 min-w-32 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
                 <input
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
                     placeholder={t("admin.diagnostics.addCriterion.titlePh")}
-                    className="h-9 min-w-32 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 min-w-32 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
                 <input
                     value={points}
                     onChange={(event) => setPoints(event.target.value)}
                     placeholder={t("admin.diagnostics.addCriterion.ptsPh")}
                     inputMode="numeric"
-                    className="h-9 w-20 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 w-20 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
             </div>
             <div className="flex flex-wrap gap-2">
                 <select
                     value={evaluationType}
                     onChange={(event) => setEvaluationType(event.target.value)}
-                    className="h-9 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                 >
                     {["boolean", "contains", "numeric_range", "set_match"].map((type) => (
                         <option key={type} value={type}>
@@ -582,7 +582,7 @@ function AddCriterionForm({
                 <select
                     value={stepId}
                     onChange={(event) => setStepId(event.target.value)}
-                    className="h-9 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                 >
                     <option value="">{t("admin.diagnostics.addCriterion.scenarioWide")}</option>
                     {steps.map((step) => (
@@ -595,13 +595,13 @@ function AddCriterionForm({
                     value={field}
                     onChange={(event) => setField(event.target.value)}
                     placeholder={t("admin.diagnostics.addCriterion.answerFieldPh")}
-                    className="h-9 min-w-28 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 min-w-28 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
                 <input
                     value={expected}
                     onChange={(event) => setExpected(event.target.value)}
                     placeholder={evaluationType === "numeric_range" ? t("admin.diagnostics.addCriterion.rangePh") : t("admin.diagnostics.addCriterion.expectedPh")}
-                    className="h-9 min-w-28 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 min-w-28 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
             </div>
             <button
@@ -636,12 +636,12 @@ function AddHintForm({
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
                     placeholder={t("admin.diagnostics.addHint.contentPh")}
-                className="h-9 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                className="h-9 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
             />
             <select
                 value={stepId}
                 onChange={(event) => setStepId(event.target.value)}
-                className="h-9 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                className="h-9 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
             >
                 <option value="">{t("admin.diagnostics.addHint.scenarioWide")}</option>
                 {steps.map((step) => (
@@ -693,7 +693,7 @@ function AddAssignmentForm({ scenarioId, onDone }: { scenarioId: string; onDone:
                     value={courseId}
                     onChange={(event) => setCourseId(event.target.value)}
                     placeholder={t("admin.diagnostics.addAssignment.courseIdPh")}
-                    className="h-9 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-9 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
             </div>
             <div className="flex gap-2">
@@ -701,7 +701,7 @@ function AddAssignmentForm({ scenarioId, onDone }: { scenarioId: string; onDone:
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={t("admin.diagnostics.addAssignment.searchCoursesPh")}
-                    className="h-8 flex-1 rounded-lg border border-[#3A3A3A]/10 px-3 text-xs outline-none focus:border-[#F47822]"
+                    className="h-8 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-3 text-xs outline-none focus:border-[#F47822]"
                 />
             </div>
             {picks.length > 0 && (
@@ -711,7 +711,7 @@ function AddAssignmentForm({ scenarioId, onDone }: { scenarioId: string; onDone:
                             key={c.id}
                             type="button"
                             onClick={() => setCourseId(c.id)}
-                            className={`rounded-full border px-2.5 py-1 text-[11px] ${courseId === c.id ? "border-[#F47822] bg-[#F47822] text-white" : "border-[#3A3A3A]/15 bg-white text-[#3A3A3A]/70 hover:border-[#F47822]/40"}`}
+                            className={`rounded-full border px-2.5 py-1 text-[11px] ${courseId === c.id ? "border-[#F47822] bg-[#F47822] text-white" : "border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/70 dark:text-white/70 hover:border-[#F47822]/40"}`}
                         >
                             {c.title}
                         </button>
@@ -761,16 +761,16 @@ function StepRow({
 
     if (isEditing) {
         return (
-            <li className="flex flex-wrap gap-2 rounded-xl bg-[#F7F7F7] px-3 py-2 text-xs">
+            <li className="flex flex-wrap gap-2 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-3 py-2 text-xs">
                 <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="h-8 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-8 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                 />
                 <select
                     value={actionType}
                     onChange={(e) => setActionType(e.target.value)}
-                    className="h-8 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-8 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                 >
                     {["inspect", "scan", "measure", "test", "identify", "diagnose", "repair"].map((action) => (
                         <option key={action} value={action}>
@@ -778,21 +778,21 @@ function StepRow({
                         </option>
                     ))}
                 </select>
-                <label className="flex items-center gap-1.5 text-xs text-[#3A3A3A]/70">
+                <label className="flex items-center gap-1.5 text-xs text-[#3A3A3A]/70 dark:text-white/70">
                     <input
                         type="checkbox"
                         checked={isRequired}
                         onChange={(e) => setIsRequired(e.target.checked)}
-                        className="h-3 w-3 rounded border-[#3A3A3A]/20 accent-[#F47822]"
+                        className="h-3 w-3 rounded border-[#3A3A3A]/20 dark:border-white/20 accent-[#F47822]"
                     />
                     {t("admin.diagnostics.stepRow.required")}
                 </label>
-                <label className="flex items-center gap-1.5 text-xs text-[#3A3A3A]/70">
+                <label className="flex items-center gap-1.5 text-xs text-[#3A3A3A]/70 dark:text-white/70">
                     <input
                         type="checkbox"
                         checked={isTerminal}
                         onChange={(e) => setIsTerminal(e.target.checked)}
-                        className="h-3 w-3 rounded border-[#3A3A3A]/20 accent-[#F47822]"
+                        className="h-3 w-3 rounded border-[#3A3A3A]/20 dark:border-white/20 accent-[#F47822]"
                     />
                     {t("admin.diagnostics.stepRow.terminal")}
                 </label>
@@ -807,7 +807,7 @@ function StepRow({
                 <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="h-8 rounded-lg border border-[#3A3A3A]/10 px-2.5 text-xs font-bold text-[#3A3A3A]/70"
+                    className="h-8 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2.5 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70"
                 >
                     {t("admin.diagnostics.stepRow.cancel")}
                 </button>
@@ -816,11 +816,11 @@ function StepRow({
     }
 
     return (
-        <li className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] px-3 py-2 text-xs">
-            <span className="font-semibold text-[#3A3A3A] min-w-0">
-                <span className="text-[#3A3A3A]/40">{step.position}. </span>
+        <li className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-3 py-2 text-xs">
+            <span className="font-semibold text-[#3A3A3A] dark:text-[#ececef] min-w-0">
+                <span className="text-[#3A3A3A]/40 dark:text-white/40">{step.position}. </span>
                 {step.title}
-                <span className="ml-2 text-[#3A3A3A]/45">{step.action_type}</span>
+                <span className="ml-2 text-[#3A3A3A]/45 dark:text-white/45">{step.action_type}</span>
                 {step.is_required ? <span className="ml-2 rounded bg-emerald-100 px-1.5 text-[9px] font-bold text-emerald-800">{t("admin.diagnostics.stepRow.reqBadge")}</span> : null}
                 {step.is_terminal ? <span className="ml-2 rounded bg-amber-100 px-1.5 text-[9px] font-bold text-amber-800">{t("admin.diagnostics.stepRow.termBadge")}</span> : null}
             </span>
@@ -830,7 +830,7 @@ function StepRow({
                         type="button"
                         disabled={disabled}
                         onClick={() => setIsEditing(true)}
-                        className="h-6 rounded-lg border border-[#3A3A3A]/10 px-2 text-[10px] font-bold text-[#3A3A3A]/70 hover:bg-white"
+                        className="h-6 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-[10px] font-bold text-[#3A3A3A]/70 dark:text-white/70 hover:bg-white dark:hover:bg-white/10"
                     >
                         {t("admin.diagnostics.stepRow.edit")}
                     </button>
@@ -838,7 +838,7 @@ function StepRow({
                         type="button"
                         disabled={disabled}
                         onClick={onDelete}
-                        className="h-6 rounded-lg font-bold text-red-600 hover:bg-red-50"
+                        className="h-6 rounded-lg font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                     >
                         {t("admin.diagnostics.stepRow.delete")}
                     </button>
@@ -870,23 +870,23 @@ function HintRow({
 
     if (isEditing) {
         return (
-            <li className="flex flex-wrap gap-2 rounded-xl bg-[#F7F7F7] px-3 py-2 text-xs">
+            <li className="flex flex-wrap gap-2 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-3 py-2 text-xs">
                 <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder={t("admin.diagnostics.hintRow.titlePh")}
-                    className="h-8 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-8 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                 />
                 <input
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                 placeholder={t("admin.diagnostics.hintRow.contentPh")}
-                    className="h-8 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-8 min-w-40 flex-1 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                 />
 <select
                         value={level}
                         onChange={(e) => setLevel(Number(e.target.value))}
-                        className="h-8 w-16 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                        className="h-8 w-16 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                     >
                         {[1, 2, 3].map((l) => (
                             <option key={l} value={l}>L{l}</option>
@@ -898,7 +898,7 @@ function HintRow({
                     onChange={(e) => setPenalty(Number(e.target.value) || 0)}
                     min="0"
                     max="50"
-                    className="h-8 w-16 rounded-lg border border-[#3A3A3A]/10 px-2 text-xs outline-none focus:border-[#F47822]"
+                    className="h-8 w-16 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-xs outline-none focus:border-[#F47822]"
                     placeholder={t("admin.diagnostics.hintRow.penaltyPh")}
                 />
                 <button
@@ -912,7 +912,7 @@ function HintRow({
                 <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="h-8 rounded-lg border border-[#3A3A3A]/10 px-2.5 text-xs font-bold text-[#3A3A3A]/70"
+                    className="h-8 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2.5 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70"
                 >
                     {t("admin.diagnostics.hintRow.cancel")}
                 </button>
@@ -921,8 +921,8 @@ function HintRow({
     }
 
     return (
-        <li className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] px-3 py-2 text-xs">
-            <span className="text-[#3A3A3A] flex-1 min-w-0 truncate">
+        <li className="flex items-center justify-between gap-2 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] px-3 py-2 text-xs">
+            <span className="text-[#3A3A3A] dark:text-[#ececef] flex-1 min-w-0 truncate">
                 <b>L{hint.level}</b> · {hint.title ?? hint.content.slice(0, 80)} · −{hint.penalty_points} {t("admin.diagnostics.pointsUnit")}
             </span>
             {editable && (
@@ -931,7 +931,7 @@ function HintRow({
                         type="button"
                         disabled={disabled}
                         onClick={() => setIsEditing(true)}
-                        className="h-6 rounded-lg border border-[#3A3A3A]/10 px-2 text-[10px] font-bold text-[#3A3A3A]/70 hover:bg-white"
+                        className="h-6 rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2 text-[10px] font-bold text-[#3A3A3A]/70 dark:text-white/70 hover:bg-white dark:hover:bg-white/10"
                     >
                         {t("admin.diagnostics.hintRow.edit")}
                     </button>
@@ -939,7 +939,7 @@ function HintRow({
                         type="button"
                         disabled={disabled}
                         onClick={onDelete}
-                        className="h-6 rounded-lg font-bold text-red-600 hover:bg-red-50"
+                        className="h-6 rounded-lg font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10"
                     >
                         {t("admin.diagnostics.hintRow.delete")}
                     </button>

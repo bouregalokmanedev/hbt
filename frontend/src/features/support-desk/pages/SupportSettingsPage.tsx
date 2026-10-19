@@ -115,7 +115,7 @@ export function SupportSettingsPage() {
     };
 
     return (
-        <main className="min-h-full bg-[#F3F3F3]">
+        <main className="min-h-full bg-[#F3F3F3] dark:bg-[#101013]">
             <div className="mx-auto w-full max-w-[1320px] px-5 py-6 sm:px-8 sm:py-8">
                 <header className="mb-6 rounded-3xl bg-[#3A3A3A] px-6 py-7 text-white shadow-[0_14px_38px_rgba(58,58,58,0.12)] sm:px-8">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F47822]">
@@ -128,9 +128,9 @@ export function SupportSettingsPage() {
                 </header>
 
                 <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
-                    <aside className="h-fit rounded-3xl border border-[#3A3A3A]/8 bg-white p-3 shadow-[0_10px_30px_rgba(58,58,58,0.05)] lg:sticky lg:top-6">
+                    <aside className="h-fit rounded-3xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-3 shadow-[0_10px_30px_rgba(58,58,58,0.05)] lg:sticky lg:top-6">
                         <div className="mb-2 flex items-center justify-between px-2 py-2">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/35">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/35 dark:text-white/35">
                                 {t("supportDesk.settings.menuTitle")}
                             </p>
                             <span className="rounded-md bg-[#F47822]/10 px-1.5 py-0.5 text-[9px] font-bold text-[#F47822]">
@@ -147,14 +147,14 @@ export function SupportSettingsPage() {
                                     className={`group relative flex w-full items-center gap-2.5 rounded-xl px-3 py-3 text-left rtl:text-right transition-all duration-200 ${
                                         tab === id
                                             ? "bg-[#F47822] text-white shadow-[0_7px_16px_rgba(244,120,34,.2)]"
-                                            : "text-[#3A3A3A]/60 hover:bg-[#F47822]/6 hover:text-[#3A3A3A]"
+                                            : "text-[#3A3A3A]/60 dark:text-white/60 hover:bg-[#F47822]/6 hover:text-[#3A3A3A]"
                                     }`}
                                 >
                                     <span
                                         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition ${
                                             tab === id
                                                 ? "bg-white/15 text-white"
-                                                : "bg-[#3A3A3A]/5 text-[#3A3A3A]/45 group-hover:bg-[#F47822]/10 group-hover:text-[#F47822]"
+                                                : "bg-[#3A3A3A]/5 dark:bg-white/5 text-[#3A3A3A]/45 dark:text-white/45 group-hover:bg-[#F47822]/10 group-hover:text-[#F47822]"
                                         }`}
                                     >
                                         <Icon className="h-3.5 w-3.5" />
@@ -163,7 +163,7 @@ export function SupportSettingsPage() {
                                         <span className="block text-xs font-semibold leading-none">{label}</span>
                                         <span
                                             className={`hidden text-[10px] leading-none lg:block ${
-                                                tab === id ? "text-white/70" : "text-[#3A3A3A]/40"
+                                                tab === id ? "text-white/70" : "text-[#3A3A3A]/40 dark:text-white/40"
                                             }`}
                                         >
                                             {desc}
@@ -172,18 +172,18 @@ export function SupportSettingsPage() {
                                 </button>
                             ))}
                         </div>
-                        <div className="mt-4 rounded-xl bg-[#FFF8F4] p-3">
-                            <p className="flex items-center gap-1.5 text-[11px] font-semibold text-[#3A3A3A]">
+                        <div className="mt-4 rounded-xl bg-[#FFF8F4] dark:bg-[#F47822]/10 p-3">
+                            <p className="flex items-center gap-1.5 text-[11px] font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                 <ShieldCheck className="h-3.5 w-3.5 text-[#F47822]" /> {t("supportDesk.settings.roleCard.title")}
                             </p>
-                            <p className="mt-1 text-[11px] leading-4 text-[#3A3A3A]/50">{t("supportDesk.settings.roleCard.desc")}</p>
+                            <p className="mt-1 text-[11px] leading-4 text-[#3A3A3A]/50 dark:text-white/50">{t("supportDesk.settings.roleCard.desc")}</p>
                             <a href="/support-desk/tickets" className="mt-2 inline-flex text-xs font-bold text-[#F47822] hover:underline">
                                 {t("supportDesk.settings.roleCard.queueLink")}
                             </a>
                         </div>
                     </aside>
 
-                    <section className="overflow-hidden rounded-3xl border border-[#3A3A3A]/8 bg-white shadow-[0_14px_34px_rgba(58,58,58,0.06)]">
+                    <section className="overflow-hidden rounded-3xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] shadow-[0_14px_34px_rgba(58,58,58,0.06)]">
                         {feedback && <Notice tone="success" message={feedback} onClose={() => setFeedback(null)} />}
                         {error && <Notice tone="error" message={error} onClose={() => setError(null)} />}
 
@@ -222,8 +222,8 @@ function Notice({ tone, message, onClose }: { tone: "success" | "error"; message
         <div
             className={`m-5 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm shadow-sm ${
                 tone === "success"
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-red-200 bg-red-50 text-red-600"
+                    ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                    : "border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400"
             }`}
         >
             <span>{message}</span>
@@ -237,14 +237,14 @@ function Notice({ tone, message, onClose }: { tone: "success" | "error"; message
 function Header({ title, description }: { title: string; description: string }) {
     const { t } = useTranslation();
     return (
-        <div className="relative overflow-hidden border-b border-[#3A3A3A]/6 px-6 py-6 sm:px-8">
+        <div className="relative overflow-hidden border-b border-[#3A3A3A]/6 dark:border-white/6 px-6 py-6 sm:px-8">
             <div className="absolute -right-10 -top-12 h-28 w-28 rounded-full bg-[#F47822]/8 blur-2xl rtl:-left-10 rtl:right-auto" />
             <div className="relative">
                 <p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#F47822]">
                     {t("supportDesk.settings.sectionTag")}
                 </p>
-                <h2 className="mt-2 text-xl font-bold tracking-tight text-[#3A3A3A]">{title}</h2>
-                <p className="mt-1.5 max-w-xl text-xs leading-5 text-[#3A3A3A]/55">{description}</p>
+                <h2 className="mt-2 text-xl font-bold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">{title}</h2>
+                <p className="mt-1.5 max-w-xl text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{description}</p>
             </div>
         </div>
     );
@@ -252,12 +252,12 @@ function Header({ title, description }: { title: string; description: string }) 
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
     return (
-        <label className="block text-xs font-semibold text-[#3A3A3A]">
+        <label className="block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
             {label}
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3.5 text-sm outline-none focus:border-[#F47822]"
+                className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3.5 text-sm outline-none focus:border-[#F47822]"
             />
         </label>
     );
@@ -267,11 +267,11 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
     return (
         <label
             className={`flex cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3.5 transition ${
-                checked ? "border-[#F47822]/20 bg-[#F47822]/[.035]" : "border-[#3A3A3A]/8 bg-[#FAFAFA]"
+                checked ? "border-[#F47822]/20 bg-[#F47822]/[.035]" : "border-[#3A3A3A]/8 dark:border-white/8 bg-[#FAFAFA]"
             }`}
         >
-            <span className="text-sm font-semibold text-[#3A3A3A]">{label}</span>
-            <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${checked ? "bg-[#F47822]" : "bg-[#3A3A3A]/15"}`}>
+            <span className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{label}</span>
+            <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${checked ? "bg-[#F47822]" : "bg-[#3A3A3A]/15 dark:bg-white/15"}`}>
                 <input
                     type="checkbox"
                     checked={checked}
@@ -279,7 +279,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
                     className="peer absolute inset-0 opacity-0"
                 />
                 <span
-                    className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition ${
+                    className={`absolute top-1 h-4 w-4 rounded-full bg-white dark:bg-[#1b1b20] shadow-sm transition ${
                         checked ? "left-6 rtl:left-1 rtl:right-6" : "left-1 rtl:left-auto rtl:right-1"
                     }`}
                 />
@@ -317,25 +317,25 @@ function ProfileTab({
             <form onSubmit={onSubmit} className="p-5 sm:p-7">
                 <div className="grid gap-5 sm:grid-cols-2">
                     {fields.map(([k, label]) => (
-                        <label key={k} className="block text-xs font-semibold text-[#3A3A3A]">
+                        <label key={k} className="block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                             {label}
                             <input
                                 value={profile[k]}
                                 onChange={(e) => setProfile((c) => ({ ...c, [k]: e.target.value }))}
-                                className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3.5 text-sm outline-none focus:border-[#F47822]"
+                                className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3.5 text-sm outline-none focus:border-[#F47822]"
                             />
                         </label>
                     ))}
-                    <label className="block text-xs font-semibold text-[#3A3A3A]">
+                    <label className="block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                         {t("supportDesk.settings.profileTab.email")}
                         <input
                             value={email}
                             disabled
-                            className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3.5 text-sm text-[#3A3A3A]/45"
+                            className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3.5 text-sm text-[#3A3A3A]/45 dark:text-white/45"
                         />
                     </label>
                 </div>
-                <label className="mt-5 block text-xs font-semibold text-[#3A3A3A]">
+                <label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("supportDesk.settings.profileTab.bio")}
                     <textarea
                         value={profile.bio}
@@ -343,10 +343,10 @@ function ProfileTab({
                         maxLength={500}
                         rows={4}
                         placeholder={t("supportDesk.settings.profileTab.bioPh")}
-                        className="mt-2 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3.5 py-3 text-sm outline-none focus:border-[#F47822]"
+                        className="mt-2 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3.5 py-3 text-sm outline-none focus:border-[#F47822]"
                     />
                 </label>
-                <div className="mt-6 flex justify-end border-t border-[#3A3A3A]/6 pt-5">
+                <div className="mt-6 flex justify-end border-t border-[#3A3A3A]/6 dark:border-white/6 pt-5">
                     <button
                         type="submit"
                         disabled={saving}
@@ -381,20 +381,20 @@ function DeskTab({ onSaved }: { onSaved: (msg: string) => void }) {
         <>
             <Header title={t("supportDesk.settings.deskTab.title")} description={t("supportDesk.settings.deskTab.description")} />
             <div className="p-5 sm:p-7">
-                <div className="rounded-2xl border border-[#F47822]/15 bg-[#FFF8F4] p-4">
+                <div className="rounded-2xl border border-[#F47822]/15 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-4">
                     <p className="text-xs font-bold text-[#F47822] flex items-center gap-1.5">
                         <GraduationCap className="h-4 w-4" /> {t("supportDesk.settings.deskTab.personalisedTitle")}
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60">{t("supportDesk.settings.deskTab.personalisedDesc")}</p>
+                    <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60 dark:text-white/60">{t("supportDesk.settings.deskTab.personalisedDesc")}</p>
                 </div>
 
-                <label className="mt-5 block text-xs font-semibold text-[#3A3A3A]">
+                <label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("supportDesk.settings.deskTab.defaultFilter")}
                     <select
                         data-testid="desk-default-status"
                         value={prefs.defaultStatus}
                         onChange={(e) => setPrefs((c) => ({ ...c, defaultStatus: e.target.value }))}
-                        className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 text-sm"
+                        className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 text-sm"
                     >
                         {statusOptions.map((o) => (
                             <option key={o.value || "all"} value={o.value}>
@@ -403,15 +403,15 @@ function DeskTab({ onSaved }: { onSaved: (msg: string) => void }) {
                         ))}
                     </select>
                 </label>
-                <p className="mt-1.5 text-[11px] text-[#3A3A3A]/45">{t("supportDesk.settings.deskTab.defaultFilterDesc")}</p>
+                <p className="mt-1.5 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">{t("supportDesk.settings.deskTab.defaultFilterDesc")}</p>
 
-                <label className="mt-5 block text-xs font-semibold text-[#3A3A3A]">
+                <label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                     {t("supportDesk.settings.deskTab.defaultAssigned")}
                     <select
                         data-testid="desk-default-assigned"
                         value={prefs.defaultAssigned}
                         onChange={(e) => setPrefs((c) => ({ ...c, defaultAssigned: e.target.value }))}
-                        className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 text-sm"
+                        className="mt-2 h-11 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] px-3 text-sm"
                     >
                         {assignedOptions.map((o) => (
                             <option key={o.value || "any"} value={o.value}>
@@ -468,7 +468,7 @@ function SwitchGroup({
                         />
                     ))}
                     {entries.length === 0 && (
-                        <p className="text-xs text-[#3A3A3A]/45">{t("supportDesk.settings.notificationsTab.empty")}</p>
+                        <p className="text-xs text-[#3A3A3A]/45 dark:text-white/45">{t("supportDesk.settings.notificationsTab.empty")}</p>
                     )}
                 </div>
                 <div className="mt-6 flex justify-end">
@@ -494,7 +494,7 @@ function AppearanceTab({ group, onSave }: { group?: Record<string, unknown>; onS
         <>
             <Header title={t("supportDesk.settings.appearanceTab.title")} description={t("supportDesk.settings.appearanceTab.description")} />
             <div className="p-5 sm:p-7">
-                <p className="text-xs font-semibold text-[#3A3A3A]">{t("supportDesk.settings.appearanceTab.colorPref")}</p>
+                <p className="text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("supportDesk.settings.appearanceTab.colorPref")}</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                     {options.map((o) => (
                         <button
@@ -504,7 +504,7 @@ function AppearanceTab({ group, onSave }: { group?: Record<string, unknown>; onS
                             className={`rounded-xl border px-4 py-4 text-sm font-semibold capitalize ${
                                 appearance === o
                                     ? "border-[#F47822] bg-[#F47822]/8 text-[#F47822]"
-                                    : "border-[#3A3A3A]/10 text-[#3A3A3A]/55"
+                                    : "border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/55 dark:text-white/55"
                             }`}
                         >
                             {t(`supportDesk.settings.appearanceTab.${o}`)}
@@ -557,13 +557,13 @@ function SecurityTab({ onSaved }: { onSaved: (msg: string) => void }) {
             <Header title={t("supportDesk.settings.securityTab.title")} description={t("supportDesk.settings.securityTab.description")} />
             <div className="space-y-7 p-5 sm:p-7">
                 <TwoFactorCard />
-                <form onSubmit={submit} className="space-y-4 border-t border-[#3A3A3A]/6 pt-6">
-                    <h3 className="font-bold text-[#3A3A3A]">{t("supportDesk.settings.securityTab.changeTitle")}</h3>
+                <form onSubmit={submit} className="space-y-4 border-t border-[#3A3A3A]/6 dark:border-white/6 pt-6">
+                    <h3 className="font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("supportDesk.settings.securityTab.changeTitle")}</h3>
                     <Field label={t("supportDesk.settings.securityTab.current")} value={current} onChange={setCurrent} />
                     <Field label={t("supportDesk.settings.securityTab.newPass")} value={password} onChange={setPassword} />
                     <PasswordRequirements password={password} />
                     <Field label={t("supportDesk.settings.securityTab.confirm")} value={confirmation} onChange={setConfirmation} />
-                    {error && <p className="text-xs font-semibold text-red-600">{error}</p>}
+                    {error && <p className="text-xs font-semibold text-red-600 dark:text-red-400">{error}</p>}
                     <div className="flex justify-end">
                         <button type="submit" className="rounded-xl bg-[#F47822] px-5 py-2.5 text-xs font-bold text-white">
                             {t("supportDesk.settings.securityTab.update")}
@@ -581,10 +581,10 @@ function DataTab({ onExport }: { onExport: () => void }) {
         <>
             <Header title={t("supportDesk.settings.dataTab.title")} description={t("supportDesk.settings.dataTab.description")} />
             <div className="space-y-5 p-5 sm:p-7">
-                <div className="flex flex-col justify-between gap-4 rounded-2xl border border-[#3A3A3A]/8 p-5 sm:flex-row sm:items-center">
+                <div className="flex flex-col justify-between gap-4 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 p-5 sm:flex-row sm:items-center">
                     <div>
-                        <h3 className="font-bold text-[#3A3A3A]">{t("supportDesk.settings.dataTab.exportTitle")}</h3>
-                        <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50">{t("supportDesk.settings.dataTab.exportDesc")}</p>
+                        <h3 className="font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("supportDesk.settings.dataTab.exportTitle")}</h3>
+                        <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">{t("supportDesk.settings.dataTab.exportDesc")}</p>
                     </div>
                     <button
                         type="button"
@@ -595,11 +595,11 @@ function DataTab({ onExport }: { onExport: () => void }) {
                         {t("supportDesk.settings.dataTab.exportBtn")}
                     </button>
                 </div>
-                <div className="rounded-2xl border border-[#F47822]/15 bg-[#FFF8F4] p-5">
+                <div className="rounded-2xl border border-[#F47822]/15 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-5">
                     <h3 className="font-bold text-[#F47822] flex items-center gap-1.5">
                         <Settings className="h-4 w-4" /> {t("supportDesk.settings.dataTab.noteTitle")}
                     </h3>
-                    <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60">{t("supportDesk.settings.dataTab.noteDesc")}</p>
+                    <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/60 dark:text-white/60">{t("supportDesk.settings.dataTab.noteDesc")}</p>
                 </div>
             </div>
         </>

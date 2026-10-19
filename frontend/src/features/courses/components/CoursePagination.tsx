@@ -14,7 +14,7 @@ export function CoursePagination({ pagination, onPageChange }: CoursePaginationP
   if (!pagination || pagination.last_page <= 1) return null;
 
   const btnClass =
-    "inline-flex h-10 items-center gap-1 rounded-xl border border-[#3A3A3A]/12 bg-white px-3 text-sm font-semibold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:pointer-events-none disabled:opacity-40 dark:border-white/12 dark:bg-white/[0.04] dark:text-white dark:hover:border-[#F47822]/40";
+    "inline-flex h-10 items-center gap-1 rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 text-sm font-semibold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:pointer-events-none disabled:opacity-40 dark:border-white/12 dark:bg-white/[0.04] dark:text-white dark:hover:border-[#F47822]/40";
 
   return (
     <nav
@@ -46,7 +46,7 @@ export function CoursePagination({ pagination, onPageChange }: CoursePaginationP
                 "flex h-10 min-w-10 items-center justify-center rounded-xl text-sm font-semibold transition",
                 link.active
                   ? "bg-[#F47822] text-white shadow-[0_8px_18px_rgba(244,120,34,0.18)]"
-                  : "text-[#3A3A3A]/55 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/55",
+                  : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/55",
               ].join(" ")}
             >
               {link.page}

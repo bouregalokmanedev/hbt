@@ -61,31 +61,88 @@ export const FAULT_CODE_LIBRARY: FaultCodeEntry[] = [
     { code: "P0741", desc: "Torque converter clutch circuit performance", category: "powertrain", ecu: "TCM", severity: "medium" },
     { code: "P0750", desc: "Shift solenoid A", category: "powertrain", ecu: "TCM", severity: "medium" },
     { code: "P2118", desc: "Throttle actuator control motor current range/performance", category: "powertrain", ecu: "ECM", severity: "high" },
+    { code: "P0230", desc: "Fuel pump primary circuit", category: "powertrain", ecu: "ECM", severity: "medium" },
+    { code: "P0261", desc: "Cylinder 1 injector circuit low", category: "powertrain", ecu: "ECM", severity: "medium" },
+    { code: "P0303", desc: "Cylinder 3 misfire detected", category: "powertrain", ecu: "ECM", severity: "high" },
+    { code: "P0336", desc: "Crankshaft position sensor A circuit range/performance", category: "powertrain", ecu: "ECM", severity: "medium" },
+    { code: "P0404", desc: "Exhaust gas recirculation circuit range/performance", category: "powertrain", ecu: "ECM", severity: "medium" },
+    { code: "P0443", desc: "Evaporative emission purge control valve circuit", category: "powertrain", ecu: "ECM", severity: "medium" },
+    { code: "P0562", desc: "System voltage low", category: "powertrain", ecu: "ECM", severity: "medium" },
+    { code: "P0717", desc: "Input/turbine speed sensor circuit no signal", category: "powertrain", ecu: "TCM", severity: "high" },
+    { code: "P0732", desc: "Gear 2 incorrect ratio", category: "powertrain", ecu: "TCM", severity: "high" },
+    { code: "P0755", desc: "Shift solenoid B", category: "powertrain", ecu: "TCM", severity: "medium" },
+    { code: "P0760", desc: "Shift solenoid C", category: "powertrain", ecu: "TCM", severity: "medium" },
+    { code: "P0765", desc: "Shift solenoid D", category: "powertrain", ecu: "TCM", severity: "medium" },
+    { code: "P1520", desc: "Intake manifold runner control", category: "powertrain", ecu: "ECM", severity: "low" },
+    { code: "P1614", desc: "Immobilizer signal error", category: "manufacturer", ecu: "CAS", severity: "high" },
+    { code: "P1621", desc: "Immobilizer ID not recognized", category: "manufacturer", ecu: "CAS", severity: "high" },
+    { code: "P1631", desc: "Fuel pump control module fault", category: "manufacturer", ecu: "EKPS", severity: "medium" },
+    { code: "P1650", desc: "Steering angle sensor plausibility", category: "manufacturer", ecu: "ICM", severity: "medium" },
+    { code: "P1748", desc: "Transmission solenoid power stage", category: "manufacturer", ecu: "TCM", severity: "high" },
 
     // ---- Manufacturer (P1) ----
     { code: "P1171", desc: "Throttle control motor circuit", category: "manufacturer", ecu: "ECM", severity: "high" },
     { code: "P1411", desc: "Secondary air injection system flow detected", category: "manufacturer", ecu: "ECM", severity: "medium" },
+    { code: "P1602", desc: "Battery voltage out of range", category: "manufacturer", ecu: "ECM", severity: "medium" },
 
     // ---- Body (B) ----
     { code: "B0020", desc: "Driver frontal airbag deployment loop", category: "body", ecu: "SRS", severity: "high" },
+    { code: "B0021", desc: "Passenger frontal airbag deployment loop", category: "body", ecu: "SRS", severity: "high" },
+    { code: "B0081", desc: "Passenger seat occupancy sensor", category: "body", ecu: "SRS", severity: "medium" },
     { code: "B0429", desc: "Interior air temperature actuator circuit", category: "body", ecu: "HVAC", severity: "low" },
+    { code: "B0542", desc: "Interior fan motor circuit", category: "body", ecu: "HVAC", severity: "low" },
     { code: "B1000", desc: "Control module general failure", category: "body", ecu: "BCM", severity: "high" },
     { code: "B1318", desc: "Low battery voltage", category: "body", ecu: "BCM", severity: "medium" },
+    { code: "B1320", desc: "Supply voltage too high", category: "body", ecu: "BCM", severity: "medium" },
+    { code: "B1414", desc: "Left headlamp leveling motor", category: "body", ecu: "BCM", severity: "low" },
+    { code: "B1421", desc: "Rear window defroster relay", category: "body", ecu: "JBE", severity: "low" },
     { code: "B1483", desc: "Front camera calibration not complete", category: "body", ecu: "ADAS", severity: "low" },
+    { code: "B1503", desc: "Interior light circuit", category: "body", ecu: "JBE", severity: "low" },
+    { code: "B1600", desc: "Door lock motor jammed", category: "body", ecu: "DDM", severity: "medium" },
+    { code: "B1710", desc: "Seat heating element open circuit", category: "body", ecu: "SM", severity: "low" },
+    { code: "B1800", desc: "Parking sensor front left", category: "body", ecu: "PDC", severity: "low" },
+    { code: "B2100", desc: "Roof blind motor fault", category: "body", ecu: "RFR", severity: "low" },
+    { code: "B2205", desc: "Exterior mirror heater circuit", category: "body", ecu: "DDM", severity: "low" },
 
     // ---- Chassis (C) ----
     { code: "C0035", desc: "Left front wheel speed sensor circuit", category: "chassis", ecu: "ABS", severity: "high" },
     { code: "C0040", desc: "Right front wheel speed sensor circuit", category: "chassis", ecu: "ABS", severity: "high" },
+    { code: "C0045", desc: "Left rear wheel speed sensor circuit", category: "chassis", ecu: "ABS", severity: "high" },
+    { code: "C0050", desc: "Right rear wheel speed sensor circuit", category: "chassis", ecu: "ABS", severity: "high" },
+    { code: "C0060", desc: "ABS hydraulic pump motor", category: "chassis", ecu: "ABS", severity: "high" },
+    { code: "C0110", desc: "Yaw rate sensor circuit", category: "chassis", ecu: "ICM", severity: "medium" },
+    { code: "C0140", desc: "Steering angle sensor circuit", category: "chassis", ecu: "ICM", severity: "medium" },
+    { code: "C0161", desc: "Brake pedal switch circuit", category: "chassis", ecu: "ABS", severity: "medium" },
+    { code: "C0195", desc: "Brake pressure sensor circuit", category: "chassis", ecu: "DSC", severity: "medium" },
+    { code: "C0210", desc: "Lateral acceleration sensor", category: "chassis", ecu: "ICM", severity: "medium" },
     { code: "C0561", desc: "System disabled — information stored", category: "chassis", ecu: "ABS", severity: "medium" },
-    { code: "C1201", desc: "Engine control system malfunction — ESC inhibited", category: "chassis", ecu: "ABS", severity: "high" },
-    { code: "C2126", desc: "TPMS sensor battery low", category: "chassis", ecu: "TPMS", severity: "low" },
+    { code: "C0567", desc: "Parking brake actuator fault", category: "chassis", ecu: "EPB", severity: "medium" },
+    { code: "C0625", desc: "Electric parking brake motor", category: "chassis", ecu: "EPB", severity: "high" },
+    { code: "C1101", desc: "Steering torque sensor circuit", category: "chassis", ecu: "EPS", severity: "medium" },
+    { code: "C1235", desc: "TPMS sensor not programmed", category: "chassis", ecu: "TPMS", severity: "low" },
+    { code: "C1241", desc: "TPMS low pressure warning", category: "chassis", ecu: "TPMS", severity: "medium" },
+    { code: "C2000", desc: "Electronic power steering ECU", category: "chassis", ecu: "EPS", severity: "high" },
+    { code: "C2126", desc: "TPMS sensor battery low", category: "chassis", ecu: "TBX", severity: "low" },
 
     // ---- Network (U) ----
     { code: "U0001", desc: "High speed CAN communication bus", category: "network", ecu: "ECM", severity: "high" },
+    { code: "U0010", desc: "Medium speed CAN communication bus", category: "network", ecu: "ECM", severity: "medium" },
     { code: "U0100", desc: "Lost communication with engine control module", category: "network", ecu: "TCM", severity: "high" },
+    { code: "U0104", desc: "Lost communication with cruise control module", category: "network", ecu: "ECM", severity: "medium" },
+    { code: "U0121", desc: "Lost communication with ABS control module", category: "network", ecu: "ABS", severity: "high" },
+    { code: "U0126", desc: "Lost communication with steering angle sensor", category: "network", ecu: "ICM", severity: "medium" },
     { code: "U0129", desc: "Lost communication with brake system control module", category: "network", ecu: "ABS", severity: "medium" },
     { code: "U0140", desc: "Lost communication with body control module", category: "network", ecu: "BCM", severity: "medium" },
+    { code: "U0151", desc: "Lost communication with airbag control module", category: "network", ecu: "SRS", severity: "high" },
+    { code: "U0167", desc: "Lost communication with car access system", category: "network", ecu: "CAS", severity: "high" },
+    { code: "U0184", desc: "Lost communication with radio", category: "network", ecu: "CCC", severity: "low" },
     { code: "U0201", desc: "Lost communication with door control module A", category: "network", ecu: "DDM", severity: "medium" },
+    { code: "U0212", desc: "Lost communication with steering column module", category: "network", ecu: "SZL", severity: "medium" },
+    { code: "U0230", desc: "Lost communication with fuel pump control module", category: "network", ecu: "EKPS", severity: "medium" },
+    { code: "U0300", desc: "Control module request — MIL on", category: "network", ecu: "ECM", severity: "high" },
+    { code: "U0401", desc: "Invalid data received from engine control module", category: "network", ecu: "ECM", severity: "medium" },
+    { code: "U1000", desc: "Control module communication error", category: "network", ecu: "CGM", severity: "high" },
+    { code: "U1100", desc: "Control module malfunction", category: "network", ecu: "ICM", severity: "medium" },
 ];
 
 /** Exact lookup for a typed code (case-insensitive). */
@@ -96,7 +153,7 @@ export function faultCodeByCode(code: string): FaultCodeEntry | undefined {
 }
 
 /** Case-insensitive search across code, description, ECU and category. */
-export function searchFaultCodes(query: string, limit = 100): FaultCodeEntry[] {
+export function searchFaultCodes(query: string, limit = FAULT_CODE_LIBRARY.length): FaultCodeEntry[] {
     const q = query.trim().toUpperCase();
     if (!q) return FAULT_CODE_LIBRARY.slice(0, limit);
     return FAULT_CODE_LIBRARY.filter(

@@ -16,8 +16,8 @@ export function ComponentSidebar({
     const { t } = useTranslation();
     const cleared = Object.values(done).filter((d) => d.status === "clear").length;
     return (
-        <aside className="w-64 shrink-0 overflow-y-auto border-e border-[#3A3A3A]/8 bg-white dark:border-white/8 dark:bg-[#1b1b20]">
-            <div className="border-b border-[#3A3A3A]/8 px-4 py-3 dark:border-white/8">
+        <aside className="w-64 shrink-0 overflow-y-auto border-e border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:border-white/8 dark:bg-[#1b1b20]">
+            <div className="border-b border-[#3A3A3A]/8 dark:border-white/8 px-4 py-3 dark:border-white/8">
                 <p className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A] dark:text-white">
                     {t("simulator.dmmLab.bench.sidebarTitle")}
                 </p>

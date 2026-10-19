@@ -35,7 +35,7 @@ export function NotificationsCard() {
   return (
     <section
       data-testid="dashboard-card-notifications-content"
-      className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-5 shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:border-white/10 dark:bg-[#1b1b20] sm:p-6"
+      className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:border-white/10 dark:bg-[#1b1b20] sm:p-6"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export function NotificationsCard() {
               className={[
                 "rounded-2xl border px-3 py-2.5",
                 item.read_at
-                  ? "border-[#3A3A3A]/8 bg-[#FCFCFC] dark:border-white/8 dark:bg-white/[0.04]"
+                  ? "border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:border-white/8 dark:bg-white/[0.04]"
                   : "border-[#F47822]/30 bg-[#FFF8F4] dark:border-[#F47822]/30 dark:bg-[#F47822]/[0.08]",
               ].join(" ")}
             >

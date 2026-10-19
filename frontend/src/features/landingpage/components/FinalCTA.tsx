@@ -69,7 +69,7 @@ export default function CTASection() {
     <section
       ref={sectionRef}
       aria-labelledby="cta-heading"
-      className="relative overflow-hidden bg-[#F7F7F7] px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16"
+      className="relative overflow-hidden bg-[#F7F7F7] dark:bg-[#101013] px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16"
     >
       {/* Background technical grid */}
       <div
@@ -365,7 +365,7 @@ export default function CTASection() {
             }
           `}
         >
-          <span className="text-xs text-[#181818]/40">
+          <span className="text-xs text-[#181818]/40 dark:text-white/40">
             Ready to take the next step?
           </span>
           <Link

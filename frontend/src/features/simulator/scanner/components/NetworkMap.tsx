@@ -34,7 +34,7 @@ export function NetworkMap({
     if (!selected) return null;
 
     return (
-        <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
             <div className="flex flex-wrap items-center gap-2">
                 {(["all", "CAN-B", "CAN-C", "CAN-FD"] as const).map((b) => (
                     <button
@@ -44,7 +44,7 @@ export function NetworkMap({
                         className={`rounded-full px-3 py-1.5 font-mono text-[11px] font-bold transition ${
                             bus === b
                                 ? "bg-[#0f1115] text-white dark:bg-white dark:text-[#0f1115]"
-                                : "border border-[#3A3A3A]/10 text-[#3A3A3A]/55 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:text-white"
+                                : "border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:text-white"
                         }`}
                     >
                         {b === "all" ? t("simulator.scannerLab.network.all") : b}
@@ -55,7 +55,7 @@ export function NetworkMap({
                         type="button"
                         onClick={() => setZoom((z) => Math.max(0.6, +(z - 0.2).toFixed(2)))}
                         aria-label={t("simulator.scannerLab.network.zoomOut")}
-                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60 dark:hover:text-white"
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60 dark:hover:text-white"
                     >
                         <Minus className="h-3.5 w-3.5" />
                     </button>
@@ -66,7 +66,7 @@ export function NetworkMap({
                         type="button"
                         onClick={() => setZoom((z) => Math.min(1.8, +(z + 0.2).toFixed(2)))}
                         aria-label={t("simulator.scannerLab.network.zoomIn")}
-                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60 dark:hover:text-white"
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60 dark:hover:text-white"
                     >
                         <Plus className="h-3.5 w-3.5" />
                     </button>
@@ -74,13 +74,13 @@ export function NetworkMap({
                         type="button"
                         onClick={() => setZoom(1)}
                         aria-label={t("simulator.scannerLab.network.fit")}
-                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 text-[#3A3A3A]/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60 dark:hover:text-white"
+                        className="grid h-7 w-7 place-items-center rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/60 dark:hover:text-white"
                     >
                         <Maximize className="h-3.5 w-3.5" />
                     </button>
                 </span>
             </div>
-            <div dir="ltr" className="mt-3 overflow-auto rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] p-2 dark:border-white/10 dark:bg-white/[0.03]">
+            <div dir="ltr" className="mt-3 overflow-auto rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] p-2 dark:border-white/10 dark:bg-white/[0.03]">
                 <svg viewBox="0 0 1000 400" className="min-w-[640px]" style={{ width: `${100 * zoom}%` }} role="img">
                     {BUSES.map((b) => (
                         <g key={b.id}>
@@ -132,7 +132,7 @@ export function NetworkMap({
                     })}
                 </svg>
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-[#3A3A3A]/[.04] px-4 py-3 dark:bg-white/[0.04]">
+            <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-[#3A3A3A]/[.04] dark:bg-white/[.04] px-4 py-3 dark:bg-white/[0.04]">
                 <p className="font-mono text-xs font-black text-[#3A3A3A] dark:text-white" dir="ltr">
                     {selected.id} · {selected.name}
                 </p>

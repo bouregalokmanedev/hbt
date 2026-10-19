@@ -62,7 +62,7 @@ export function LocationPanel({ component, view, note, onComponentChange, onView
                                     onMouseEnter={() => setHover(c.id)}
                                     onMouseLeave={() => setHover(null)}
                                     onClick={() => onComponentChange(c.label)}
-                                    className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 px-2 py-1 text-[9px] font-bold leading-none shadow ${isTarget ? "border-[#F47822] bg-[#F47822] text-white" : isHover ? "border-white bg-white text-[#0f1115]" : "border-white/30 bg-white/10 text-white/80"}`}
+                                    className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 px-2 py-1 text-[9px] font-bold leading-none shadow ${isTarget ? "border-[#F47822] bg-[#F47822] text-white" : isHover ? "border-white bg-white dark:bg-[#1b1b20] text-[#0f1115]" : "border-white/30 bg-white/10 text-white/80"}`}
                                     style={{ left: `${c.x}%`, top: `${c.y}%` }}
                                 >
                                     {c.id}

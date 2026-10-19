@@ -62,7 +62,7 @@ export function SchematicPanel({ from, to, wire, verdict, onFromChange, onToChan
                         </div>
                         {DEMO_WIRES.map((w, i) => (
                             <div key={w.id} className="absolute" style={{ left: 150 + i * 110, top: 22 + (i % 2) * 44 }}>
-                                <div className="rounded-lg border bg-white px-2 py-1.5 text-[10px] font-bold leading-none" style={{ borderColor: w.color, color: w.color }}>{w.to}</div>
+                                <div className="rounded-lg border bg-white dark:bg-[#1b1b20] px-2 py-1.5 text-[10px] font-bold leading-none" style={{ borderColor: w.color, color: w.color }}>{w.to}</div>
                                 <svg width={110} height={40} className="pointer-events-none absolute -left-[38px] top-3">
                                     <path d={`M 0 12 C 18 12, 22 ${i % 2 ? 28 : -8}, 38 12`} fill="none" stroke={traceOn && DEMO_WIRES.findIndex((x) => x.id === sel) >= i ? "#F47822" : w.color} strokeWidth={traceOn && sel === w.id ? 3 : 1.8} strokeDasharray={traceOn ? "0" : "0"} opacity={0.95} />
                                     {traceOn && traceStep >= i && <circle r={3} fill="#F47822"><animateMotion dur="0.9s" repeatCount="1" path={`M 0 12 C 18 12, 22 ${i % 2 ? 28 : -8}, 38 12`} /></circle>}
@@ -73,7 +73,7 @@ export function SchematicPanel({ from, to, wire, verdict, onFromChange, onToChan
                 </div>
                 <div className="mt-2 flex items-center justify-between text-[10px]">
                     <span className="font-mono text-white/50">{t("diagnostics.tools.schematic.selected")} <b className="text-white">{active.label}</b>{t("diagnostics.tools.schematic.inspectHint")}</span>
-                    {traceOn && <button type="button" onClick={() => setTraceStep((s) => Math.min(DEMO_WIRES.length - 1, s + 1))} className="rounded-full bg-white px-2.5 py-1 font-bold text-[#0a0c0f]">{t("diagnostics.tools.schematic.nextStep")}</button>}
+                    {traceOn && <button type="button" onClick={() => setTraceStep((s) => Math.min(DEMO_WIRES.length - 1, s + 1))} className="rounded-full bg-white dark:bg-[#1b1b20] px-2.5 py-1 font-bold text-[#0a0c0f]">{t("diagnostics.tools.schematic.nextStep")}</button>}
                 </div>
             </div>
 

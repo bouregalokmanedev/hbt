@@ -10,10 +10,17 @@ class AnalyticsEvent extends Model
 {
     protected $fillable = [
         'user_id',
+        'visitor_id',
         'event',
         'page',
         'properties',
         'session_hash',
+        'country',
+        'region',
+        'city',
+        'user_agent',
+        'referrer',
+        'language',
     ];
 
     protected function casts(): array

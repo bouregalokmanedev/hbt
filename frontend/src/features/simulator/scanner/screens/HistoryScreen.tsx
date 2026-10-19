@@ -60,12 +60,12 @@ export function HistoryScreen({ refreshKey }: { refreshKey: number | null }) {
                 </p>
             </div>
             {results.length === 0 ? (
-                <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 bg-white p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
+                <p className="rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] p-6 text-center text-sm text-[#3A3A3A]/50 dark:border-white/15 dark:bg-[#1b1b20] dark:text-white/50">
                     {t("simulator.scannerLab.historyScreen.empty")}
                 </p>
             ) : !comparing ? (
                 <div className="overflow-x-auto rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10">
-                    <table className="min-w-[640px] w-full bg-white text-sm dark:bg-[#1b1b20]">
+                    <table className="min-w-[640px] w-full bg-white dark:bg-[#1b1b20] text-sm dark:bg-[#1b1b20]">
                         <thead>
                             <tr className="text-left font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#3A3A3A]/45 dark:text-white/45">
                                 <th className="px-4 py-2.5" />
@@ -101,7 +101,7 @@ export function HistoryScreen({ refreshKey }: { refreshKey: number | null }) {
                                         {r.score ?? "—"}
                                     </td>
                                     <td className="px-4 py-2.5">
-                                        <span className="rounded-full bg-[#3A3A3A]/[.06] px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-[#3A3A3A]/60 dark:bg-white/[0.07] dark:text-white/60">
+                                        <span className="rounded-full bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-[#3A3A3A]/60 dark:bg-white/[0.07] dark:text-white/60">
                                             {r.outcome ?? "—"}
                                         </span>
                                     </td>
@@ -111,7 +111,7 @@ export function HistoryScreen({ refreshKey }: { refreshKey: number | null }) {
                     </table>
                 </div>
             ) : (
-                <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+                <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                         <h4 className="text-sm font-black text-[#3A3A3A] dark:text-white">
                             {t("simulator.scannerLab.historyScreen.compareTitle")} ·{" "}
@@ -120,7 +120,7 @@ export function HistoryScreen({ refreshKey }: { refreshKey: number | null }) {
                         <button
                             type="button"
                             onClick={() => setComparing(false)}
-                            className="rounded-xl border border-[#3A3A3A]/10 px-4 py-2 text-xs font-black text-[#3A3A3A] dark:border-white/10 dark:text-white"
+                            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-4 py-2 text-xs font-black text-[#3A3A3A] dark:border-white/10 dark:text-white"
                         >
                             {t("simulator.scannerLab.historyScreen.back")}
                         </button>

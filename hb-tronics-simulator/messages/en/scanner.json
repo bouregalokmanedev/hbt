@@ -300,6 +300,20 @@
     "close": "Close",
     "complete": "End of guided dialogue"
   },
+  "device": {
+    "kicker": "Diagnostic tablet",
+    "hint": "Tap a button",
+    "btn": {
+      "special": "Special Function",
+      "report": "Report",
+      "remote": "Remote Control",
+      "autoscan": "Auto Scan",
+      "diagnosis": "Diagnosis",
+      "updates": "Updates",
+      "setting": "Setting",
+      "more": "More"
+    }
+  },
   "rail": {
     "label": "Scanner tools",
     "home": "Scanner home"

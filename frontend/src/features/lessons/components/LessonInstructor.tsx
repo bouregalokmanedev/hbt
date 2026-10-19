@@ -85,7 +85,7 @@ export function LessonInstructor({ courseId }: { courseId: string }) {
     const instructor = course?.instructor ?? null;
 
     if (!instructor) {
-        return <p className="px-5 py-6 text-sm text-gray-500 sm:px-7">{t("lessonPlayer.instructor.unavailable")}</p>;
+        return <p className="px-5 py-6 text-sm text-gray-500 dark:text-white/55 sm:px-7">{t("lessonPlayer.instructor.unavailable")}</p>;
     }
 
     const fullName = `${instructor.first_name} ${instructor.last_name}`.trim();
@@ -104,7 +104,7 @@ export function LessonInstructor({ courseId }: { courseId: string }) {
                         <UserRound className="h-3.5 w-3.5" /> {t("lessonPlayer.instructor.eyebrow")}
                     </p>
                     <h3 className="mt-1 truncate text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">{fullName}</h3>
-                    <p className="text-xs font-medium text-gray-500">@{instructor.username}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-white/55">@{instructor.username}</p>
                 </div>
             </div>
             {instructor.bio && <p className="whitespace-pre-line text-sm leading-7 text-gray-600 dark:text-gray-300">{instructor.bio}</p>}
@@ -115,7 +115,7 @@ export function LessonInstructor({ courseId }: { courseId: string }) {
                     <BookOpen className="h-3.5 w-3.5" /> {t("lessonPlayer.instructor.moreFrom", { name: instructor.first_name })}
                 </p>
                 {others.length === 0 ? (
-                    <p className="mt-2 text-xs leading-5 text-gray-500">{t("lessonPlayer.instructor.noOthers")}</p>
+                    <p className="mt-2 text-xs leading-5 text-gray-500 dark:text-white/55">{t("lessonPlayer.instructor.noOthers")}</p>
                 ) : (
                     <ul className="mt-3 space-y-2">
                         {others.map((entry) => (
@@ -126,7 +126,7 @@ export function LessonInstructor({ courseId }: { courseId: string }) {
                                 >
                                     <span className="min-w-0">
                                         <span className="block truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef] group-hover:text-[#F47822]">{entry.title}</span>
-                                        <span className="mt-0.5 block text-[11px] text-gray-500">{entry.is_free ? t("lessonPlayer.instructor.free") : `${entry.discount_price ?? entry.price} ${entry.currency}`}</span>
+                                        <span className="mt-0.5 block text-[11px] text-gray-500 dark:text-white/55">{entry.is_free ? t("lessonPlayer.instructor.free") : `${entry.discount_price ?? entry.price} ${entry.currency}`}</span>
                                     </span>
                                     <ArrowRight className="h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-[#F47822] rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
                                 </Link>
@@ -141,7 +141,7 @@ export function LessonInstructor({ courseId }: { courseId: string }) {
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("lessonPlayer.instructor.contact")}</p>
                 {!user ? (
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-xs leading-5 text-gray-500">{t("lessonPlayer.instructor.loginToMsg", { name: instructor.first_name })}</p>
+                        <p className="text-xs leading-5 text-gray-500 dark:text-white/55">{t("lessonPlayer.instructor.loginToMsg", { name: instructor.first_name })}</p>
                         <Link to="/login" className="inline-flex items-center gap-1.5 rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#df6817]">
                             {t("lessonPlayer.instructor.login")} <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
                         </Link>
@@ -154,7 +154,7 @@ export function LessonInstructor({ courseId }: { courseId: string }) {
                             rows={3}
                             maxLength={5000}
                             placeholder={t("lessonPlayer.instructor.askPh", { name: instructor.first_name })}
-                            className="mt-3 w-full resize-none rounded-xl border border-gray-200 dark:border-white/10 bg-[#FAFAFA] dark:bg-[#232329] px-4 py-3 text-sm leading-6 text-[#3A3A3A] dark:text-[#ececef] outline-none transition placeholder:text-gray-400 focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
+                            className="mt-3 w-full resize-none rounded-xl border border-gray-200 dark:border-white/10 bg-[#FAFAFA] dark:bg-[#232329] px-4 py-3 text-sm leading-6 text-[#3A3A3A] dark:text-[#ececef] outline-none transition placeholder:text-gray-400 dark:placeholder:text-white/30 focus:border-[#F47822] focus:bg-white dark:focus:bg-[#1b1b20]"
                         />
                         {error && <p role="alert" className="mt-2 rounded-xl bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
                         {sent && <p className="mt-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400">{t("lessonPlayer.instructor.sent")}</p>}

@@ -23,10 +23,19 @@ class ContactController extends Controller
             'inquiry' => ['nullable', 'string', 'max:100'],
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
+            'visitor_id' => ['nullable', 'uuid'],
+            'source' => ['nullable', 'string', 'max:50'],
+            'course_interest' => ['nullable', 'string', 'max:255'],
+            'utm_source' => ['nullable', 'string', 'max:100'],
+            'utm_medium' => ['nullable', 'string', 'max:100'],
+            'utm_campaign' => ['nullable', 'string', 'max:100'],
+            'utm_term' => ['nullable', 'string', 'max:100'],
+            'utm_content' => ['nullable', 'string', 'max:100'],
         ]);
 
         $contactMessage = ContactMessage::create([
             ...$data,
+            'source' => $data['source'] ?? 'contact_form',
             'ip' => $request->ip(),
             'user_agent' => substr((string) $request->userAgent(), 0, 512),
         ]);

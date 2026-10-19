@@ -65,15 +65,15 @@ export function GuideCard({ engine }: { engine: MeterProcedureEngine }) {
                         key={i}
                         className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold ${
                             item.done
-                                ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
+                                ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300"
                                 : item.active
                                   ? "animate-pulse border-[#1F6AE1] bg-[#1F6AE1]/10 text-[#1F6AE1]"
-                                  : "border-[#3A3A3A]/15 text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55"
+                                  : "border-[#3A3A3A]/15 dark:border-white/15 text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55"
                         }`}
                     >
                         <span
                             className={`grid h-4 w-4 place-items-center rounded-full text-[9px] font-black ${
-                                item.done ? "bg-emerald-500 text-white" : "bg-[#3A3A3A]/10 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60"
+                                item.done ? "bg-emerald-500 text-white" : "bg-[#3A3A3A]/10 dark:bg-white/10 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60"
                             }`}
                         >
                             {item.done ? "✓" : i + 1}

@@ -970,7 +970,7 @@ function Security({
           </div>
           {security?.two_factor_enabled ? (
             confirmDisable ? (
-              <div data-testid="two-factor-disable-confirm" className="mt-5 rounded-2xl border border-red-200 bg-red-50/70 p-4">
+              <div data-testid="two-factor-disable-confirm" className="mt-5 rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50/70 p-4">
                 <p className="text-xs font-bold text-red-700 dark:text-red-300">{t("settingsPage.security.disableConfirmTitle")}</p>
                 <p className="mt-1 text-[11px] leading-4 text-red-700/80 dark:text-red-300/80">{t("settingsPage.security.disableConfirmDesc")}</p>
                 <div className="mt-3 flex flex-wrap items-end gap-3">

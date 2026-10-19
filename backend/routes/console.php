@@ -15,3 +15,17 @@ Schedule::command('notifications:weekly-digest')
 Schedule::command('notifications:streak-nudge')
     ->dailyAt('18:00')
     ->withoutOverlapping();
+
+Schedule::command('marketing:recover-carts', ['--hours' => 24])
+    ->dailyAt('10:00')
+    ->withoutOverlapping();
+
+// Keep pipeline heat scores fresh for open leads.
+Schedule::command('marketing:score-leads', ['--hours' => 24])
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();
+
+// Timed lead follow-ups (gated by MARKETING_DRIP_ENABLED).
+Schedule::command('marketing:lead-drip')
+    ->dailyAt('11:00')
+    ->withoutOverlapping();

@@ -49,7 +49,7 @@ export function AdminUsersPage() {
             />
 
             {actionError && (
-                <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                <div role="alert" className="rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-600 dark:text-red-400">
                     {actionError}
                 </div>
             )}
@@ -114,12 +114,12 @@ function Mini({
     icon: React.ReactNode;
 }) {
     return (
-        <div className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-4 shadow-[0_8px_22px_rgba(58,58,58,.035)]">
+        <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-4 shadow-[0_8px_22px_rgba(58,58,58,.035)]">
             <span className="grid h-8 w-8 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
                 {icon}
             </span>
             <p className="mt-4 text-2xl font-semibold">{value}</p>
-            <p className="mt-1 text-xs text-[#3A3A3A]/47">{label}</p>
+            <p className="mt-1 text-xs text-[#3A3A3A]/47 dark:text-white/47">{label}</p>
         </div>
     );
 }

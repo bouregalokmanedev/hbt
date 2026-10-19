@@ -35,15 +35,15 @@ export function LocationSidebar({
   const favComps = state.favs.map((k) => locByKey(k)).filter(Boolean);
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col overflow-auto border-e border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
-      <div className="border-b border-[#3A3A3A]/10 p-3 dark:border-white/10">
+    <aside className="flex w-72 shrink-0 flex-col overflow-auto border-e border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-3 dark:border-white/10">
         <input
           type="search"
           value={state.search}
           onChange={(e) => engine.setSearch(e.target.value)}
           placeholder={tr("location.sidebar.search", "Search components, refs, circuits")}
           aria-label={tr("location.sidebar.search", "Search components, refs, circuits")}
-          className="w-full rounded-2xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 py-2 text-sm placeholder:text-[#3A3A3A]/40 focus:border-[#F47822]/50 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
+          className="w-full rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-3 py-2 text-sm placeholder:text-[#3A3A3A]/40 dark:text-white/40 focus:border-[#F47822]/50 focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
         />
         <div className="mt-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
           {tr("location.sidebar.inDataSet", "{n} components in data set", { n: LOC_COMPONENTS.length })}
@@ -51,7 +51,7 @@ export function LocationSidebar({
       </div>
 
       {/* categories */}
-      <div className="border-b border-[#3A3A3A]/10 py-2 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 py-2 dark:border-white/10">
         <div className="px-4 pb-1 text-[11px] font-black uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">
           {tr("location.sidebar.categories", "Categories")}
         </div>
@@ -77,7 +77,7 @@ export function LocationSidebar({
             >
               {tr(`location.cat.${c.id}`, c.id)}
             </span>
-            <span dir="ltr" className="rounded-full bg-[#3A3A3A]/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50">
+            <span dir="ltr" className="rounded-full bg-[#3A3A3A]/[0.06] dark:bg-white/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50">
               {c.count}
             </span>
           </button>
@@ -85,7 +85,7 @@ export function LocationSidebar({
       </div>
 
       {/* component list (filtered) */}
-      <div className="min-h-0 flex-1 overflow-auto border-b border-[#3A3A3A]/10 py-2 dark:border-white/10">
+      <div className="min-h-0 flex-1 overflow-auto border-b border-[#3A3A3A]/10 dark:border-white/10 py-2 dark:border-white/10">
         {filtered.length === 0 ? (
           <div className="px-4 py-3 text-sm text-[#3A3A3A]/60 dark:text-white/60">{tr("location.empty", "No components match your filters.")}</div>
         ) : (
@@ -108,7 +108,7 @@ export function LocationSidebar({
                   "w-9 shrink-0 rounded-md px-1 py-0.5 text-center font-mono text-xs font-bold",
                   state.selected === c.key
                     ? "bg-[#F47822] text-white"
-                    : "bg-[#3A3A3A]/5 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60",
+                    : "bg-[#3A3A3A]/5 dark:bg-white/5 text-[#3A3A3A]/60 dark:bg-white/10 dark:text-white/60",
                 )}
               >
                 {c.ref}
@@ -141,7 +141,7 @@ export function LocationSidebar({
               <span dir="ltr" className={clsx("min-w-0 flex-1 truncate text-sm", state.sys === g.key ? "font-bold text-[#F47822]" : "font-medium text-[#3A3A3A] dark:text-white")}>
                 {g.label}
               </span>
-              <span dir="ltr" className="rounded-full bg-[#3A3A3A]/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50">
+              <span dir="ltr" className="rounded-full bg-[#3A3A3A]/[0.06] dark:bg-white/[0.06] px-1.5 py-0.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:bg-white/10 dark:text-white/50">
                 {g.total}
               </span>
             </button>

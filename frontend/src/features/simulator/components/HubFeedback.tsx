@@ -152,8 +152,8 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
     const activeRating = hovered || rating;
 
     return (
-        <section className="mt-6 overflow-hidden rounded-[20px] border border-[#3A3A3A]/8 bg-white dark:border-white/8 dark:bg-[#1b1b20]">
-            <header className="flex flex-col gap-4 border-b border-[#3A3A3A]/6 p-5 dark:border-white/6 sm:flex-row sm:items-center sm:justify-between">
+        <section className="mt-6 overflow-hidden rounded-[20px] border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:border-white/8 dark:bg-[#1b1b20]">
+            <header className="flex flex-col gap-4 border-b border-[#3A3A3A]/6 dark:border-white/6 p-5 dark:border-white/6 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p className="flex items-center gap-2 text-xs font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
                         <MessageSquareQuote className="h-4 w-4 text-[#F47822]" />
@@ -165,7 +165,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                         })}
                     </p>
                 </div>
-                <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="flex items-center gap-3 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]">
                     <span className="text-2xl font-black text-[#1A1A1A] dark:text-white">
                         {loading ? "—" : summary.average.toFixed(1)}
                     </span>
@@ -180,7 +180,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
 
             <div className="grid gap-0 lg:grid-cols-2">
                 {/* Reviews list */}
-                <div className="border-b border-[#3A3A3A]/6 p-5 dark:border-white/6 lg:border-b-0 lg:border-e">
+                <div className="border-b border-[#3A3A3A]/6 dark:border-white/6 p-5 dark:border-white/6 lg:border-b-0 lg:border-e">
                     <div
                         className="mb-4 flex flex-wrap gap-1.5"
                         aria-label={t("simulator.hub.feedback.filterLabel", { defaultValue: "Filter reviews by lab" })}
@@ -194,7 +194,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                                 className={`rounded-full px-3 py-1.5 text-[11px] font-black transition ${
                                     filter === option.id
                                         ? "bg-[#F47822] text-white"
-                                        : "bg-[#F8F7F6] text-[#3A3A3A]/55 hover:text-[#F47822] dark:bg-white/5 dark:text-white/55 dark:hover:text-[#F47822]"
+                                        : "bg-[#F8F7F6] text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#F47822] dark:bg-white/5 dark:text-white/55 dark:hover:text-[#F47822]"
                                 }`}
                             >
                                 {option.label}
@@ -208,7 +208,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                             ))}
                         </div>
                     ) : reviews.length === 0 ? (
-                        <div className="rounded-2xl border-2 border-dashed border-[#3A3A3A]/10 bg-[#F8F7F6] p-6 text-center dark:border-white/10 dark:bg-white/[0.03]">
+                        <div className="rounded-2xl border-2 border-dashed border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] p-6 text-center dark:border-white/10 dark:bg-white/[0.03]">
                             <p className="text-sm font-bold text-[#3A3A3A] dark:text-white">
                                 {t("simulator.hub.feedback.emptyFiltered", {
                                     defaultValue: "No reviews in this scope yet",
@@ -274,7 +274,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                                 aria-label={t("simulator.hub.feedback.prevPage", {
                                     defaultValue: "Previous page",
                                 })}
-                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-[11px] font-black text-[#3A3A3A] transition hover:border-[#F47822] hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822] dark:hover:text-[#F47822]"
+                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-[11px] font-black text-[#3A3A3A] transition hover:border-[#F47822] hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822] dark:hover:text-[#F47822]"
                             >
                                 <ChevronLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
                                 {t("simulator.hub.feedback.prevShort", { defaultValue: "Prev" })}
@@ -293,7 +293,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                                 aria-label={t("simulator.hub.feedback.nextPage", {
                                     defaultValue: "Next page",
                                 })}
-                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 px-3 py-2 text-[11px] font-black text-[#3A3A3A] transition hover:border-[#F47822] hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822] dark:hover:text-[#F47822]"
+                                className="inline-flex items-center gap-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-2 text-[11px] font-black text-[#3A3A3A] transition hover:border-[#F47822] hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822] dark:hover:text-[#F47822]"
                             >
                                 {t("simulator.hub.feedback.nextShort", { defaultValue: "Next" })}
                                 <ChevronRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
@@ -318,7 +318,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                             <button
                                 type="button"
                                 onClick={() => setSent(false)}
-                                className="mt-3 rounded-xl border border-[#3A3A3A]/10 bg-white px-4 py-2 text-xs font-bold text-[#3A3A3A] transition hover:bg-[#F8F7F6] dark:border-white/10 dark:bg-white/5 dark:text-white"
+                                className="mt-3 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-xs font-bold text-[#3A3A3A] transition hover:bg-[#F8F7F6] dark:border-white/10 dark:bg-white/5 dark:text-white"
                             >
                                 {t("simulator.hub.feedback.another", { defaultValue: "Write another" })}
                             </button>
@@ -339,7 +339,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                                             className={`rounded-full px-3 py-1.5 text-[11px] font-black transition ${
                                                 lab === option.id
                                                     ? "bg-[#3A3A3A] text-white dark:bg-white dark:text-[#1b1b20]"
-                                                    : "bg-[#F8F7F6] text-[#3A3A3A]/55 hover:text-[#F47822] dark:bg-white/5 dark:text-white/55 dark:hover:text-[#F47822]"
+                                                    : "bg-[#F8F7F6] text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#F47822] dark:bg-white/5 dark:text-white/55 dark:hover:text-[#F47822]"
                                             }`}
                                         >
                                             {option.label}
@@ -389,7 +389,7 @@ export function HubFeedback({ onSubmitted }: HubFeedbackProps) {
                                     placeholder={t("simulator.hub.feedback.placeholder", {
                                         defaultValue: "What went well? What should improve?",
                                     })}
-                                    className="mt-2 w-full resize-none rounded-xl border border-[#3A3A3A]/10 bg-[#F8F7F6] px-3 py-2.5 text-sm text-[#1A1A1A] outline-none transition placeholder:text-[#3A3A3A]/35 focus:border-[#F47822]/40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/35"
+                                    className="mt-2 w-full resize-none rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F8F7F6] px-3 py-2.5 text-sm text-[#1A1A1A] outline-none transition placeholder:text-[#3A3A3A]/35 dark:text-white/35 focus:border-[#F47822]/40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-white/35"
                                 />
                             </div>
 

@@ -14,6 +14,7 @@ final readonly class CreateQuizQuestionData
         public bool $required,
         public array $options = [],
         public ?string $quizId = null,
+        public ?string $explanation = null,
     ) {
     }
 }

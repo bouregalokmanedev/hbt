@@ -184,7 +184,7 @@ export function ContactPage() {
     const mapsSrc = `https://www.google.com/maps?q=03%20Rue%20Mouloud%20Feraoun%2C%20Dar%20El%20Beida%2C%20Algiers%2C%20Algeria&output=embed&hl=${i18n.language === "ar" ? "ar" : "en"}`;
 
     return (
-        <div className="contact-page-ar min-h-screen bg-white text-hbt-dark">
+        <div className="contact-page-ar min-h-screen bg-white dark:bg-[#1b1b20] text-hbt-dark dark:text-[#ececef]">
             <Navbar />
 
 
@@ -197,8 +197,8 @@ export function ContactPage() {
                     relative
                     overflow-hidden
                     border-b
-                    border-black/5
-                    bg-[#F7F7F7]
+                    border-black/5 dark:border-white/8
+                    bg-[#F7F7F7] dark:bg-[#101013]
                     pt-32
                     sm:pt-36
                     lg:pt-10
@@ -280,7 +280,7 @@ export function ContactPage() {
                                 rounded-full
                                 border
                                 border-hbt-orange/15
-                                bg-white
+                                bg-white dark:bg-[#1b1b20]
                                 px-3.5
                                 py-2
                                 text-xs
@@ -301,7 +301,7 @@ export function ContactPage() {
                                 font-bold
                                 leading-[1.05]
                                 tracking-[-0.04em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-5xl
                                 lg:text-7xl
                             "
@@ -319,7 +319,7 @@ export function ContactPage() {
                                 max-w-2xl
                                 text-base
                                 leading-7
-                                text-slate-500
+                                text-slate-500 dark:text-white/55
                                 sm:text-lg
                                 sm:leading-8
                             "
@@ -389,17 +389,17 @@ export function ContactPage() {
                                 gap-2
                                 rounded-xl
                                 border
-                                border-black/10
-                                bg-white
+                                border-black/10 dark:border-white/10
+                                bg-white dark:bg-[#1b1b20]
                                 px-5
                                 py-3
                                 text-sm
                                 font-semibold
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 transition-all
                                 duration-300
                                 hover:-translate-y-0.5
-                                hover:border-black/15
+                                hover:border-black/15 dark:border-white/15
                                 hover:shadow-lg
                             "
                         >
@@ -416,7 +416,7 @@ export function ContactPage() {
                 CONTACT METHODS
             ===================================================== */}
 
-            <section className="bg-white">
+            <section className="bg-white dark:bg-[#1b1b20]">
                 <div
                     className="
                         mx-auto
@@ -446,8 +446,8 @@ export function ContactPage() {
                                 group
                                 rounded-2xl
                                 border
-                                border-slate-200
-                                bg-white
+                                border-slate-200 dark:border-white/10
+                                bg-white dark:bg-[#1b1b20]
                                 p-6
                                 transition-all
                                 duration-300
@@ -464,8 +464,8 @@ export function ContactPage() {
                                     items-center
                                     justify-center
                                     rounded-xl
-                                    bg-slate-100
-                                    text-hbt-dark
+                                    bg-slate-100 dark:bg-white/8
+                                    text-hbt-dark dark:text-[#ececef]
                                     transition-transform
                                     duration-300
                                     group-hover:scale-110
@@ -474,15 +474,15 @@ export function ContactPage() {
                                 <Mail className="h-5 w-5" />
                             </div>
 
-                            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/40">
                                 {t("contactPage.methods.email")}
                             </p>
 
-                            <p className="mt-1 text-sm font-semibold text-hbt-dark" dir="ltr">
+                            <p className="mt-1 text-sm font-semibold text-hbt-dark dark:text-[#ececef]" dir="ltr">
                                 {COMPANY.email}
                             </p>
 
-                            <p className="mt-2 text-xs leading-5 text-slate-500">
+                            <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-white/55">
                                 {t("contactPage.methods.emailDesc")}
                             </p>
                         </a>
@@ -496,8 +496,8 @@ export function ContactPage() {
                                 group
                                 rounded-2xl
                                 border
-                                border-slate-200
-                                bg-white
+                                border-slate-200 dark:border-white/10
+                                bg-white dark:bg-[#1b1b20]
                                 p-6
                                 transition-all
                                 duration-300
@@ -514,8 +514,8 @@ export function ContactPage() {
                                     items-center
                                     justify-center
                                     rounded-xl
-                                    bg-slate-100
-                                    text-hbt-dark
+                                    bg-slate-100 dark:bg-white/8
+                                    text-hbt-dark dark:text-[#ececef]
                                     transition-transform
                                     duration-300
                                     group-hover:scale-110
@@ -524,15 +524,15 @@ export function ContactPage() {
                                 <Phone className="h-5 w-5" />
                             </div>
 
-                            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/40">
                                 {t("contactPage.methods.phone")}
                             </p>
 
-                            <p className="mt-1 text-sm font-semibold text-hbt-dark" dir="ltr">
+                            <p className="mt-1 text-sm font-semibold text-hbt-dark dark:text-[#ececef]" dir="ltr">
                                 {COMPANY.phone}
                             </p>
 
-                            <p className="mt-2 text-xs leading-5 text-slate-500">
+                            <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-white/55">
                                 {t("contactPage.methods.phoneDesc")}
                             </p>
                         </a>
@@ -548,8 +548,8 @@ export function ContactPage() {
                                 group
                                 rounded-2xl
                                 border
-                                border-slate-200
-                                bg-white
+                                border-slate-200 dark:border-white/10
+                                bg-white dark:bg-[#1b1b20]
                                 p-6
                                 transition-all
                                 duration-300
@@ -568,8 +568,8 @@ export function ContactPage() {
                                     items-center
                                     justify-center
                                     rounded-xl
-                                    bg-slate-100
-                                    text-hbt-dark
+                                    bg-slate-100 dark:bg-white/8
+                                    text-hbt-dark dark:text-[#ececef]
                                     transition-transform
                                     duration-300
                                     group-hover:scale-110
@@ -578,15 +578,15 @@ export function ContactPage() {
                                 <MapPin className="h-5 w-5" />
                             </div>
 
-                            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/40">
                                 {t("contactPage.methods.visit")}
                             </p>
 
-                            <p className="mt-1 text-sm font-semibold leading-6 text-hbt-dark">
+                            <p className="mt-1 text-sm font-semibold leading-6 text-hbt-dark dark:text-[#ececef]">
                                 {t("contactPage.methods.locationCity")}
                             </p>
 
-                            <p className="mt-2 text-xs leading-5 text-slate-500">
+                            <p className="mt-2 text-xs leading-5 text-slate-500 dark:text-white/55">
                                 {t("contactPage.methods.locationDesc")}
                             </p>
                         </a>
@@ -604,8 +604,8 @@ export function ContactPage() {
                 id="contact-form"
                 className="
                     border-y
-                    border-black/5
-                    bg-[#F7F7F7]
+                    border-black/5 dark:border-white/8
+                    bg-[#F7F7F7] dark:bg-[#101013]
                     scroll-mt-24
                 "
             >
@@ -652,7 +652,7 @@ export function ContactPage() {
                                 font-bold
                                 leading-tight
                                 tracking-[-0.03em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-4xl
                             "
                         >
@@ -666,7 +666,7 @@ export function ContactPage() {
                                 max-w-md
                                 text-sm
                                 leading-7
-                                text-slate-500
+                                text-slate-500 dark:text-white/55
                             "
                         >
                             {t("contactPage.formSide.description")}
@@ -685,7 +685,7 @@ export function ContactPage() {
                                         items-center
                                         justify-center
                                         rounded-xl
-                                        bg-white
+                                        bg-white dark:bg-[#1b1b20]
                                         text-hbt-orange
                                         shadow-sm
                                     "
@@ -694,11 +694,11 @@ export function ContactPage() {
                                 </div>
 
                                 <div>
-                                    <p className="text-sm font-semibold text-hbt-dark">
+                                    <p className="text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
                                         {t("contactPage.formSide.supportTitle")}
                                     </p>
 
-                                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                                    <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-white/55">
                                         {t("contactPage.formSide.supportDesc")}
                                     </p>
                                 </div>
@@ -715,7 +715,7 @@ export function ContactPage() {
                                         items-center
                                         justify-center
                                         rounded-xl
-                                        bg-white
+                                        bg-white dark:bg-[#1b1b20]
                                         text-hbt-orange
                                         shadow-sm
                                     "
@@ -724,11 +724,11 @@ export function ContactPage() {
                                 </div>
 
                                 <div>
-                                    <p className="text-sm font-semibold text-hbt-dark">
+                                    <p className="text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
                                         {t("contactPage.formSide.trainingTitle")}
                                     </p>
 
-                                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                                    <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-white/55">
                                         {t("contactPage.formSide.trainingDesc")}
                                     </p>
                                 </div>
@@ -745,7 +745,7 @@ export function ContactPage() {
                                         items-center
                                         justify-center
                                         rounded-xl
-                                        bg-white
+                                        bg-white dark:bg-[#1b1b20]
                                         text-hbt-orange
                                         shadow-sm
                                     "
@@ -754,11 +754,11 @@ export function ContactPage() {
                                 </div>
 
                                 <div>
-                                    <p className="text-sm font-semibold text-hbt-dark">
+                                    <p className="text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
                                         {t("contactPage.formSide.responseTitle")}
                                     </p>
 
-                                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                                    <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-white/55">
                                         {t("contactPage.formSide.responseDesc")}
                                     </p>
                                 </div>
@@ -776,8 +776,8 @@ export function ContactPage() {
                         className="
                             rounded-3xl
                             border
-                            border-slate-200
-                            bg-white
+                            border-slate-200 dark:border-white/10
+                            bg-white dark:bg-[#1b1b20]
                             p-5
                             shadow-[0_20px_60px_rgba(15,23,42,0.06)]
                             sm:p-8
@@ -803,7 +803,7 @@ export function ContactPage() {
                                         items-center
                                         justify-center
                                         rounded-full
-                                        bg-green-50
+                                        bg-green-50 dark:bg-green-500/10
                                         text-green-600
                                     "
                                 >
@@ -816,7 +816,7 @@ export function ContactPage() {
                                         text-2xl
                                         font-bold
                                         tracking-tight
-                                        text-hbt-dark
+                                        text-hbt-dark dark:text-[#ececef]
                                     "
                                 >
                                     {t("contactPage.form.successTitle")}
@@ -828,7 +828,7 @@ export function ContactPage() {
                                         max-w-sm
                                         text-sm
                                         leading-6
-                                        text-slate-500
+                                        text-slate-500 dark:text-white/55
                                     "
                                 >
                                     {t("contactPage.form.successDesc")}
@@ -845,14 +845,14 @@ export function ContactPage() {
                                         mt-7
                                         rounded-xl
                                         border
-                                        border-slate-200
+                                        border-slate-200 dark:border-white/10
                                         px-5
                                         py-2.5
                                         text-sm
                                         font-semibold
-                                        text-hbt-dark
+                                        text-hbt-dark dark:text-[#ececef]
                                         transition-colors
-                                        hover:bg-slate-50
+                                        hover:bg-slate-50 dark:bg-white/5 dark:hover:bg-white/5
                                     "
                                 >
                                     {t("contactPage.form.sendAnother")}
@@ -880,7 +880,7 @@ export function ContactPage() {
                                     <div>
                                         <label
                                             htmlFor="firstName"
-                                            className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                            className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                         >
                                             {t("contactPage.form.firstName")}
                                             <span className="text-hbt-orange">
@@ -911,16 +911,16 @@ export function ContactPage() {
                                                 w-full
                                                 rounded-xl
                                                 border
-                                                border-slate-200
-                                                bg-slate-50
+                                                border-slate-200 dark:border-white/10
+                                                bg-slate-50 dark:bg-white/5
                                                 px-4
                                                 text-sm
-                                                text-hbt-dark
+                                                text-hbt-dark dark:text-[#ececef]
                                                 outline-none
                                                 transition-all
-                                                placeholder:text-slate-400
+                                                placeholder:text-slate-400 dark:text-white/40 dark:placeholder:text-white/30
                                                 focus:border-hbt-orange
-                                                focus:bg-white
+                                                focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                                 focus:ring-4
                                                 focus:ring-hbt-orange/10
                                             "
@@ -931,7 +931,7 @@ export function ContactPage() {
                                     <div>
                                         <label
                                             htmlFor="lastName"
-                                            className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                            className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                         >
                                             {t("contactPage.form.lastName")}
                                         </label>
@@ -957,16 +957,16 @@ export function ContactPage() {
                                                 w-full
                                                 rounded-xl
                                                 border
-                                                border-slate-200
-                                                bg-slate-50
+                                                border-slate-200 dark:border-white/10
+                                                bg-slate-50 dark:bg-white/5
                                                 px-4
                                                 text-sm
-                                                text-hbt-dark
+                                                text-hbt-dark dark:text-[#ececef]
                                                 outline-none
                                                 transition-all
-                                                placeholder:text-slate-400
+                                                placeholder:text-slate-400 dark:text-white/40 dark:placeholder:text-white/30
                                                 focus:border-hbt-orange
-                                                focus:bg-white
+                                                focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                                 focus:ring-4
                                                 focus:ring-hbt-orange/10
                                             "
@@ -987,7 +987,7 @@ export function ContactPage() {
                                     <div>
                                         <label
                                             htmlFor="email"
-                                            className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                            className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                         >
                                             {t("contactPage.form.email")}
                                             <span className="text-hbt-orange">
@@ -1019,16 +1019,16 @@ export function ContactPage() {
                                                 w-full
                                                 rounded-xl
                                                 border
-                                                border-slate-200
-                                                bg-slate-50
+                                                border-slate-200 dark:border-white/10
+                                                bg-slate-50 dark:bg-white/5
                                                 px-4
                                                 text-sm
-                                                text-hbt-dark
+                                                text-hbt-dark dark:text-[#ececef]
                                                 outline-none
                                                 transition-all
-                                                placeholder:text-slate-400
+                                                placeholder:text-slate-400 dark:text-white/40 dark:placeholder:text-white/30
                                                 focus:border-hbt-orange
-                                                focus:bg-white
+                                                focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                                 focus:ring-4
                                                 focus:ring-hbt-orange/10
                                             "
@@ -1039,7 +1039,7 @@ export function ContactPage() {
                                     <div>
                                         <label
                                             htmlFor="phone"
-                                            className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                            className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                         >
                                             {t("contactPage.form.phone")}
                                         </label>
@@ -1066,16 +1066,16 @@ export function ContactPage() {
                                                 w-full
                                                 rounded-xl
                                                 border
-                                                border-slate-200
-                                                bg-slate-50
+                                                border-slate-200 dark:border-white/10
+                                                bg-slate-50 dark:bg-white/5
                                                 px-4
                                                 text-sm
-                                                text-hbt-dark
+                                                text-hbt-dark dark:text-[#ececef]
                                                 outline-none
                                                 transition-all
-                                                placeholder:text-slate-400
+                                                placeholder:text-slate-400 dark:text-white/40 dark:placeholder:text-white/30
                                                 focus:border-hbt-orange
-                                                focus:bg-white
+                                                focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                                 focus:ring-4
                                                 focus:ring-hbt-orange/10
                                             "
@@ -1089,7 +1089,7 @@ export function ContactPage() {
                                 <div>
                                     <label
                                         htmlFor="inquiry"
-                                        className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                        className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                     >
                                         {t("contactPage.form.inquiry")}
                                         <span className="text-hbt-orange">
@@ -1119,15 +1119,15 @@ export function ContactPage() {
                                             w-full
                                             rounded-xl
                                             border
-                                            border-slate-200
-                                            bg-slate-50
+                                            border-slate-200 dark:border-white/10
+                                            bg-slate-50 dark:bg-white/5
                                             px-4
                                             text-sm
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             outline-none
                                             transition-all
                                             focus:border-hbt-orange
-                                            focus:bg-white
+                                            focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                             focus:ring-4
                                             focus:ring-hbt-orange/10
                                         "
@@ -1159,7 +1159,7 @@ export function ContactPage() {
                                 <div>
                                     <label
                                         htmlFor="subject"
-                                        className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                        className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                     >
                                         {t("contactPage.form.subject")}
                                         <span className="text-hbt-orange">
@@ -1190,16 +1190,16 @@ export function ContactPage() {
                                             w-full
                                             rounded-xl
                                             border
-                                            border-slate-200
-                                            bg-slate-50
+                                            border-slate-200 dark:border-white/10
+                                            bg-slate-50 dark:bg-white/5
                                             px-4
                                             text-sm
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             outline-none
                                             transition-all
-                                            placeholder:text-slate-400
+                                            placeholder:text-slate-400 dark:text-white/40 dark:placeholder:text-white/30
                                             focus:border-hbt-orange
-                                            focus:bg-white
+                                            focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                             focus:ring-4
                                             focus:ring-hbt-orange/10
                                         "
@@ -1212,7 +1212,7 @@ export function ContactPage() {
                                 <div>
                                     <label
                                         htmlFor="message"
-                                        className="mb-2 block text-xs font-semibold text-hbt-dark"
+                                        className="mb-2 block text-xs font-semibold text-hbt-dark dark:text-[#ececef]"
                                     >
                                         {t("contactPage.form.message")}
                                         <span className="text-hbt-orange">
@@ -1244,18 +1244,18 @@ export function ContactPage() {
                                             resize-none
                                             rounded-xl
                                             border
-                                            border-slate-200
-                                            bg-slate-50
+                                            border-slate-200 dark:border-white/10
+                                            bg-slate-50 dark:bg-white/5
                                             px-4
                                             py-3
                                             text-sm
                                             leading-6
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             outline-none
                                             transition-all
-                                            placeholder:text-slate-400
+                                            placeholder:text-slate-400 dark:text-white/40 dark:placeholder:text-white/30
                                             focus:border-hbt-orange
-                                            focus:bg-white
+                                            focus:bg-white dark:bg-[#1b1b20] dark:focus:bg-[#1b1b20]
                                             focus:ring-4
                                             focus:ring-hbt-orange/10
                                         "
@@ -1268,7 +1268,7 @@ export function ContactPage() {
                                 {submitError && (
                                     <p
                                         role="alert"
-                                        className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600"
+                                        className="rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400"
                                     >
                                         {submitError}
                                     </p>
@@ -1339,7 +1339,7 @@ export function ContactPage() {
                                 </button>
 
 
-                                <p className="text-center text-[11px] leading-5 text-slate-400">
+                                <p className="text-center text-[11px] leading-5 text-slate-400 dark:text-white/40">
                                     {t("contactPage.form.consent")}
                                 </p>
 
@@ -1355,7 +1355,7 @@ export function ContactPage() {
                 LOCATION
             ===================================================== */}
 
-            <section className="bg-white">
+            <section className="bg-white dark:bg-[#1b1b20]">
                 <div
                     className="
                         mx-auto
@@ -1387,14 +1387,14 @@ export function ContactPage() {
                                 text-3xl
                                 font-bold
                                 tracking-[-0.03em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-4xl
                             "
                         >
                             {t("contactPage.location.title")}
                         </h2>
 
-                        <p className="mt-4 text-sm leading-7 text-slate-500">
+                        <p className="mt-4 text-sm leading-7 text-slate-500 dark:text-white/55">
                             {t("contactPage.location.description")}
                         </p>
                     </div>
@@ -1406,15 +1406,15 @@ export function ContactPage() {
                             overflow-hidden
                             rounded-3xl
                             border
-                            border-slate-200
-                            bg-[#F7F7F7]
+                            border-slate-200 dark:border-white/10
+                            bg-[#F7F7F7] dark:bg-[#101013]
                             lg:grid-cols-[1fr_340px]
                         "
                     >
 
                         {/* Map */}
 
-                        <div className="relative min-h-[420px] bg-slate-100">
+                        <div className="relative min-h-[420px] bg-slate-100 dark:bg-white/8">
 
                             <iframe
                                 title={t("contactPage.location.mapTitle")}
@@ -1442,8 +1442,8 @@ export function ContactPage() {
                                 flex-col
                                 justify-between
                                 border-t
-                                border-slate-200
-                                bg-white
+                                border-slate-200 dark:border-white/10
+                                bg-white dark:bg-[#1b1b20]
                                 p-7
                                 lg:border-l
                                 lg:border-t-0
@@ -1467,7 +1467,7 @@ export function ContactPage() {
                                 </div>
 
 
-                                <h3 className="mt-6 text-lg font-bold text-hbt-dark">
+                                <h3 className="mt-6 text-lg font-bold text-hbt-dark dark:text-[#ececef]">
                                     HBTronics
                                 </h3>
 
@@ -1477,7 +1477,7 @@ export function ContactPage() {
                                         mt-3
                                         text-sm
                                         leading-6
-                                        text-slate-500
+                                        text-slate-500 dark:text-white/55
                                     "
                                 >
                                     {t(
@@ -1499,7 +1499,7 @@ export function ContactPage() {
                                             gap-3
                                             text-sm
                                             font-medium
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             transition-colors
                                             hover:text-hbt-orange
                                         "
@@ -1523,7 +1523,7 @@ export function ContactPage() {
                                             gap-3
                                             text-sm
                                             font-medium
-                                            text-hbt-dark
+                                            text-hbt-dark dark:text-[#ececef]
                                             transition-colors
                                             hover:text-hbt-orange
                                         "
@@ -1556,11 +1556,11 @@ export function ContactPage() {
                                     gap-2
                                     rounded-xl
                                     border
-                                    border-slate-200
+                                    border-slate-200 dark:border-white/10
                                     px-4
                                     text-sm
                                     font-semibold
-                                    text-hbt-dark
+                                    text-hbt-dark dark:text-[#ececef]
                                     transition-all
                                     duration-300
                                     hover:border-hbt-orange/30
@@ -1597,8 +1597,8 @@ export function ContactPage() {
             <section
                 className="
                     border-t
-                    border-black/5
-                    bg-[#F7F7F7]
+                    border-black/5 dark:border-white/8
+                    bg-[#F7F7F7] dark:bg-[#101013]
                 "
             >
                 <div
@@ -1632,14 +1632,14 @@ export function ContactPage() {
                                 text-3xl
                                 font-bold
                                 tracking-[-0.03em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-4xl
                             "
                         >
                             {t("contactPage.faq.title")}
                         </h2>
 
-                        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500">
+                        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500 dark:text-white/55">
                             {t("contactPage.faq.description")}
                         </p>
                     </div>
@@ -1665,8 +1665,8 @@ export function ContactPage() {
                                             overflow-hidden
                                             rounded-2xl
                                             border
-                                            border-slate-200
-                                            bg-white
+                                            border-slate-200 dark:border-white/10
+                                            bg-white dark:bg-[#1b1b20]
                                             transition-shadow
                                             duration-300
                                             hover:shadow-sm
@@ -1692,7 +1692,7 @@ export function ContactPage() {
                                                 text-start
                                             "
                                         >
-                                            <span className="text-sm font-semibold text-hbt-dark">
+                                            <span className="text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
                                                 {
                                                     faq.question
                                                 }
@@ -1700,7 +1700,7 @@ export function ContactPage() {
 
                                             <ChevronDown
                                                 className={[
-                                                    "h-4 w-4 shrink-0 text-slate-400 transition-transform duration-300",
+                                                    "h-4 w-4 shrink-0 text-slate-400 dark:text-white/40 transition-transform duration-300",
                                                     isOpen
                                                         ? "rotate-180 text-hbt-orange"
                                                         : "",
@@ -1725,13 +1725,13 @@ export function ContactPage() {
                                                 <p
                                                     className="
                                                         border-t
-                                                        border-slate-100
+                                                        border-slate-100 dark:border-white/8
                                                         px-5
                                                         pb-5
                                                         pt-4
                                                         text-sm
                                                         leading-6
-                                                        text-slate-500
+                                                        text-slate-500 dark:text-white/55
                                                     "
                                                 >
                                                     {
@@ -1757,8 +1757,8 @@ export function ContactPage() {
             <section
                 className="
                     border-t
-                    border-black/5
-                    bg-white
+                    border-black/5 dark:border-white/8
+                    bg-white dark:bg-[#1b1b20]
                 "
             >
                 <div
@@ -1792,14 +1792,14 @@ export function ContactPage() {
                                 text-3xl
                                 font-bold
                                 tracking-[-0.03em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-4xl
                             "
                         >
                             {t("contactPage.join.title")}
                         </h2>
 
-                        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500">
+                        <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500 dark:text-white/55">
                             {t("contactPage.join.description")}
                         </p>
                     </div>
@@ -1814,8 +1814,8 @@ export function ContactPage() {
                                     flex-col
                                     rounded-3xl
                                     border
-                                    border-black/5
-                                    bg-[#F7F7F7]
+                                    border-black/5 dark:border-white/8
+                                    bg-[#F7F7F7] dark:bg-[#101013]
                                     p-6
                                     transition-all
                                     duration-300
@@ -1841,11 +1841,11 @@ export function ContactPage() {
                                     <role.icon className="h-6 w-6" />
                                 </div>
 
-                                <h3 className="mt-5 text-lg font-bold text-hbt-dark">
+                                <h3 className="mt-5 text-lg font-bold text-hbt-dark dark:text-[#ececef]">
                                     {role.title}
                                 </h3>
 
-                                <p className="mt-2 flex-1 text-sm leading-6 text-slate-500">
+                                <p className="mt-2 flex-1 text-sm leading-6 text-slate-500 dark:text-white/55">
                                     {role.description}
                                 </p>
 

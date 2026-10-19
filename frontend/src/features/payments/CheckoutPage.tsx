@@ -61,10 +61,13 @@ function CheckoutForm({
       <PaymentElement
         options={{
           layout: "tabs",
+          // Apple Pay / Google Pay render as wallets on top of card.
+          // "auto" shows each wallet only in a browser that supports it
+          // (Apple Pay → Safari, Google Pay → Chrome).
           wallets: { applePay: "auto", googlePay: "auto" },
         }}
       />
-      {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
+      {error && <p className="rounded-xl bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
       <button
         type="button"
         disabled={!stripe || submitting}
@@ -74,7 +77,7 @@ function CheckoutForm({
         {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
         {submitting ? t("checkout.processing") : t("checkout.payNow")}
       </button>
-      <p className="flex items-center justify-center gap-1.5 text-[11px] text-[#3A3A3A]/40">
+      <p className="flex items-center justify-center gap-1.5 text-[11px] text-[#3A3A3A]/40 dark:text-white/40">
         <ShieldCheck className="h-3.5 w-3.5" /> {t("checkout.secureNote")}
       </p>
     </div>
@@ -92,28 +95,67 @@ export function CheckoutPage() {
   const [checkout, setCheckout] = useState<{ order_id: string; payment_id?: string; client_secret?: string; status: string; free?: boolean } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState(false);
+  const [coupon, setCoupon] = useState(() => searchParams.get("coupon") ?? "");
+  const [couponState, setCouponState] = useState<{ ok: boolean; name?: string; message?: string } | null>(null);
+  const [couponChecking, setCouponChecking] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (publishableKey) setStripePromise(loadStripe(publishableKey));
   }, [publishableKey]);
 
+  const startCheckout = async (code?: string) => {
+    if (!courseId || creating) return;
+    setCreating(true);
+    setError(null);
+    try {
+      const res = await checkoutApi.create({
+        items: [{ course_id: courseId }],
+        provider: "stripe",
+        ...(code?.trim() ? { coupon_code: code.trim().toUpperCase() } : {}),
+      });
+      if (res.free) {
+        navigate(`/courses/${courseId}`, { replace: true });
+        return;
+      }
+      // Persist client_secret for the order-scoped checkout URL
+      try {
+        sessionStorage.setItem(`checkout:${res.order_id}`, JSON.stringify(res));
+      } catch {}
+      navigate(`/checkout/${res.order_id}`, { replace: true });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("checkout.payFailed"));
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const checkCoupon = async () => {
+    if (!coupon.trim() || !courseId) return;
+    setCouponChecking(true);
+    setCouponState(null);
+    try {
+      const result = await checkoutApi.validateCoupon(coupon.trim(), [courseId]);
+      setCouponState({ ok: true, name: result.name });
+    } catch {
+      setCouponState({ ok: false, message: t("checkout.couponInvalid") });
+    } finally {
+      setCouponChecking(false);
+    }
+  };
+
+  // ?coupon= links (marketer emails, broadcasts) validate immediately.
   useEffect(() => {
-    if (!courseId || orderId) return;
-    checkoutApi
-      .create({ items: [{ course_id: courseId }], provider: "stripe" })
-      .then((res) => {
-        if (res.free) {
-          navigate(`/courses/${courseId}`, { replace: true });
-          return;
-        }
-        // Persist client_secret for the order-scoped checkout URL
-        try {
-          sessionStorage.setItem(`checkout:${res.order_id}`, JSON.stringify(res));
-        } catch {}
-        navigate(`/checkout/${res.order_id}`, { replace: true });
-      })
-      .catch((e: Error) => setError(e.message));
-  }, [courseId, orderId, navigate]);
+    const preset = searchParams.get("coupon");
+    if (preset && courseId && !orderId) {
+      setCoupon(preset);
+      void checkoutApi
+        .validateCoupon(preset, [courseId])
+        .then((result) => setCouponState({ ok: true, name: result.name }))
+        .catch(() => setCouponState({ ok: false, message: t("checkout.couponInvalid") }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId, orderId]);
 
   useEffect(() => {
     if (!orderId) return;
@@ -168,7 +210,7 @@ export function CheckoutPage() {
   if (error) {
     return (
       <main className="mx-auto max-w-3xl px-5 py-10">
-        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
+        <p className="rounded-2xl bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">{error}</p>
         <Link to="/catalog" className="mt-4 inline-block text-sm font-bold text-[#F47822]">
           {t("checkout.backCatalog")}
         </Link>
@@ -179,10 +221,73 @@ export function CheckoutPage() {
   if (!orderId) {
     return (
       <main className="mx-auto max-w-3xl px-5 py-10">
-        <div className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-8 text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#F47822]" />
-          <p className="mt-4 text-sm font-semibold text-[#3A3A3A]">{t("checkout.preparing")}</p>
-          <p className="mt-1 text-xs text-[#3A3A3A]/50">{t("checkout.walletsNote")}</p>
+        <div className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_12px_40px_rgba(58,58,58,.06)] sm:p-8">
+          <h1 className="flex items-center gap-2 text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">
+            <Wallet className="h-5 w-5 text-[#F47822]" /> {t("checkout.title")}
+          </h1>
+
+          <label className="mt-6 block text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
+            {t("checkout.couponLabel")}
+            <span className="mt-2 flex gap-2">
+              <input
+                value={coupon}
+                onChange={(event) => {
+                  setCoupon(event.target.value.toUpperCase().replace(/\s+/g, ""));
+                  setCouponState(null);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    void checkCoupon();
+                  }
+                }}
+                placeholder={t("checkout.couponPh")}
+                dir="ltr"
+                maxLength={40}
+                className="h-11 min-w-0 flex-1 rounded-xl border border-[#3A3A3A]/10 bg-[#FAFAFA] px-3 font-mono text-sm outline-none focus:border-[#F47822] dark:border-white/10 dark:bg-white/5"
+              />
+              <button
+                type="button"
+                onClick={() => void checkCoupon()}
+                disabled={couponChecking || !coupon.trim()}
+                className="h-11 shrink-0 rounded-xl border border-[#F47822]/30 px-4 text-xs font-bold text-[#F47822] transition hover:bg-[#F47822]/10 disabled:opacity-50"
+              >
+                {couponChecking ? <Loader2 className="h-4 w-4 animate-spin" /> : t("checkout.couponApply")}
+              </button>
+            </span>
+          </label>
+          {couponState?.ok && (
+            <p className="mt-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-xs font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+              <CheckCircle2 className="mr-1.5 inline h-3.5 w-3.5" />
+              {t("checkout.couponApplied", { name: couponState.name ?? coupon.trim().toUpperCase() })}
+            </p>
+          )}
+          {couponState && !couponState.ok && (
+            <p role="alert" className="mt-2 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">
+              {couponState.message}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={() => void startCheckout(couponState?.ok ? coupon : undefined)}
+            disabled={creating || couponChecking}
+            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#F47822] text-sm font-bold text-white shadow-[0_8px_20px_rgba(244,120,34,.22)] hover:bg-[#E96D18] disabled:opacity-60"
+          >
+            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+            {t("checkout.couponContinue")}
+          </button>
+          <button
+            type="button"
+            onClick={() => void startCheckout(undefined)}
+            disabled={creating}
+            className="mt-2 w-full py-1 text-center text-xs font-bold text-[#3A3A3A]/50 hover:text-[#F47822] disabled:opacity-50 dark:text-white/50"
+          >
+            {t("checkout.couponSkip")}
+          </button>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-[#3A3A3A]/40 dark:text-white/40">
+            <ShieldCheck className="h-3.5 w-3.5" /> {t("checkout.secureNote")}
+          </p>
         </div>
       </main>
     );
@@ -193,15 +298,15 @@ export function CheckoutPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
-      <div className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-6 shadow-[0_12px_40px_rgba(58,58,58,.06)] sm:p-8">
-        <h1 className="flex items-center gap-2 text-xl font-bold text-[#3A3A3A]">
+      <div className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_12px_40px_rgba(58,58,58,.06)] sm:p-8">
+        <h1 className="flex items-center gap-2 text-xl font-bold text-[#3A3A3A] dark:text-[#ececef]">
           <Wallet className="h-5 w-5 text-[#F47822]" /> {t("checkout.title")}
         </h1>
-        <p className="mt-1 text-sm text-[#3A3A3A]/55">{t("checkout.orderHint", { id: orderId.slice(0, 8) })}</p>
+        <p className="mt-1 text-sm text-[#3A3A3A]/55 dark:text-white/55">{t("checkout.orderHint", { id: orderId.slice(0, 8) })}</p>
 
         {!publishableKey || !clientSecret ? (
           <div className="mt-6">
-            <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            <p className="rounded-2xl bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
               {t("checkout.stubNote")}
             </p>
             <button

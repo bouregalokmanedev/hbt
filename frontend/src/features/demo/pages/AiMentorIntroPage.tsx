@@ -31,7 +31,7 @@ export function AiMentorIntroPage() {
 
   return (
     <main className="min-h-screen bg-[#F3F3F3] dark:bg-[#101013]" data-testid="ai-mentor-intro">
-      <section className="relative overflow-hidden border-b border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+      <section className="relative overflow-hidden border-b border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
         <div
           aria-hidden
           className="absolute inset-0 bg-gradient-to-br from-[#F47822]/[0.08] via-transparent to-[#8B5CF6]/[0.06]"
@@ -44,7 +44,7 @@ export function AiMentorIntroPage() {
           <h1 className="mt-4 max-w-2xl text-3xl font-black leading-tight text-[#3A3A3A] sm:text-5xl dark:text-white">
             {t("demo.mentorPage.title")}
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-[#3A3A3A]/60 sm:text-base dark:text-white/60">
+          <p className="mt-4 max-w-xl text-sm leading-7 text-[#3A3A3A]/60 dark:text-white/60 sm:text-base dark:text-white/60">
             {t("demo.mentorPage.desc")}
           </p>
 
@@ -70,7 +70,7 @@ export function AiMentorIntroPage() {
                 </Link>
                 <Link
                   to="/demo"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/15 bg-white px-6 py-3.5 text-sm font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-6 py-3.5 text-sm font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/15 dark:bg-white/[0.04] dark:text-white"
                 >
                   {t("demo.mentorPage.tryDemo")}
                 </Link>
@@ -98,6 +98,8 @@ export function AiMentorIntroPage() {
       </section>
 
       <div className="mx-auto max-w-[1100px] space-y-12 px-5 py-12 sm:px-8">
+        <MentorShowcaseLoop />
+
         <section aria-labelledby="mentor-what">
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#F47822]">
             {t("demo.mentorPage.whatEyebrow")}
@@ -109,7 +111,7 @@ export function AiMentorIntroPage() {
             {CAPABILITIES.map(({ icon: Icon, key }) => (
               <article
                 key={key}
-                className="rounded-[22px] border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]"
+                className="rounded-[22px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]"
               >
                 <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#F47822]/10 text-[#F47822]">
                   <Icon className="h-5 w-5" />
@@ -136,7 +138,7 @@ export function AiMentorIntroPage() {
             {STEPS.map((step, index) => (
               <li
                 key={step}
-                className="rounded-[22px] border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]"
+                className="rounded-[22px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]"
               >
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-[#F47822] text-xs font-black text-white">
                   {index + 1}
@@ -152,9 +154,7 @@ export function AiMentorIntroPage() {
           </ol>
         </section>
 
-        <MentorShowcaseLoop />
-
-        <section aria-labelledby="mentor-value" className="rounded-[28px] border border-[#3A3A3A]/10 bg-white p-6 sm:p-8 dark:border-white/10 dark:bg-[#1b1b20]">
+        <section aria-labelledby="mentor-value" className="rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 sm:p-8 dark:border-white/10 dark:bg-[#1b1b20]">
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#F47822]">
             {t("demo.mentorPage.valueEyebrow")}
           </p>
@@ -175,7 +175,7 @@ export function AiMentorIntroPage() {
             ))}
           </ul>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-[#3A3A3A]/8 pt-6 dark:border-white/8">
+          <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-[#3A3A3A]/8 dark:border-white/8 pt-6 dark:border-white/8">
             <Sparkles className="h-5 w-5 text-[#F47822]" />
             <p className="flex-1 text-sm text-[#3A3A3A]/60 dark:text-white/60">{t("demo.mentorPage.ctaLine")}</p>
             {!user ? (

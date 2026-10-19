@@ -32,7 +32,7 @@ export function UserRow({
     const [syncTick, syncControls] = useReducer((tick: number) => tick + 1, 0);
 
     return (
-        <tr className="transition hover:bg-[#FCFCFC]">
+        <tr className="transition hover:bg-[#FCFCFC] dark:bg-[#1b1b20]">
             {/* Person */}
             <td className="py-4">
                 <div className="flex items-center gap-3">
@@ -46,7 +46,7 @@ export function UserRow({
                         <span className="block text-sm font-semibold">
                             {user.first_name} {user.last_name}
                         </span>
-                        <span className="mt-0.5 block text-xs text-[#3A3A3A]/45">
+                        <span className="mt-0.5 block text-xs text-[#3A3A3A]/45 dark:text-white/45">
                             {user.email}
                         </span>
                     </span>
@@ -69,10 +69,10 @@ export function UserRow({
             </td>
 
             {/* Verification */}
-            <td className="py-4 text-xs text-[#3A3A3A]/55">
+            <td className="py-4 text-xs text-[#3A3A3A]/55 dark:text-white/55">
                 {verified ? (
                     <span className="inline-flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
+                        <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
                             <span className="size-1.5 rounded-full bg-emerald-500" />
                             {t("admin.users.row.verified")}
                         </span>
@@ -132,7 +132,7 @@ export function UserRow({
             </td>
 
             {/* Joined */}
-            <td className="py-4 text-xs text-[#3A3A3A]/50">
+            <td className="py-4 text-xs text-[#3A3A3A]/50 dark:text-white/50">
                 {formatDate(user.created_at, i18n.language)}
             </td>
 

@@ -194,7 +194,7 @@ function StudentVideoCard({
                             : "opacity-100"
                     }`}
                 >
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-[#3A3A3A] shadow-[0_15px_45px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#F47822] group-hover:text-white">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white dark:bg-[#1b1b20] text-[#3A3A3A] shadow-[0_15px_45px_rgba(0,0,0,0.3)] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#F47822] group-hover:text-white">
                         <Play
                             size={21}
                             fill="currentColor"
@@ -252,7 +252,7 @@ export default function StudentProof() {
     }) as string[];
 
     return (
-        <LandingSection className="bg-[#F7F7F7]">
+        <LandingSection className="bg-[#F7F7F7] dark:bg-[#101013]">
             {/* ====================================================
                 SUBTLE BACKGROUND
             ===================================================== */}
@@ -301,7 +301,7 @@ export default function StudentProof() {
 
                     {/* Small description */}
 
-                    <p className="max-w-[330px] text-sm leading-6 text-[#3A3A3A]/50 lg:pb-2">
+                    <p className="max-w-[330px] text-sm leading-6 text-[#3A3A3A]/50 dark:text-white/50 lg:pb-2">
                         {t("landingPage.proof.description")}
                     </p>
                 </Reveal>
@@ -310,7 +310,7 @@ export default function StudentProof() {
                     DIVIDER
                 ================================================== */}
 
-                <div className="my-6 h-px bg-[#3A3A3A]/10 sm:my-8" />
+                <div className="my-6 h-px bg-[#3A3A3A]/10 dark:bg-white/10 sm:my-8" />
 
                 {/* =================================================
                     VIDEO GRID
@@ -341,13 +341,13 @@ export default function StudentProof() {
                 <div className="mt-6 flex sm:justify-end">
                     <Link
                         to="/register"
-                        className="group inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.12em] text-[#3A3A3A]"
+                        className="group inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.12em] text-[#3A3A3A] dark:text-[#ececef]"
                     >
                         <span>
                             {t("landingPage.proof.startLearning")}
                         </span>
 
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3A3A3A]/15 transition-all duration-300 group-hover:border-[#F47822] group-hover:bg-[#F47822] group-hover:text-white">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3A3A3A]/15 dark:border-white/15 transition-all duration-300 group-hover:border-[#F47822] group-hover:bg-[#F47822] group-hover:text-white">
                             <ArrowRight
                                 size={15}
                                 strokeWidth={1.8}

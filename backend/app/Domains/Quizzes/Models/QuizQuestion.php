@@ -30,6 +30,7 @@ class QuizQuestion extends Model
         'position',
         'points',
         'required',
+        'explanation',
         'answer_key',
         'scoring_config',
     ];

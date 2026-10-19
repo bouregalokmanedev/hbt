@@ -157,7 +157,7 @@ export function CertificationSection() {
     <LandingSection
       id="certification"
       sectionRef={sectionRef}
-      className="bg-[#E8E4DE]"
+      className="bg-[#E8E4DE] dark:bg-[#101013]"
     >
       <TechnicalGrid />
 
@@ -210,7 +210,7 @@ export function CertificationSection() {
           w-20
           rounded-full
           border
-          border-[#181818]/10
+          border-[#181818]/10 dark:border-white/10
           rtl:left-auto
           rtl:right-[8%]
         "
@@ -244,7 +244,7 @@ export function CertificationSection() {
               max-w-2xl
               text-base
               leading-7
-              text-[#181818]/60
+              text-[#181818]/60 dark:text-white/60
               sm:text-lg
             "
           >
@@ -285,7 +285,7 @@ export function CertificationSection() {
                 relative
                 overflow-hidden
                 rounded-[24px]
-                bg-[#F7F5F0]
+                bg-[#F7F5F0] dark:bg-[#101013]
                 shadow-[0_35px_90px_rgba(24,24,24,0.14)]
               "
             >
@@ -297,7 +297,7 @@ export function CertificationSection() {
                     rounded-[24px]
                     border
                     border-black/[0.07]
-                    bg-[#F7F5F0]
+                    bg-[#F7F5F0] dark:bg-[#101013]
                     px-5
                     py-6
                     sm:px-8
@@ -358,17 +358,17 @@ export function CertificationSection() {
                         "
                       />
 
-                      <p className="mt-2.5 font-mono text-[6px] uppercase tracking-[0.18em] text-black/30 sm:text-[7px]">
+                      <p className="mt-2.5 font-mono text-[6px] uppercase tracking-[0.18em] text-black/30 dark:text-white/30 sm:text-[7px]">
                         {t("landingPage.certification.platformLine")}
                       </p>
                     </div>
 
                     <div className="text-right rtl:text-left">
-                      <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                      <p className="font-mono text-[7px] uppercase tracking-[0.16em] text-black/30 dark:text-white/30">
                         {t("landingPage.certification.credentialLabel")}
                       </p>
 
-                      <p className="mt-1 font-mono text-[8px] font-semibold tracking-[0.1em] text-black/65">
+                      <p className="mt-1 font-mono text-[8px] font-semibold tracking-[0.1em] text-black/65 dark:text-white/65">
                         HBT-9X42-EMS-26
                       </p>
                     </div>
@@ -389,7 +389,7 @@ export function CertificationSection() {
                       {t("landingPage.certification.certificateNameB")}
                     </h3>
 
-                    <p className="mx-auto mt-6 max-w-md text-[10px] leading-5 text-black/45 sm:text-xs sm:leading-6">
+                    <p className="mx-auto mt-6 max-w-md text-[10px] leading-5 text-black/45 dark:text-white/45 sm:text-xs sm:leading-6">
                       {t("landingPage.certification.certificateDesc")}
                     </p>
                   </div>
@@ -400,41 +400,41 @@ export function CertificationSection() {
 
                   <div className="mx-auto mt-8 grid w-full max-w-2xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
                     <div>
-                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30 dark:text-white/30">
                         {t("landingPage.certification.candidateLabel")}
                       </span>
 
-                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 dark:text-white/75 sm:text-xs">
                         Alex Morgan
                       </p>
                     </div>
 
                     <div>
-                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30 dark:text-white/30">
                         {t("landingPage.certification.programLabel")}
                       </span>
 
-                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 dark:text-white/75 sm:text-xs">
                         {t("landingPage.certification.programValue")}
                       </p>
                     </div>
 
                     <div>
-                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30 dark:text-white/30">
                         {t("landingPage.certification.issuedLabel")}
                       </span>
 
-                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 dark:text-white/75 sm:text-xs">
                         {t("landingPage.certification.issuedValue")}
                       </p>
                     </div>
 
                     <div>
-                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                      <span className="block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30 dark:text-white/30">
                         {t("landingPage.certification.levelLabel")}
                       </span>
 
-                      <p className="mt-1 text-[10px] font-semibold text-black/75 sm:text-xs">
+                      <p className="mt-1 text-[10px] font-semibold text-black/75 dark:text-white/75 sm:text-xs">
                         {t("landingPage.certification.levelValue")}
                       </p>
                     </div>
@@ -452,11 +452,11 @@ export function CertificationSection() {
                       <div>
                         <div className="mb-5 h-px w-32 bg-black/25" />
 
-                        <p className="text-[9px] font-semibold text-black/65">
+                        <p className="text-[9px] font-semibold text-black/65 dark:text-white/65">
                           {t("landingPage.certification.boardName")}
                         </p>
 
-                        <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.13em] text-black/30">
+                        <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.13em] text-black/30 dark:text-white/30">
                           {t("landingPage.certification.authorizedLabel")}
                         </p>
                       </div>
@@ -468,7 +468,7 @@ export function CertificationSection() {
                         {/* QR */}
 
                         <div className="flex items-center gap-3">
-                          <div className="rounded-lg border border-black/10 bg-white p-2">
+                          <div className="rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-2">
                             <QRCodeSVG
                               value="https://hbtronics.dz/verify/HBT-9X42-EMS-26"
                               size={58}
@@ -480,11 +480,11 @@ export function CertificationSection() {
                           </div>
 
                           <div className="max-w-[80px]">
-                            <p className="text-[7px] font-bold uppercase tracking-[0.13em] text-black/45">
+                            <p className="text-[7px] font-bold uppercase tracking-[0.13em] text-black/45 dark:text-white/45">
                               {t("landingPage.certification.scanLabel")}
                             </p>
 
-                            <p className="mt-1 font-mono text-[6px] leading-3 text-black/25">
+                            <p className="mt-1 font-mono text-[6px] leading-3 text-black/25 dark:text-white/25">
                               HBT-9X42-EMS-26
                             </p>
                           </div>
@@ -494,11 +494,11 @@ export function CertificationSection() {
 
                         <div className="flex items-center gap-4">
                           <div className="text-right rtl:text-left">
-                            <span className="mb-1 block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30">
+                            <span className="mb-1 block font-mono text-[7px] uppercase tracking-[0.16em] text-black/30 dark:text-white/30">
                               {t("landingPage.certification.statusLabel")}
                             </span>
 
-                            <span className="flex items-center justify-end gap-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-600 rtl:justify-start">
+                            <span className="flex items-center justify-end gap-1.5 text-[9px] font-bold uppercase tracking-[0.1em] text-emerald-600 dark:text-emerald-400 rtl:justify-start">
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               {t("landingPage.certification.statusValue")}
                             </span>
@@ -539,7 +539,7 @@ export function CertificationSection() {
             <div>
               <div className="mb-8 flex items-center justify-between">
                 <div>
-                  <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35">
+                  <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35 dark:text-white/35">
                     {t("landingPage.certification.pathwayLabel")}
                   </span>
 
@@ -548,7 +548,7 @@ export function CertificationSection() {
                   </h3>
                 </div>
 
-                <div className="hidden h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#F7F5F0] sm:flex">
+                <div className="hidden h-10 w-10 items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-[#F7F5F0] sm:flex">
                   <Sparkles className="h-4 w-4 text-[#F47822]" />
                 </div>
               </div>
@@ -609,7 +609,7 @@ export function CertificationSection() {
                                 ? "border-[#F47822] bg-[#F47822] text-white shadow-[0_8px_25px_rgba(244,120,34,0.22)]"
                                 : isComplete
                                   ? "border-[#F47822]/30 bg-[#F47822]/10 text-[#F47822]"
-                                  : "border-black/10 bg-[#F7F5F0] text-black/35"
+                                  : "border-black/10 dark:border-white/10 bg-[#F7F5F0] text-black/35 dark:text-white/35"
                             }
                           `}
                         >
@@ -625,7 +625,7 @@ export function CertificationSection() {
                         <div className="min-w-0 flex-1 pt-0.5">
                           <div className="flex items-center justify-between gap-4">
                             <div>
-                              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#181818]/30">
+                              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-[#181818]/30 dark:text-white/30">
                                 {step.number}
                               </span>
 
@@ -658,13 +658,13 @@ export function CertificationSection() {
                                 ${
                                   isActive
                                     ? "translate-x-0 text-[#F47822] opacity-100 rtl:-translate-x-0"
-                                    : "-translate-x-1 text-black/20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 rtl:translate-x-1 rtl:group-hover:-translate-x-0"
+                                    : "-translate-x-1 text-black/20 dark:text-white/20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 rtl:translate-x-1 rtl:group-hover:-translate-x-0"
                                 }
                               `}
                             />
                           </div>
 
-                          <p className="mt-2 max-w-md text-xs leading-5 text-[#181818]/50">
+                          <p className="mt-2 max-w-md text-xs leading-5 text-[#181818]/50 dark:text-white/50">
                             {step.description}
                           </p>
                         </div>
@@ -680,13 +680,13 @@ export function CertificationSection() {
                 VERIFICATION CARD
             ======================================================== */}
 
-            <div className="mt-6 rounded-[24px] border border-black/10 bg-[#F7F5F0] p-5 shadow-[0_18px_50px_rgba(24,24,24,0.06)] sm:p-6">
+            <div className="mt-6 rounded-[24px] border border-black/10 dark:border-white/10 bg-[#F7F5F0] p-5 shadow-[0_18px_50px_rgba(24,24,24,0.06)] sm:p-6">
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <div className="flex items-center gap-2">
                     <ScanLine className="h-4 w-4 text-[#F47822]" />
 
-                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#181818]/40">
+                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#181818]/40 dark:text-white/40">
                       {t("landingPage.certification.verifyTitle")}
                     </span>
                   </div>
@@ -695,7 +695,7 @@ export function CertificationSection() {
                     {t("landingPage.certification.verifyHeading")}
                   </h4>
 
-                  <p className="mt-2 max-w-sm text-xs leading-5 text-[#181818]/50">
+                  <p className="mt-2 max-w-sm text-xs leading-5 text-[#181818]/50 dark:text-white/50">
                     {t("landingPage.certification.verifyDesc")}
                   </p>
                 </div>
@@ -800,7 +800,7 @@ export function CertificationSection() {
                     overflow-hidden
                     rounded-2xl
                     border
-                    border-black/10
+                    border-black/10 dark:border-white/10
                     bg-white/40
                     px-4
                     py-3
@@ -809,7 +809,7 @@ export function CertificationSection() {
                     duration-300
                     hover:-translate-y-0.5
                     hover:border-[#F47822]/30
-                    hover:bg-white
+                    hover:bg-white dark:hover:bg-white/10
                     hover:shadow-[0_15px_32px_rgba(24,24,24,0.08)]
                   "
                 >
@@ -838,7 +838,7 @@ export function CertificationSection() {
                         {t("landingPage.certification.exploreCta")}
                       </span>
 
-                      <span className="mt-0.5 block font-mono text-[7px] uppercase tracking-[0.12em] text-black/30 group-hover:text-[#F47822]/70">
+                      <span className="mt-0.5 block font-mono text-[7px] uppercase tracking-[0.12em] text-black/30 dark:text-white/30 group-hover:text-[#F47822]/70">
                         {t("landingPage.certification.exploreSub")}
                       </span>
                     </span>
@@ -853,7 +853,7 @@ export function CertificationSection() {
                       justify-center
                       rounded-full
                       border
-                      border-black/10
+                      border-black/10 dark:border-white/10
                       transition-all
                       duration-300
                       group-hover:translate-x-0.5
@@ -880,7 +880,7 @@ export function CertificationSection() {
           className={`
             mt-28
             border-t
-            border-black/10
+            border-black/10 dark:border-white/10
             pt-12
             transition-all
             delay-500
@@ -895,7 +895,7 @@ export function CertificationSection() {
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
 
             <div>
-              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35">
+              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.18em] text-[#181818]/35 dark:text-white/35">
                 {t("landingPage.certification.structureLabel")}
               </span>
 
@@ -903,7 +903,7 @@ export function CertificationSection() {
                 {t("landingPage.certification.structureTitle")}
               </h3>
 
-              <p className="mt-5 max-w-md text-sm leading-6 text-[#181818]/50">
+              <p className="mt-5 max-w-md text-sm leading-6 text-[#181818]/50 dark:text-white/50">
                 {t("landingPage.certification.structureDesc")}
               </p>
             </div>
@@ -918,7 +918,7 @@ export function CertificationSection() {
                     overflow-hidden
                     rounded-2xl
                     border
-                    border-black/10
+                    border-black/10 dark:border-white/10
                     bg-[#F7F5F0]
                     p-5
                     transition-all
@@ -933,7 +933,7 @@ export function CertificationSection() {
                       {level.level}
                     </span>
 
-                    <span className="font-mono text-[8px] text-black/25">
+                    <span className="font-mono text-[8px] text-black/25 dark:text-white/25">
                       0{index + 1}
                     </span>
                   </div>
@@ -942,11 +942,11 @@ export function CertificationSection() {
                     {level.title}
                   </h4>
 
-                  <p className="mt-3 text-xs leading-5 text-[#181818]/45">
+                  <p className="mt-3 text-xs leading-5 text-[#181818]/45 dark:text-white/45">
                     {level.description}
                   </p>
 
-                  <div className="mt-7 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/35 transition-colors group-hover:text-[#F47822]">
+                  <div className="mt-7 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/35 dark:text-white/35 transition-colors group-hover:text-[#F47822]">
                     {t("landingPage.certification.pathwayCta")}
 
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" />
@@ -1025,7 +1025,7 @@ export function CertificationSection() {
               text-white
               transition-all
               duration-300
-              hover:bg-white
+              hover:bg-white dark:hover:bg-white/10
               hover:text-[#181818]
               hover:shadow-[0_12px_30px_rgba(244,120,34,0.22)]
             "

@@ -20,7 +20,7 @@ function Tile({
   return (
     <span
       data-brand={brand}
-      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E6E6E6] bg-white shadow-sm dark:border-white/10 dark:bg-white ${className}`}
+      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E6E6E6] bg-white dark:bg-[#1b1b20] shadow-sm dark:border-white/10 dark:bg-white dark:bg-[#1b1b20] ${className}`}
     >
       {children}
     </span>
@@ -95,7 +95,7 @@ export function PaymentBrandIcon({ brand, type, className = "" }: IconProps) {
   if (key.includes("apple")) {
     return (
       <Tile className={className} brand="apple_pay">
-        <Apple className="h-4 w-4 text-black dark:text-black" strokeWidth={2.5} />
+        <Apple className="h-4 w-4 text-black dark:text-black dark:text-white" strokeWidth={2.5} />
       </Tile>
     );
   }

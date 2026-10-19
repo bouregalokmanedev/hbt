@@ -49,7 +49,7 @@ export function AdminCrmStatsPage() {
                 title={t("admin.crm.title")}
                 description={t("admin.crm.description")}
                 action={
-                    <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-[#3A3A3A]/10 bg-white p-1.5">
+                    <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1.5">
                         {RANGES.map((item) => (
                             <button
                                 key={item}
@@ -59,7 +59,7 @@ export function AdminCrmStatsPage() {
                                 className={`rounded-xl px-3.5 py-2 text-xs font-bold transition ${
                                     range === item
                                         ? "bg-[#3A3A3A] text-white shadow"
-                                        : "text-[#3A3A3A]/55 hover:text-[#F47822]"
+                                        : "text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#F47822]"
                                 }`}
                             >
                                 {t(`admin.crm.range.${item}`)}
@@ -95,7 +95,7 @@ export function AdminCrmStatsPage() {
                         className={`rounded-full px-4 py-2 text-xs font-bold transition ${
                             metric === key
                                 ? "bg-[#F47822] text-white shadow-[0_8px_18px_rgba(244,120,34,0.2)]"
-                                : "border border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/60 hover:border-[#F47822]/40 hover:text-[#F47822]"
+                                : "border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/60 dark:text-white/60 hover:border-[#F47822]/40 hover:text-[#F47822]"
                         }`}
                     >
                         {t(`admin.crm.metrics.${key}`)}
@@ -112,7 +112,7 @@ export function AdminCrmStatsPage() {
                         <h2 className="font-semibold">
                             {t("admin.crm.chartTitle", { metric: t(`admin.crm.metrics.${metric}`) })}
                         </h2>
-                        <p className="mt-1 text-xs text-[#3A3A3A]/45">
+                        <p className="mt-1 text-xs text-[#3A3A3A]/45 dark:text-white/45">
                             {t(data.bucket === "day" ? "admin.crm.perDay" : "admin.crm.perMonth")}
                             {" · "}
                             {data.period.from} → {data.period.to}
@@ -138,10 +138,10 @@ export function AdminCrmStatsPage() {
                             );
                         })
                     ) : (
-                        <p className="m-auto text-sm text-[#3A3A3A]/45">{t("admin.crm.empty")}</p>
+                        <p className="m-auto text-sm text-[#3A3A3A]/45 dark:text-white/45">{t("admin.crm.empty")}</p>
                     )}
                 </div>
-                <div className="mt-3 flex justify-between text-[10px] text-[#3A3A3A]/38">
+                <div className="mt-3 flex justify-between text-[10px] text-[#3A3A3A]/38 dark:text-white/38">
                     <span>{data.labels[0]}</span>
                     <span>{data.labels[data.labels.length - 1]}</span>
                 </div>

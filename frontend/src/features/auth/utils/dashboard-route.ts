@@ -16,6 +16,10 @@ export function dashboardRouteFor(user: Pick<User, "roles"> | null | undefined):
         return "/support-desk";
     }
 
+    if (roles.includes("Sales")) {
+        return "/marketing";
+    }
+
     if (roles.includes("Instructor")) {
         return "/instructor";
     }

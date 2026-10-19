@@ -243,7 +243,7 @@ export function RecentActivity({
                                                     activity.id
                                                 }
                                                 to={destination.to}
-                                                className="group relative flex gap-4 rounded-xl px-1 py-3 transition hover:bg-[#F8F8F8]"
+                                                className="group relative flex gap-4 rounded-xl px-1 py-3 transition hover:bg-[#F8F8F8] dark:bg-[#1b1b20]"
                                             >
                                                 {/* Icon */}
                                                 <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white bg-[#F3F3F3] dark:bg-[#101013] shadow-sm transition group-hover:bg-[#F47822]/10">

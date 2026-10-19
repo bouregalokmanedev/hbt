@@ -27,9 +27,9 @@ export function TrainingPanel({
   const noHints = state.difficulty === "Hard" || state.difficulty === "Expert";
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+    <aside className="flex w-80 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
       {/* task */}
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="text-[11px] font-black uppercase tracking-[0.14em] text-[#F47822]">
           {tr("location.train.task", "Training task")} · {state.difficulty.toUpperCase()}
         </div>
@@ -46,7 +46,7 @@ export function TrainingPanel({
             type="button"
             onClick={() => engine.useHint()}
             disabled={noHints || state.tHints >= 3}
-            className="rounded-xl border border-[#3A3A3A]/10 bg-white px-2.5 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/30 hover:text-[#F47822] focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 disabled:opacity-40 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+            className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/30 hover:text-[#F47822] focus:outline-none focus:ring-2 focus:ring-[#F47822]/20 disabled:opacity-40 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
           >
             {tr("location.train.hint", "Hint {n} / 5", { n: state.tHints })}
           </button>
@@ -63,8 +63,8 @@ export function TrainingPanel({
             className={clsx(
               "mt-2 rounded-xl px-2.5 py-1.5 text-sm font-bold",
               state.tVerdict === "ok"
-                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
-                : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400",
+                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
+                : "bg-red-50 dark:bg-red-500/10 text-red-600 dark:bg-red-500/10 dark:text-red-400",
             )}
           >
             {state.tVerdict === "ok" ? trc("location.train.correct", "Correct location.") : trc("location.train.wrong", "Not there — look again.")}
@@ -73,7 +73,7 @@ export function TrainingPanel({
       </div>
 
       {/* progress */}
-      <div className="grid grid-cols-2 gap-2 border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="grid grid-cols-2 gap-2 border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="rounded-xl border border-[#F47822]/20 bg-[#F47822]/[0.06] p-2.5">
           <div className="text-[11px] font-black uppercase tracking-wide text-[#F47822]/80">
             {tr("location.train.score", "SCORE")}
@@ -82,7 +82,7 @@ export function TrainingPanel({
             {state.tScore}
           </div>
         </div>
-        <div className="rounded-xl border border-[#3A3A3A]/10 p-2.5 dark:border-white/10">
+        <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 p-2.5 dark:border-white/10">
           <div className="text-[11px] font-black uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
             {tr("location.train.wrong", "WRONG PICKS")}
           </div>
@@ -96,7 +96,7 @@ export function TrainingPanel({
       </div>
 
       {/* difficulty */}
-      <div className="border-b border-[#3A3A3A]/10 p-4 dark:border-white/10">
+      <div className="border-b border-[#3A3A3A]/10 dark:border-white/10 p-4 dark:border-white/10">
         <div className="text-[11px] font-black uppercase tracking-[0.14em] text-[#3A3A3A]/40 dark:text-white/40">
           {tr("location.train.difficulty", "Difficulty")}
         </div>
@@ -111,7 +111,7 @@ export function TrainingPanel({
                 "rounded-xl border px-2.5 py-1.5 text-start transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/20",
                 state.difficulty === d
                   ? "border-[#F47822] bg-[#F47822]/10 shadow-[0_4px_12px_rgba(244,120,34,0.15)]"
-                  : "border-[#3A3A3A]/10 bg-white hover:border-[#F47822]/30 dark:border-white/10 dark:bg-[#1b1b20]",
+                  : "border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] hover:border-[#F47822]/30 dark:border-white/10 dark:bg-[#1b1b20]",
               )}
             >
               <div className={clsx("text-xs font-black", state.difficulty === d ? "text-[#F47822]" : "text-[#3A3A3A] dark:text-white")}>{d}</div>
@@ -131,8 +131,8 @@ export function TrainingPanel({
         ) : (
           <ul className="mt-2 space-y-1">
             {state.tLog.map((l, i) => (
-              <li key={i} className="flex items-center gap-2 rounded-lg bg-[#3A3A3A]/[0.04] px-2 py-1.5 text-sm dark:bg-white/[0.04]">
-                <span className={l.ok ? "text-emerald-600" : "text-red-500"}>{l.ok ? "✓" : "✗"}</span>
+              <li key={i} className="flex items-center gap-2 rounded-lg bg-[#3A3A3A]/[0.04] dark:bg-white/[0.04] px-2 py-1.5 text-sm dark:bg-white/[0.04]">
+                <span className={l.ok ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}>{l.ok ? "✓" : "✗"}</span>
                 <span dir="ltr" className="font-mono text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60">
                   {l.ref}
                 </span>

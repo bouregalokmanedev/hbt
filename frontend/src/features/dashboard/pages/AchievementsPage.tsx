@@ -218,7 +218,7 @@ function LearningStreakSection({
                     className={`flex h-9 w-9 items-center justify-center rounded-xl text-[11px] font-black transition ${
                       day.active
                         ? "bg-gradient-to-br from-[#F47822] to-[#ff9a55] text-white shadow-[0_6px_16px_rgba(244,120,34,0.3)]"
-                        : "border border-[#3A3A3A]/10 bg-[#3A3A3A]/[0.05] text-[#3A3A3A]/35 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/35"
+                        : "border border-[#3A3A3A]/10 dark:border-white/10 bg-[#3A3A3A]/[0.05] dark:bg-white/[0.05] text-[#3A3A3A]/35 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/35"
                     } ${isToday ? "ring-2 ring-[#F47822]/40 ring-offset-2 ring-offset-[#FDFDFD] dark:ring-offset-[#16161a]" : ""}`}
                     aria-label={`${label}: ${day.active ? t("dashboard.achievementsPage.dayActive") : t("dashboard.achievementsPage.dayIdle")}`}
                   >
@@ -269,7 +269,7 @@ function LearningStreakSection({
             </p>
           </div>
 
-          <div className="rounded-2xl border border-[#3A3A3A]/10 bg-[#FAFAFA] p-4 dark:border-white/10 dark:bg-[#232329]">
+          <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] p-4 dark:border-white/10 dark:bg-[#232329]">
             <p className="flex items-center gap-1.5 text-xs font-black text-[#3A3A3A] dark:text-[#ececef]">
               <Activity className="h-3.5 w-3.5 text-[#F47822]" />
               {t("dashboard.achievementsPage.breakNoteTitle")}
@@ -507,7 +507,7 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
                   type="button"
                   onClick={() => setPage((p) => Math.max(p - 1, 0))}
                   disabled={safePage === 0}
-                  className="rounded-xl border border-[#3A3A3A]/10 px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-[#3A3A3A]/10 disabled:hover:text-[#3A3A3A] dark:border-white/10 dark:text-white dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822] dark:disabled:hover:border-white/10 dark:disabled:hover:text-white"
+                  className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-[#3A3A3A]/10 dark:border-white/10 disabled:hover:text-[#3A3A3A] dark:border-white/10 dark:text-white dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822] dark:disabled:hover:border-white/10 dark:disabled:hover:text-white"
                 >
                   {t("dashboard.leaderboard.prevPage")}
                 </button>
@@ -521,7 +521,7 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
                     className={`min-w-8 rounded-xl px-2.5 py-1.5 text-xs font-black tabular-nums transition focus:outline-none focus:ring-2 focus:ring-[#F47822]/30 ${
                       safePage === i
                         ? "bg-[#F47822] text-white shadow-[0_6px_14px_rgba(244,120,34,0.25)]"
-                        : "border border-[#3A3A3A]/10 text-[#3A3A3A]/70 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                        : "border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/70 dark:text-white/70 hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/70 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
                     }`}
                   >
                     {i + 1}
@@ -531,7 +531,7 @@ function FullLeaderboardSection({ t }: { t: TFunction }) {
                   type="button"
                   onClick={() => setPage((p) => Math.min(p + 1, pageCount - 1))}
                   disabled={safePage >= pageCount - 1}
-                  className="rounded-xl border border-[#3A3A3A]/10 px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-[#3A3A3A]/10 disabled:hover:text-[#3A3A3A] dark:border-white/10 dark:text-white dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822] dark:disabled:hover:border-white/10 dark:disabled:hover:text-white"
+                  className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 px-3 py-1.5 text-xs font-black text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-[#3A3A3A]/10 dark:border-white/10 disabled:hover:text-[#3A3A3A] dark:border-white/10 dark:text-white dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822] dark:disabled:hover:border-white/10 dark:disabled:hover:text-white"
                 >
                   {t("dashboard.leaderboard.nextPage")}
                 </button>
@@ -732,7 +732,7 @@ function LevelProgressSection({
               <span className="truncate">{title}</span>
             </span>
             <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/25 dark:text-white/25 rtl:-scale-x-100" aria-hidden="true" />
-            <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#F47822]/30 bg-[#F47822]/10 px-3 py-1.5 font-bold text-[#D96319]">
+            <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-[#F47822]/30 bg-[#F47822]/10 px-3 py-1.5 font-bold text-[#D96319] dark:text-[#F9A16C]">
               <Sparkles className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{nextLevelTitle}</span>
             </span>
@@ -808,7 +808,7 @@ function BadgeSection({
         ) : null}
       </div>
       {badges.length === 0 ? (
-        <p className="mt-4 rounded-2xl border border-dashed border-[#3A3A3A]/15 px-4 py-8 text-center text-sm text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55">
+        <p className="mt-4 rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-4 py-8 text-center text-sm text-[#3A3A3A]/55 dark:border-white/15 dark:text-white/55">
           {earned
             ? t("dashboard.achievementsPage.badgesEmptyEarned")
             : t("dashboard.achievementsPage.badgesEmptyLocked")}

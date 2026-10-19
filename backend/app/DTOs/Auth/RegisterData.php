@@ -14,6 +14,7 @@ final readonly class RegisterData
         public string $language = 'en',
         public string $timezone = 'UTC',
         public ?string $ref = null,
+        public ?string $visitor_id = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -28,6 +29,7 @@ final readonly class RegisterData
             language: $data['language'] ?? 'en',
             timezone: $data['timezone'] ?? 'UTC',
             ref: $data['ref'] ?? null,
+            visitor_id: $data['visitor_id'] ?? null,
         );
     }
 }

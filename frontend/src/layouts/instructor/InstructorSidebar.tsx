@@ -1,6 +1,7 @@
 import {
     BarChart3,
     BookOpen,
+    BookOpenCheck,
     ChevronLeft,
     ChevronRight,
     Cpu,
@@ -85,6 +86,11 @@ const navigationItems: NavigationItem[] = [
         to: "/instructor/announcements",
         icon: Megaphone,
     },
+    {
+        labelKey: "instructor.sidebar.guide",
+        to: "/instructor/guide",
+        icon: BookOpenCheck,
+    },
 ];
 
 export function InstructorSidebar({
@@ -130,7 +136,7 @@ export function InstructorSidebar({
                         fixed
                         inset-0
                         z-40
-                        bg-[#3A3A3A]/25
+                        bg-[#3A3A3A]/25 dark:bg-white/25
                         backdrop-blur-sm
                         lg:hidden
                     "
@@ -146,8 +152,8 @@ export function InstructorSidebar({
                     flex
                     flex-col
                     border-e
-                    border-[#3A3A3A]/8
-                    bg-[#FCFCFC]
+                    border-[#3A3A3A]/8 dark:border-white/8
+                    bg-[#FCFCFC] dark:bg-[#1b1b20]
                     shadow-[10px_0_36px_rgba(58,58,58,0.06)]
                     rtl:shadow-[-10px_0_36px_rgba(58,58,58,0.06)]
                     transition-all
@@ -177,7 +183,7 @@ export function InstructorSidebar({
                         shrink-0
                         items-center
                         border-b
-                        border-[#3A3A3A]/6
+                        border-[#3A3A3A]/6 dark:border-white/6
                         bg-white/75
                         px-5
                         backdrop-blur-sm
@@ -195,7 +201,7 @@ export function InstructorSidebar({
                                 HBT
                             </p>
 
-                            <p className="text-sm font-semibold text-[#3A3A3A]">
+                            <p className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                 {t("instructor.badge")}
                             </p>
                         </div>
@@ -222,9 +228,9 @@ export function InstructorSidebar({
                             items-center
                             justify-center
                             rounded-lg
-                            text-[#3A3A3A]/40
+                            text-[#3A3A3A]/40 dark:text-white/40
                             transition
-                            hover:bg-[#3A3A3A]/5
+                            hover:bg-[#3A3A3A]/5 dark:bg-white/5
                             hover:text-[#3A3A3A]
                             lg:flex
 
@@ -253,8 +259,8 @@ export function InstructorSidebar({
                             items-center
                             justify-center
                             rounded-lg
-                            text-[#3A3A3A]/40
-                            hover:bg-[#3A3A3A]/5
+                            text-[#3A3A3A]/40 dark:text-white/40
+                            hover:bg-[#3A3A3A]/5 dark:bg-white/5
                             lg:hidden
                         "
                     >
@@ -271,7 +277,7 @@ export function InstructorSidebar({
                             font-bold
                             uppercase
                             tracking-[0.18em]
-                            text-[#3A3A3A]/30
+                            text-[#3A3A3A]/30 dark:text-white/30
 
                             ${
                                 collapsed
@@ -328,7 +334,7 @@ export function InstructorSidebar({
                                             ${
                                                 isActive
                                                     ? "bg-[#F47822] text-white shadow-[0_7px_16px_rgba(244,120,34,.18)]"
-                                                    : "text-[#3A3A3A]/60 hover:bg-white hover:text-[#3A3A3A] hover:shadow-sm"
+                                                    : "text-[#3A3A3A]/60 dark:text-white/60 hover:bg-white dark:hover:bg-white/10 hover:text-[#3A3A3A] hover:shadow-sm"
                                             }
 
                                             ${
@@ -365,7 +371,7 @@ export function InstructorSidebar({
                     </div>
                 </nav>
 
-                <div className="shrink-0 border-t border-[#3A3A3A]/8 p-3">
+                <div className="shrink-0 border-t border-[#3A3A3A]/8 dark:border-white/8 p-3">
                     {/* Settings */}
                     <NavLink
                         to="/instructor/settings"
@@ -375,7 +381,7 @@ export function InstructorSidebar({
                             `
                             group relative flex h-10 items-center gap-3 rounded-xl px-3
                             text-xs font-medium transition-all
-                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"}
+                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A]"}
                             ${collapsed ? "justify-center px-0" : ""}
                             `
                         }
@@ -393,7 +399,7 @@ export function InstructorSidebar({
                             `
                             group relative mt-1 flex h-10 items-center gap-3 rounded-xl px-3
                             text-xs font-medium transition-all
-                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"}
+                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A]"}
                             ${collapsed ? "justify-center px-0" : ""}
                             `
                         }
@@ -403,7 +409,7 @@ export function InstructorSidebar({
                     </NavLink>
 
                     {/* User */}
-                    <div className={`mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/6 bg-[#F7F7F7] p-2 ${collapsed ? "justify-center" : ""}`}>
+                    <div className={`mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/6 dark:border-white/6 bg-[#F7F7F7] dark:bg-[#101013] p-2 ${collapsed ? "justify-center" : ""}`}>
                         <UserAvatar
                             user={user}
                             className="h-9 w-9"
@@ -413,10 +419,10 @@ export function InstructorSidebar({
                         {!collapsed && (
                             <>
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-xs font-semibold text-[#3A3A3A]">
+                                    <p className="truncate text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                         {firstName} {lastName}
                                     </p>
-                                    <p className="truncate text-[10px] text-[#3A3A3A]/40">{user?.email}</p>
+                                    <p className="truncate text-[10px] text-[#3A3A3A]/40 dark:text-white/40">{user?.email}</p>
                                 </div>
 
                                 <button
@@ -424,7 +430,7 @@ export function InstructorSidebar({
                                     onClick={() => void handleLogout()}
                                     title={t("instructor.sidebar.logout")}
                                     aria-label={t("instructor.sidebar.logout")}
-                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/35 transition hover:bg-red-50 hover:text-red-500"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/35 dark:text-white/35 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-500"
                                 >
                                     <LogOut className="h-3.5 w-3.5" />
                                 </button>

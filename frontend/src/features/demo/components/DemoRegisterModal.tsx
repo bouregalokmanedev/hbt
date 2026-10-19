@@ -38,7 +38,7 @@ export function DemoRegisterModal({ open, onClose }: DemoRegisterModalProps) {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <section className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#1b1b20]">
+      <section className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white dark:bg-[#1b1b20] shadow-2xl dark:bg-[#1b1b20]">
         <div className="h-1.5 w-full bg-[#F47822]" />
         <div
           aria-hidden
@@ -48,7 +48,7 @@ export function DemoRegisterModal({ open, onClose }: DemoRegisterModalProps) {
           type="button"
           onClick={onClose}
           aria-label={t("demo.modal.close")}
-          className="absolute end-4 top-4 rounded-lg p-1.5 text-[#3A3A3A]/45 transition hover:bg-slate-100 hover:text-[#3A3A3A] dark:text-white/45 dark:hover:bg-white/10 dark:hover:text-white"
+          className="absolute end-4 top-4 rounded-lg p-1.5 text-[#3A3A3A]/45 dark:text-white/45 transition hover:bg-slate-100 dark:bg-white/8 hover:text-[#3A3A3A] dark:text-white/45 dark:hover:bg-white/10 dark:hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
@@ -79,7 +79,7 @@ export function DemoRegisterModal({ open, onClose }: DemoRegisterModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="mt-3 w-full text-xs font-semibold text-[#3A3A3A]/55 transition hover:text-[#F47822] dark:text-white/55"
+            className="mt-3 w-full text-xs font-semibold text-[#3A3A3A]/55 dark:text-white/55 transition hover:text-[#F47822] dark:text-white/55"
           >
             {t("demo.modal.later")}
           </button>

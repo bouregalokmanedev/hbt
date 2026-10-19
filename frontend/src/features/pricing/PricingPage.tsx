@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { track } from "@/lib/track";
+import { PaymentMethodsSection } from "@/features/pricing/PaymentMethodsSection";
 
 type BillingPeriod = "monthly" | "yearly";
 
@@ -157,7 +158,7 @@ export function PricingPage() {
                                 text-4xl
                                 font-bold
                                 tracking-[-0.045em]
-                                text-hbt-dark
+                                text-hbt-dark dark:text-[#ececef]
                                 sm:text-5xl
                                 lg:text-6xl
                             "
@@ -172,7 +173,7 @@ export function PricingPage() {
                                 max-w-2xl
                                 text-base
                                 leading-7
-                                text-slate-500
+                                text-slate-500 dark:text-white/55
                                 sm:text-lg
                                 sm:leading-8
                             "
@@ -189,8 +190,8 @@ export function PricingPage() {
                                 inline-flex
                                 rounded-2xl
                                 border
-                                border-slate-200
-                                bg-white
+                                border-slate-200 dark:border-white/10
+                                bg-white dark:bg-[#1b1b20]
                                 p-1
                                 shadow-sm
                             "
@@ -204,7 +205,7 @@ export function PricingPage() {
                   "transition-all duration-200",
                   billing === "monthly"
                     ? "bg-hbt-dark text-white shadow-sm"
-                    : "text-slate-500 hover:text-hbt-dark",
+                    : "text-slate-500 dark:text-white/55 hover:text-hbt-dark dark:text-[#ececef]",
                 ].join(" ")}
               >
                 {t("pricing.billing.monthly")}
@@ -219,7 +220,7 @@ export function PricingPage() {
                   "transition-all duration-200",
                   billing === "yearly"
                     ? "bg-hbt-dark text-white shadow-sm"
-                    : "text-slate-500 hover:text-hbt-dark",
+                    : "text-slate-500 dark:text-white/55 hover:text-hbt-dark dark:text-[#ececef]",
                 ].join(" ")}
               >
                 {t("pricing.billing.yearly")}
@@ -278,8 +279,8 @@ export function PricingPage() {
                           "shadow-[0_30px_80px_rgba(244,120,34,0.16)]",
                         ].join(" ")
                       : [
-                          "border-slate-200",
-                          "bg-white",
+                          "border-slate-200 dark:border-white/10",
+                          "bg-white dark:bg-[#1b1b20]",
                           "shadow-sm",
                           "hover:border-hbt-orange/30",
                           "hover:shadow-xl",
@@ -319,7 +320,7 @@ export function PricingPage() {
                   <div
                     className={[
                       "mb-7 flex items-center justify-between",
-                      plan.popular ? "text-white" : "text-hbt-dark",
+                      plan.popular ? "text-white" : "text-hbt-dark dark:text-[#ececef]",
                     ].join(" ")}
                   >
                     <span
@@ -356,7 +357,7 @@ export function PricingPage() {
                   <h2
                     className={[
                       "text-2xl font-bold tracking-tight",
-                      plan.popular ? "text-white" : "text-hbt-dark",
+                      plan.popular ? "text-white" : "text-hbt-dark dark:text-[#ececef]",
                     ].join(" ")}
                   >
                     {plan.name}
@@ -367,7 +368,7 @@ export function PricingPage() {
                   <p
                     className={[
                       "mt-3 min-h-[72px] text-sm leading-6",
-                      plan.popular ? "text-white/60" : "text-slate-500",
+                      plan.popular ? "text-white/60" : "text-slate-500 dark:text-white/55",
                     ].join(" ")}
                   >
                     {plan.description}
@@ -380,7 +381,7 @@ export function PricingPage() {
                       <span
                         className={[
                           "text-4xl font-bold tracking-tight",
-                          plan.popular ? "text-white" : "text-hbt-dark",
+                          plan.popular ? "text-white" : "text-hbt-dark dark:text-[#ececef]",
                         ].join(" ")}
                       >
                         {formatPrice(price)}
@@ -390,7 +391,7 @@ export function PricingPage() {
                         <span
                           className={[
                             "mb-1.5 text-sm",
-                            plan.popular ? "text-white/50" : "text-slate-400",
+                            plan.popular ? "text-white/50" : "text-slate-400 dark:text-white/40",
                           ].join(" ")}
                         >
                           {billing === "monthly"
@@ -404,7 +405,7 @@ export function PricingPage() {
                       <p
                         className={[
                           "mt-2 text-xs",
-                          plan.popular ? "text-white/40" : "text-slate-400",
+                          plan.popular ? "text-white/40" : "text-slate-400 dark:text-white/40",
                         ].join(" ")}
                       >
                         {t("pricing.price.monthlyBilledYearly", {
@@ -438,9 +439,9 @@ export function PricingPage() {
                             "hover:-translate-y-0.5",
                           ].join(" ")
                         : [
-                            "border border-slate-200",
-                            "bg-white",
-                            "text-hbt-dark",
+                            "border border-slate-200 dark:border-white/10",
+                            "bg-white dark:bg-[#1b1b20]",
+                            "text-hbt-dark dark:text-[#ececef]",
                             "hover:border-hbt-orange",
                             "hover:text-hbt-orange",
                           ].join(" "),
@@ -456,7 +457,7 @@ export function PricingPage() {
                   <div
                     className={[
                       "my-8 h-px",
-                      plan.popular ? "bg-white/10" : "bg-slate-100",
+                      plan.popular ? "bg-white/10" : "bg-slate-100 dark:bg-white/8",
                     ].join(" ")}
                   />
 
@@ -466,7 +467,7 @@ export function PricingPage() {
                     <p
                       className={[
                         "mb-4 text-xs font-bold uppercase tracking-wider",
-                        plan.popular ? "text-white/40" : "text-slate-400",
+                        plan.popular ? "text-white/40" : "text-slate-400 dark:text-white/40",
                       ].join(" ")}
                     >
                       {t("pricing.plans.included")}
@@ -489,7 +490,7 @@ export function PricingPage() {
                           <span
                             className={[
                               "text-sm leading-5",
-                              plan.popular ? "text-white/75" : "text-slate-600",
+                              plan.popular ? "text-white/75" : "text-slate-600 dark:text-white/65",
                             ].join(" ")}
                           >
                             {feature}
@@ -509,41 +510,47 @@ export function PricingPage() {
                 TRUST STRIP
             ====================================================== */}
 
-      <section className="border-y border-slate-100 bg-slate-50/70">
+      <section className="border-y border-slate-100 dark:border-white/8 bg-slate-50/70">
         <div className="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8">
           <div className="grid gap-8 text-center sm:grid-cols-3">
             <div>
-              <p className="text-2xl font-bold text-hbt-dark">
+              <p className="text-2xl font-bold text-hbt-dark dark:text-[#ececef]">
                 {t("pricing.trust.practical")}
               </p>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-500 dark:text-white/55">
                 {t("pricing.trust.practicalDescription")}
               </p>
             </div>
 
-            <div className="sm:border-x sm:border-slate-200">
-              <p className="text-2xl font-bold text-hbt-dark">
+            <div className="sm:border-x sm:border-slate-200 dark:border-white/10">
+              <p className="text-2xl font-bold text-hbt-dark dark:text-[#ececef]">
                 {t("pricing.trust.flexible")}
               </p>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-500 dark:text-white/55">
                 {t("pricing.trust.flexibleDescription")}
               </p>
             </div>
 
             <div>
-              <p className="text-2xl font-bold text-hbt-dark">
+              <p className="text-2xl font-bold text-hbt-dark dark:text-[#ececef]">
                 {t("pricing.trust.career")}
               </p>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-500 dark:text-white/55">
                 {t("pricing.trust.careerDescription")}
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* =====================================================
+                PAYMENT METHODS
+            ====================================================== */}
+
+      <PaymentMethodsSection />
 
       {/* =====================================================
                 FAQ
@@ -573,19 +580,19 @@ export function PricingPage() {
                             text-3xl
                             font-bold
                             tracking-tight
-                            text-hbt-dark
+                            text-hbt-dark dark:text-[#ececef]
                             sm:text-4xl
                         "
           >
             {t("pricing.faq.title")}
           </h2>
 
-          <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">
+          <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-white/55 sm:text-base">
             {t("pricing.faq.subtitle")}
           </p>
         </div>
 
-        <div className="mt-10 divide-y divide-slate-200 rounded-3xl border border-slate-200 bg-white px-6">
+        <div className="mt-10 divide-y divide-slate-200 dark:divide-white/10 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-6">
           {faqs.map((faq) => (
             <details key={faq.question} className="group py-5">
               <summary
@@ -598,7 +605,7 @@ export function PricingPage() {
                                         gap-6
                                         text-sm
                                         font-semibold
-                                        text-hbt-dark
+                                        text-hbt-dark dark:text-[#ececef]
                                     "
               >
                 {faq.question}
@@ -612,8 +619,8 @@ export function PricingPage() {
                                             items-center
                                             justify-center
                                             rounded-full
-                                            bg-slate-100
-                                            text-slate-500
+                                            bg-slate-100 dark:bg-white/8
+                                            text-slate-500 dark:text-white/55
                                             transition-transform
                                             duration-300
                                             group-open:rotate-45
@@ -629,7 +636,7 @@ export function PricingPage() {
                                         max-w-2xl
                                         text-sm
                                         leading-6
-                                        text-slate-500
+                                        text-slate-500 dark:text-white/55
                                     "
               >
                 {faq.answer}

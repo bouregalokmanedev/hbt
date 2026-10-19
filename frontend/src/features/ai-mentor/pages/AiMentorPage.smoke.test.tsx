@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { I18nextProvider } from "react-i18next";
+import { MemoryRouter } from "react-router-dom";
 
 import i18n from "@/i18n";
 import { AiMentorPage } from "./AiMentorPage";
@@ -41,9 +42,11 @@ function createConversation(id: string): MentorConversation {
 
 function renderPage() {
     return render(
-        <I18nextProvider i18n={i18n}>
-            <AiMentorPage />
-        </I18nextProvider>,
+        <MemoryRouter>
+            <I18nextProvider i18n={i18n}>
+                <AiMentorPage />
+            </I18nextProvider>
+        </MemoryRouter>,
     );
 }
 

@@ -26,6 +26,8 @@ export interface RegisterPayload {
     timezone?: string;
     /** Invite code from the /register?ref= signup link. */
     ref?: string;
+    /** Anonymous browser id for stitching pre-signup analytics and leads. */
+    visitor_id?: string;
 }
 
 

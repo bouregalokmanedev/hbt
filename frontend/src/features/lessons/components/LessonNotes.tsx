@@ -110,7 +110,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
   if (loadError) {
     return (
       <div className="p-5 text-center sm:p-7">
-        <p className="text-sm font-semibold text-red-600">{loadError}</p>
+        <p className="text-sm font-semibold text-red-600 dark:text-red-400">{loadError}</p>
         <button
           type="button"
           onClick={() => void load()}
@@ -134,7 +134,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
         </button>
         <div className="mt-3 space-y-1">
           {notes.length === 0 ? (
-            <p className="rounded-xl bg-[#FCFCFC] px-3 py-4 text-center text-xs leading-5 text-gray-400 dark:bg-[#232329]">
+            <p className="rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-4 text-center text-xs leading-5 text-gray-400 dark:bg-[#232329]">
               {t("lessonPlayer.notes.emptyTitle")}
             </p>
           ) : (
@@ -148,7 +148,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
               <p className="truncate text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                 {note.title}
               </p>
-              <p className="mt-1 truncate text-xs text-gray-400">
+              <p className="mt-1 truncate text-xs text-gray-400 dark:text-white/40">
                 {note.content || t("lessonPlayer.notes.emptyNote")}
               </p>
             </button>
@@ -166,7 +166,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
               <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#F47822]">
                 {t("lessonPlayer.notes.eyebrow")}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-white/55">
                 {t("lessonPlayer.notes.desc")}
               </p>
             </div>
@@ -184,7 +184,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
                 <button
                   type="button"
                   onClick={() => void remove()}
-                  className="rounded-xl p-2 text-gray-400 transition hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
+                  className="rounded-xl p-2 text-gray-400 dark:text-white/40 transition hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
                   aria-label={t("lessonPlayer.notes.delete")}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -207,7 +207,7 @@ export function LessonNotes({ lessonId }: { lessonId: string }) {
         />
         <div className="mt-4 flex items-center justify-end gap-3">
           {actionError && (
-            <p role="alert" className="mr-auto text-xs font-semibold text-red-600">
+            <p role="alert" className="mr-auto text-xs font-semibold text-red-600 dark:text-red-400">
               {actionError}
             </p>
           )}

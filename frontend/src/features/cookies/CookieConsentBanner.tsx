@@ -62,12 +62,12 @@ function Switch({
                 "disabled:cursor-not-allowed",
                 checked
                     ? "bg-[#F47822] shadow-[inset_0_1px_2px_rgba(0,0,0,0.18)]"
-                    : "bg-[#3A3A3A]/15 shadow-[inset_0_1px_2px_rgba(0,0,0,0.08)] dark:bg-white/15",
+                    : "bg-[#3A3A3A]/15 dark:bg-white/15 shadow-[inset_0_1px_2px_rgba(0,0,0,0.08)] dark:bg-white/15",
             )}
         >
             <span
                 className={cn(
-                    "absolute start-0 top-[3px] h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    "absolute start-0 top-[3px] h-5 w-5 rounded-full bg-white dark:bg-[#1b1b20] shadow-md transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                     checked
                         ? "translate-x-[23px] rtl:-translate-x-[23px]"
                         : "translate-x-[3px] rtl:-translate-x-[3px]",
@@ -96,7 +96,7 @@ function CategoryRow({
                     "grid size-9 shrink-0 place-items-center rounded-xl border transition-colors",
                     checked
                         ? "border-[#F47822]/25 bg-[#F47822]/10 text-[#F47822]"
-                        : "border-[#3A3A3A]/10 bg-[#3A3A3A]/[0.04] text-[#3A3A3A]/45 dark:border-white/10 dark:bg-white/5 dark:text-white/40",
+                        : "border-[#3A3A3A]/10 dark:border-white/10 bg-[#3A3A3A]/[0.04] dark:bg-white/[0.04] text-[#3A3A3A]/45 dark:border-white/10 dark:bg-white/5 dark:text-white/40",
                 )}
             >
                 <Icon className="size-4" aria-hidden="true" />
@@ -237,7 +237,7 @@ export function CookieConsentBanner() {
                                     type="button"
                                     onClick={rejectAll}
                                     aria-label={t("cookieConsent.reject")}
-                                    className="-me-1 -mt-1 rounded-full p-2 text-[#3A3A3A]/35 transition hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A] dark:text-white/35 dark:hover:bg-white/10 dark:hover:text-white"
+                                    className="-me-1 -mt-1 rounded-full p-2 text-[#3A3A3A]/35 dark:text-white/35 transition hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A] dark:text-white/35 dark:hover:bg-white/10 dark:hover:text-white"
                                 >
                                     <X className="size-[18px]" aria-hidden="true" />
                                 </button>
@@ -270,7 +270,7 @@ export function CookieConsentBanner() {
                                         }
                                         className="overflow-hidden"
                                     >
-                                        <div className="mt-4 divide-y divide-[#3A3A3A]/[0.07] overflow-hidden rounded-2xl border border-[#3A3A3A]/[0.08] bg-[#3A3A3A]/[0.025] px-3.5 dark:divide-white/[0.07] dark:border-white/10 dark:bg-white/[0.03]">
+                                        <div className="mt-4 divide-y divide-[#3A3A3A]/[0.07] overflow-hidden rounded-2xl border border-[#3A3A3A]/[0.08] dark:border-white/[0.08] bg-[#3A3A3A]/[0.025] dark:bg-white/[0.025] px-3.5 dark:divide-white/[0.07] dark:border-white/10 dark:bg-white/[0.03]">
                                             {CATEGORIES.map((category) => (
                                                 <CategoryRow
                                                     key={category.key}
@@ -297,7 +297,7 @@ export function CookieConsentBanner() {
                             </AnimatePresence>
 
                             {/* Trust strip */}
-                            <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#3A3A3A]/[0.07] pt-3.5 dark:border-white/[0.08]">
+                            <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#3A3A3A]/[0.07] dark:border-white/[0.07] pt-3.5 dark:border-white/[0.08]">
                                 <p className="flex items-center gap-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/45 dark:text-white/40">
                                     <ShieldCheck
                                         className="size-3.5 text-[#16a34a]"
@@ -324,7 +324,7 @@ export function CookieConsentBanner() {
                                 type="button"
                                 onClick={() => setManaging((prev) => !prev)}
                                 aria-expanded={managing}
-                                className="flex w-full items-center justify-center gap-2 rounded-full border border-[#3A3A3A]/10 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/[0.06] hover:text-[#F47822] dark:border-white/10 dark:text-white/55 dark:hover:border-[#F47822]/35 dark:hover:text-[#F47822]"
+                                className="flex w-full items-center justify-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/[0.06] hover:text-[#F47822] dark:border-white/10 dark:text-white/55 dark:hover:border-[#F47822]/35 dark:hover:text-[#F47822]"
                             >
                                 <SlidersHorizontal
                                     className="size-3.5"
@@ -341,7 +341,7 @@ export function CookieConsentBanner() {
                                         <button
                                             type="button"
                                             onClick={() => setManaging(false)}
-                                            className="rounded-full border border-[#3A3A3A]/10 py-3 text-[13px] font-bold text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white"
+                                            className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 py-3 text-[13px] font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:bg-white/10 dark:hover:text-white"
                                         >
                                             {t("cookieConsent.cancel")}
                                         </button>
@@ -361,7 +361,7 @@ export function CookieConsentBanner() {
                                         <button
                                             type="button"
                                             onClick={rejectAll}
-                                            className="rounded-full border border-[#3A3A3A]/10 py-3 text-[13px] font-bold text-[#3A3A3A]/60 transition hover:border-[#3A3A3A]/20 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-white"
+                                            className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 py-3 text-[13px] font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#3A3A3A]/20 dark:border-white/20 hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-white"
                                         >
                                             {t("cookieConsent.reject")}
                                         </button>

@@ -39,7 +39,7 @@ function ScenarioCta({ item, t }: { item: DiagnosticHubItem; t: TFunction }) {
         return (
             <Link
                 to={`/diagnostics/${item.id}`}
-                className="group/cta inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-5 py-3 text-xs font-bold text-[#3A3A3A] transition-all hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/40 focus-visible:ring-offset-2 dark:border-white/10 dark:bg-[#1b1b20] dark:text-[#ececef] dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400 sm:w-auto"
+                className="group/cta inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-5 py-3 text-xs font-bold text-[#3A3A3A] transition-all hover:border-emerald-300 hover:bg-emerald-50 dark:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/40 focus-visible:ring-offset-2 dark:border-white/10 dark:bg-[#1b1b20] dark:text-[#ececef] dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400 sm:w-auto"
             >
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     {item.best_score !== null ? <Eye className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
@@ -101,7 +101,7 @@ export function LessonDiagnostics({ courseId }: { courseId: string }) {
                     <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#F47822]">{t("lessonPlayer.scenarios.eyebrow")}</p>
                         <h2 className="mt-1 text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("lessonPlayer.scenarios.title")}</h2>
-                        <p className="mt-1 text-xs leading-5 text-gray-500">
+                        <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-white/55">
                             {t("lessonPlayer.scenarios.loginDesc")}
                         </p>
                     </div>
@@ -141,7 +141,7 @@ export function LessonDiagnostics({ courseId }: { courseId: string }) {
                         <h2 className="mt-0.5 text-base font-bold text-[#3A3A3A] dark:text-[#ececef] sm:text-lg">{t("lessonPlayer.scenarios.title")}</h2>
                     </div>
                 </div>
-                <p className="mt-3 text-xs leading-5 text-gray-500 sm:text-sm sm:leading-6">
+                <p className="mt-3 text-xs leading-5 text-gray-500 dark:text-white/55 sm:text-sm sm:leading-6">
                     {t("lessonPlayer.scenarios.listDesc")}
                 </p>
             </div>
@@ -167,8 +167,8 @@ export function LessonDiagnostics({ courseId }: { courseId: string }) {
                                     </span>
                                 )}
                             </div>
-                            {item.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500">{item.description}</p>}
-                            <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
+                            {item.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500 dark:text-white/55">{item.description}</p>}
+                            <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 dark:text-white/55">
                                 <span>{t("lessonPlayer.scenarios.steps", { n: item.steps_count })}</span>
                                 <span>{t("lessonPlayer.scenarios.passAt", { pct: item.passing_score })}</span>
                                 {item.best_score !== null && (

@@ -1,9 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ArrowRight, Gauge, Activity, MapPin, GitBranch, ScanSearch, X, Info, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Gauge, Activity, MapPin, GitBranch, ScanSearch, X, Info, Lock, Play } from "lucide-react";
 
-import { ScannerLabFull } from "../components/labs/ScannerLabFull";
+import { ScannerToolHome } from "../scanner/screens/ScannerToolHome";
 import { MultimeterLabFull } from "../components/labs/MultimeterLabFull";
 import { OscilloscopeLabFull } from "../oscilloscope/components/OscilloscopeLabFull";
 import { LocationLabFull } from "../components/labs/LocationLabFull";
@@ -150,6 +150,9 @@ export function SimulatorLabPage() {
             return true;
         }
     });
+    // Scanner: the "Start the tour" button in the intro card re-opens the
+    // first-use tour inside the tablet.
+    const [scannerTourNonce, setScannerTourNonce] = useState(0);
     useEffect(() => {
         try {
             setIntroOpen(window.localStorage.getItem(introKey) !== "1");
@@ -190,7 +193,7 @@ export function SimulatorLabPage() {
             <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013] p-6">
                 <div
                     data-testid="simulator-limit-block"
-                    className="mx-auto max-w-xl rounded-2xl border border-[#F47822]/30 bg-white p-6 text-center shadow-sm dark:border-[#F47822]/30 dark:bg-[#1b1b20]"
+                    className="mx-auto max-w-xl rounded-2xl border border-[#F47822]/30 bg-white dark:bg-[#1b1b20] p-6 text-center shadow-sm dark:border-[#F47822]/30 dark:bg-[#1b1b20]"
                 >
                     <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#F47822]/10 text-[#F47822]">
                         <Lock className="h-5 w-5" />
@@ -220,7 +223,7 @@ export function SimulatorLabPage() {
                         </Link>
                         <Link
                             to="/simulator"
-                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-white px-5 py-2.5 text-sm font-bold text-[#3A3A3A] transition hover:bg-[#F8F7F6] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
+                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-5 py-2.5 text-sm font-bold text-[#3A3A3A] transition hover:bg-[#F8F7F6] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white"
                         >
                             <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                             {t("simulator.lab.backLabs")}
@@ -235,16 +238,36 @@ export function SimulatorLabPage() {
 
     return (
         <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013]">
-            <div className="mx-auto max-w-[1440px] px-5 py-6 sm:px-8">
-                <Link
-                    to="/simulator"
-                    className="group inline-flex w-fit items-center gap-2 rounded-full border border-[#3A3A3A]/10 bg-white px-4 py-2 text-sm font-bold text-[#3A3A3A]/60 shadow-sm transition-all hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
-                >
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-[#3A3A3A]/[.05] transition-colors group-hover:bg-[#F47822]/10 dark:bg-white/[0.06]">
-                        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
-                    </span>
-                    {t("simulator.lab.backLabs")}
-                </Link>
+            <div
+                className={
+                    tool === "scanner"
+                        ? "mx-auto max-w-full px-3 py-3 sm:px-4"
+                        : "mx-auto max-w-[1440px] px-5 py-6 sm:px-8"
+                }
+            >
+                {/* Back to labs + About this lab share one toolbar row. */}
+                <div className="flex w-full items-center justify-between gap-3">
+                    <Link
+                        to="/simulator"
+                        className="group inline-flex w-fit items-center gap-2 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2 text-sm font-bold text-[#3A3A3A]/60 dark:text-white/60 shadow-sm transition-all hover:-translate-x-0.5 hover:border-[#F47822]/40 hover:bg-[#F47822]/5 hover:text-[#F47822] rtl:hover:translate-x-0.5 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                    >
+                        <span className="grid h-7 w-7 place-items-center rounded-full bg-[#3A3A3A]/[.05] dark:bg-white/[.05] transition-colors group-hover:bg-[#F47822]/10 dark:bg-white/[0.06]">
+                            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
+                        </span>
+                        {t("simulator.lab.backLabs")}
+                    </Link>
+                    {!introOpen ? (
+                        <button
+                            type="button"
+                            data-testid="simulator-lab-about"
+                            onClick={reopenIntro}
+                            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 py-2 text-xs font-bold text-[#3A3A3A]/60 shadow-sm transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+                        >
+                            <Info className="h-3.5 w-3.5" />
+                            {t("simulator.lab.intro.about")}
+                        </button>
+                    ) : null}
+                </div>
 
                 {limitHit && (
                     <div
@@ -276,7 +299,14 @@ export function SimulatorLabPage() {
                 )}
 
                 {introOpen ? (
-                <div className="relative mt-4 rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-sm">
+                <section
+                    aria-label={t("simulator.lab.intro.about")}
+                    className="relative mt-4 overflow-hidden rounded-[24px] border border-[#3A3A3A]/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#1b1b20]"
+                >
+                    <div
+                        aria-hidden="true"
+                        className="h-1 w-full bg-gradient-to-r from-[#F47822] via-[#ffab67] to-transparent rtl:bg-gradient-to-l"
+                    />
                     <button
                         type="button"
                         onClick={dismissIntro}
@@ -286,43 +316,103 @@ export function SimulatorLabPage() {
                     >
                         <X className="h-4 w-4" />
                     </button>
-                    <div className="flex items-center gap-3">
-                        <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#3A3A3A] text-white"><Icon className="h-5 w-5" /></span>
-                        <div>
-                            <h1 className="text-xl font-black tracking-tight text-[#3A3A3A] dark:text-[#ececef]">{lab.name}</h1>
-                            <p className="text-xs font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">{lab.bench}</p>
+
+                    <div className="flex flex-col gap-5 p-6 lg:flex-row lg:gap-7">
+                        {/* identity: icon, title, blurb, engine badge, parity note */}
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-3 pe-9">
+                                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#3A3A3A] to-[#15151a] text-white shadow-md dark:from-[#2c2c33] dark:to-[#141417]">
+                                    <Icon className="h-5 w-5" />
+                                </span>
+                                <div className="min-w-0">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#F47822]">
+                                        {t("simulator.lab.intro.about")}
+                                    </p>
+                                    <h1 className="truncate text-xl font-black tracking-tight text-[#1A1A1A] dark:text-[#ececef]">
+                                        {lab.name}
+                                    </h1>
+                                    <p className="text-xs font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
+                                        {lab.bench}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p className="mt-4 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">
+                                {lab.desc}
+                            </p>
+
+                            <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                {t("simulator.lab.engine")}
+                            </span>
+
+                            <p className="mt-3 text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">
+                                {t("simulator.lab.parityPrefix")}{" "}
+                                {about?.parity ?? t("simulator.lab.about.scanner.parity")}
+                            </p>
                         </div>
-                        <span className="ml-auto hidden sm:inline-flex rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">{t("simulator.lab.engine")}</span>
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">{lab.desc}</p>
-                    <div className="mt-4 rounded-2xl bg-[#0f1115] p-4 text-white">
-                        <p className="text-xs font-bold uppercase tracking-wide text-white/40">{about?.liveBench ?? lab.name}</p>
-                        <p className="mt-1 text-sm text-white/60">{about?.liveDesc ?? lab.desc}</p>
-                        <p className="mt-2 text-sm text-white/60">{about?.tryLine ?? t("simulator.lab.about.scanner.tryLine")} <Link to="/reports" className="underline text-white">{t("simulator.lab.reports")}</Link>.</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">{t("simulator.lab.vehicleWith", { car: practiceCarName(vehicleKey ?? DEFAULT_VEHICLE) })}</span>
-                            <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold">{t("simulator.lab.tool")} {t(`simulator.toolNames.${tool ?? "scanner"}`)}</span>
-                            <span className="rounded-full bg-[#F47822] px-3 py-1.5 text-xs font-bold">{about?.try ?? t("simulator.lab.about.scanner.try")}</span>
+
+                        {/* live bench card: what the bench is + quick facts */}
+                        <div className="w-full shrink-0 rounded-2xl border border-white/10 bg-[#0f1115] p-5 text-white lg:w-[330px]">
+                            <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.16em] text-[#F47822]">
+                                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#F47822]" />
+                                {about?.liveBench ?? lab.name}
+                            </p>
+                            <p className="mt-2 text-sm leading-6 text-white/60">{about?.liveDesc ?? lab.desc}</p>
+                            <p className="mt-3 text-sm leading-6 text-white/60">
+                                {about?.tryLine ?? t("simulator.lab.about.scanner.tryLine")}{" "}
+                                <Link
+                                    to="/reports"
+                                    className="font-bold text-white underline underline-offset-2 transition hover:text-[#F47822]"
+                                >
+                                    {t("simulator.lab.reports")}
+                                </Link>.
+                            </p>
+                            <ul className="mt-4 space-y-2.5 border-t border-white/10 pt-4">
+                                <li className="flex items-start gap-2.5 text-[13px] font-semibold text-white/70">
+                                    <span aria-hidden="true" className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-white/30" />
+                                    {t("simulator.lab.vehicleWith", { car: practiceCarName(vehicleKey ?? DEFAULT_VEHICLE) })}
+                                </li>
+                                <li className="flex items-start gap-2.5 text-[13px] font-semibold text-white/70">
+                                    <span aria-hidden="true" className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-white/30" />
+                                    {t("simulator.lab.tool")} {t(`simulator.toolNames.${tool ?? "scanner"}`)}
+                                </li>
+                                <li className="flex items-start gap-2.5 text-[13px] font-bold text-[#F9A05A]">
+                                    <span aria-hidden="true" className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#F47822]" />
+                                    {about?.try ?? t("simulator.lab.about.scanner.try")}
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <p className="mt-3 text-xs text-[#3A3A3A]/40 dark:text-white/40">{t("simulator.lab.parityPrefix")} {about?.parity ?? t("simulator.lab.about.scanner.parity")}</p>
-                </div>
-                ) : (
-                <div className="mt-4 flex justify-end">
-                    <button
-                        type="button"
-                        onClick={reopenIntro}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 py-2 text-xs font-bold text-[#3A3A3A]/60 transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60"
-                    >
-                        <Info className="h-3.5 w-3.5" />
-                        {t("simulator.lab.intro.about")}
-                    </button>
-                </div>
-                )}
+
+                    {tool === "scanner" ? (
+                        <div className="flex flex-wrap items-center gap-3 border-t border-[#3A3A3A]/10 bg-[#FBFBFA] px-6 py-4 dark:border-white/10 dark:bg-white/[.02]">
+                            <button
+                                type="button"
+                                data-testid="scanner-start-tour"
+                                onClick={() => {
+                                    setScannerTourNonce((n) => n + 1);
+                                    dismissIntro();
+                                }}
+                                className="inline-flex items-center gap-2 rounded-xl bg-[#F47822] px-5 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-[#E96D18]"
+                            >
+                                <Play className="h-4 w-4" />
+                                {t("simulator.lab.intro.startTour")}
+                            </button>
+                            <p className="max-w-[54ch] text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">
+                                {t("simulator.lab.intro.tourHint")}
+                            </p>
+                        </div>
+                    ) : null}
+                </section>
+                ) : null}
 
                 {tool === "scanner" && (
-                    <div className="mt-6">
-                        <ScannerLabFull sessionId={null} />
+                    <div className="mt-3">
+                        <ScannerToolHome
+                            key={scannerTourNonce}
+                            forceTour={scannerTourNonce > 0}
+                        />
                     </div>
                 )}
 

@@ -1,4 +1,5 @@
 import {
+    BookOpenCheck,
     ChevronLeft,
     ChevronRight,
     Inbox,
@@ -7,6 +8,7 @@ import {
     Mail,
     Megaphone,
     MessageCircle,
+    Search,
     Settings,
     Ticket,
     UserRound,
@@ -38,10 +40,12 @@ const navigationItems: NavigationItem[] = [
     { labelKey: "supportDesk.sidebar.dashboard", to: "/support-desk", icon: LayoutDashboard, end: true },
     { labelKey: "supportDesk.sidebar.queue", to: "/support-desk/tickets", icon: Inbox },
     { labelKey: "supportDesk.sidebar.myTickets", to: "/support-desk/my-tickets", icon: Ticket },
+    { labelKey: "supportDesk.sidebar.students", to: "/support-desk/students", icon: Search },
     { labelKey: "supportDesk.sidebar.mailbox", to: "/support-desk/mail", icon: Mail },
     { labelKey: "supportDesk.sidebar.staffHub", to: "/support-desk/staff-hub", icon: Users },
     { labelKey: "supportDesk.sidebar.messages", to: "/support-desk/messages", icon: MessageCircle },
     { labelKey: "supportDesk.sidebar.announcements", to: "/support-desk/announcements", icon: Megaphone },
+    { labelKey: "supportDesk.sidebar.guide", to: "/support-desk/guide", icon: BookOpenCheck },
 ];
 
 export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: SupportSidebarProps) {
@@ -69,14 +73,14 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                     type="button"
                     aria-label={t("supportDesk.sidebar.closeAria")}
                     onClick={onClose}
-                    className="fixed inset-0 z-40 bg-[#3A3A3A]/25 backdrop-blur-sm lg:hidden"
+                    className="fixed inset-0 z-40 bg-[#3A3A3A]/25 dark:bg-white/25 backdrop-blur-sm lg:hidden"
                 />
             )}
 
             <aside
                 className={`
                     fixed inset-y-0 start-0 z-50 flex flex-col
-                    border-e border-[#3A3A3A]/8 bg-[#FCFCFC]
+                    border-e border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20]
                     shadow-[10px_0_36px_rgba(58,58,58,0.06)]
                     rtl:shadow-[-10px_0_36px_rgba(58,58,58,0.06)]
                     transition-all duration-300 w-[260px]
@@ -87,14 +91,14 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                 <div
                     className={`
                         relative flex h-[72px] shrink-0 items-center gap-4
-                        border-b border-[#3A3A3A]/6 bg-white/75 backdrop-blur-sm px-5
+                        border-b border-[#3A3A3A]/6 dark:border-white/6 bg-white/75 backdrop-blur-sm px-5
                         ${collapsed ? "justify-center px-0" : "justify-between"}
                     `}
                 >
                     {!collapsed && (
                         <div>
                             <p className="text-xs font-bold tracking-[0.18em] text-[#F47822]">HBT</p>
-                            <p className="text-sm font-semibold text-[#3A3A3A]">{t("supportDesk.brand")}</p>
+                            <p className="text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("supportDesk.brand")}</p>
                         </div>
                     )}
 
@@ -110,7 +114,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                         aria-label={collapsed ? t("supportDesk.sidebar.expandAria") : t("supportDesk.sidebar.collapseAria")}
                         className={`
                             hidden h-8 w-8 items-center justify-center rounded-lg
-                            text-[#3A3A3A]/40 transition hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A] lg:flex
+                            text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A] lg:flex
                             ${collapsed ? "absolute right-3 top-1/2 -translate-y-1/2 rtl:left-3 rtl:right-auto" : ""}
                         `}
                     >
@@ -121,14 +125,14 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                         type="button"
                         onClick={onClose}
                         aria-label={t("supportDesk.sidebar.closeAria")}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-[#3A3A3A]/40 hover:bg-[#3A3A3A]/5 lg:hidden"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-[#3A3A3A]/40 dark:text-white/40 hover:bg-[#3A3A3A]/5 dark:bg-white/5 lg:hidden"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 </div>
 
                 <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-5 [scrollbar-width:thin]">
-                    <p className={`mb-2 px-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]/30 ${collapsed ? "sr-only" : ""}`}>
+                    <p className={`mb-2 px-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]/30 dark:text-white/30 ${collapsed ? "sr-only" : ""}`}>
                         {t("supportDesk.sidebar.section")}
                     </p>
 
@@ -152,7 +156,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                                         `
                                         group relative flex h-11 items-center gap-3 rounded-xl px-3
                                         text-xs font-medium transition-all
-                                        ${isActive ? "bg-[#F47822] text-white shadow-[0_7px_16px_rgba(244,120,34,.18)]" : "text-[#3A3A3A]/60 hover:bg-white hover:text-[#3A3A3A] hover:shadow-sm"}
+                                        ${isActive ? "bg-[#F47822] text-white shadow-[0_7px_16px_rgba(244,120,34,.18)]" : "text-[#3A3A3A]/60 dark:text-white/60 hover:bg-white dark:hover:bg-white/10 hover:text-[#3A3A3A] hover:shadow-sm"}
                                         ${collapsed ? "justify-center px-0" : ""}
                                         `
                                     }
@@ -173,7 +177,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                     </div>
                 </nav>
 
-                <div className="shrink-0 border-t border-[#3A3A3A]/8 p-3">
+                <div className="shrink-0 border-t border-[#3A3A3A]/8 dark:border-white/8 p-3">
                     {/* Settings */}
                     <NavLink
                         to="/support-desk/settings"
@@ -183,7 +187,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                             `
                             group relative flex h-10 items-center gap-3 rounded-xl px-3
                             text-xs font-medium transition-all
-                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"}
+                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A]"}
                             ${collapsed ? "justify-center px-0" : ""}
                             `
                         }
@@ -201,7 +205,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                             `
                             group relative flex h-10 items-center gap-3 rounded-xl px-3
                             text-xs font-medium transition-all
-                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 hover:bg-[#3A3A3A]/5 hover:text-[#3A3A3A]"}
+                            ${isActive ? "bg-[#F47822]/10 text-[#F47822]" : "text-[#3A3A3A]/55 dark:text-white/55 hover:bg-[#3A3A3A]/5 dark:bg-white/5 hover:text-[#3A3A3A]"}
                             ${collapsed ? "justify-center px-0" : ""}
                             `
                         }
@@ -211,7 +215,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                     </NavLink>
 
                     {/* User */}
-                    <div className={`mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/6 bg-[#F7F7F7] p-2 ${collapsed ? "justify-center" : ""}`}>
+                    <div className={`mt-2 flex items-center gap-3 rounded-xl border border-[#3A3A3A]/6 dark:border-white/6 bg-[#F7F7F7] dark:bg-[#101013] p-2 ${collapsed ? "justify-center" : ""}`}>
                         <UserAvatar
                             user={user}
                             className="h-9 w-9"
@@ -221,10 +225,10 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                         {!collapsed && (
                             <>
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-xs font-semibold text-[#3A3A3A]">
+                                    <p className="truncate text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                                         {firstName} {lastName}
                                     </p>
-                                    <p dir="ltr" className="truncate text-[10px] text-[#3A3A3A]/40 rtl:text-right">{user?.email}</p>
+                                    <p dir="ltr" className="truncate text-[10px] text-[#3A3A3A]/40 dark:text-white/40 rtl:text-right">{user?.email}</p>
                                 </div>
 
                                 <button
@@ -232,7 +236,7 @@ export function SupportSidebar({ open, collapsed, onClose, onToggleCollapse }: S
                                     onClick={() => void handleLogout()}
                                     title={t("supportDesk.sidebar.logout")}
                                     aria-label={t("supportDesk.sidebar.logout")}
-                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/35 transition hover:bg-red-50 hover:text-red-500"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/35 dark:text-white/35 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-500"
                                 >
                                     <LogOut className="h-3.5 w-3.5" />
                                 </button>

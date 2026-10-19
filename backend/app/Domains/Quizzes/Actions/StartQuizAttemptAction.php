@@ -90,7 +90,14 @@ $attemptNumber = $attemptCount + 1;
             'percentage' => 0,
             'passed' => false,
             'started_at' => now(),
-            'expires_at' => now()->addMinutes(5),
+            /*
+             * A null time_limit means the quiz is untimed, so the attempt
+             * never expires on its own (matches the instructor's
+             * "no time limit" option).
+             */
+            'expires_at' => $quiz->time_limit !== null
+                ? now()->addMinutes($quiz->time_limit)
+                : null,
         ]);
     }
 }

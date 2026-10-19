@@ -221,7 +221,7 @@ export function Navbar() {
       "text-sm font-medium",
       "transition-colors duration-200",
       "rounded-lg",
-      isActive ? "text-hbt-orange" : "text-hbt-dark/75 hover:text-hbt-dark",
+      isActive ? "text-hbt-orange" : "text-hbt-dark/75 hover:text-hbt-dark dark:text-[#ececef]",
     ].join(" ");
   }
 
@@ -241,13 +241,13 @@ export function Navbar() {
             ? [
                 "max-w-7xl",
                 "rounded-2xl",
-                "border border-black/5",
+                "border border-black/5 dark:border-white/8",
                 "bg-white/80",
                 "shadow-[0_12px_40px_rgba(15,23,42,0.10)]",
                 "backdrop-blur-xl",
                 "supports-[backdrop-filter]:bg-white/70",
               ].join(" ")
-            : ["w-full", "border-b border-black/5", "bg-white"].join(" "),
+            : ["w-full", "border-b border-black/5 dark:border-white/8", "bg-white dark:bg-[#1b1b20]"].join(" "),
         ].join(" ")}
       >
         <nav
@@ -312,11 +312,11 @@ export function Navbar() {
                     )}
                   </NavLink>
                   <div className="pointer-events-none absolute left-0 top-full min-w-52 pt-2 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
-                    <div className="rounded-2xl border border-black/5 bg-white p-2 shadow-[0_16px_38px_rgba(15,23,42,.12)]">
+                    <div className="rounded-2xl border border-black/5 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-2 shadow-[0_16px_38px_rgba(15,23,42,.12)]">
                       {item.key === "courses" && (
                         <Link
                           to={item.href}
-                          className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] hover:text-hbt-orange"
+                          className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] dark:bg-[#F47822]/10 hover:text-hbt-orange"
                         >
                           {t("navigation.exploreCourses")}
                         </Link>
@@ -327,7 +327,7 @@ export function Navbar() {
                             ? "/verify-certificate"
                             : mentorHref
                         }
-                        className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] hover:text-hbt-orange"
+                        className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] dark:bg-[#F47822]/10 hover:text-hbt-orange"
                       >
                         {item.key === "courses"
                           ? t("navigation.verifyCertificate")
@@ -380,7 +380,7 @@ export function Navbar() {
                   className={[
                     "rounded-xl px-4 py-2.5",
                     "text-sm font-semibold",
-                    "text-hbt-dark",
+                    "text-hbt-dark dark:text-[#ececef]",
                     "transition-colors",
                     "hover:bg-hbt-gray",
                   ].join(" ")}
@@ -435,7 +435,7 @@ export function Navbar() {
                     "border border-transparent",
                     "px-2 py-1.5",
                     "transition-all duration-200",
-                    "hover:border-black/5",
+                    "hover:border-black/5 dark:border-white/8",
                     "hover:bg-hbt-gray/70",
                   ].join(" ")}
                 >
@@ -458,11 +458,11 @@ export function Navbar() {
                   {/* Name + Role */}
 
                   <div className="hidden text-start xl:block">
-                    <p className="max-w-[150px] truncate text-xs font-semibold leading-4 text-hbt-dark">
+                    <p className="max-w-[150px] truncate text-xs font-semibold leading-4 text-hbt-dark dark:text-[#ececef]">
                       {fullName}
                     </p>
 
-                    <p className="text-[10px] font-medium leading-4 text-slate-500">
+                    <p className="text-[10px] font-medium leading-4 text-slate-500 dark:text-white/55">
                       {role}
                     </p>
                   </div>
@@ -470,7 +470,7 @@ export function Navbar() {
                   <ChevronDown
                     className={[
                       "h-4 w-4",
-                      "text-slate-500",
+                      "text-slate-500 dark:text-white/55",
                       "transition-transform duration-200",
                       isProfileOpen ? "rotate-180" : "",
                     ].join(" ")}
@@ -491,7 +491,7 @@ export function Navbar() {
                       "rtl:left-0 rtl:right-auto",
                       "rounded-2xl",
                       "border border-slate-200/80",
-                      "bg-white",
+                      "bg-white dark:bg-[#1b1b20]",
                       "shadow-[0_20px_50px_rgba(15,23,42,0.14)]",
                       "animate-in fade-in slide-in-from-top-2",
                       "duration-200",
@@ -499,7 +499,7 @@ export function Navbar() {
                   >
                     {/* User information */}
 
-                    <div className="border-b border-slate-100 px-4 py-4">
+                    <div className="border-b border-slate-100 dark:border-white/8 px-4 py-4">
                       <div className="flex items-center gap-3">
                         <UserAvatar
                           user={user}
@@ -508,11 +508,11 @@ export function Navbar() {
                         />
 
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-hbt-dark">
+                          <p className="truncate text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
                             {fullName}
                           </p>
 
-                          <p dir="ltr" className="mt-0.5 truncate text-xs text-slate-500 rtl:text-right">
+                          <p dir="ltr" className="mt-0.5 truncate text-xs text-slate-500 dark:text-white/55 rtl:text-right">
                             {email}
                           </p>
 
@@ -534,13 +534,13 @@ export function Navbar() {
                           "flex items-center gap-3",
                           "rounded-xl px-3 py-2.5",
                           "text-sm font-medium",
-                          "text-hbt-dark",
+                          "text-hbt-dark dark:text-[#ececef]",
                           "transition-colors",
                           "hover:bg-hbt-gray",
                         ].join(" ")}
                       >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
-                          <LayoutDashboard className="h-4 w-4 text-slate-600" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-white/8">
+                          <LayoutDashboard className="h-4 w-4 text-slate-600 dark:text-white/65" />
                         </div>
 
                         <div className="flex-1">
@@ -548,12 +548,12 @@ export function Navbar() {
                             {t("common.dashboard")}
                           </p>
 
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-slate-500 dark:text-white/55">
                             {t("profile.dashboardDescription")}
                           </p>
                         </div>
 
-                        <ChevronRight className="h-4 w-4 text-slate-400 rtl:-scale-x-100" />
+                        <ChevronRight className="h-4 w-4 text-slate-400 dark:text-white/40 rtl:-scale-x-100" />
                       </Link>
 
                       <Link
@@ -564,13 +564,13 @@ export function Navbar() {
                           "mt-1 flex items-center gap-3",
                           "rounded-xl px-3 py-2.5",
                           "text-sm font-medium",
-                          "text-hbt-dark",
+                          "text-hbt-dark dark:text-[#ececef]",
                           "transition-colors",
                           "hover:bg-hbt-gray",
                         ].join(" ")}
                       >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
-                          <Settings className="h-4 w-4 text-slate-600" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-white/8">
+                          <Settings className="h-4 w-4 text-slate-600 dark:text-white/65" />
                         </div>
 
                         <div className="flex-1">
@@ -578,18 +578,18 @@ export function Navbar() {
                             {t("common.settings")}
                           </p>
 
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-[11px] text-slate-500 dark:text-white/55">
                             {t("profile.settingsDescription")}
                           </p>
                         </div>
 
-                        <ChevronRight className="h-4 w-4 text-slate-400 rtl:-scale-x-100" />
+                        <ChevronRight className="h-4 w-4 text-slate-400 dark:text-white/40 rtl:-scale-x-100" />
                       </Link>
                     </div>
 
                     {/* Logout */}
 
-                    <div className="border-t border-slate-100 p-2">
+                    <div className="border-t border-slate-100 dark:border-white/8 p-2">
                       <button
                         type="button"
                         role="menuitem"
@@ -598,12 +598,12 @@ export function Navbar() {
                           "flex w-full items-center gap-3",
                           "rounded-xl px-3 py-2.5",
                           "text-sm font-medium",
-                          "text-red-600",
+                          "text-red-600 dark:text-red-400",
                           "transition-colors",
-                          "hover:bg-red-50",
+                          "hover:bg-red-50 dark:bg-red-500/10",
                         ].join(" ")}
                       >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 dark:bg-red-500/10">
                           <LogOut className="h-4 w-4" />
                         </div>
 
@@ -628,9 +628,9 @@ export function Navbar() {
             className={[
               "flex h-10 w-10 items-center justify-center",
               "rounded-xl",
-              "border border-slate-200",
-              "bg-white",
-              "text-hbt-dark",
+              "border border-slate-200 dark:border-white/10",
+              "bg-white dark:bg-[#1b1b20]",
+              "text-hbt-dark dark:text-[#ececef]",
               "transition-colors",
               "hover:bg-hbt-gray",
               "lg:hidden",
@@ -653,8 +653,8 @@ export function Navbar() {
         {isMenuOpen && (
           <div
             className={[
-              "border-t border-slate-100",
-              "bg-white",
+              "border-t border-slate-100 dark:border-white/8",
+              "bg-white dark:bg-[#1b1b20]",
               "px-4 pb-5 pt-3",
               "lg:hidden",
             ].join(" ")}
@@ -672,7 +672,7 @@ export function Navbar() {
                       "transition-colors",
                       isActive
                         ? "bg-orange-50 text-hbt-orange"
-                        : "text-hbt-dark hover:bg-hbt-gray",
+                        : "text-hbt-dark dark:text-[#ececef] hover:bg-hbt-gray",
                     ].join(" ")
                   }
                 >
@@ -692,7 +692,7 @@ export function Navbar() {
                       "transition-colors",
                       isActive
                         ? "bg-orange-50 text-hbt-orange"
-                        : "text-hbt-dark hover:bg-hbt-gray",
+                        : "text-hbt-dark dark:text-[#ececef] hover:bg-hbt-gray",
                     ].join(" ")
                   }
                 >
@@ -702,17 +702,17 @@ export function Navbar() {
               )}
             </div>
 
-            <div className="mt-4 border-t border-slate-100 pt-4">
+            <div className="mt-4 border-t border-slate-100 dark:border-white/8 pt-4">
               {!isAuthenticated ? (
                 <div className="grid grid-cols-2 gap-2">
                   <Link
                     to="/login"
                     className={[
                       "flex items-center justify-center",
-                      "rounded-xl border border-slate-200",
+                      "rounded-xl border border-slate-200 dark:border-white/10",
                       "px-4 py-3",
                       "text-sm font-semibold",
-                      "text-hbt-dark",
+                      "text-hbt-dark dark:text-[#ececef]",
                       "transition-colors",
                       "hover:bg-hbt-gray",
                     ].join(" ")}
@@ -748,11 +748,11 @@ export function Navbar() {
                     />
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-hbt-dark">
+                      <p className="truncate text-sm font-semibold text-hbt-dark dark:text-[#ececef]">
                         {fullName}
                       </p>
 
-                      <p dir="ltr" className="truncate text-xs text-slate-500 rtl:text-right">{email}</p>
+                      <p dir="ltr" className="truncate text-xs text-slate-500 dark:text-white/55 rtl:text-right">{email}</p>
 
                       <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-hbt-orange">
                         {role}
@@ -766,11 +766,11 @@ export function Navbar() {
                       "flex items-center gap-3",
                       "rounded-xl px-3 py-3",
                       "text-sm font-semibold",
-                      "text-hbt-dark",
+                      "text-hbt-dark dark:text-[#ececef]",
                       "hover:bg-hbt-gray",
                     ].join(" ")}
                   >
-                    <UserCircle className="h-5 w-5 text-slate-500" />
+                    <UserCircle className="h-5 w-5 text-slate-500 dark:text-white/55" />
                     {t("common.dashboard")}
                   </Link>
 
@@ -780,11 +780,11 @@ export function Navbar() {
                       "flex items-center gap-3",
                       "rounded-xl px-3 py-3",
                       "text-sm font-semibold",
-                      "text-hbt-dark",
+                      "text-hbt-dark dark:text-[#ececef]",
                       "hover:bg-hbt-gray",
                     ].join(" ")}
                   >
-                    <Settings className="h-5 w-5 text-slate-500" />
+                    <Settings className="h-5 w-5 text-slate-500 dark:text-white/55" />
                     {t("common.settings")}
                   </Link>
 
@@ -795,8 +795,8 @@ export function Navbar() {
                       "flex w-full items-center gap-3",
                       "rounded-xl px-3 py-3",
                       "text-sm font-semibold",
-                      "text-red-600",
-                      "hover:bg-red-50",
+                      "text-red-600 dark:text-red-400",
+                      "hover:bg-red-50 dark:bg-red-500/10",
                     ].join(" ")}
                   >
                     <LogOut className="h-5 w-5" />

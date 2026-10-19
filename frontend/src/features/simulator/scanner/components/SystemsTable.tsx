@@ -50,7 +50,7 @@ export function SystemsTable({
     };
 
     return (
-        <div className="rounded-2xl border border-[#3A3A3A]/10 bg-white p-5 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 dark:border-white/10 dark:bg-[#1b1b20]">
             <div className="flex flex-wrap items-center gap-2">
                 {(Object.keys(counts) as Filter[]).map((f) => (
                     <button
@@ -60,7 +60,7 @@ export function SystemsTable({
                         className={`rounded-full px-3 py-1.5 text-[11px] font-black transition ${
                             filter === f
                                 ? "bg-[#14181C] text-white dark:bg-white dark:text-[#14181C]"
-                                : "border border-[#3A3A3A]/10 text-[#3A3A3A]/55 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:text-white"
+                                : "border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/55 dark:text-white/55 hover:text-[#3A3A3A] dark:border-white/10 dark:text-white/55 dark:hover:text-white"
                         }`}
                     >
                         {t(`simulator.scannerLab.systems.${f}`)} · {counts[f]}
@@ -75,7 +75,7 @@ export function SystemsTable({
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder={t("simulator.scannerLab.systems.searchPh")}
-                        className="h-8 w-52 rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] ps-8 pe-2 text-xs outline-none placeholder:text-[#3A3A3A]/30 focus:border-[#F47822] dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
+                        className="h-8 w-52 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] ps-8 pe-2 text-xs outline-none placeholder:text-[#3A3A3A]/30 dark:text-white/30 focus:border-[#F47822] dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
                     />
                 </span>
             </div>
@@ -135,7 +135,7 @@ export function SystemsTable({
                                         <button
                                             type="button"
                                             onClick={() => onOpen(n.id)}
-                                            className="rounded-lg border border-[#3A3A3A]/10 px-2.5 py-1 text-[11px] font-black text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/70"
+                                            className="rounded-lg border border-[#3A3A3A]/10 dark:border-white/10 px-2.5 py-1 text-[11px] font-black text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:text-white/70"
                                         >
                                             {t("simulator.scannerLab.systems.open")}
                                         </button>

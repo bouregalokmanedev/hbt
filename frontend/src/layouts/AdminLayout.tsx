@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import { VisitorTracker } from "@/features/marketing/tracking";
 
 import { AdminNavbar } from "./admin/AdminNavbar";
 import { AdminSidebar } from "./admin/AdminSidebar";
@@ -11,12 +12,12 @@ export function AdminLayout() {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] text-[#3A3A3A]">
+        <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#1b1b20] text-[#3A3A3A]">
             <ScrollToTop />
             <AdminSidebar open={sidebarOpen} collapsed={sidebarCollapsed} onClose={() => setSidebarOpen(false)} onToggle={() => setSidebarCollapsed((value) => !value)} />
             <div className={`min-h-screen transition-[padding] duration-300 ${sidebarCollapsed ? "lg:ps-[78px]" : "lg:ps-[272px]"}`}>
                 <AdminNavbar onMenuClick={() => setSidebarOpen(true)} />
-                <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><Outlet /></main>
+                <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><><VisitorTracker /><Outlet /></></main>
             </div>
         </div>
     );

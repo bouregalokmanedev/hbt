@@ -28,7 +28,7 @@ export function ScopeControls({
       "rounded-md border px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/30",
       active
         ? "border-[#0E9F6E] bg-[#0E9F6E]/10 text-[#0E9F6E]"
-        : "border-[#3A3A3A]/10 text-[#3A3A3A] hover:border-[#0E9F6E]/40 dark:border-white/10 dark:text-white",
+        : "border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A] hover:border-[#0E9F6E]/40 dark:border-white/10 dark:text-white",
     );
 
   return (
@@ -53,7 +53,7 @@ export function ScopeControls({
           {t("oscilloscope.control.autoSet", { defaultValue: "AUTO SET" }) as string}
         </button>
 
-        <div className="ms-1 inline-flex items-center gap-1 rounded-md border border-[#3A3A3A]/10 bg-white px-1 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="ms-1 inline-flex items-center gap-1 rounded-md border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-1 dark:border-white/10 dark:bg-[#1b1b20]">
           <span className="px-1.5 font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:text-white/50">
             {t("oscilloscope.control.timeDiv", { defaultValue: "Time/div" }) as string}
           </span>
@@ -68,7 +68,7 @@ export function ScopeControls({
           </button>
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-md border border-[#3A3A3A]/10 bg-white px-2 py-1 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="inline-flex items-center gap-2 rounded-md border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2 py-1 dark:border-white/10 dark:bg-[#1b1b20]">
           <span className="font-mono text-[11px] font-bold text-[#3A3A3A]/50 dark:text-white/50">
             {t("oscilloscope.control.trig", { defaultValue: "Trig" }) as string}
           </span>
@@ -114,7 +114,7 @@ export function ScopeControls({
         <span
           className={clsx(
             "ms-auto rounded-md px-2 py-1 font-mono text-[11px] font-bold",
-            state.triggered ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300" : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
+            state.triggered ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300" : "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
           )}
         >
           {t("oscilloscope.header.triggered", { defaultValue: "Triggered" }) as string} ·{" "}
@@ -123,7 +123,7 @@ export function ScopeControls({
       </div>
 
       {state.cursors ? (
-        <div className="flex flex-wrap items-center gap-4 rounded-xl border border-[#3A3A3A]/10 bg-white p-2.5 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div className="flex flex-wrap items-center gap-4 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-2.5 dark:border-white/10 dark:bg-[#1b1b20]">
           {(["A", "B"] as const).map((c) => (
             <label key={c} className="flex items-center gap-2 text-sm text-[#3A3A3A]/60 dark:text-white/60">
               <span className="font-bold text-[#0E9F6E]">

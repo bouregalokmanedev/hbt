@@ -32,7 +32,7 @@ export function MeasurementRow({
   return (
     <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-9">
       {cells.map(([label, val]) => (
-        <div key={label} className="rounded-xl border border-[#3A3A3A]/10 bg-white px-2.5 py-1.5 dark:border-white/10 dark:bg-[#1b1b20]">
+        <div key={label} className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-2.5 py-1.5 dark:border-white/10 dark:bg-[#1b1b20]">
           <div className="text-[10px] font-black uppercase tracking-wide text-[#3A3A3A]/45 dark:text-white/45">{label}</div>
           <div dir="ltr" className="font-mono text-sm font-bold text-[#3A3A3A] dark:text-white">
             {val}

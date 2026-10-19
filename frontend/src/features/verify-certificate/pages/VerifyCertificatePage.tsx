@@ -68,20 +68,20 @@ function Stepper({ phase, steps }: { phase: Phase; steps: string[] }) {
                                     ? "bg-[#F47822] text-white"
                                     : active
                                       ? "bg-[#3A3A3A] text-white"
-                                      : "bg-[#3A3A3A]/8 text-[#3A3A3A]/40"
+                                      : "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A]/40 dark:text-white/40"
                             }`}
                         >
                             {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
                         </span>
                         <span
                             className={`hidden text-[11px] font-bold uppercase tracking-[0.12em] sm:block ${
-                                active || done ? "text-[#3A3A3A]" : "text-[#3A3A3A]/40"
+                                active || done ? "text-[#3A3A3A]" : "text-[#3A3A3A]/40 dark:text-white/40"
                             }`}
                         >
                             {label}
                         </span>
                         {index < steps.length - 1 ? (
-                            <span className={`mx-1 h-px flex-1 transition-colors duration-300 ${done ? "bg-[#F47822]" : "bg-[#3A3A3A]/10"}`} />
+                            <span className={`mx-1 h-px flex-1 transition-colors duration-300 ${done ? "bg-[#F47822]" : "bg-[#3A3A3A]/10 dark:bg-white/10"}`} />
                         ) : null}
                     </li>
                 );
@@ -236,7 +236,7 @@ export function VerifyCertificatePage() {
     };
 
     return (
-        <div className="verify-page-ar min-h-screen bg-[#F3F3F3] text-[#3A3A3A]">
+        <div className="verify-page-ar min-h-screen bg-[#F3F3F3] dark:bg-[#101013] text-[#3A3A3A]">
             {/* ================= HERO ================= */}
             <section className="relative overflow-hidden bg-[#1d1d1d] text-white">
                 <div
@@ -278,21 +278,21 @@ export function VerifyCertificatePage() {
                 </div>
 
                 {/* curved transition into the card */}
-                <div aria-hidden="true" className="relative h-8 bg-[#F3F3F3] [border-radius:50%_50%_0_0/100%_100%_0_0]" />
+                <div aria-hidden="true" className="relative h-8 bg-[#F3F3F3] dark:bg-[#101013] [border-radius:50%_50%_0_0/100%_100%_0_0]" />
             </section>
 
             {/* ================= VERIFICATION CARD ================= */}
             <main className="mx-auto w-full max-w-5xl px-5 sm:px-8">
-                <section className="-mt-2 rounded-3xl border border-[#3A3A3A]/8 bg-white p-6 shadow-[0_20px_60px_rgba(58,58,58,0.10)] sm:p-8">
+                <section className="-mt-2 rounded-3xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_20px_60px_rgba(58,58,58,0.10)] sm:p-8">
                     <Stepper phase={phase} steps={STEPS} />
 
                     <form onSubmit={handleSubmit} className="mt-7" noValidate>
-                        <label htmlFor="certificate-id" className="text-xs font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/60">
+                        <label htmlFor="certificate-id" className="text-xs font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/60 dark:text-white/60">
                             {t("verifyPage.form.label")}
                         </label>
                         <div
-                            className={`mt-2.5 flex flex-col gap-2.5 rounded-2xl border bg-[#F7F7F7] p-2.5 transition-colors duration-150 focus-within:border-[#3A3A3A]/25 sm:flex-row sm:items-center ${
-                                phase === "error" ? "border-red-300" : "border-[#3A3A3A]/10"
+                            className={`mt-2.5 flex flex-col gap-2.5 rounded-2xl border bg-[#F7F7F7] dark:bg-[#101013] p-2.5 transition-colors duration-150 focus-within:border-[#3A3A3A]/25 dark:border-white/25 sm:flex-row sm:items-center ${
+                                phase === "error" ? "border-red-300" : "border-[#3A3A3A]/10 dark:border-white/10"
                             }`}
                         >
                             <div className="flex flex-1 items-center gap-2.5 rounded-xl px-2.5">
@@ -316,7 +316,7 @@ export function VerifyCertificatePage() {
                                     }}
                                     disabled={phase === "verifying"}
                                     aria-describedby="certificate-id-hint"
-                                    className="verify-cert-input h-12 w-full rounded-lg border border-transparent bg-transparent px-2 font-mono text-sm font-semibold tracking-wide text-[#3A3A3A] outline-none transition-colors placeholder:font-normal placeholder:text-[#3A3A3A]/35 focus:border-[#F47822] disabled:opacity-60"
+                                    className="verify-cert-input h-12 w-full rounded-lg border border-transparent bg-transparent px-2 font-mono text-sm font-semibold tracking-wide text-[#3A3A3A] outline-none transition-colors placeholder:font-normal placeholder:text-[#3A3A3A]/35 dark:text-white/35 focus:border-[#F47822] disabled:opacity-60"
                                 />
                                 {input ? (
                                     <button
@@ -326,7 +326,7 @@ export function VerifyCertificatePage() {
                                             inputRef.current?.focus();
                                         }}
                                         aria-label={t("verifyPage.form.clearLabel")}
-                                        className="rounded-lg p-1.5 text-[#3A3A3A]/40 transition hover:bg-[#3A3A3A]/8 hover:text-[#3A3A3A]"
+                                        className="rounded-lg p-1.5 text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-[#3A3A3A]/8 dark:bg-white/8 hover:text-[#3A3A3A]"
                                     >
                                         <X className="h-4 w-4" />
                                     </button>
@@ -337,7 +337,7 @@ export function VerifyCertificatePage() {
                                     type="button"
                                     onClick={() => void handlePaste()}
                                     disabled={phase === "verifying"}
-                                    className="inline-flex h-12 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 bg-white px-3.5 text-xs font-bold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-50"
+                                    className="inline-flex h-12 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-xs font-bold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:text-[#F47822] disabled:opacity-50"
                                 >
                                     <ClipboardPaste className="h-4 w-4" />
                                     {t("verifyPage.form.paste")}
@@ -361,25 +361,25 @@ export function VerifyCertificatePage() {
                                 </button>
                             </div>
                         </div>
-                        <p id="certificate-id-hint" className="mt-2.5 flex items-center gap-1.5 text-xs text-[#3A3A3A]/50">
-                            <Fingerprint className="h-3.5 w-3.5 text-[#3A3A3A]/35" />
+                        <p id="certificate-id-hint" className="mt-2.5 flex items-center gap-1.5 text-xs text-[#3A3A3A]/50 dark:text-white/50">
+                            <Fingerprint className="h-3.5 w-3.5 text-[#3A3A3A]/35 dark:text-white/35" />
                             {t("verifyPage.form.hint")}
                         </p>
                     </form>
 
                     {/* Progress */}
                     {phase === "verifying" ? (
-                        <div className="mt-6 rounded-2xl border border-[#F47822]/20 bg-[#FFF7F1] p-5" role="status" aria-live="polite">
+                        <div className="mt-6 rounded-2xl border border-[#F47822]/20 bg-[#FFF7F1] dark:bg-[#1b1b20] p-5" role="status" aria-live="polite">
                             <div className="flex items-center gap-3">
                                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F47822] text-white">
                                     <Loader2 className="h-5 w-5 animate-spin" />
                                 </span>
                                 <div>
-                                    <p className="text-sm font-bold text-[#3A3A3A]">{VERIFY_STAGES[stageIndex]}</p>
-                                    <p className="font-mono text-[11px] text-[#3A3A3A]/50">{normalizedInput || "…"}</p>
+                                    <p className="text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{VERIFY_STAGES[stageIndex]}</p>
+                                    <p className="font-mono text-[11px] text-[#3A3A3A]/50 dark:text-white/50">{normalizedInput || "…"}</p>
                                 </div>
                             </div>
-                            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#3A3A3A]/8">
+                            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#3A3A3A]/8 dark:bg-white/8">
                                 <div
                                     className="h-full rounded-full bg-[#F47822] transition-all duration-500"
                                     style={{ width: `${((stageIndex + 1) / VERIFY_STAGES.length) * 100}%` }}
@@ -391,7 +391,7 @@ export function VerifyCertificatePage() {
                     {/* Recent */}
                     {recent.length > 0 && phase !== "verifying" ? (
                         <div className="mt-6">
-                            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/45">
+                            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/45 dark:text-white/45">
                                 <History className="h-3.5 w-3.5" />
                                 {t("verifyPage.form.recent")}
                             </p>
@@ -404,7 +404,7 @@ export function VerifyCertificatePage() {
                                             setInput(item);
                                             void runVerification(item);
                                         }}
-                                        className="rounded-full border border-[#3A3A3A]/10 bg-[#F7F7F7] px-3.5 py-1.5 font-mono text-[11px] font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40 hover:bg-[#FFF4EC] hover:text-[#F47822]"
+                                        className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-[#F7F7F7] dark:bg-[#101013] px-3.5 py-1.5 font-mono text-[11px] font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40 hover:bg-[#FFF4EC] dark:bg-[#F47822]/10 hover:text-[#F47822]"
                                     >
                                         {item}
                                     </button>
@@ -422,12 +422,12 @@ export function VerifyCertificatePage() {
                                         <BadgeCheck className="h-5 w-5" />
                                     </span>
                                     <div className="flex-1">
-                                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
+                                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-400">
                                             {t("verifyPage.result.authentic")}
                                         </p>
-                                        <p className="text-sm font-bold text-[#3A3A3A]">{t("verifyPage.result.valid")}</p>
+                                        <p className="text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("verifyPage.result.valid")}</p>
                                     </div>
-                                    <span className="hidden items-center gap-1.5 rounded-full bg-emerald-600/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 sm:inline-flex">
+                                    <span className="hidden items-center gap-1.5 rounded-full bg-emerald-600/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 sm:inline-flex">
                                         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
                                         {t("verifyPage.result.live")}
                                     </span>
@@ -438,22 +438,22 @@ export function VerifyCertificatePage() {
                                         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#F47822]">
                                             {t("verifyPage.result.certOfCompletion")}
                                         </p>
-                                        <h2 className="mt-1.5 text-xl font-black tracking-tight text-[#3A3A3A]">
+                                        <h2 className="mt-1.5 text-xl font-black tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                                             {certificate.course_title}
                                         </h2>
-                                        <p className="mt-1.5 text-sm text-[#3A3A3A]/60">
+                                        <p className="mt-1.5 text-sm text-[#3A3A3A]/60 dark:text-white/60">
                                             {t("verifyPage.result.awardedTo")}{" "}
-                                            <span className="font-bold text-[#3A3A3A]">{certificate.recipient_name}</span>
+                                            <span className="font-bold text-[#3A3A3A] dark:text-[#ececef]">{certificate.recipient_name}</span>
                                             {" · "}{t("verifyPage.result.issued")} {formatDate(certificate.issued_at)}
                                         </p>
                                         <button
                                             type="button"
                                             onClick={() => void handleCopyId()}
-                                            className="mt-3.5 inline-flex max-w-full items-center gap-2 rounded-xl border border-dashed border-[#3A3A3A]/15 bg-white px-3 py-2 font-mono text-xs font-semibold text-[#3A3A3A]/70 transition hover:border-[#F47822]/40"
+                                            className="mt-3.5 inline-flex max-w-full items-center gap-2 rounded-xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 bg-white dark:bg-[#1b1b20] px-3 py-2 font-mono text-xs font-semibold text-[#3A3A3A]/70 dark:text-white/70 transition hover:border-[#F47822]/40"
                                             title={t("verifyPage.result.copyTitle")}
                                         >
                                             <span className="truncate">{certificate.certificate_number}</span>
-                                            {copied ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" /> : <Copy className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/40" />}
+                                            {copied ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" /> : <Copy className="h-3.5 w-3.5 shrink-0 text-[#3A3A3A]/40 dark:text-white/40" />}
                                             <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-[#F47822]">
                                                 {copied ? t("verifyPage.result.copied") : t("verifyPage.result.copy")}
                                             </span>
@@ -463,17 +463,17 @@ export function VerifyCertificatePage() {
                                         <div className="relative flex h-24 w-24 items-center justify-center rounded-full border-2 border-[#F47822]">
                                             <div aria-hidden="true" className="absolute inset-1.5 animate-[spin_18s_linear_infinite] rounded-full border border-dashed border-[#F47822]/50" />
                                             <Award className="h-9 w-9 text-[#F47822]" />
-                                            <span className="absolute -bottom-1 bg-white px-1.5 text-[8px] font-black tracking-[0.18em] text-[#F47822]">
+                                            <span className="absolute -bottom-1 bg-white dark:bg-[#1b1b20] px-1.5 text-[8px] font-black tracking-[0.18em] text-[#F47822]">
                                                 VERIFIED
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-2 border-t border-[#3A3A3A]/8 bg-[#F7F7F7]/70 px-5 py-4 sm:flex-row sm:px-6">
+                                <div className="flex flex-col gap-2 border-t border-[#3A3A3A]/8 dark:border-white/8 bg-[#F7F7F7]/70 px-5 py-4 sm:flex-row sm:px-6">
                                     <Link
                                         to={`/verify-certificate/${encodeURIComponent(certificate.certificate_number)}`}
-                                        className="inline-flex flex-1 items-center justify-center rounded-xl border border-[#3A3A3A]/10 bg-white px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                                        className="inline-flex flex-1 items-center justify-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                                     >
                                         {t("verifyPage.result.shareLink")}
                                     </Link>
@@ -490,7 +490,7 @@ export function VerifyCertificatePage() {
                         ) : null}
 
                         {phase === "error" && error ? (
-                            <div className="mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4" role="alert" aria-live="assertive">
+                            <div className="mt-6 flex items-start gap-3 rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 px-5 py-4" role="alert" aria-live="assertive">
                                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500 text-white">
                                     <CircleAlert className="h-4.5 w-4.5" />
                                 </span>
@@ -500,7 +500,7 @@ export function VerifyCertificatePage() {
                                     <button
                                         type="button"
                                         onClick={() => inputRef.current?.focus()}
-                                        className="mt-2.5 text-xs font-bold text-red-700 underline underline-offset-4 transition hover:text-red-900"
+                                        className="mt-2.5 text-xs font-bold text-red-700 dark:text-red-400 underline underline-offset-4 transition hover:text-red-900"
                                     >
                                         {t("verifyPage.errorBlock.retry")}
                                     </button>
@@ -517,15 +517,15 @@ export function VerifyCertificatePage() {
                         const step = `0${index + 1}`;
                         const { title, text } = card;
                         return (
-                        <div key={step} className="rounded-3xl border border-[#3A3A3A]/8 bg-white p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)]">
+                        <div key={step} className="rounded-3xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-6 shadow-[0_8px_30px_rgba(58,58,58,0.05)]">
                             <div className="flex items-center justify-between">
                                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F47822]/10">
                                     <Icon className="h-5 w-5 text-[#F47822]" />
                                 </span>
-                                <span className="font-mono text-xs font-bold text-[#3A3A3A]/25">{step}</span>
+                                <span className="font-mono text-xs font-bold text-[#3A3A3A]/25 dark:text-white/25">{step}</span>
                             </div>
-                            <h3 className="mt-4 text-sm font-bold text-[#3A3A3A]">{title}</h3>
-                            <p className="mt-1.5 text-[13px] leading-6 text-[#3A3A3A]/60">{text}</p>
+                            <h3 className="mt-4 text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">{title}</h3>
+                            <p className="mt-1.5 text-[13px] leading-6 text-[#3A3A3A]/60 dark:text-white/60">{text}</p>
                         </div>
                         );
                     })}
@@ -567,22 +567,22 @@ export function VerifyCertificatePage() {
                         </div>
                         <div className="relative flex items-center justify-center border-t border-white/10 bg-[#2a2a2a] p-8 md:border-s md:border-t-0">
                             <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:36px_36px]" />
-                            <div className="relative w-full max-w-[260px] rounded-2xl border border-white/10 bg-white p-5 text-[#3A3A3A] shadow-2xl">
+                            <div className="relative w-full max-w-[260px] rounded-2xl border border-white/10 bg-white dark:bg-[#1b1b20] p-5 text-[#3A3A3A] shadow-2xl">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#3A3A3A]/40">
+                                    <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#3A3A3A]/40 dark:text-white/40">
                                         {t("verifyPage.findId.cardLabel")}
                                     </span>
                                     <QrCode className="h-4 w-4 text-[#F47822]" />
                                 </div>
-                                <div className="mt-4 rounded-xl bg-[#F7F7F7] p-4 text-center">
-                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#3A3A3A]/40">{t("verifyPage.findId.credId")}</p>
-                                    <p className="mt-1.5 font-mono text-sm font-bold tracking-wide text-[#3A3A3A]">
+                                <div className="mt-4 rounded-xl bg-[#F7F7F7] dark:bg-[#101013] p-4 text-center">
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#3A3A3A]/40 dark:text-white/40">{t("verifyPage.findId.credId")}</p>
+                                    <p className="mt-1.5 font-mono text-sm font-bold tracking-wide text-[#3A3A3A] dark:text-[#ececef]">
                                         HBT-••••-••••••
                                     </p>
                                 </div>
                                 <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#F47822]/10 px-3 py-2.5">
                                     <ShieldCheck className="h-4 w-4 shrink-0 text-[#F47822]" />
-                                    <p className="text-[11px] font-bold text-[#3A3A3A]">{t("verifyPage.findId.scanHint")}</p>
+                                    <p className="text-[11px] font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("verifyPage.findId.scanHint")}</p>
                                 </div>
                             </div>
                         </div>

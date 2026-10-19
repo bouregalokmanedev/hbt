@@ -390,10 +390,10 @@ Route::get('/certificates', [CertificateController::class, 'index']);
             ->middleware('throttle:60,1');
     });
 
-    // Staff Hub: the shared space where Admin, Super Admin, Support and
+    // Staff Hub: the shared space where Admin, Super Admin, Sales, Support and
     // Instructor meet. Guarded by role rather than by `admin:` so Support and
     // Instructors are not locked out of the platform-wide staff audience.
-    Route::middleware('role:Admin|Super Admin|Support|Instructor')
+    Route::middleware('role:Admin|Super Admin|Support|Instructor|Sales')
         ->prefix('staff-hub')
         ->group(function () {
             Route::get('/room', [StaffHubController::class, 'room']);
@@ -1242,6 +1242,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
             Route::post('/{attempt}/submit', 'submit')
                 ->name('quizzes.attempts.submit');
+            Route::put('/{attempt}/answers/{question}', 'saveAnswers')
+                ->name('quizzes.attempts.answers.save');
             Route::post('/{attempt}/expire', 'expire')
                 ->name('quizzes.attempts.expire');
             Route::post('/{attempt}/tab-switch', 'tabSwitch');
@@ -1415,13 +1417,27 @@ Route::middleware([
     ->prefix('v1/support-desk')
     ->group(function () {
         Route::get('/overview', [\App\Domains\Support\Controllers\SupportDashboardController::class, 'overview']);
+        Route::get('/agents', [\App\Domains\Support\Controllers\SupportDashboardController::class, 'agents']);
         Route::get('/tickets', [AdminSupportController::class, 'index']);
+        Route::post('/tickets/bulk', [AdminSupportController::class, 'bulk']);
         Route::get('/tickets/{ticket}', [AdminSupportController::class, 'show']);
         Route::post('/tickets/{ticket}/replies', [AdminSupportController::class, 'reply']);
         Route::patch('/tickets/{ticket}/assign', [AdminSupportController::class, 'assign']);
         Route::post('/tickets/{ticket}/escalate', [AdminSupportController::class, 'escalate']);
         Route::post('/tickets/{ticket}/resolve', [AdminSupportController::class, 'resolve']);
         Route::post('/tickets/{ticket}/close', [AdminSupportController::class, 'close']);
+        Route::patch('/tickets/{ticket}/tags', [AdminSupportController::class, 'setTags']);
+
+        // Read-only student lookup: enrollments, certificates and open
+        // tickets in one place so agents stop answering tickets blind.
+        Route::get('/students', [\App\Domains\Support\Controllers\SupportStudentController::class, 'index']);
+        Route::get('/students/{student}', [\App\Domains\Support\Controllers\SupportStudentController::class, 'show']);
+
+        // Per-agent canned reply templates.
+        Route::get('/canned-replies', [\App\Domains\Support\Controllers\CannedReplyController::class, 'index']);
+        Route::post('/canned-replies', [\App\Domains\Support\Controllers\CannedReplyController::class, 'store']);
+        Route::patch('/canned-replies/{reply}', [\App\Domains\Support\Controllers\CannedReplyController::class, 'update']);
+        Route::delete('/canned-replies/{reply}', [\App\Domains\Support\Controllers\CannedReplyController::class, 'destroy']);
 
         // Mailbox: contact-form submissions land in the inbox, agents answer
         // and compose from the same table (roots = one row per conversation).
@@ -1433,3 +1449,50 @@ Route::middleware([
         Route::patch('/mail/{mail}/read', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'read']);
         Route::patch('/mail/{mail}/archive', [\App\Domains\Support\Controllers\SupportMailboxController::class, 'archive']);
     });
+
+
+// Growth workspace (one Sales role): campaigns, merchandising, leads,
+// broadcasts, referrals and visitor analytics. Money movement and user
+// management stay admin-only.
+Route::middleware([
+    'auth:sanctum',
+    'verified',
+    'role:Sales|Admin|Super Admin',
+])
+    ->prefix('v1/marketing')
+    ->group(function () {
+        Route::get('/overview', [\App\Domains\Marketing\Controllers\DashboardController::class, 'overview']);
+        Route::get('/analytics', [\App\Domains\Marketing\Controllers\AnalyticsController::class, 'overview']);
+        Route::get('/discounts', [\App\Domains\Marketing\Controllers\DiscountController::class, 'index']);
+        Route::post('/discounts', [\App\Domains\Marketing\Controllers\DiscountController::class, 'store']);
+        Route::get('/discounts/{discount}', [\App\Domains\Marketing\Controllers\DiscountController::class, 'show']);
+        Route::patch('/discounts/{discount}', [\App\Domains\Marketing\Controllers\DiscountController::class, 'update']);
+        Route::delete('/discounts/{discount}', [\App\Domains\Marketing\Controllers\DiscountController::class, 'destroy']);
+        Route::get('/featured', [\App\Domains\Marketing\Controllers\FeaturedCourseController::class, 'index']);
+        Route::post('/featured', [\App\Domains\Marketing\Controllers\FeaturedCourseController::class, 'store']);
+        Route::patch('/featured/{featuredCourse}', [\App\Domains\Marketing\Controllers\FeaturedCourseController::class, 'update']);
+        Route::delete('/featured/{featuredCourse}', [\App\Domains\Marketing\Controllers\FeaturedCourseController::class, 'destroy']);
+        Route::get('/leads', [\App\Domains\Marketing\Controllers\LeadController::class, 'index']);
+        Route::get('/leads/team', [\App\Domains\Marketing\Controllers\LeadController::class, 'team']);
+        Route::post('/leads', [\App\Domains\Marketing\Controllers\LeadController::class, 'store']);
+        Route::get('/leads/export', [\App\Domains\Marketing\Controllers\LeadController::class, 'export']);
+        Route::post('/leads/import', [\App\Domains\Marketing\Controllers\LeadController::class, 'import']);
+        Route::get('/leads/{lead}', [\App\Domains\Marketing\Controllers\LeadController::class, 'show']);
+        Route::patch('/leads/{lead}', [\App\Domains\Marketing\Controllers\LeadController::class, 'update']);
+        Route::delete('/leads/{lead}', [\App\Domains\Marketing\Controllers\LeadController::class, 'destroy']);
+        Route::patch('/leads/{lead}/read', [\App\Domains\Marketing\Controllers\LeadController::class, 'read']);
+        Route::post('/leads/{lead}/activities', [\App\Domains\Marketing\Controllers\LeadController::class, 'storeActivity']);
+        Route::get('/converted-users', [\App\Domains\Marketing\Controllers\ConvertedUserController::class, '__invoke']);
+        Route::get('/performance', [\App\Domains\Marketing\Controllers\PerformanceController::class, '__invoke']);
+        Route::put('/performance/quota', [\App\Domains\Marketing\Controllers\PerformanceController::class, 'setQuota']);
+        Route::get('/broadcasts', [\App\Domains\Marketing\Controllers\BroadcastController::class, 'index']);
+        Route::post('/broadcasts', [\App\Domains\Marketing\Controllers\BroadcastController::class, 'store']);
+        Route::get('/referrals', [\App\Domains\Marketing\Controllers\ReferralController::class, 'overview']);
+    });
+
+// Public marketing endpoints (no login needed).
+Route::prefix('v1')->group(function () {
+    Route::post('/discounts/validate', [\App\Domains\Marketing\Controllers\DiscountController::class, 'validate'])->middleware('throttle:30,1');
+    Route::get('/featured', [\App\Domains\Marketing\Controllers\FeaturedCourseController::class, 'featured']);
+    Route::post('/leads/capture', [\App\Domains\Marketing\Controllers\LeadController::class, 'capture'])->middleware('throttle:10,1');
+});

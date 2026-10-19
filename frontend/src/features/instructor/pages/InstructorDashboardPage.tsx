@@ -148,11 +148,11 @@ export function InstructorDashboardPage() {
 
   if (isError || !data) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+      <div className="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50 dark:bg-red-500/10 p-6">
         <h2 className="text-lg font-semibold text-red-900">
           {t("instructor.dashboard.errorTitle")}
         </h2>
-        <p className="mt-2 text-sm text-red-700">
+        <p className="mt-2 text-sm text-red-700 dark:text-red-400">
           {t("instructor.dashboard.errorDesc")}
         </p>
         <button
@@ -182,7 +182,7 @@ export function InstructorDashboardPage() {
     {
       label: t("instructor.dashboard.status.archived"),
       value: data.statistics.archived,
-      color: "bg-[#3A3A3A]/30",
+      color: "bg-[#3A3A3A]/30 dark:bg-white/30",
     },
   ];
   const courseTotal = Math.max(data.statistics.total, 1);
@@ -228,7 +228,7 @@ export function InstructorDashboardPage() {
     progression: <ProgressionCard data={progression.data} />,
     attention: <AttentionQueue data={attention.data} />,
     topCourses: (
-      <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+      <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
         <SectionHeading
           icon={Trophy}
           title={t("instructor.dashboard.topCourses.title")}
@@ -250,17 +250,17 @@ export function InstructorDashboardPage() {
               <Link
                 key={course.id}
                 to={`/instructor/courses/${course.id}/analytics`}
-                className="group flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-3 py-3 ring-1 ring-transparent transition hover:bg-[#FFF8F4] hover:ring-[#F47822]/25 focus-visible:outline-none focus-visible:ring-[#F47822]/50"
+                className="group flex items-center gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-3 ring-1 ring-transparent transition hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:ring-[#F47822]/25 focus-visible:outline-none focus-visible:ring-[#F47822]/50"
               >
                 <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#F47822]/10 text-xs font-black text-[#F47822]">
                   {index + 1}
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold text-[#3A3A3A]">
+                  <span className="block truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                     {course.title}
                   </span>
-                  <span className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-[#3A3A3A]/8">
+                  <span className="mt-1.5 block h-1.5 w-full overflow-hidden rounded-full bg-[#3A3A3A]/8 dark:bg-white/8">
                     <span
                       className="block h-full rounded-full bg-[#F47822]"
                       style={{
@@ -271,10 +271,10 @@ export function InstructorDashboardPage() {
                 </span>
 
                 <span className="shrink-0 text-right">
-                  <span className="block text-sm font-bold text-[#3A3A3A]">
+                  <span className="block text-sm font-bold text-[#3A3A3A] dark:text-[#ececef]">
                     {learners}
                   </span>
-                  <span className="block text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40">
+                  <span className="block text-[10px] font-bold uppercase tracking-wide text-[#3A3A3A]/40 dark:text-white/40">
                     {t(
                       learners === 0
                         ? "instructor.dashboard.topCourses.noLearners"
@@ -284,7 +284,7 @@ export function InstructorDashboardPage() {
                   </span>
                 </span>
 
-                <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/30 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
+                <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/30 dark:text-white/30 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
               </Link>
             );
           })}
@@ -293,7 +293,7 @@ export function InstructorDashboardPage() {
     ),
     momentum: <MomentumSection data={trends.data} />,
     simulatorLab: (
-      <section className="rounded-2xl border border-[#3A3A3A]/10 bg-[#3A3A3A] p-5 shadow-[0_10px_30px_rgba(58,58,58,.12)] sm:p-6">
+      <section className="rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#3A3A3A] p-5 shadow-[0_10px_30px_rgba(58,58,58,.12)] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#F47822] text-white shadow-sm">
@@ -329,7 +329,7 @@ export function InstructorDashboardPage() {
     ),
     pipelineRow: (
       <div className="grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
-        <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+        <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
           <SectionHeading
             icon={BookOpen}
             title={t("instructor.dashboard.pipeline.title")}
@@ -350,11 +350,11 @@ export function InstructorDashboardPage() {
                 background: `conic-gradient(#F47822 ${Math.round((data.statistics.published / courseTotal) * 100)}%, #F2F2F2 0)`,
               }}
             >
-              <div className="flex h-[106px] w-[106px] flex-col items-center justify-center rounded-full bg-white">
-                <strong className="text-3xl font-semibold tracking-tight text-[#3A3A3A]">
+              <div className="flex h-[106px] w-[106px] flex-col items-center justify-center rounded-full bg-white dark:bg-[#1b1b20]">
+                <strong className="text-3xl font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                   {data.statistics.total}
                 </strong>
-                <span className="mt-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/42">
+                <span className="mt-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/42 dark:text-white/42">
                   {t("instructor.dashboard.pipeline.coursesLabel")}
                 </span>
               </div>
@@ -363,14 +363,14 @@ export function InstructorDashboardPage() {
               {courseDistribution.map((item) => (
                 <div key={item.label}>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-[#3A3A3A]/60">
+                    <span className="font-medium text-[#3A3A3A]/60 dark:text-white/60">
                       {item.label}
                     </span>
-                    <span className="font-bold text-[#3A3A3A]">
+                    <span className="font-bold text-[#3A3A3A] dark:text-[#ececef]">
                       {item.value}
                     </span>
                   </div>
-                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[#3A3A3A]/7">
+                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-[#3A3A3A]/7 dark:bg-white/7">
                     <div
                       className={`h-full rounded-full ${item.color}`}
                       style={{
@@ -383,7 +383,7 @@ export function InstructorDashboardPage() {
             </div>
           </div>
         </section>
-        <section className="rounded-2xl border border-[#F47822]/20 bg-[#FFF8F4] p-5 sm:p-6">
+        <section className="rounded-2xl border border-[#F47822]/20 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-5 sm:p-6">
           <SectionHeading
             icon={BarChart3}
             title={t("instructor.dashboard.pulse.title")}
@@ -413,7 +413,7 @@ export function InstructorDashboardPage() {
           </div>
           <Link
             to="/instructor/students"
-            className="mt-5 flex h-11 items-center justify-between rounded-xl border border-[#F47822]/15 bg-white px-4 text-xs font-bold text-[#3A3A3A] shadow-[0_5px_14px_rgba(58,58,58,.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#F47822] hover:text-white hover:shadow-[0_10px_22px_rgba(244,120,34,.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35"
+            className="mt-5 flex h-11 items-center justify-between rounded-xl border border-[#F47822]/15 bg-white dark:bg-[#1b1b20] px-4 text-xs font-bold text-[#3A3A3A] shadow-[0_5px_14px_rgba(58,58,58,.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#F47822]/35 hover:bg-[#F47822] hover:text-white hover:shadow-[0_10px_22px_rgba(244,120,34,.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35"
           >
             <span>{t("instructor.dashboard.pulse.review")}</span>
             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
@@ -423,7 +423,7 @@ export function InstructorDashboardPage() {
     ),
     instructorActivityRow: (
       <div className="grid gap-6 xl:grid-cols-[1.2fr_.8fr]">
-        <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+        <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
           <SectionHeading
             icon={ClipboardCheck}
             title={t("instructor.dashboard.activity.title")}
@@ -447,29 +447,29 @@ export function InstructorDashboardPage() {
             <EmptyActivity />
           )}
         </section>
-        <section className="relative overflow-hidden rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+        <section className="relative overflow-hidden rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
           <div className="relative flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#F47822]">
                 {t("instructor.dashboard.checklistCard.eyebrow")}
               </p>
-              <h2 className="mt-2 text-lg font-semibold tracking-tight text-[#3A3A3A]">
+              <h2 className="mt-2 text-lg font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
                 {t("instructor.dashboard.checklistCard.title")}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/50">
+              <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/50 dark:text-white/50">
                 {t("instructor.dashboard.checklistCard.description")}
               </p>
             </div>
-            <div className="shrink-0 rounded-xl border border-[#F47822]/15 bg-[#FFF8F4] px-3 py-2 text-center">
+            <div className="shrink-0 rounded-xl border border-[#F47822]/15 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3 py-2 text-center">
               <p className="text-lg font-bold leading-none text-[#F47822]">
                 {checklistDone}/{checklist.length}
               </p>
-              <p className="mt-1 text-[9px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/45">
+              <p className="mt-1 text-[9px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/45 dark:text-white/45">
                 {t("instructor.dashboard.checklistCard.complete")}
               </p>
             </div>
           </div>
-          <div className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-[#3A3A3A]/8">
+          <div className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-[#3A3A3A]/8 dark:bg-white/8">
             <div
               className="h-full rounded-full bg-[#F47822] transition-[width] duration-500"
               style={{ width: `${(checklistDone / checklist.length) * 100}%` }}
@@ -589,7 +589,7 @@ export function InstructorDashboardPage() {
             type="button"
             data-testid="customize-enter"
             onClick={toggleCustomizing}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/12 px-3.5 py-2 text-xs font-bold text-[#3A3A3A]/65 transition hover:border-[#F47822]/40 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:border-white/12 dark:text-white/65 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 px-3.5 py-2 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 transition hover:border-[#F47822]/40 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:border-white/12 dark:text-white/65 dark:hover:border-[#F47822]/40 dark:hover:text-[#F47822]"
           >
             <SlidersHorizontal className="h-4 w-4" />
             {t("dashboard.personalize.customize")}
@@ -639,7 +639,7 @@ export function InstructorDashboardPage() {
 
       {customizing && (
         <div
-          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[#3A3A3A]/12 bg-white/95 p-1.5 shadow-[0_18px_50px_rgba(58,58,58,0.18)] backdrop-blur-md dark:border-white/12 dark:bg-[#1b1b20]/95"
+          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white/95 p-1.5 shadow-[0_18px_50px_rgba(58,58,58,0.18)] backdrop-blur-md dark:border-white/12 dark:bg-[#1b1b20]/95"
           data-testid="customize-toolbar"
           role="toolbar"
           aria-label={t("dashboard.personalize.title")}
@@ -648,7 +648,7 @@ export function InstructorDashboardPage() {
             type="button"
             data-testid="customize-reset"
             onClick={reset}
-            className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#3A3A3A]/65 transition hover:bg-[#3A3A3A]/6 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:text-white/65 dark:hover:bg-white/8 dark:hover:text-[#F47822]"
+            className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 transition hover:bg-[#3A3A3A]/6 dark:bg-white/6 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:text-white/65 dark:hover:bg-white/8 dark:hover:text-[#F47822]"
           >
             <RotateCcw className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-180" />
             {t("dashboard.personalize.reset")}
@@ -719,14 +719,14 @@ function AttentionQueue({ data }: { data?: InstructorAttention }) {
     <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700 dark:text-amber-400">
             <AlertTriangle className="h-4 w-4" />
           </span>
           <div>
-            <h2 className="font-semibold text-[#3A3A3A]">
+            <h2 className="font-semibold text-[#3A3A3A] dark:text-[#ececef]">
               {t("instructor.dashboard.attention.title")}
             </h2>
-            <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50">
+            <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/50 dark:text-white/50">
               {t("instructor.dashboard.attention.subtitle")}
             </p>
           </div>
@@ -742,11 +742,11 @@ function AttentionQueue({ data }: { data?: InstructorAttention }) {
           return (
             <div key={group.key}>
               <div className="flex items-center gap-2">
-                <Icon className="h-3.5 w-3.5 text-amber-700" />
+                <Icon className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
                 <p className="text-[11px] font-black uppercase tracking-[.12em] text-amber-800/70">
                   {group.title}
                 </p>
-                <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                <span className="rounded-full bg-white dark:bg-[#1b1b20] px-2 py-0.5 text-[10px] font-bold text-amber-800">
                   {group.items.length}
                 </span>
               </div>
@@ -756,20 +756,20 @@ function AttentionQueue({ data }: { data?: InstructorAttention }) {
                   const content = (
                     <>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-semibold text-[#3A3A3A]">
+                        <span className="block truncate text-sm font-semibold text-[#3A3A3A] dark:text-[#ececef]">
                           {item.title}
                         </span>
-                        <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/50">
+                        <span className="mt-0.5 block truncate text-xs text-[#3A3A3A]/50 dark:text-white/50">
                           {item.subtitle}
                         </span>
                       </span>
                       {item.badge && (
-                        <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-red-700">
+                        <span className="shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-red-700 dark:text-red-400">
                           {item.badge}
                         </span>
                       )}
                       {item.href && (
-                        <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/30 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
+                        <ChevronRight className="h-4 w-4 shrink-0 text-[#3A3A3A]/30 dark:text-white/30 transition group-hover:translate-x-0.5 group-hover:text-[#F47822]" />
                       )}
                     </>
                   );
@@ -778,12 +778,12 @@ function AttentionQueue({ data }: { data?: InstructorAttention }) {
                     <Link
                       key={item.id}
                       to={item.href}
-                      className="group flex items-center gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-transparent transition hover:bg-[#FFFBF7] hover:ring-amber-300 focus-visible:outline-none focus-visible:ring-amber-400"
+                      className="group flex items-center gap-3 rounded-xl bg-white dark:bg-[#1b1b20] px-4 py-3 ring-1 ring-transparent transition hover:bg-[#FFFBF7] hover:ring-amber-300 focus-visible:outline-none focus-visible:ring-amber-400"
                     >
                       {content}
                     </Link>
                   ) : (
-                    <div key={item.id} className="flex items-center gap-3 rounded-xl bg-white px-4 py-3">
+                    <div key={item.id} className="flex items-center gap-3 rounded-xl bg-white dark:bg-[#1b1b20] px-4 py-3">
                       {content}
                     </div>
                   );
@@ -808,13 +808,13 @@ function MomentumSection({ data }: { data?: InstructorTrends }) {
   if (!data) return null;
 
   return (
-    <section className="rounded-2xl border border-[#3A3A3A]/8 bg-white p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
+    <section className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_30px_rgba(58,58,58,.045)] sm:p-6">
       <SectionHeading
         icon={BarChart3}
         title={t("instructor.dashboard.momentum.title")}
         subtitle={t("instructor.dashboard.momentum.subtitle")}
         action={
-          <span className="rounded-full bg-[#3A3A3A]/6 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/50">
+          <span className="rounded-full bg-[#3A3A3A]/6 dark:bg-white/6 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/50 dark:text-white/50">
             {data.range.from} → {data.range.to}
           </span>
         }
@@ -865,8 +865,8 @@ function SectionHeading({
           <Icon className="h-4 w-4" />
         </div>
         <div>
-          <h2 className="font-semibold text-[#3A3A3A]">{title}</h2>
-          <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45">{subtitle}</p>
+          <h2 className="font-semibold text-[#3A3A3A] dark:text-[#ececef]">{title}</h2>
+          <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">{subtitle}</p>
         </div>
       </div>
       {action}
@@ -883,14 +883,14 @@ function PulseCard({
   icon: typeof Clock3;
 }) {
   return (
-    <div className="rounded-xl border border-[#F47822]/12 bg-white p-3">
+    <div className="rounded-xl border border-[#F47822]/12 bg-white dark:bg-[#1b1b20] p-3">
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/40">
+        <p className="text-[10px] font-bold uppercase tracking-[.1em] text-[#3A3A3A]/40 dark:text-white/40">
           {label}
         </p>
         <Icon className="h-3.5 w-3.5 text-[#F47822]" />
       </div>
-      <p className="mt-2 text-xl font-semibold tracking-tight text-[#3A3A3A]">
+      <p className="mt-2 text-xl font-semibold tracking-tight text-[#3A3A3A] dark:text-[#ececef]">
         {value}
       </p>
     </div>
@@ -904,14 +904,14 @@ function ChecklistItem({
   text: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] px-3 py-3">
+    <div className="flex items-center gap-3 rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-3">
       <span
-        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${complete ? "bg-emerald-100 text-emerald-600" : "bg-[#F47822]/10 text-[#F47822]"}`}
+        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${complete ? "bg-emerald-100 text-emerald-600 dark:text-emerald-400" : "bg-[#F47822]/10 text-[#F47822]"}`}
       >
         <CheckCircle2 className="h-3.5 w-3.5" />
       </span>
       <span
-        className={`text-xs ${complete ? "text-[#3A3A3A]/45 line-through" : "font-medium text-[#3A3A3A]/70"}`}
+        className={`text-xs ${complete ? "text-[#3A3A3A]/45 dark:text-white/45 line-through" : "font-medium text-[#3A3A3A]/70 dark:text-white/70"}`}
       >
         {text}
       </span>
@@ -951,15 +951,15 @@ function ActivityRow({
         <Icon className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm text-[#3A3A3A]">
+        <p className="truncate text-sm text-[#3A3A3A] dark:text-[#ececef]">
           <span className="font-semibold">{activity.student_name}</span>
-          <span className="text-[#3A3A3A]/60"> {activity.description} </span>
+          <span className="text-[#3A3A3A]/60 dark:text-white/60"> {activity.description} </span>
           <span className="font-medium">{activity.course_title}</span>
           {activity.score !== undefined && (
-            <span className="text-[#3A3A3A]/60"> · {activity.score}%</span>
+            <span className="text-[#3A3A3A]/60 dark:text-white/60"> · {activity.score}%</span>
           )}
         </p>
-        <p className="mt-1 text-[11px] text-[#3A3A3A]/40">{date}</p>
+        <p className="mt-1 text-[11px] text-[#3A3A3A]/40 dark:text-white/40">{date}</p>
       </div>
     </div>
   );
@@ -967,11 +967,11 @@ function ActivityRow({
 function EmptyActivity() {
   const { t } = useTranslation();
   return (
-    <div className="mt-5 rounded-xl border border-dashed border-[#3A3A3A]/12 bg-[#FCFCFC] px-5 py-8 text-center">
-      <p className="text-sm font-medium text-[#3A3A3A]">
+    <div className="mt-5 rounded-xl border border-dashed border-[#3A3A3A]/12 dark:border-white/12 bg-[#FCFCFC] dark:bg-[#1b1b20] px-5 py-8 text-center">
+      <p className="text-sm font-medium text-[#3A3A3A] dark:text-[#ececef]">
         {t("instructor.dashboard.activity.emptyTitle")}
       </p>
-      <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45">
+      <p className="mt-1 text-xs leading-5 text-[#3A3A3A]/45 dark:text-white/45">
         {t("instructor.dashboard.activity.emptyDesc")}
       </p>
     </div>

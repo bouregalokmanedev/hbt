@@ -143,7 +143,7 @@ export function TrendChart({ series }: { series: TrendPoint[] }) {
                 })}
             </svg>
 
-            <ul className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] font-semibold text-[#3A3A3A]/60">
+            <ul className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] font-semibold text-[#3A3A3A]/60 dark:text-white/60">
                 <li className="flex items-center gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#F47822]" aria-hidden />
                     {t("instructor.dashboard.momentum.enrollments")} · {totals.enrollments}

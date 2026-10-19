@@ -1,11 +1,13 @@
 import {
     Award,
     BookOpen,
+    BookOpenCheck,
     BrainCircuit,
     ChevronLeft,
     ChevronRight,
     ClipboardCheck,
     CreditCard,
+    Gift,
     Heart,
     LayoutDashboard,
     LifeBuoy,
@@ -106,6 +108,11 @@ const rewardsItems: NavigationItem[] = [
         to: "/favourite",
         icon: Heart,
     },
+    {
+        labelKey: "dashboard.sidebar.referrals",
+        to: "/referrals",
+        icon: Gift,
+    },
 ];
 
 const inboxItems: NavigationItem[] = [
@@ -136,6 +143,11 @@ const accountItems: NavigationItem[] = [
         labelKey: "dashboard.sidebar.billing",
         to: "/billing",
         icon: Receipt,
+    },
+    {
+        labelKey: "dashboard.sidebar.guide",
+        to: "/guide",
+        icon: BookOpenCheck,
     },
 ];
 

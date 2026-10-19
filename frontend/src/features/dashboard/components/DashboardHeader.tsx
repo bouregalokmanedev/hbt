@@ -188,7 +188,7 @@ export function DashboardHeader({
                                     key={badge.id}
                                     title={badge.title}
                                     aria-label={badge.title}
-                                    className="grid h-9 w-9 place-items-center rounded-xl border bg-white shadow-sm dark:bg-white/10"
+                                    className="grid h-9 w-9 place-items-center rounded-xl border bg-white dark:bg-[#1b1b20] shadow-sm dark:bg-white/10"
                                     style={{
                                         color: badgeAccent(badge.id),
                                         borderColor: `${badgeAccent(badge.id)}40`,
@@ -216,7 +216,7 @@ export function DashboardHeader({
                     <div className="mt-3 flex items-center justify-between gap-2 text-xs font-semibold text-[#3A3A3A]/55 dark:text-white/55">
                         <span className="truncate">{levelText(progression.title, t)}</span>
 
-                        <span className="flex shrink-0 items-center gap-1 font-bold text-[#D96319]">
+                        <span className="flex shrink-0 items-center gap-1 font-bold text-[#D96319] dark:text-[#F9A16C]">
                             <span dir="ltr">{remaining.toLocaleString()} XP</span>
                             <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
                             <span className="truncate">{levelText(progression.next_level_title, t)}</span>

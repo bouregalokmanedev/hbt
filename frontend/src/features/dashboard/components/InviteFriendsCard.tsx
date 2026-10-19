@@ -78,7 +78,7 @@ export function InviteFriendsCard() {
     return (
         <section
             data-testid="invite-friends-card"
-            className="rounded-3xl border border-[#3A3A3A]/10 bg-white p-5 shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:border-white/10 dark:bg-[#1b1b20] sm:p-6"
+            className="rounded-3xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-5 shadow-[0_10px_36px_rgba(58,58,58,0.06)] dark:border-white/10 dark:bg-[#1b1b20] sm:p-6"
         >
             <div className="flex items-center gap-3">
                 <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#F47822]/10 text-[#F47822]">
@@ -122,7 +122,7 @@ export function InviteFriendsCard() {
                             aria-label={t("dashboard.invite.linkLabel")}
                             data-testid="invite-friends-link"
                             dir="ltr"
-                            className="min-w-0 flex-1 truncate rounded-xl border border-[#3A3A3A]/10 bg-[#FCFCFC] px-3 py-2.5 text-xs text-[#3A3A3A] outline-none focus:border-[#F47822]/40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/80"
+                            className="min-w-0 flex-1 truncate rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5 text-xs text-[#3A3A3A] outline-none focus:border-[#F47822]/40 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/80"
                         />
 
                         <button
@@ -140,14 +140,14 @@ export function InviteFriendsCard() {
                             onClick={() => void handleShare()}
                             data-testid="invite-friends-share"
                             aria-label={t("dashboard.invite.share")}
-                            className="inline-flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl border border-[#3A3A3A]/10 text-[#3A3A3A]/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/10 dark:text-white/60"
+                            className="inline-flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 text-[#3A3A3A]/60 dark:text-white/60 transition hover:border-[#F47822]/30 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/10 dark:text-white/60"
                         >
                             <Share2 className="h-4 w-4" />
                         </button>
                     </div>
 
                     <dl className="mt-4 grid grid-cols-2 gap-3">
-                        <div className="rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] px-3 py-2.5 dark:border-white/8 dark:bg-white/[0.04]">
+                        <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5 dark:border-white/8 dark:bg-white/[0.04]">
                             <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#3A3A3A]/45 dark:text-white/45">
                                 {t("dashboard.invite.invites")}
                             </dt>
@@ -156,7 +156,7 @@ export function InviteFriendsCard() {
                             </dd>
                         </div>
 
-                        <div className="rounded-2xl border border-[#3A3A3A]/8 bg-[#FCFCFC] px-3 py-2.5 dark:border-white/8 dark:bg-white/[0.04]">
+                        <div className="rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2.5 dark:border-white/8 dark:bg-white/[0.04]">
                             <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#3A3A3A]/45 dark:text-white/45">
                                 {t("dashboard.invite.earned")}
                             </dt>

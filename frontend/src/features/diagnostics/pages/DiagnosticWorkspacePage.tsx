@@ -154,7 +154,7 @@ export function DiagnosticWorkspacePage() {
                 <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-4 py-3 sm:px-6">
                     <Link
                         to="/diagnostics"
-                        className="group inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/12 bg-white px-3 text-[#3A3A3A]/70 shadow-sm transition hover:border-[#F47822]/45 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/12 dark:bg-[#1b1b20] dark:text-white/70 dark:hover:border-[#F47822]/45 dark:hover:text-[#F47822]"
+                        className="group inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white dark:bg-[#1b1b20] px-3 text-[#3A3A3A]/70 dark:text-white/70 shadow-sm transition hover:border-[#F47822]/45 hover:bg-[#F47822]/5 hover:text-[#F47822] dark:border-white/12 dark:bg-[#1b1b20] dark:text-white/70 dark:hover:border-[#F47822]/45 dark:hover:text-[#F47822]"
                         aria-label={t("diagnostics.workspace.back")}
                     >
                         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
@@ -286,7 +286,7 @@ export function DiagnosticWorkspacePage() {
                                         <span className="rounded-full bg-[#3A3A3A] px-3 py-1 text-xs font-black text-white">{t("diagnostics.workspace.stepLabel")} {current.position}</span>
                                         <span className="rounded-full bg-[#F47822]/10 px-3 py-1 text-xs font-bold text-[#F47822] border border-[#F47822]/15">{current.action_type}</span>
                                         {current.tool ? (
-                                            <span className="rounded-full border border-[#3A3A3A]/10 bg-white px-3 py-1 text-xs font-bold text-[#3A3A3A]/60 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60">
+                                            <span className="rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1 text-xs font-bold text-[#3A3A3A]/60 dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/60">
                                                 {current.tool === "oscilloscope" ? t("diagnostics.briefing.toolNames.scope") : t(`diagnostics.briefing.toolNames.${current.tool}`)}
                                             </span>
                                         ) : null}

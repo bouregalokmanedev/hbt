@@ -320,7 +320,7 @@ export function DashboardPage() {
 
       {customizing && (
         <div
-          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[#3A3A3A]/12 bg-white/95 p-1.5 shadow-[0_18px_50px_rgba(58,58,58,0.18)] backdrop-blur-md dark:border-white/12 dark:bg-[#1b1b20]/95"
+          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[#3A3A3A]/12 dark:border-white/12 bg-white/95 p-1.5 shadow-[0_18px_50px_rgba(58,58,58,0.18)] backdrop-blur-md dark:border-white/12 dark:bg-[#1b1b20]/95"
           data-testid="customize-toolbar"
           role="toolbar"
           aria-label={t("dashboard.personalize.title")}
@@ -329,7 +329,7 @@ export function DashboardPage() {
             type="button"
             data-testid="customize-reset"
             onClick={reset}
-            className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#3A3A3A]/65 transition hover:bg-[#3A3A3A]/6 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:text-white/65 dark:hover:bg-white/8 dark:hover:text-[#F47822]"
+            className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 transition hover:bg-[#3A3A3A]/6 dark:bg-white/6 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/40 dark:text-white/65 dark:hover:bg-white/8 dark:hover:text-[#F47822]"
           >
             <RotateCcw className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-180" />
             {t("dashboard.personalize.reset")}

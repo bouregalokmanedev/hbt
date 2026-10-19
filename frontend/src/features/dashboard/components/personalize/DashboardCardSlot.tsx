@@ -68,7 +68,7 @@ export function DashboardSectionSlot({
     >
       {editing && (
         <div
-          className="mb-2 flex items-center gap-2 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] px-3 py-2 dark:border-[#F47822]/30 dark:bg-[#F47822]/10"
+          className="mb-2 flex items-center gap-2 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3 py-2 dark:border-[#F47822]/30 dark:bg-[#F47822]/10"
           data-testid={`section-bar-${id}`}
         >
           <button
@@ -109,7 +109,7 @@ export function DashboardSectionSlot({
                 "rounded-lg p-1 transition",
                 isHalf
                   ? "bg-[#F47822] text-white"
-                  : "text-[#3A3A3A]/50 hover:bg-[#3A3A3A]/10 hover:text-[#F47822] dark:text-white/50 dark:hover:bg-white/10",
+                  : "text-[#3A3A3A]/50 dark:text-white/50 hover:bg-[#3A3A3A]/10 dark:bg-white/10 hover:text-[#F47822] dark:text-white/50 dark:hover:bg-white/10",
               ].join(" ")}
             >
               {isHalf ? (
@@ -126,7 +126,7 @@ export function DashboardSectionSlot({
               aria-label={t("dashboard.personalize.hideCard", { card: label })}
               data-testid={`hide-card-${id}`}
               onClick={hideSection}
-              className="rounded-lg p-1 text-[#3A3A3A]/50 hover:bg-[#3A3A3A]/10 hover:text-[#F47822] dark:text-white/50 dark:hover:bg-white/10"
+              className="rounded-lg p-1 text-[#3A3A3A]/50 dark:text-white/50 hover:bg-[#3A3A3A]/10 dark:bg-white/10 hover:text-[#F47822] dark:text-white/50 dark:hover:bg-white/10"
             >
               <EyeOff className="h-4 w-4" />
             </button>
@@ -169,7 +169,7 @@ export function DashboardSectionGhost({ id, onShow }: DashboardSectionGhostProps
   return (
     <div
       data-testid={`dashboard-ghost-${id}`}
-      className="hbt-wiggle flex items-center gap-3 rounded-2xl border border-dashed border-[#3A3A3A]/20 bg-[#3A3A3A]/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/[0.03]"
+      className="hbt-wiggle flex items-center gap-3 rounded-2xl border border-dashed border-[#3A3A3A]/20 dark:border-white/20 bg-[#3A3A3A]/[0.03] dark:bg-white/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/[0.03]"
     >
       <span className="min-w-0 flex-1 truncate text-xs font-bold text-[#3A3A3A]/55 dark:text-white/55">
         {label}

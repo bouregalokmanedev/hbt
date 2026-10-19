@@ -184,7 +184,7 @@ export function SubscriptionPage() {
                   </span>
                 </div>
                 <h2 className="mt-3 text-xl font-bold text-hbt-dark dark:text-white">{t("subscription.onPlan", { plan: activeSub.plan ?? t("subscription.yourPlanFallback") })}</h2>
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 dark:text-white/40">
                   <Calendar className="h-4 w-4" />
                   {activeSub.status === "trial"
                     ? t("subscription.trialEnds", { date: fmtDate(activeSub.current_period_ends_at) })
@@ -222,9 +222,9 @@ export function SubscriptionPage() {
                   .map((plan) => (
                     <div key={plan.id} className="rounded-2xl border border-slate-200 dark:border-white/10 p-4">
                       <p className="text-sm font-bold">{plan.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{plan.description ?? ""}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-white/40">{plan.description ?? ""}</p>
                       <p className="mt-2 text-lg font-bold">
-                        {plan.price === 0 ? t("subscription.free") : `${plan.price} ${plan.currency}`} <span className="text-xs font-normal text-slate-400">/ {plan.interval}</span>
+                        {plan.price === 0 ? t("subscription.free") : `${plan.price} ${plan.currency}`} <span className="text-xs font-normal text-slate-400 dark:text-white/40">/ {plan.interval}</span>
                       </p>
                       {plan.trial_days > 0 && <p className="text-[11px] text-emerald-600 dark:text-emerald-400">{t("subscription.trialDays", { count: plan.trial_days })}</p>}
                       <button
@@ -245,7 +245,7 @@ export function SubscriptionPage() {
               <Crown className="h-6 w-6" />
             </div>
             <h2 className="mt-4 text-xl font-bold">{t("subscription.emptyTitle")}</h2>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400 dark:text-white/40">
               {t("subscription.emptyDesc")}
             </p>
             <Link to="/pricing" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-hbt-orange px-6 py-3 text-sm font-bold text-white hover:bg-[#e96916]">
@@ -260,10 +260,10 @@ export function SubscriptionPage() {
             <Sparkles className="h-5 w-5 text-hbt-orange" /> {t("subscription.gridTitle")}
           </h2>
             {plans.length === 0 ? (
-              <div className="mt-4 rounded-3xl border border-dashed border-slate-300 px-6 py-10 text-center dark:border-white/15">
+              <div className="mt-4 rounded-3xl border border-dashed border-slate-300 dark:border-white/15 px-6 py-10 text-center dark:border-white/15">
                 <Sparkles className="mx-auto h-8 w-8 text-hbt-orange" />
                 <h3 className="mt-3 text-base font-bold">{t("subscription.plansEmptyTitle")}</h3>
-                <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">{t("subscription.plansEmptyDesc")}</p>
+                <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400 dark:text-white/40">{t("subscription.plansEmptyDesc")}</p>
               </div>
             ) : (
           <div className="mt-4 grid gap-4 lg:grid-cols-3">
@@ -277,17 +277,17 @@ export function SubscriptionPage() {
                   }`}
                 >
                   <h3 className="text-lg font-bold">{plan.name}</h3>
-                  <p className="mt-1 min-h-10 text-sm leading-5 text-slate-500 dark:text-slate-400">{plan.description}</p>
+                  <p className="mt-1 min-h-10 text-sm leading-5 text-slate-500 dark:text-slate-400 dark:text-white/40">{plan.description}</p>
                   <div className="mt-4">
                     <span className="text-3xl font-bold">{plan.price === 0 ? t("subscription.free") : `${plan.price}`}</span>
-                    {plan.price > 0 && <span className="text-sm text-slate-400"> {plan.currency} / {plan.interval}</span>}
+                    {plan.price > 0 && <span className="text-sm text-slate-400 dark:text-white/40"> {plan.currency} / {plan.interval}</span>}
                   </div>
                   {plan.trial_days > 0 && <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">{t("subscription.trialDaysFree", { count: plan.trial_days })}</p>}
                   <ul className="mt-4 flex-1 space-y-2">
                     {(Array.isArray(plan.features) ? plan.features : []).slice(0, 5).map((f) => (
                       <li key={f} className="flex gap-2 text-sm">
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                        <span className="text-slate-600 dark:text-slate-300">{f}</span>
+                        <span className="text-slate-600 dark:text-slate-300 dark:text-white/45">{f}</span>
                       </li>
                     ))}
                   </ul>
@@ -296,7 +296,7 @@ export function SubscriptionPage() {
                     disabled={!!actionLoading || isCurrent}
                     className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition ${
                       isCurrent
-                        ? "bg-slate-100 dark:bg-white/10 text-slate-400"
+                        ? "bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/40"
                         : plan.slug.includes("academy")
                           ? "border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1b1b20] text-hbt-dark dark:text-white hover:border-hbt-orange"
                           : "bg-hbt-orange text-white hover:bg-[#e96916]"
@@ -330,7 +330,7 @@ export function SubscriptionPage() {
                 <div key={s.id} className="flex items-center justify-between py-3">
                   <div>
                     <p className="text-sm font-semibold">{s.plan ?? t("subscription.planFallbackRow")}</p>
-                    <p className="text-xs text-slate-400">{s.created_at ? new Date(s.created_at).toLocaleDateString(i18n.language) : ""}</p>
+                    <p className="text-xs text-slate-400 dark:text-white/40">{s.created_at ? new Date(s.created_at).toLocaleDateString(i18n.language) : ""}</p>
                   </div>
                   <span className="rounded-full bg-slate-100 dark:bg-white/10 px-3 py-1 text-xs font-bold capitalize">{s.status}</span>
                 </div>

@@ -33,12 +33,12 @@ export function HelpArticlePage() {
     const category = HELP_CATEGORIES.find((entry) => entry.id === article.category);
 
     return (
-        <div className="bg-white">
-            <div className="border-b border-[#3A3A3A]/8 bg-[#FFF8F4]">
+        <div className="bg-white dark:bg-[#1b1b20]">
+            <div className="border-b border-[#3A3A3A]/8 dark:border-white/8 bg-[#FFF8F4] dark:bg-[#F47822]/10">
                 <div className="mx-auto max-w-3xl px-5 py-8">
                     <nav
                         aria-label={t("navigation.breadcrumb")}
-                        className="flex flex-wrap items-center gap-1 text-[11px] font-semibold text-[#3A3A3A]/50"
+                        className="flex flex-wrap items-center gap-1 text-[11px] font-semibold text-[#3A3A3A]/50 dark:text-white/50"
                     >
                         <Link to="/help" className="inline-flex items-center gap-1 hover:text-[#F47822]">
                             <Home className="h-3.5 w-3.5" />
@@ -47,13 +47,13 @@ export function HelpArticlePage() {
                         <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" />
                         <span>{category ? localized(category.label, locale) : article.category}</span>
                         <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" />
-                        <span className="text-[#3A3A3A]/80">{localized(article.title, locale)}</span>
+                        <span className="text-[#3A3A3A]/80 dark:text-white/80">{localized(article.title, locale)}</span>
                     </nav>
 
-                    <h1 className="mt-4 text-2xl font-black tracking-tight text-[#3A3A3A] sm:text-3xl">
+                    <h1 className="mt-4 text-2xl font-black tracking-tight text-[#3A3A3A] dark:text-[#ececef] sm:text-3xl">
                         {localized(article.title, locale)}
                     </h1>
-                    <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60">
+                    <p className="mt-3 text-sm leading-6 text-[#3A3A3A]/60 dark:text-white/60">
                         {localized(article.summary, locale)}
                     </p>
                 </div>
@@ -62,7 +62,7 @@ export function HelpArticlePage() {
             <article className="mx-auto max-w-3xl px-5 py-10">
                 <div className="space-y-4">
                     {article.body.map((paragraph, index) => (
-                        <p key={index} className="text-sm leading-7 text-[#3A3A3A]/75">
+                        <p key={index} className="text-sm leading-7 text-[#3A3A3A]/75 dark:text-white/75">
                             {localized(paragraph, locale)}
                         </p>
                     ))}
@@ -73,12 +73,12 @@ export function HelpArticlePage() {
                         {article.steps.map((step, index) => (
                             <li
                                 key={index}
-                                className="flex gap-3 rounded-2xl border border-[#3A3A3A]/8 bg-[#FAFAFA] p-4"
+                                className="flex gap-3 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-[#FAFAFA] p-4"
                             >
                                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F47822] text-[11px] font-black text-white">
                                     {index + 1}
                                 </span>
-                                <p className="text-sm leading-6 text-[#3A3A3A]/75">
+                                <p className="text-sm leading-6 text-[#3A3A3A]/75 dark:text-white/75">
                                     {localized(step, locale)}
                                 </p>
                             </li>
@@ -86,8 +86,8 @@ export function HelpArticlePage() {
                     </ol>
                 )}
 
-                <div className="mt-8 flex flex-wrap gap-3 rounded-2xl border border-[#F47822]/20 bg-[#FFF8F4] p-5">
-                    <p className="w-full text-xs font-bold text-[#3A3A3A]">
+                <div className="mt-8 flex flex-wrap gap-3 rounded-2xl border border-[#F47822]/20 bg-[#FFF8F4] dark:bg-[#F47822]/10 p-5">
+                    <p className="w-full text-xs font-bold text-[#3A3A3A] dark:text-[#ececef]">
                         {t("help.stillStuck")}
                     </p>
                     <Link
@@ -99,7 +99,7 @@ export function HelpArticlePage() {
                     </Link>
                     <Link
                         to="/help/track"
-                        className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-white px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                        className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-4 py-2.5 text-xs font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                     >
                         <LifeBuoy className="h-4 w-4" />
                         {t("help.trackCta")}
@@ -108,7 +108,7 @@ export function HelpArticlePage() {
 
                 {related.length > 0 && (
                     <section className="mt-10">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/40">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3A3A3A]/40 dark:text-white/40">
                             {t("help.related")}
                         </p>
                         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -116,7 +116,7 @@ export function HelpArticlePage() {
                                 <Link
                                     key={entry.slug}
                                     to={`/help/${entry.slug}`}
-                                    className="group rounded-2xl border border-[#3A3A3A]/8 p-4 text-xs font-bold leading-5 text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
+                                    className="group rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 p-4 text-xs font-bold leading-5 text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822]"
                                 >
                                     {localized(entry.title, locale)}
                                     <ArrowRight className="mt-2 h-3.5 w-3.5 text-[#F47822] transition group-hover:translate-x-0.5" />

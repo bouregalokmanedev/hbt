@@ -135,7 +135,7 @@ export function Canvas({ engine, state, t, tc }: { engine: SchematicWorkspaceEng
                     <CircuitGraph engine={engine} state={state} tx={tx} ty={ty} z={z} />
                 ) : (
                     <div className="absolute left-0 top-0 origin-top-left" style={{ transform: `translate(${tx}px,${ty}px) scale(${z})` }}>
-                        <div className="relative bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]" style={{ width: SCH_IMG_W, height: SCH_IMG_H }}>
+                        <div className="relative bg-white dark:bg-[#1b1b20] shadow-[0_8px_32px_rgba(0,0,0,0.12)]" style={{ width: SCH_IMG_W, height: SCH_IMG_H }}>
                             <img src={SCH_DIAGRAM} alt={`${trace.labelId}`} width={SCH_IMG_W} height={SCH_IMG_H} draggable={false} className="pointer-events-none block select-none" />
 
                             {isTrace && tracePts.length ? (
@@ -221,7 +221,7 @@ export function Canvas({ engine, state, t, tc }: { engine: SchematicWorkspaceEng
 
                 {/* Minimap — card */}
                 {!isCircuit ? (
-                    <div className="absolute bottom-4 left-4 z-[6] w-[260px] overflow-hidden rounded-2xl border border-[#3A3A3A]/10 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#1b1b20]">
+                    <div className="absolute bottom-4 left-4 z-[6] w-[260px] overflow-hidden rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#1b1b20]">
                         <div className="relative h-[96px] bg-[#F8F7F6] dark:bg-[#101013]">
                             <img src={SCH_DIAGRAM} alt="" className="block h-full w-full object-cover opacity-60" />
                             <div
@@ -235,7 +235,7 @@ export function Canvas({ engine, state, t, tc }: { engine: SchematicWorkspaceEng
                                 }}
                             />
                         </div>
-                        <div className="flex items-center justify-between border-t border-[#3A3A3A]/10 bg-white px-3 py-2 dark:border-white/10 dark:bg-[#1b1b20]">
+                        <div className="flex items-center justify-between border-t border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-2 dark:border-white/10 dark:bg-[#1b1b20]">
                             <span className="flex items-center gap-1.5 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60">
                                 <MapPinned className="h-3.5 w-3.5" />
                                 {t("controls.minimap")}
@@ -246,8 +246,8 @@ export function Canvas({ engine, state, t, tc }: { engine: SchematicWorkspaceEng
                 ) : null}
 
                 {/* Zoom dock — pill */}
-                <div className="absolute bottom-4 right-4 z-[6] flex items-center gap-1 rounded-full border border-[#3A3A3A]/10 bg-white p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#1b1b20]">
-                    <button type="button" onClick={() => zoomTo(z / 1.25)} aria-label={t("controls.zoomOut")} className="grid h-8 w-8 place-items-center rounded-full text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A]/10 hover:text-[#3A3A3A] dark:text-white/60 dark:hover:bg-white/10">
+                <div className="absolute bottom-4 right-4 z-[6] flex items-center gap-1 rounded-full border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#1b1b20]">
+                    <button type="button" onClick={() => zoomTo(z / 1.25)} aria-label={t("controls.zoomOut")} className="grid h-8 w-8 place-items-center rounded-full text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#3A3A3A]/10 dark:bg-white/10 hover:text-[#3A3A3A] dark:text-white/60 dark:hover:bg-white/10">
                         <Minus className="h-4 w-4" />
                     </button>
                     <span dir="ltr" className="min-w-14 text-center font-mono text-xs font-black text-[#3A3A3A] dark:text-white">{Math.round(z * 100)}%</span>

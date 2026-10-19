@@ -26,7 +26,7 @@ export function ScannerToolbar({
 }) {
     const { t } = useTranslation();
     return (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3A3A3A]/8 bg-white px-4 py-2.5 dark:border-white/8 dark:bg-[#1b1b20]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-4 py-2.5 dark:border-white/8 dark:bg-[#1b1b20]">
             <p className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#3A3A3A]/50 dark:text-white/50">
                 <span className="h-1.5 w-1.5 rounded-sm bg-[#F47822]" />
                 {t("simulator.scannerLab.dash.crumbScanner")}
@@ -38,12 +38,12 @@ export function ScannerToolbar({
                     type="button"
                     onClick={onSwitchVehicle}
                     title={t("simulator.scannerLab.gate.changeVehicle")}
-                    className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 font-mono text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 font-mono text-[11px] font-bold text-[#3A3A3A] transition hover:border-[#F47822]/40 hover:text-[#F47822] dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
                 >
                     <Car className="h-3.5 w-3.5 text-[#F47822]" />
                     <span dir="ltr">{vehicleEngine}</span>
                 </button>
-                <span className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 bg-white px-3 py-1.5 font-mono text-[11px] font-bold text-[#3A3A3A] dark:border-white/10 dark:bg-white/[0.04] dark:text-white">
+                <span className="inline-flex items-center gap-2 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 py-1.5 font-mono text-[11px] font-bold text-[#3A3A3A] dark:border-white/10 dark:bg-white/[0.04] dark:text-white">
                     <span className={`h-2 w-2 rounded-full ${livePlay ? "animate-pulse bg-emerald-500" : "bg-[#3A3A3A]/25 dark:bg-white/25"}`} />
                     {t("simulator.scannerLab.dash.vciLinked")}
                     <span dir="ltr" className="tabular-nums text-emerald-600 dark:text-emerald-400">{volts.toFixed(2)} V</span>
@@ -60,18 +60,18 @@ export function ScannerToolbar({
                         {t("simulator.scannerLab.status.inProgress")}
                     </span>
                 )}
-                <div className="flex rounded-xl bg-[#3A3A3A]/[.06] p-1 dark:bg-white/[0.07]">
+                <div className="flex rounded-xl bg-[#3A3A3A]/[.06] dark:bg-white/[.06] p-1 dark:bg-white/[0.07]">
                     <button
                         type="button"
                         onClick={onProfessional}
-                        className={`rounded-lg px-3 py-1.5 text-[11px] font-black tracking-wide transition ${!trainingActive ? "bg-[#F47822] text-white shadow" : "text-[#3A3A3A]/50 hover:text-[#3A3A3A] dark:text-white/50 dark:hover:text-white"}`}
+                        className={`rounded-lg px-3 py-1.5 text-[11px] font-black tracking-wide transition ${!trainingActive ? "bg-[#F47822] text-white shadow" : "text-[#3A3A3A]/50 dark:text-white/50 hover:text-[#3A3A3A] dark:text-white/50 dark:hover:text-white"}`}
                     >
                         {t("simulator.scannerLab.dash.professional")}
                     </button>
                     <button
                         type="button"
                         onClick={onTraining}
-                        className={`rounded-lg px-3 py-1.5 text-[11px] font-black tracking-wide transition ${trainingActive ? "bg-[#F47822] text-white shadow" : "text-[#3A3A3A]/50 hover:text-[#3A3A3A] dark:text-white/50 dark:hover:text-white"}`}
+                        className={`rounded-lg px-3 py-1.5 text-[11px] font-black tracking-wide transition ${trainingActive ? "bg-[#F47822] text-white shadow" : "text-[#3A3A3A]/50 dark:text-white/50 hover:text-[#3A3A3A] dark:text-white/50 dark:hover:text-white"}`}
                     >
                         {t("simulator.scannerLab.dash.training")}
                     </button>

@@ -66,7 +66,7 @@ export function LanguageSwitcher() {
                     text-hbt-dark/75
                     transition-colors
                     hover:bg-hbt-gray
-                    hover:text-hbt-dark
+                    hover:text-hbt-dark dark:text-[#ececef]
                 "
       >
         <Languages className="h-4 w-4" />
@@ -94,8 +94,8 @@ export function LanguageSwitcher() {
                         overflow-hidden
                         rounded-xl
                         border
-                        border-slate-200
-                        bg-white
+                        border-slate-200 dark:border-white/10
+                        bg-white dark:bg-[#1b1b20]
                         p-1.5
                         shadow-[0_15px_40px_rgba(15,23,42,0.12)]
                     "
@@ -111,7 +111,7 @@ export function LanguageSwitcher() {
               "transition-colors",
               currentLanguage === "en"
                 ? "bg-orange-50 text-hbt-orange"
-                : "text-hbt-dark hover:bg-hbt-gray",
+                : "text-hbt-dark dark:text-[#ececef] hover:bg-hbt-gray",
             ].join(" ")}
           >
             English
@@ -131,7 +131,7 @@ export function LanguageSwitcher() {
               "transition-colors",
               currentLanguage === "ar"
                 ? "bg-orange-50 text-hbt-orange"
-                : "text-hbt-dark hover:bg-hbt-gray",
+                : "text-hbt-dark dark:text-[#ececef] hover:bg-hbt-gray",
             ].join(" ")}
           >
             العربية

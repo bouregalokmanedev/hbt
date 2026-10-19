@@ -127,4 +127,8 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
 
+    // Default billing currency for checkout orders.
+    // Stripe supports: USD, EUR, GBP, AED, SAR… (NOT DZD).
+    'currency' => env('APP_CURRENCY', 'USD'),
+
 ];

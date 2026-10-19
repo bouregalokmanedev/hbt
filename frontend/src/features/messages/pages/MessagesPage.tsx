@@ -58,11 +58,11 @@ function ConfirmDialog({ title, description, confirmLabel, cancelLabel, danger, 
 }) {
     return (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-[#17202b]/40 p-4 backdrop-blur-sm" role="presentation" onClick={onCancel}>
-            <div role="alertdialog" aria-modal="true" aria-label={title} onClick={(event) => event.stopPropagation()} className="w-full max-w-sm rounded-[24px] border border-[#3A3A3A]/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]">
+            <div role="alertdialog" aria-modal="true" aria-label={title} onClick={(event) => event.stopPropagation()} className="w-full max-w-sm rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]">
                 <h2 className="text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">{title}</h2>
                 <p className="mt-2 text-sm leading-6 text-[#3A3A3A]/65 dark:text-white/65">{description}</p>
                 <div className="mt-5 flex justify-end gap-2">
-                    <button type="button" onClick={onCancel} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A]/5 dark:text-white/60 dark:hover:bg-white/5">{cancelLabel}</button>
+                    <button type="button" onClick={onCancel} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#3A3A3A]/5 dark:text-white/60 dark:hover:bg-white/5">{cancelLabel}</button>
                     <button type="button" onClick={onConfirm} className={`rounded-xl px-4 py-2.5 text-xs font-bold text-white transition ${danger ? "bg-red-600 hover:bg-red-500" : "bg-[#3A3A3A] hover:bg-[#F47822]"}`}>{confirmLabel}</button>
                 </div>
             </div>
@@ -365,8 +365,8 @@ export function MessagesPage({ mode = "messages", basePath = "", getProfilePath,
                         </div>
                         <div className="relative mt-3">
                             <Search className="pointer-events-none absolute inset-y-0 start-3 my-auto h-3.5 w-3.5 text-[#3A3A3A]/40 dark:text-white/40" />
-                            <input value={inboxQuery} onChange={(event) => setInboxQuery(event.target.value)} placeholder={t("messages.searchInboxPh")} aria-label={t("messages.searchInbox")} className="messages-quiet-focus h-9 w-full rounded-xl border border-[#3A3A3A]/10 bg-white ps-9 pe-8 text-xs text-[#3A3A3A] transition placeholder:text-[#3A3A3A]/35 focus:border-[#F47822]/55 dark:border-white/10 dark:bg-[#1b1b20] dark:text-[#ececef] dark:placeholder:text-white/35" />
-                            {inboxQuery && <button type="button" onClick={() => setInboxQuery("")} aria-label={t("messages.close")} className="absolute inset-y-0 end-1.5 my-auto grid h-6 w-6 place-items-center rounded-lg text-[#3A3A3A]/40 transition hover:bg-[#3A3A3A]/8 hover:text-[#3A3A3A] dark:text-white/40 dark:hover:bg-white/10"><X className="h-3.5 w-3.5" /></button>}
+                            <input value={inboxQuery} onChange={(event) => setInboxQuery(event.target.value)} placeholder={t("messages.searchInboxPh")} aria-label={t("messages.searchInbox")} className="messages-quiet-focus h-9 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] ps-9 pe-8 text-xs text-[#3A3A3A] transition placeholder:text-[#3A3A3A]/35 dark:text-white/35 focus:border-[#F47822]/55 dark:border-white/10 dark:bg-[#1b1b20] dark:text-[#ececef] dark:placeholder:text-white/35" />
+                            {inboxQuery && <button type="button" onClick={() => setInboxQuery("")} aria-label={t("messages.close")} className="absolute inset-y-0 end-1.5 my-auto grid h-6 w-6 place-items-center rounded-lg text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-[#3A3A3A]/8 dark:bg-white/8 hover:text-[#3A3A3A] dark:text-white/40 dark:hover:bg-white/10"><X className="h-3.5 w-3.5" /></button>}
                         </div>
                     </div>
                     {loading ? (
@@ -396,7 +396,7 @@ export function MessagesPage({ mode = "messages", basePath = "", getProfilePath,
                                 onOpen={() => void openConversation(conversation.id)}
                             />
                         ))}{inboxHasMore && !needle && !unreadOnly && (
-                            <div className="border-t border-[#3A3A3A]/8 p-3 text-center dark:border-white/8">
+                            <div className="border-t border-[#3A3A3A]/8 dark:border-white/8 p-3 text-center dark:border-white/8">
                                 <button type="button" onClick={() => void loadMoreInbox()} disabled={inboxLoadingMore} className="inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-[#F47822] transition hover:bg-[#F47822]/10 disabled:opacity-50">
                                     {inboxLoadingMore && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}
                                     {t("messages.loadMoreInbox")}
@@ -406,7 +406,7 @@ export function MessagesPage({ mode = "messages", basePath = "", getProfilePath,
                     )}
                 </aside>
                 <section className="flex min-h-[500px] flex-col">
-                    <div className="flex items-center justify-between gap-3 border-b border-[#3A3A3A]/8 px-5 py-3.5 sm:px-6 dark:border-white/8">
+                    <div className="flex items-center justify-between gap-3 border-b border-[#3A3A3A]/8 dark:border-white/8 px-5 py-3.5 sm:px-6 dark:border-white/8">
                         {active ? (
                             <div className="flex min-w-0 items-center gap-3">
                                 <ThreadHeaderAvatar active={active} />
@@ -431,12 +431,12 @@ export function MessagesPage({ mode = "messages", basePath = "", getProfilePath,
                             <p className="text-sm font-semibold text-[#3A3A3A]/50 dark:text-white/50">{t("messages.selectItem")}</p>
                         )}
                         {active && (
-                            <div className="flex shrink-0 items-center gap-0.5 rounded-xl bg-[#3A3A3A]/[.04] p-1 dark:bg-white/[.06]">
+                            <div className="flex shrink-0 items-center gap-0.5 rounded-xl bg-[#3A3A3A]/[.04] dark:bg-white/[.04] p-1 dark:bg-white/[.06]">
                                 {active.status === "active" && (
-                                    <button onClick={() => void toggleMute(active)} className={`rounded-lg p-2 transition ${active.muted ? "text-[#F47822]" : "text-[#3A3A3A]/45 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/45"}`} aria-pressed={Boolean(active.muted)} aria-label={active.muted ? t("messages.unmuteAria") : t("messages.muteAria")} title={active.muted ? t("messages.unmuteAria") : t("messages.muteAria")}><BellOff className="h-4 w-4" /></button>
+                                    <button onClick={() => void toggleMute(active)} className={`rounded-lg p-2 transition ${active.muted ? "text-[#F47822]" : "text-[#3A3A3A]/45 dark:text-white/45 hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/45"}`} aria-pressed={Boolean(active.muted)} aria-label={active.muted ? t("messages.unmuteAria") : t("messages.muteAria")} title={active.muted ? t("messages.unmuteAria") : t("messages.muteAria")}><BellOff className="h-4 w-4" /></button>
                                 )}
                                 {active.status === "active" && active.can_archive !== false && (
-                                    <button onClick={() => void archiveActive(active.id)} className="rounded-lg p-2 text-[#3A3A3A]/45 transition hover:bg-red-50 hover:text-red-600 dark:text-white/45 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label={t("messages.archiveAria")} title={t("messages.archiveAria")}><Archive className="h-4 w-4" /></button>
+                                    <button onClick={() => void archiveActive(active.id)} className="rounded-lg p-2 text-[#3A3A3A]/45 dark:text-white/45 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-600 dark:text-white/45 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label={t("messages.archiveAria")} title={t("messages.archiveAria")}><Archive className="h-4 w-4" /></button>
                                 )}
                             </div>
                         )}
@@ -481,7 +481,7 @@ export function RoomPage({ basePath = "", embedded = false }: { basePath?: strin
 
 const AVATAR_TONES = [
     "bg-[#F47822]/12 text-[#F47822]",
-    "bg-[#3A3A3A]/8 text-[#3A3A3A] dark:bg-white/10 dark:text-white",
+    "bg-[#3A3A3A]/8 dark:bg-white/8 text-[#3A3A3A] dark:bg-white/10 dark:text-white",
     "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     "bg-violet-500/10 text-violet-600 dark:text-violet-400",
@@ -530,7 +530,7 @@ function DayDivider({ label, id }: { label: string; id?: string }) {
     return (
         <div id={id} className="flex items-center gap-3 px-2 py-1">
             <span className="h-px flex-1 bg-[#3A3A3A]/10 dark:bg-white/10" />
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3A3A3A]/8 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/55 shadow-sm dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/55">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] px-3 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#3A3A3A]/55 dark:text-white/55 shadow-sm dark:border-white/10 dark:bg-[#1b1b20] dark:text-white/55">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#F47822]" aria-hidden="true" />
                 {label}
             </span>
@@ -613,7 +613,7 @@ function ConversationRow({ conversation, isActive, isAnnouncements, fallbackName
             type="button"
             onClick={onOpen}
             aria-current={isActive ? "true" : undefined}
-            className={`group relative flex w-full items-start gap-3 border-b border-[#3A3A3A]/[.06] px-4 py-3.5 text-start transition last:border-b-0 hover:bg-[#F47822]/[.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#F47822]/45 dark:border-white/[.06] dark:hover:bg-white/[.03] ${isActive ? "bg-[#FFF7F2] dark:bg-[#F47822]/[.08]" : ""}`}
+            className={`group relative flex w-full items-start gap-3 border-b border-[#3A3A3A]/[.06] dark:border-white/[.06] px-4 py-3.5 text-start transition last:border-b-0 hover:bg-[#F47822]/[.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#F47822]/45 dark:border-white/[.06] dark:hover:bg-white/[.03] ${isActive ? "bg-[#FFF7F2] dark:bg-[#F47822]/[.08]" : ""}`}
         >
             <span aria-hidden="true" className={`absolute inset-y-0 start-0 w-[3px] rounded-e-full bg-[#F47822] transition-opacity ${isActive ? "opacity-100" : "opacity-0"}`} />
             <span className="relative shrink-0 pt-0.5">
@@ -640,12 +640,12 @@ function ConversationRow({ conversation, isActive, isAnnouncements, fallbackName
                     )}
                 </span>
                 {preview && tag && (
-                    <span className="mt-1.5 inline-block max-w-full truncate rounded-md bg-[#3A3A3A]/[.06] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[.09em] text-[#3A3A3A]/50 dark:bg-white/[.07] dark:text-white/50">
+                    <span className="mt-1.5 inline-block max-w-full truncate rounded-md bg-[#3A3A3A]/[.06] dark:bg-white/[.06] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[.09em] text-[#3A3A3A]/50 dark:bg-white/[.07] dark:text-white/50">
                         {tag}
                     </span>
                 )}
             </span>
-            <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-[#3A3A3A]/20 transition group-hover:translate-x-0.5 group-hover:text-[#F47822] rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5 rtl:group-hover:translate-x-0 dark:text-white/20" />
+            <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-[#3A3A3A]/20 dark:text-white/20 transition group-hover:translate-x-0.5 group-hover:text-[#F47822] rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5 rtl:group-hover:translate-x-0 dark:text-white/20" />
         </button>
     );
 }
@@ -653,7 +653,7 @@ function ConversationRow({ conversation, isActive, isAnnouncements, fallbackName
 /** Shimmering stand-in while the first inbox page is still loading. */
 function ConversationRowSkeleton() {
     return (
-        <div className="flex items-start gap-3 border-b border-[#3A3A3A]/[.06] px-4 py-3.5 last:border-b-0 dark:border-white/[.06]" aria-hidden="true">
+        <div className="flex items-start gap-3 border-b border-[#3A3A3A]/[.06] dark:border-white/[.06] px-4 py-3.5 last:border-b-0 dark:border-white/[.06]" aria-hidden="true">
             <Skeleton className="h-11 w-11 shrink-0 rounded-2xl bg-[#3A3A3A]/[.07] dark:bg-white/[.07]" />
             <span className="min-w-0 flex-1 space-y-2 pt-1.5">
                 <Skeleton className="h-3 w-1/2 rounded-full bg-[#3A3A3A]/[.07] dark:bg-white/[.07]" />
@@ -759,7 +759,7 @@ const Bubble = memo(function Bubble({ message, incoming, mine, members, myUuid, 
     if (message.deleted === "all") {
         return (
             <article className={`flex ${incoming ? "justify-start" : "justify-end"}`}>
-                <div className="max-w-[min(85%,34rem)] rounded-2xl border border-dashed border-[#3A3A3A]/15 px-4 py-2.5 text-xs italic text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
+                <div className="max-w-[min(85%,34rem)] rounded-2xl border border-dashed border-[#3A3A3A]/15 dark:border-white/15 px-4 py-2.5 text-xs italic text-[#3A3A3A]/50 dark:border-white/15 dark:text-white/50">
                     {t("messages.deletedMessage")}
                 </div>
             </article>
@@ -776,7 +776,7 @@ const Bubble = memo(function Bubble({ message, incoming, mine, members, myUuid, 
     // surface underneath it — white wash on charcoal, ink wash on paper.
     const actionHover = incoming ? "hover:bg-[#3A3A3A]/10 dark:hover:bg-white/10" : "hover:bg-white/15";
     const surface = incoming
-        ? "rounded-bl-md border border-[#3A3A3A]/[.07] bg-white text-[#3A3A3A]/85 shadow-[0_1px_6px_rgba(58,58,58,.06)] dark:border-white/[.07] dark:bg-[#1b1b20] dark:text-white/85"
+        ? "rounded-bl-md border border-[#3A3A3A]/[.07] dark:border-white/[.07] bg-white dark:bg-[#1b1b20] text-[#3A3A3A]/85 dark:text-white/85 shadow-[0_1px_6px_rgba(58,58,58,.06)] dark:border-white/[.07] dark:bg-[#1b1b20] dark:text-white/85"
         : "rounded-br-md bg-[#3A3A3A] text-white shadow-[0_3px_14px_rgba(58,58,58,.22)]";
     // Exactly one ring at a time: brand accent normally, failure state when the
     // send bounced — two ring utilities on the same element fight in the sheet.
@@ -847,7 +847,7 @@ const Bubble = memo(function Bubble({ message, incoming, mine, members, myUuid, 
                 {entries.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1">
                         {entries.map(([emoji, ids]) => (
-                            <button key={emoji} type="button" onClick={() => onReact(message, emoji)} title={String(ids.length)} className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] transition ${reacted.includes(emoji) ? "bg-[#F47822] text-white" : incoming ? "bg-[#3A3A3A]/[.06] hover:bg-[#3A3A3A]/[.1] dark:bg-white/10 dark:hover:bg-white/20" : "bg-white/10 hover:bg-white/20"}`}>
+                            <button key={emoji} type="button" onClick={() => onReact(message, emoji)} title={String(ids.length)} className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] transition ${reacted.includes(emoji) ? "bg-[#F47822] text-white" : incoming ? "bg-[#3A3A3A]/[.06] dark:bg-white/[.06] hover:bg-[#3A3A3A]/[.1] dark:bg-white/10 dark:hover:bg-white/20" : "bg-white/10 hover:bg-white/20"}`}>
                                 <span>{emoji}</span>
                                 <span className="font-bold tabular-nums">{ids.length}</span>
                             </button>
@@ -873,7 +873,7 @@ const Bubble = memo(function Bubble({ message, incoming, mine, members, myUuid, 
                 {pickerOpen && (
                     <>
                         <button type="button" aria-label={t("messages.close")} onClick={() => onTogglePicker(null)} className="fixed inset-0 z-30 cursor-default" />
-                        <span className="absolute bottom-full end-0 z-40 mb-2 flex gap-1 rounded-xl border border-[#3A3A3A]/10 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-[#1b1b20]">
+                        <span className="absolute bottom-full end-0 z-40 mb-2 flex gap-1 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1.5 shadow-xl dark:border-white/10 dark:bg-[#1b1b20]">
                             {MESSAGE_REACTIONS.map((emoji) => (
                                 <button key={emoji} type="button" onClick={() => onReact(message, emoji)} aria-label={emoji} className="rounded-lg px-1.5 py-1 text-base transition hover:bg-[#F47822]/10">{emoji}</button>
                             ))}
@@ -1265,26 +1265,26 @@ function Thread({ active, conversations, online, onSent, onChanged }: { active: 
                 setDragging(false);
                 addFiles(event.dataTransfer.files);
             }}
-            className={`relative flex-1 space-y-4 overflow-y-auto bg-[#FCFCFC] p-4 sm:p-6 dark:bg-[#232329] ${dragging ? "outline-2 outline-dashed outline-[#F47822]" : ""}`}
+            className={`relative flex-1 space-y-4 overflow-y-auto bg-[#FCFCFC] dark:bg-[#1b1b20] p-4 sm:p-6 dark:bg-[#232329] ${dragging ? "outline-2 outline-dashed outline-[#F47822]" : ""}`}
         >
         {dragging && <div className="pointer-events-none sticky top-1/2 z-20 -my-6 rounded-2xl border-2 border-dashed border-[#F47822] bg-white/90 px-6 py-8 text-center text-xs font-bold text-[#F47822] dark:bg-[#1b1b20]/90">{t("messages.attachments.dropHere")}</div>}
         <div className="sticky top-0 z-10 -mx-1 flex items-center gap-2 bg-[#FCFCFC]/95 px-1 py-1.5 backdrop-blur dark:bg-[#232329]/95">
             {searchOpen ? (
-                <div className="flex w-full items-center gap-2 rounded-xl border border-[#F47822]/45 bg-white px-3 py-1.5 shadow-sm dark:border-[#F47822]/40 dark:bg-[#1b1b20]">
+                <div className="flex w-full items-center gap-2 rounded-xl border border-[#F47822]/45 bg-white dark:bg-[#1b1b20] px-3 py-1.5 shadow-sm dark:border-[#F47822]/40 dark:bg-[#1b1b20]">
                     <Search className="h-4 w-4 shrink-0 text-[#F47822]" />
                     <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("messages.searchThreadPh")} aria-label={t("messages.searchInThread")} className="messages-quiet-focus h-8 min-w-0 flex-1 bg-transparent text-sm text-[#3A3A3A] outline-none placeholder:text-[#3A3A3A]/35 dark:text-[#ececef] dark:placeholder:text-white/35" />
                     {searching && <LoaderCircle className="h-4 w-4 animate-spin text-[#F47822]" />}
-                    <button type="button" onClick={() => { setSearchOpen(false); clearSearch(); }} aria-label={t("messages.close")} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 hover:bg-[#3A3A3A]/8 dark:text-white/40 dark:hover:bg-white/10"><X className="h-3.5 w-3.5" /></button>
+                    <button type="button" onClick={() => { setSearchOpen(false); clearSearch(); }} aria-label={t("messages.close")} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 dark:text-white/40 hover:bg-[#3A3A3A]/8 dark:text-white/40 dark:hover:bg-white/10"><X className="h-3.5 w-3.5" /></button>
                 </div>
             ) : (
                 <>
                     {hasMore && !query.trim() ? (
-                        <button type="button" onClick={() => void loadEarlier()} disabled={loadingMore} className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-[#F47822]/20 bg-white px-3.5 py-1.5 text-[11px] font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white disabled:opacity-50 dark:bg-[#1b1b20]">
+                        <button type="button" onClick={() => void loadEarlier()} disabled={loadingMore} className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-[#F47822]/20 bg-white dark:bg-[#1b1b20] px-3.5 py-1.5 text-[11px] font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white disabled:opacity-50 dark:bg-[#1b1b20]">
                             {loadingMore ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : null}
                             {t("messages.loadEarlier")}
                         </button>
                     ) : <span className="flex-1" />}
-                    <button type="button" onClick={() => setSearchOpen(true)} title={t("messages.searchInThread")} aria-label={t("messages.searchInThread")} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 transition hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/40 dark:hover:bg-[#F47822]/15 dark:hover:text-[#F47822]"><Search className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setSearchOpen(true)} title={t("messages.searchInThread")} aria-label={t("messages.searchInThread")} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/40 dark:hover:bg-[#F47822]/15 dark:hover:text-[#F47822]"><Search className="h-4 w-4" /></button>
                 </>
             )}
         </div>
@@ -1362,7 +1362,7 @@ function Thread({ active, conversations, online, onSent, onChanged }: { active: 
         )}
     </div>
         {active.replies_enabled && active.status === "active" ? (
-            <footer className="border-t border-[#3A3A3A]/8 bg-white p-4 sm:p-5 dark:border-white/8 dark:bg-[#1b1b20]">
+            <footer className="border-t border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-4 sm:p-5 dark:border-white/8 dark:bg-[#1b1b20]">
                 {active.quick_replies.length > 0 && (
                     <div className="mb-3 flex flex-wrap gap-2">
                         {active.quick_replies.map((reply) => (
@@ -1371,12 +1371,12 @@ function Thread({ active, conversations, online, onSent, onChanged }: { active: 
                     </div>
                 )}
                 {replyDraft && (
-                    <div className="mb-3 flex items-center gap-2 rounded-xl border-s-2 border-[#F47822] bg-[#FCFCFC] px-3 py-2 dark:bg-[#232329]">
+                    <div className="mb-3 flex items-center gap-2 rounded-xl border-s-2 border-[#F47822] bg-[#FCFCFC] dark:bg-[#1b1b20] px-3 py-2 dark:bg-[#232329]">
                         <span className="min-w-0 flex-1">
                             <span className="block text-[10px] font-bold uppercase tracking-[.1em] text-[#F47822]">{t("messages.replyingTo", { name: replyDraft.senderName })}</span>
                             <span className="block truncate text-xs text-[#3A3A3A]/60 dark:text-white/60">{replyDraft.excerpt || t("messages.quotedAttachment")}</span>
                         </span>
-                        <button type="button" onClick={() => setReplyDraft(null)} aria-label={t("messages.close")} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 transition hover:bg-[#3A3A3A]/8 dark:text-white/40 dark:hover:bg-white/10"><X className="h-3.5 w-3.5" /></button>
+                        <button type="button" onClick={() => setReplyDraft(null)} aria-label={t("messages.close")} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-[#3A3A3A]/8 dark:text-white/40 dark:hover:bg-white/10"><X className="h-3.5 w-3.5" /></button>
                     </div>
                 )}
                 {canAttach && files.length > 0 && (
@@ -1386,21 +1386,21 @@ function Thread({ active, conversations, online, onSent, onChanged }: { active: 
                                 <FileText className="h-4 w-4 shrink-0 text-[#F47822]" />
                                 <span className="min-w-0 flex-1 truncate text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{file.name}</span>
                                 <span className="shrink-0 text-[10px] text-[#3A3A3A]/45 dark:text-white/45">{formatAttachmentSize(file.size)}</span>
-                                <button type="button" onClick={() => removeFile(index)} title={t("messages.attachments.remove")} aria-label={t("messages.attachments.remove")} className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 transition hover:bg-red-50 hover:text-red-500 dark:text-white/40 dark:hover:bg-red-500/10"><X className="h-3.5 w-3.5" /></button>
+                                <button type="button" onClick={() => removeFile(index)} title={t("messages.attachments.remove")} aria-label={t("messages.attachments.remove")} className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[#3A3A3A]/40 dark:text-white/40 transition hover:bg-red-50 dark:bg-red-500/10 hover:text-red-500 dark:text-white/40 dark:hover:bg-red-500/10"><X className="h-3.5 w-3.5" /></button>
                             </div>
                         ))}
                     </div>
                 )}
                 {fileError && <p role="alert" className="mb-3 text-xs font-semibold text-red-600 dark:text-red-400">{fileError}</p>}
-                <div className="flex items-end gap-2 rounded-2xl border border-[#3A3A3A]/10 bg-[#FAFAFA] p-2 transition focus-within:border-[#F47822]/55 focus-within:bg-white dark:border-white/10 dark:bg-[#232329] dark:focus-within:bg-[#1b1b20]">
+                <div className="flex items-end gap-2 rounded-2xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#FAFAFA] p-2 transition focus-within:border-[#F47822]/55 focus-within:bg-white dark:border-white/10 dark:bg-[#232329] dark:focus-within:bg-[#1b1b20]">
                     {canAttach && (
                         <div className="relative shrink-0">
                             <input ref={fileInput} type="file" multiple accept={ATTACHMENT_ACCEPT} className="hidden" onChange={(event) => { addFiles(event.target.files); setAttachOpen(false); if (fileInput.current) fileInput.current.value = ""; }} />
-                            <button type="button" onClick={() => setAttachOpen((value) => !value)} aria-expanded={attachOpen} aria-haspopup="menu" title={t("messages.attachments.attach")} aria-label={t("messages.attachments.attach")} className="flex h-10 w-10 items-center justify-center rounded-xl text-[#3A3A3A]/45 transition hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/45"><Paperclip className="h-4 w-4" /></button>
+                            <button type="button" onClick={() => setAttachOpen((value) => !value)} aria-expanded={attachOpen} aria-haspopup="menu" title={t("messages.attachments.attach")} aria-label={t("messages.attachments.attach")} className="flex h-10 w-10 items-center justify-center rounded-xl text-[#3A3A3A]/45 dark:text-white/45 transition hover:bg-[#F47822]/10 hover:text-[#F47822] dark:text-white/45"><Paperclip className="h-4 w-4" /></button>
                             {attachOpen && (
                                 <>
                                     <button type="button" aria-label={t("messages.close")} onClick={() => setAttachOpen(false)} className="fixed inset-0 z-40 cursor-default" />
-                                    <div role="menu" className="absolute bottom-12 start-0 z-50 w-48 overflow-hidden rounded-xl border border-[#3A3A3A]/10 bg-white p-1.5 shadow-[0_15px_40px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-[#1b1b20]">
+                                    <div role="menu" className="absolute bottom-12 start-0 z-50 w-48 overflow-hidden rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-1.5 shadow-[0_15px_40px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-[#1b1b20]">
                                         <button type="button" role="menuitem" onClick={() => openPicker("image")} className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-[#3A3A3A] transition hover:bg-[#F47822]/[.06] hover:text-[#F47822] dark:text-[#ececef]"><ImageIcon className="h-4 w-4 shrink-0" />{t("messages.attachments.attachImage")}</button>
                                         <button type="button" role="menuitem" onClick={() => openPicker("file")} className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-xs font-semibold text-[#3A3A3A] transition hover:bg-[#F47822]/[.06] hover:text-[#F47822] dark:text-[#ececef]"><FileText className="h-4 w-4 shrink-0" />{t("messages.attachments.attachFile")}</button>
                                     </div>
@@ -1430,7 +1430,7 @@ function Thread({ active, conversations, online, onSent, onChanged }: { active: 
                 </div>
             </footer>
         ) : (
-            <div className="border-t border-[#3A3A3A]/8 bg-[#FAFAFA] px-5 py-4 text-xs text-[#3A3A3A]/45 dark:border-white/8 dark:bg-[#232329] dark:text-white/45">{t("messages.repliesDisabled")}</div>
+            <div className="border-t border-[#3A3A3A]/8 dark:border-white/8 bg-[#FAFAFA] px-5 py-4 text-xs text-[#3A3A3A]/45 dark:border-white/8 dark:bg-[#232329] dark:text-white/45">{t("messages.repliesDisabled")}</div>
         )}
         {confirming && (
             <ConfirmDialog
@@ -1445,20 +1445,20 @@ function Thread({ active, conversations, online, onSent, onChanged }: { active: 
         )}
         {forwarding && (
             <div className="fixed inset-0 z-[60] grid place-items-center bg-[#17202b]/40 p-4 backdrop-blur-sm" role="presentation" onClick={() => setForwarding(null)}>
-                <div role="dialog" aria-modal="true" aria-label={t("messages.forwardTitle")} onClick={(event) => event.stopPropagation()} className="w-full max-w-md rounded-[24px] border border-[#3A3A3A]/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]">
+                <div role="dialog" aria-modal="true" aria-label={t("messages.forwardTitle")} onClick={(event) => event.stopPropagation()} className="w-full max-w-md rounded-[24px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-2xl dark:border-white/10 dark:bg-[#1b1b20]">
                     <h2 className="text-base font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.forwardTitle")}</h2>
                     <p className="mt-1 truncate text-xs text-[#3A3A3A]/55 dark:text-white/55">{forwarding.body || forwarding.attachment?.name}</p>
                     <label className="mt-4 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.forwardTo")}
-                        <select value={forwardTo} onChange={(event) => setForwardTo(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 bg-[#FAFAFA] px-3 text-sm font-normal dark:border-white/12 dark:bg-[#232329]">
+                        <select value={forwardTo} onChange={(event) => setForwardTo(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] px-3 text-sm font-normal dark:border-white/12 dark:bg-[#232329]">
                             <option value="">{t("messages.chooseRecipient")}</option>
                             {conversations.filter((conversation) => conversation.id !== active.id).map((conversation) => <option key={conversation.id} value={conversation.id}>{conversation.subject || conversation.participant?.name || t("messages.fallbackConv")}</option>)}
                         </select>
                     </label>
                     <label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.forwardComment")}
-                        <textarea value={forwardComment} onChange={(event) => setForwardComment(event.target.value)} rows={2} placeholder={t("messages.forwardCommentPh")} className="messages-quiet-focus mt-1.5 w-full resize-none rounded-xl border border-[#3A3A3A]/12 bg-[#FAFAFA] px-3 py-2 text-sm font-normal outline-none dark:border-white/12 dark:bg-[#232329]" />
+                        <textarea value={forwardComment} onChange={(event) => setForwardComment(event.target.value)} rows={2} placeholder={t("messages.forwardCommentPh")} className="messages-quiet-focus mt-1.5 w-full resize-none rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] px-3 py-2 text-sm font-normal outline-none dark:border-white/12 dark:bg-[#232329]" />
                     </label>
                     <div className="mt-5 flex justify-end gap-2">
-                        <button type="button" onClick={() => setForwarding(null)} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/60 transition hover:bg-[#3A3A3A]/5 dark:text-white/60 dark:hover:bg-white/5">{t("messages.cancel")}</button>
+                        <button type="button" onClick={() => setForwarding(null)} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/60 dark:text-white/60 transition hover:bg-[#3A3A3A]/5 dark:text-white/60 dark:hover:bg-white/5">{t("messages.cancel")}</button>
                         <button type="button" disabled={!forwardTo || forwardingBusy} onClick={() => void submitForward()} className="inline-flex items-center gap-2 rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#de6414] disabled:opacity-40">{forwardingBusy && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}{t("messages.forwardSend")}</button>
                     </div>
                 </div>
@@ -1498,5 +1498,5 @@ function Compose({ contacts, initialRecipient, onClose, onCreated }: { contacts:
             setSending(false);
         }
     };
-    return <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#17202b]/35 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-2xl"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#F47822]">{t("messages.composeTag")}</p><h2 className="mt-1 text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.composeTitle")}</h2></div><button type="button" onClick={onClose} className="rounded-lg px-2 py-1 text-xs font-bold text-[#3A3A3A]/45 dark:text-white/45">{t("messages.close")}</button></div><div className="mt-4 inline-flex rounded-xl bg-[#FCFCFC] p-1 dark:bg-[#1b1b20]"><button type="button" onClick={() => setMode("direct")} aria-pressed={mode === "direct"} className={`rounded-lg px-3.5 py-2 text-xs font-bold transition ${mode === "direct" ? "bg-white text-[#F47822] shadow-sm dark:bg-[#1b1b20]" : "text-[#3A3A3A]/55 dark:text-white/55"}`}>{t("messages.tabDirect")}</button><button type="button" onClick={() => setMode("group")} aria-pressed={mode === "group"} className={`rounded-lg px-3.5 py-2 text-xs font-bold transition ${mode === "group" ? "bg-white text-[#F47822] shadow-sm dark:bg-[#1b1b20]" : "text-[#3A3A3A]/55 dark:text-white/55"}`}>{t("messages.tabGroup")}</button></div>{mode === "direct" ? (<form onSubmit={submitDirect}><label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.recipient")}<select value={recipient} onChange={(event) => setRecipient(event.target.value)} required className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal"><option value="">{t("messages.chooseRecipient")}</option>{contacts.length === 0 ? <option value="">{t("messages.noRecipients")}</option> : contacts.map((contact) => <option key={contact.id} value={contact.id}>{contact.name} · {contact.role}</option>)}</select></label><label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.subjectOptional")}<input value={subject} onChange={(event) => setSubject(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal" /></label><label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.firstMessage")}<textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={3} className="mt-1.5 w-full resize-none rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 py-2 text-sm font-normal" /></label><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/55 dark:text-white/55">{t("messages.cancelEdit")}</button><button type="submit" disabled={sending || !recipient} className="rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#de6414] disabled:opacity-40">{sending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t("messages.startConversation")}</button></div></form>) : (<form onSubmit={submitGroup}><label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.subject")}<input value={subject} onChange={(event) => setSubject(event.target.value)} required className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal" /></label><label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.members")}<input value={memberQuery} onChange={(event) => setMemberQuery(event.target.value)} placeholder={t("messages.searchMembers")} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal" /></label><div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-[#3A3A3A]/10 dark:border-white/10">{visibleContacts.length === 0 ? <p className="px-3 py-5 text-center text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{contacts.length === 0 ? <><b className="block text-[#3A3A3A] dark:text-[#ececef]">{t("messages.noContacts")}</b>{t("messages.noContactsDesc")}</> : t("messages.emptyFiltered")}</p> : visibleContacts.map((contact) => (<label key={contact.id} className="flex cursor-pointer items-center gap-2.5 border-b border-[#3A3A3A]/6 px-3 py-2.5 text-xs last:border-b-0 dark:border-white/6"><input type="checkbox" checked={selected.includes(contact.id)} onChange={() => toggleMember(contact.id)} className="h-4 w-4 accent-[#F47822]" /><span className="min-w-0 flex-1 truncate text-[#3A3A3A] dark:text-[#ececef]">{contact.name} · {contact.role}</span></label>))}</div>{groupError && <p className="mt-2 text-xs font-semibold text-red-600">{groupError}</p>}<div className="mt-5 flex justify-end gap-2"><button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/55 dark:text-white/55">{t("messages.cancelEdit")}</button><button type="submit" disabled={sending} className="rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#de6414] disabled:opacity-40">{sending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t("messages.createGroup")}</button></div></form>)}</div></div>;
+    return <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#17202b]/35 p-4 backdrop-blur-sm"><div className="w-full max-w-md rounded-[28px] border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-6 shadow-2xl"><div className="flex items-start justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#F47822]">{t("messages.composeTag")}</p><h2 className="mt-1 text-lg font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.composeTitle")}</h2></div><button type="button" onClick={onClose} className="rounded-lg px-2 py-1 text-xs font-bold text-[#3A3A3A]/45 dark:text-white/45">{t("messages.close")}</button></div><div className="mt-4 inline-flex rounded-xl bg-[#FCFCFC] dark:bg-[#1b1b20] p-1 dark:bg-[#1b1b20]"><button type="button" onClick={() => setMode("direct")} aria-pressed={mode === "direct"} className={`rounded-lg px-3.5 py-2 text-xs font-bold transition ${mode === "direct" ? "bg-white dark:bg-[#1b1b20] text-[#F47822] shadow-sm dark:bg-[#1b1b20]" : "text-[#3A3A3A]/55 dark:text-white/55"}`}>{t("messages.tabDirect")}</button><button type="button" onClick={() => setMode("group")} aria-pressed={mode === "group"} className={`rounded-lg px-3.5 py-2 text-xs font-bold transition ${mode === "group" ? "bg-white dark:bg-[#1b1b20] text-[#F47822] shadow-sm dark:bg-[#1b1b20]" : "text-[#3A3A3A]/55 dark:text-white/55"}`}>{t("messages.tabGroup")}</button></div>{mode === "direct" ? (<form onSubmit={submitDirect}><label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.recipient")}<select value={recipient} onChange={(event) => setRecipient(event.target.value)} required className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal"><option value="">{t("messages.chooseRecipient")}</option>{contacts.length === 0 ? <option value="">{t("messages.noRecipients")}</option> : contacts.map((contact) => <option key={contact.id} value={contact.id}>{contact.name} · {contact.role}</option>)}</select></label><label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.subjectOptional")}<input value={subject} onChange={(event) => setSubject(event.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal" /></label><label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.firstMessage")}<textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={3} className="mt-1.5 w-full resize-none rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 py-2 text-sm font-normal" /></label><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/55 dark:text-white/55">{t("messages.cancelEdit")}</button><button type="submit" disabled={sending || !recipient} className="rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#de6414] disabled:opacity-40">{sending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t("messages.startConversation")}</button></div></form>) : (<form onSubmit={submitGroup}><label className="mt-5 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.subject")}<input value={subject} onChange={(event) => setSubject(event.target.value)} required className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal" /></label><label className="mt-3 block text-xs font-semibold text-[#3A3A3A] dark:text-[#ececef]">{t("messages.members")}<input value={memberQuery} onChange={(event) => setMemberQuery(event.target.value)} placeholder={t("messages.searchMembers")} className="mt-1.5 h-11 w-full rounded-xl border border-[#3A3A3A]/12 dark:border-white/12 bg-[#FAFAFA] dark:bg-[#232329] px-3 text-sm font-normal" /></label><div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-[#3A3A3A]/10 dark:border-white/10">{visibleContacts.length === 0 ? <p className="px-3 py-5 text-center text-xs leading-5 text-[#3A3A3A]/55 dark:text-white/55">{contacts.length === 0 ? <><b className="block text-[#3A3A3A] dark:text-[#ececef]">{t("messages.noContacts")}</b>{t("messages.noContactsDesc")}</> : t("messages.emptyFiltered")}</p> : visibleContacts.map((contact) => (<label key={contact.id} className="flex cursor-pointer items-center gap-2.5 border-b border-[#3A3A3A]/6 dark:border-white/6 px-3 py-2.5 text-xs last:border-b-0 dark:border-white/6"><input type="checkbox" checked={selected.includes(contact.id)} onChange={() => toggleMember(contact.id)} className="h-4 w-4 accent-[#F47822]" /><span className="min-w-0 flex-1 truncate text-[#3A3A3A] dark:text-[#ececef]">{contact.name} · {contact.role}</span></label>))}</div>{groupError && <p className="mt-2 text-xs font-semibold text-red-600 dark:text-red-400">{groupError}</p>}<div className="mt-5 flex justify-end gap-2"><button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-xs font-bold text-[#3A3A3A]/55 dark:text-white/55">{t("messages.cancelEdit")}</button><button type="submit" disabled={sending} className="rounded-xl bg-[#F47822] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#de6414] disabled:opacity-40">{sending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : t("messages.createGroup")}</button></div></form>)}</div></div>;
 }

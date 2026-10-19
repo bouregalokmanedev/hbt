@@ -100,4 +100,61 @@ describe('Instructor quiz management', function () {
             ->assertOk()
             ->assertJsonPath('data.status', QuizStatus::PUBLISHED->value);
     });
+
+    it('stores, updates and clears a question explanation', function () {
+        $owner = quizInstructor();
+        $course = Course::factory()->create(['instructor_id' => $owner->id]);
+        $section = Section::factory()->create(['course_id' => $course->id]);
+        $quiz = Quiz::factory()->create(['section_id' => $section->id]);
+
+        $questionId = $this
+            ->actingAs($owner)
+            ->postJson("/api/v1/instructor/quizzes/{$quiz->id}/questions", [
+                'question' => 'What does the coolant temperature sensor do?',
+                'type' => 'single_choice',
+                'explanation' => 'It reports engine temperature so the ECU can trim fueling.',
+            ])
+            ->assertCreated()
+            ->assertJsonPath(
+                'explanation',
+                'It reports engine temperature so the ECU can trim fueling.'
+            )
+            ->json('id');
+
+        // The quiz detail payload the workspace reads must carry it too.
+        $this
+            ->actingAs($owner)
+            ->getJson("/api/v1/instructor/quizzes/{$quiz->id}")
+            ->assertSuccessful()
+            ->assertJsonPath(
+                'data.questions.0.explanation',
+                'It reports engine temperature so the ECU can trim fueling.'
+            );
+
+        $this
+            ->actingAs($owner)
+            ->patchJson("/api/v1/instructor/quiz-questions/{$questionId}", [
+                'explanation' => 'Revised note.',
+            ])
+            ->assertSuccessful()
+            ->assertJsonPath('explanation', 'Revised note.');
+
+        // An empty string wipes it; omitting the key leaves it untouched.
+        $this
+            ->actingAs($owner)
+            ->patchJson("/api/v1/instructor/quiz-questions/{$questionId}", [
+                'explanation' => '',
+            ])
+            ->assertSuccessful()
+            ->assertJsonPath('explanation', null);
+
+        $this
+            ->actingAs($owner)
+            ->patchJson("/api/v1/instructor/quiz-questions/{$questionId}", [
+                'points' => 3,
+            ])
+            ->assertSuccessful()
+            ->assertJsonPath('points', 3)
+            ->assertJsonPath('explanation', null);
+    });
 });
