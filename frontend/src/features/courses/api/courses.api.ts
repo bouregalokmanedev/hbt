@@ -4,7 +4,7 @@ import { authStorage } from "@/lib/storage/auth-storage";
 import { ApiError } from "@/lib/api/errors";
 import { api } from "@/lib/api/client";
 
-import type { Course, CourseCurriculum } from "../types/course.types";
+import type { Course, CourseCurriculum, CourseGradebook } from "../types/course.types";
 
 export interface CourseListParams {
   search?: string;
@@ -59,6 +59,12 @@ export async function getCourseCurriculum(
   courseId: string,
 ): Promise<CourseCurriculum> {
   return api<CourseCurriculum>(`/v1/courses/${courseId}/curriculum`);
+}
+
+export async function getCourseGradebook(
+  courseId: string,
+): Promise<CourseGradebook> {
+  return api<CourseGradebook>(`/v1/courses/${courseId}/gradebook`);
 }
 
 export interface CourseReviewsResponse {

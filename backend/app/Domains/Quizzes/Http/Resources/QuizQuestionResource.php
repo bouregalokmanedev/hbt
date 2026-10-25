@@ -19,7 +19,6 @@ class QuizQuestionResource extends JsonResource
             'position' => $this->position,
             'points' => $this->points,
             'required' => $this->required,
-            'explanation' => $this->explanation,
 
             'options' => QuizQuestionOptionResource::collection(
                 $this->whenLoaded('options')

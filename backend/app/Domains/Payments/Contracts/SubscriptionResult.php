@@ -9,5 +9,6 @@ final class SubscriptionResult
         public readonly string $status,
         public readonly ?string $clientSecret = null,
         public readonly array $raw = [],
+        public readonly ?string $providerCustomerId = null,
     ) {}
 }

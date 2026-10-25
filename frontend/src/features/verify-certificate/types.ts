@@ -1,10 +1,10 @@
 export interface VerifiedCertificate {
-    id: string;
     certificate_number: string;
     recipient_name: string;
     course_title: string;
     issued_at: string;
-    verification_url: string;
+    status: "valid" | "revoked";
+    revoked_at: string | null;
 }
 
 export type VerifyCertificateErrorCode = "not-found" | "invalid-input" | "network" | "server";

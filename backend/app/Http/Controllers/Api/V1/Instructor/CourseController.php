@@ -21,6 +21,7 @@ use App\Domains\Instructor\Queries\InstructorCourseFeedbackQuery;
 use App\Domains\Instructor\Resources\InstructorCourseAnalyticsResource;
 use App\Domains\Instructor\Queries\InstructorCourseStudentsQuery;
 use App\Domains\Instructor\Resources\InstructorCourseStudentResource;
+use App\Domains\Courses\Services\CourseReadinessService;
 use App\Domains\Courses\Resources\CourseResource;
 use App\Enums\Courses\Difficulty;
 use App\Http\Controllers\Controller;
@@ -91,6 +92,15 @@ final class CourseController extends Controller
         $this->authorize('view', $course);
 
         return new CourseResource($course);
+    }
+
+    public function readiness(
+        Course $course,
+        CourseReadinessService $readiness,
+    ): JsonResponse {
+        $this->authorize('update', $course);
+
+        return response()->json(['data' => $readiness->forCourse($course)]);
     }
 
     public function store(

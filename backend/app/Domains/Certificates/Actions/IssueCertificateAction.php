@@ -37,14 +37,16 @@ final class IssueCertificateAction
                 );
             }
 
+            // One certificate per learner per course: a second passing attempt
+            // must not mint a duplicate certificate.
             $certificate = Certificate::query()->firstOrCreate(
                 [
-                    'assessment_result_id' => $result->id,
+                    'user_id' => $result->user_id,
+                    'course_id' => $result->assessment->course_id,
                 ],
                 [
                     'enrollment_id' => $enrollment->id,
-                    'course_id' => $result->assessment->course_id,
-                    'user_id' => $result->user_id,
+                    'assessment_result_id' => $result->id,
                     'recipient_name' => $result->user->full_name,
                     'course_title' => $result->assessment->course->title,
                     'issued_at' => $result->completed_at ?? now(),

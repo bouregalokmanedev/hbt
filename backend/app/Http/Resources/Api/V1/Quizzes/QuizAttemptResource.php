@@ -90,7 +90,11 @@ final class QuizAttemptResource extends JsonResource
                             'type' => $question->type->value,
                             'points' => $question->points,
                             'required' => $question->required,
-                            'explanation' => $question->explanation,
+                            // Explanations often contain the correct answer:
+                            // only reveal them once the attempt is graded.
+                            'explanation' => $this->status?->value === 'submitted'
+                                ? $question->explanation
+                                : null,
                             'options' => $question->relationLoaded('options')
                                 ? $question->options->map(fn ($option) => [
                                     'id' => $option->id,

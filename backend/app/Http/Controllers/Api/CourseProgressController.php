@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domains\Courses\Resources\CourseProgressResource;
+use App\Domains\Courses\Services\CourseAccessService;
 use App\Domains\Courses\Services\CourseProgressService;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
@@ -28,8 +29,11 @@ final class CourseProgressController extends Controller
     public function sync(
         Request $request,
         Course $course,
-        CourseProgressService $service
+        CourseProgressService $service,
+        CourseAccessService $access
     ): CourseProgressResource {
+        abort_unless($access->hasFullAccess($request->user(), $course), 403);
+
         $progress = $service->sync(
             $request->user(),
             $course

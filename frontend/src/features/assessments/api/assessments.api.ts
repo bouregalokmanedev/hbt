@@ -9,7 +9,8 @@ export interface Assessment {
 export interface AssessmentAttempt {
     id: string; assessment_id: string; attempt_number: number; status: string;
     expires_at?: string | null;
-    assessment?: { title: string; minimum_score: number; questions: Array<{ id: string; question: string; options: Array<{ id: string; option: string }> }> };
+    answers?: Array<{ question_id: string; selected_option_ids: string[] }>;
+    assessment?: { title: string; minimum_score: number; time_limit_minutes?: number | null; questions: Array<{ id: string; question: string; options: Array<{ id: string; option: string }> }> };
 }
 
 export interface AssessmentResult {
@@ -23,6 +24,11 @@ export async function getAssessments(): Promise<Assessment[]> {
 export const assessmentAttemptsApi = {
     start: (assessmentId: string) =>
         api<AssessmentAttempt>(`/v1/assessments/${assessmentId}/attempts`, { method: "POST", body: {} }),
+    saveAnswer: (assessmentId: string, attemptId: string, questionId: string, optionIds: string[]) =>
+        api<unknown>(`/v1/assessments/${assessmentId}/attempts/${attemptId}/answers/${questionId}`, {
+            method: "PUT",
+            body: { option_ids: optionIds },
+        }),
     submit: (assessmentId: string, attemptId: string, answers: Array<{ question_id: string; option_ids: string[] }>) =>
         api<AssessmentResult>(`/v1/assessments/${assessmentId}/attempts/${attemptId}/submit`, {
             method: "POST",

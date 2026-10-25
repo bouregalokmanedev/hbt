@@ -554,3 +554,25 @@ export interface InstructorSimulatorSessionsParams {
     page?: number;
     per_page?: number;
 }
+
+export interface InstructorGradebookStudent {
+    enrollment_id: string;
+    enrollment_status: string;
+    student: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    grade: import("@/features/courses/types/course.types").CourseGradebook;
+}
+
+export interface InstructorGradebook {
+    course_id: string;
+    course_title: string;
+    students: InstructorGradebookStudent[];
+    summary: {
+        students: number;
+        average_score: number;
+        passing: number;
+    };
+}

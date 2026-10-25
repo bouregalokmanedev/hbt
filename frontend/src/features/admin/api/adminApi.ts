@@ -76,6 +76,31 @@ async function paginated<T>(path: string, query?: Query): Promise<Paginated<T>> 
     return getJson<Paginated<T>>(path, query);
 }
 
+export interface ProviderPlanMapping {
+  id: string;
+  subscription_plan_id: string;
+  provider: "stripe" | "paypal" | string;
+  external_product_id: string | null;
+  external_plan_id: string | null;
+  external_price_id: string | null;
+  currency: string;
+  amount: number;
+  status: string;
+  metadata?: Record<string, unknown> | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ProviderPlanMappingPayload {
+  provider: "stripe" | "paypal";
+  external_product_id?: string | null;
+  external_plan_id?: string | null;
+  external_price_id?: string | null;
+  currency?: string;
+  amount?: number;
+  status?: "active" | "inactive";
+}
+
 export const adminApi = {
     dashboard: () => api<AdminDashboard>("/v1/admin/dashboard"),
     users: (query?: Query) => paginated<AdminUser>("/v1/admin/users", query),
@@ -145,6 +170,8 @@ export const adminApi = {
     createPlan: (payload: Record<string, string | number | boolean | string[] | null>) => api<unknown>("/v1/admin/plans", { method: "POST", body: payload }),
     updatePlan: (id: string, payload: Record<string, string | number | boolean | string[] | null | undefined>) => api<unknown>(`/v1/admin/plans/${id}`, { method: "PATCH", body: payload }),
     deletePlan: (id: string) => api<unknown>(`/v1/admin/plans/${id}`, { method: "DELETE" }),
+    providerMappings: (planId: string) => api<ProviderPlanMapping[]>(`/v1/admin/plans/${planId}/provider-mappings`),
+    saveProviderMapping: (planId: string, payload: ProviderPlanMappingPayload) => api<ProviderPlanMapping>(`/v1/admin/plans/${planId}/provider-mappings`, { method: "PUT", body: payload }),
     commerceOrders: (query?: Query) => paginated<CommerceOrderRow>("/v1/admin/payments/orders", query),
     commerceInvoices: (query?: Query) => paginated<CommerceInvoiceRow>("/v1/admin/payments/invoices", query),
     commerceWebhooks: (query?: Query) => paginated<CommerceWebhookRow>("/v1/admin/payments/webhooks", query),

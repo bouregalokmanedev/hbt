@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CertificateResource;
+use App\Http\Resources\CertificateVerificationResource;
 use App\Models\Certificate;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\QrCode;
@@ -35,6 +37,7 @@ final class CertificateController extends Controller
     public function download(Certificate $certificate)
     {
         abort_unless($certificate->user_id === auth()->id(), 404);
+        abort_if($certificate->isRevoked(), 410, 'This certificate has been revoked.');
 
         // The QR lands on the branded verify page, not the raw JSON endpoint,
         // so a scan shows a certificate instead of an API payload.
@@ -55,7 +58,7 @@ final class CertificateController extends Controller
         ])->setPaper('a4', 'landscape')->download('HBT-certificate-'.$certificate->certificate_number.'.pdf');
     }
 
-    public function verify(string $certificateNumber): CertificateResource
+    public function verify(string $certificateNumber): CertificateVerificationResource
     {
         $certificateNumber = trim($certificateNumber);
 
@@ -64,10 +67,30 @@ final class CertificateController extends Controller
             404,
         );
 
-        return new CertificateResource(
+        return new CertificateVerificationResource(
             Certificate::query()
                 ->where('certificate_number', $certificateNumber)
                 ->firstOrFail(),
         );
+    }
+
+    public function revoke(Request $request, Certificate $certificate): CertificateResource
+    {
+        abort_unless(
+            $request->user()?->hasAnyRole(['Admin', 'Super Admin']),
+            403,
+        );
+
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $certificate->update([
+            'revoked_at' => now(),
+            'revoked_reason' => $data['reason'] ?? 'Revoked by administrator.',
+            'revoked_by' => $request->user()->id,
+        ]);
+
+        return new CertificateResource($certificate->fresh());
     }
 }

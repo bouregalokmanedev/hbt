@@ -170,6 +170,20 @@ final class LessonProgressService
             $data['started_at'] = now();
         }
 
+        if (array_key_exists('progress_percentage', $data)) {
+            $data['progress_percentage'] = max(
+                $progress->progress_percentage,
+                (int) $data['progress_percentage'],
+            );
+        }
+
+        if (array_key_exists('time_spent', $data)) {
+            $data['time_spent'] = max(
+                (int) $progress->time_spent,
+                (int) $data['time_spent'],
+            );
+        }
+
         if (
             ($data['progress_percentage'] ?? $progress->progress_percentage) >= 100
             && ! $wasCompleted

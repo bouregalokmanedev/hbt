@@ -4,11 +4,14 @@ namespace App\Domains\Payments\Services;
 
 use App\Domains\Payments\Models\Payout;
 use App\Models\Course;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 class InstructorPayoutAutomationService
 {
+    public function __construct(
+        private readonly InstructorRevenueService $revenue,
+    ) {
+    }
+
     /**
      * Accrue eligible revenue per instructor since last payout, create pending payouts.
      *
@@ -31,36 +34,18 @@ class InstructorPayoutAutomationService
                 continue;
             }
 
-            // Already paid for this period?
+            // The period is the idempotency key: any existing row (pending,
+            // paid or cancelled) blocks a second accrual for the same month.
             $exists = Payout::where('instructor_id', $instructorId)->where('period', $period)->exists();
             if ($exists) {
                 continue;
             }
 
-            $lastPayoutAt = Payout::where('instructor_id', $instructorId)
-                ->where('status', 'paid')
-                ->max('paid_at') ?? now()->subYear();
+            $start = \Illuminate\Support\Carbon::createFromFormat('!Y-m', $period)->startOfMonth();
+            $end = $start->copy()->endOfMonth();
 
-            // Canonical orders
-            $gross = 0;
-            if (\Schema::hasTable('orders')) {
-                $gross += (int) \DB::table('order_items')
-                    ->join('orders', 'orders.id', '=', 'order_items.order_id')
-                    ->whereIn('order_items.purchasable_id', $courseIds)
-                    ->where('order_items.purchasable_type', Course::class)
-                    ->where('orders.status', 'paid')
-                    ->where('orders.paid_at', '>', $lastPayoutAt)
-                    ->sum('order_items.total');
-            }
-
-            // Legacy fallback
-            if ($gross === 0 && \Schema::hasTable('purchases')) {
-                $gross += (int) \DB::table('purchases')
-                    ->whereIn('course_id', $courseIds)
-                    ->where('status', 'completed')
-                    ->where('created_at', '>', $lastPayoutAt)
-                    ->sum('amount');
-            }
+            $totals = $this->revenue->totals((int) $instructorId, $start, $end);
+            $gross = max(0, $totals['gross'] - $totals['refunds']);
 
             if ($gross <= 0) {
                 continue;

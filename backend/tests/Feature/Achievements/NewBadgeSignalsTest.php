@@ -34,12 +34,12 @@ function badgeUnlocked(array $badges, string $id): bool
     return (bool) ($badges[$id]['completed'] ?? false);
 }
 
-it('exposes a 41 badge catalogue with unique ids', function () {
+it('exposes a 46 badge catalogue with unique ids', function () {
     $badges = app(AchievementService::class)->sync(User::factory()->create());
     $ids = array_column($badges, 'id');
 
-    expect($ids)->toHaveCount(41)
-        ->and(array_unique($ids))->toHaveCount(41)
+    expect($ids)->toHaveCount(46)
+        ->and(array_unique($ids))->toHaveCount(46)
         ->and($ids)->toContain(
             'on-fire', 'unstoppable', 'rising-level', 'veteran',
             'graduate', 'marathoner', 'thorough', 'collector',

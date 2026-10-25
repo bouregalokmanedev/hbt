@@ -144,3 +144,41 @@ export interface CourseEnrollment {
   created_at: string | null;
   updated_at: string | null;
 }
+
+export interface GradebookItem {
+  id: string;
+  title: string;
+  score: number;
+  minimum_score: number;
+  passed: boolean;
+  required: boolean;
+  attempted: boolean;
+  attempts?: number;
+}
+
+export interface GradebookComponent {
+  key: "lessons" | "assessments" | "practicals" | string;
+  label: string;
+  score: number;
+  completed: number;
+  total: number;
+  passed: boolean;
+  required: boolean;
+  weight: number;
+  weight_percent: number;
+  items: GradebookItem[];
+}
+
+export interface CourseGradebook {
+  course_id: string;
+  course_title: string;
+  user_id: string;
+  components: GradebookComponent[];
+  overall_score: number;
+  letter_grade: string;
+  pass_threshold: number;
+  required_passed: boolean;
+  passed: boolean;
+  enrollment_status: string | null;
+  completed_at: string | null;
+}

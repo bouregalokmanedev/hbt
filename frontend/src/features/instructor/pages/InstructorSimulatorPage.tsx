@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Activity, Car, CheckCircle2, ChevronDown, ChevronLeft, FlaskConical, Gauge, Pencil, Plus, ScanLine, Search, ShieldCheck, Trash2, X, XCircle } from "lucide-react";
+import { AlertCircle, Activity, Car, CheckCircle2, ChevronDown, ChevronLeft, FlaskConical, Gauge, GitBranch, Pencil, Plus, ScanLine, Search, ShieldCheck, Trash2, X, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
@@ -328,7 +328,7 @@ export function InstructorSimulatorPage() {
                             <p className="mt-1 text-sm text-[#3A3A3A]/55 dark:text-white/50">{t("instructor.simulator.labBuilders.subtitle")}</p>
                         </div>
                     </div>
-                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <LabBuilderCard
                             testId="lab-card-scanner"
                             to="/instructor/simulator/scanner"
@@ -336,6 +336,30 @@ export function InstructorSimulatorPage() {
                             description={t("instructor.simulator.labBuilders.scannerDesc")}
                             image="/assets/simulator/detail-V1.png"
                             icon={ScanLine}
+                        />
+                        <LabBuilderCard
+                            testId="lab-card-multimeter"
+                            to="/instructor/simulator/multimeter"
+                            title={t("instructor.simulator.labBuilders.multimeterTitle")}
+                            description={t("instructor.simulator.labBuilders.multimeterDesc")}
+                            image="/assets/simulator/detail-L3.png"
+                            icon={Gauge}
+                        />
+                        <LabBuilderCard
+                            testId="lab-card-oscilloscope"
+                            to="/instructor/simulator/oscilloscope"
+                            title={t("instructor.simulator.labBuilders.oscilloscopeTitle")}
+                            description={t("instructor.simulator.labBuilders.oscilloscopeDesc")}
+                            image="/assets/simulator/ref-inj-voltage.png"
+                            icon={Activity}
+                        />
+                        <LabBuilderCard
+                            testId="lab-card-schematic"
+                            to="/instructor/simulator/schematic"
+                            title={t("instructor.simulator.labBuilders.schematicTitle")}
+                            description={t("instructor.simulator.labBuilders.schematicDesc")}
+                            image="/assets/simulator/diagram-r16.png"
+                            icon={GitBranch}
                         />
                     </div>
                 </section>

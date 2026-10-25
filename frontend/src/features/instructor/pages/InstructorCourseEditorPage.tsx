@@ -272,7 +272,8 @@ export function InstructorCourseEditorPage() {
         }
 
         if (course.status === "review") {
-            return [{ action: "publish" as const, label: t("instructor.editor.lifecycle.publish"), icon: CheckCircle2 }];
+            // Publishing is an administrator approval step; instructors wait.
+            return [];
         }
 
         if (course.status === "published") {

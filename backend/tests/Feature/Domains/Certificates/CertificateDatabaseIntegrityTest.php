@@ -75,3 +75,17 @@ it('deleting a user deletes their certificates', function () {
             ->exists()
     )->toBeFalse();
 });
+it('requires a single certificate per learner and course', function () {
+    $user = User::factory()->create();
+    $course = \App\Models\Course::factory()->create();
+
+    Certificate::factory()->create([
+        'user_id' => $user->id,
+        'course_id' => $course->id,
+    ]);
+
+    expect(fn () => Certificate::factory()->create([
+        'user_id' => $user->id,
+        'course_id' => $course->id,
+    ]))->toThrow(\Illuminate\Database\QueryException::class);
+});

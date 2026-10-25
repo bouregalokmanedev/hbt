@@ -20,7 +20,7 @@ uses(RefreshDatabase::class);
 function publishableCourse(array $overrides = []): Course
 {
     return Course::factory()->create(array_merge([
-        'status' => CourseStatus::DRAFT,
+        'status' => CourseStatus::REVIEW,
         'title' => 'Laravel Backend Architecture',
         'description' => 'A complete Laravel backend course.',
         'duration_minutes' => 120,
@@ -28,7 +28,7 @@ function publishableCourse(array $overrides = []): Course
     ], $overrides));
 }
 
-it('publishes a valid draft course', function () {
+it('publishes a valid course under review', function () {
     $instructor = User::factory()->create();
 
     $course = publishableCourse([
@@ -187,7 +187,7 @@ it('leaves an invalid course unpublished', function () {
     }
 
     expect($course->fresh()->status)
-        ->toBe(CourseStatus::DRAFT);
+        ->toBe(CourseStatus::REVIEW);
 
     expect($course->fresh()->published_at)
         ->toBeNull();

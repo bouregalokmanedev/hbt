@@ -24,7 +24,7 @@ interface SimulatorUsage {
 
 const LABS = [
     { id: "scanner", name: "Scanner", tag: "SCN", accent: "#F47822", accentBg: "#FFF1E6", desc: "ECU network · DTC · Live data · ADAS", features: "14 screens · UDS · Freeze-frame", icon: ScanSearch },
-    { id: "multimeter", name: "Multimeter", tag: "DMM", accent: "#EAB308", accentBg: "#FEF9C3", desc: "11 components · 54 steps · 7 modes", features: "Rotary · Probes · Guided", icon: Gauge },
+    { id: "multimeter", name: "Multimeter", tag: "DMM", accent: "#F47822", accentBg: "#FFF1E6", desc: "3D HBT-88V · 360° · flexible leads", features: "Orbit · Rotate · Probes", icon: Gauge },
     { id: "oscilloscope", name: "Oscilloscope", tag: "OSC", accent: "#22C55E", accentBg: "#DCFCE7", desc: "7 exercises · Fault model · Cursors", features: "Waveform · Trigger · ΔV/Δt", icon: Activity },
     { id: "location", name: "Location", tag: "LOC", accent: "#06B6D4", accentBg: "#CFFAFE", desc: "115 components · 58 groups · 6 views", features: "Hotspots · Training · Quiz", icon: MapPin },
     { id: "schematic", name: "Schematic", tag: "WDG", accent: "#8B5CF6", accentBg: "#EDE9FE", desc: "57 comps · 133 pins · 3 traces", features: "E1 hub · Trace · Exam", icon: GitBranch },

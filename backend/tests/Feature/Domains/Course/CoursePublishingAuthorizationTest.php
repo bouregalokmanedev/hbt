@@ -25,15 +25,16 @@ beforeEach(function () {
 
 
 
-it('allows an instructor to publish their own course', function () {
+it('does not allow an instructor to publish a course', function () {
     $instructor = User::factory()->create();
 
     $course = Course::factory()->create([
         'instructor_id' => $instructor->id,
+        'status' => \App\Enums\Courses\CourseStatus::REVIEW,
     ]);
 
     expect($instructor->can('publish', $course))
-        ->toBeTrue();
+        ->toBeFalse();
 });
 
 it('does not allow an instructor to publish another instructors course', function () {

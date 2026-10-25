@@ -11,8 +11,7 @@ final class CourseCanBePublishedSpecification
         Course $course
     ): bool {
 
-        return $course->status !== CourseStatus::ARCHIVED
-            && $course->status !== CourseStatus::PUBLISHED;
+        return $course->status === CourseStatus::REVIEW;
 
     }
 }

@@ -43,7 +43,12 @@ final class CoursePolicy
 
     public function publish(User $user, Course $course): bool
     {
-        return $this->canManage($user, $course);
+        // Publishing is an approval step: instructors own the course but only
+        // administrators may move it out of review.
+        return $user->hasAnyRole([
+            'Admin',
+            'Super Admin',
+        ]);
     }
 
     public function submitForReview(

@@ -179,3 +179,49 @@ it('stores the passed assessment result on the certificate', function () {
     expect($certificate->assessment_result_id)
         ->toBe($result->id);
 });
+it('reuses the certificate when a second assessment in the same course passes', function () {
+    $user = User::factory()->create();
+
+    $enrollment = Enrollment::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $assessment = Assessment::factory()->create([
+        'course_id' => $enrollment->course_id,
+    ]);
+
+    $makePassedResult = function (int $attemptNumber) use ($assessment, $user) {
+        $attempt = AssessmentAttempt::factory()->create([
+            'assessment_id' => $assessment->id,
+            'user_id' => $user->id,
+            'attempt_number' => $attemptNumber,
+            'status' => AssessmentAttemptStatus::PASSED,
+            'score' => 90,
+            'passed' => true,
+        ]);
+
+        return AssessmentResult::factory()->create([
+            'assessment_id' => $assessment->id,
+            'assessment_attempt_id' => $attempt->id,
+            'user_id' => $user->id,
+            'score' => 90,
+            'passed' => true,
+        ]);
+    };
+
+    $first = $makePassedResult(1);
+    $second = $makePassedResult(2);
+
+    $action = app(
+        \App\Domains\Certificates\Actions\IssueCertificateAction::class
+    );
+
+    $action->execute($first);
+    $action->execute($second);
+
+    $certificate = Certificate::query()->sole();
+
+    expect($certificate->assessment_result_id)->toBe($first->id)
+        ->and($certificate->user_id)->toBe($user->id)
+        ->and($certificate->course_id)->toBe($enrollment->course_id);
+});

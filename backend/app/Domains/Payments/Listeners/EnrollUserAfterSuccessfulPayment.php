@@ -6,9 +6,8 @@ use App\Domains\Enrollments\Actions\CreateEnrollmentAction;
 use App\Domains\Payments\Events\PaymentSucceeded;
 use App\Models\Course;
 use App\Models\Enrollment;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class EnrollUserAfterSuccessfulPayment implements ShouldQueue
+class EnrollUserAfterSuccessfulPayment
 {
     public function handle(PaymentSucceeded $event): void
     {
@@ -26,8 +25,19 @@ class EnrollUserAfterSuccessfulPayment implements ShouldQueue
             if (! $course) {
                 continue;
             }
-            $exists = Enrollment::where('user_id', $order->user_id)->where('course_id', $course->id)->exists();
-            if ($exists) {
+            $existing = Enrollment::query()
+                ->where('user_id', $order->user_id)
+                ->where('course_id', $course->id)
+                ->first();
+
+            if (
+                $existing !== null
+                && in_array(
+                    $existing->status,
+                    [\App\Enums\EnrollmentStatus::ACTIVE, \App\Enums\EnrollmentStatus::COMPLETED],
+                    true,
+                )
+            ) {
                 continue;
             }
             try {

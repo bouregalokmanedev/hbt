@@ -94,13 +94,11 @@ class SimulatorSessionService
         return DB::transaction(function () use ($session, $data) {
             $endedAt = now();
 
-            // duration_seconds is an integer column — never store a float
-            // (diffInSeconds() returns a float and Postgres rejects "1.04").
-            $duration = $data->durationSeconds !== null ? (int) $data->durationSeconds : null;
-
-            if ($duration === null && $session->started_at !== null) {
-                $duration = (int) round($session->started_at->diffInSeconds($endedAt));
-            }
+            // Elapsed time is authoritative on the server; the engine value is
+            // only a fallback for sessions that somehow lack a start timestamp.
+            $duration = $session->started_at !== null
+                ? max(0, (int) round($session->started_at->diffInSeconds($endedAt)))
+                : ($data->durationSeconds !== null ? max(0, (int) $data->durationSeconds) : null);
 
             $session->update([
                 'status' => 'completed',

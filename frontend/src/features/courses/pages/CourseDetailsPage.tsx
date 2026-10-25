@@ -22,6 +22,7 @@ import { ContinueLearningCard } from "../components/ContinueLearningCard";
 import { CourseCertificate } from "../components/CourseCertificate";
 import { CourseCurriculum } from "../components/CourseCurriculum";
 import { CourseDiagnostics } from "../components/CourseDiagnostics";
+import { CourseGradebook } from "../components/CourseGradebook";
 import { CourseInstructor } from "../components/CourseInstructor";
 import { CourseQuizzes } from "../components/CourseQuizzes";
 import { CourseThumbnail } from "../components/CourseThumbnail";
@@ -736,6 +737,13 @@ export function CourseDetailsPage() {
                     <ContinueLearningCard
                       curriculum={curriculum}
                       isCourseCompleted={isCompleted}
+                    />
+                  )}
+
+                  {hasFullAccess && (
+                    <CourseGradebook
+                      courseId={course.id}
+                      enrolled={hasFullAccess}
                     />
                   )}
 

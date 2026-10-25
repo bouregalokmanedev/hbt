@@ -28,13 +28,22 @@ final class Certificate extends Model
     'recipient_name',
     'course_title',
     'issued_at',
+    'revoked_at',
+    'revoked_reason',
+    'revoked_by',
 ];
 
     protected function casts(): array
     {
         return [
             'issued_at' => 'datetime',
+            'revoked_at' => 'datetime',
         ];
+    }
+
+    public function isRevoked(): bool
+    {
+        return $this->revoked_at !== null;
     }
 
     protected static function booted(): void

@@ -19,6 +19,8 @@ final class CertificateResource extends JsonResource
             'recipient_name' => $this->recipient_name,
             'course_title' => $this->course_title,
             'issued_at' => $this->issued_at,
+            'status' => $this->revoked_at === null ? 'valid' : 'revoked',
+            'revoked_at' => $this->revoked_at,
             'verification_url' => url('/api/v1/certificates/verify/'.$this->certificate_number),
         ];
     }

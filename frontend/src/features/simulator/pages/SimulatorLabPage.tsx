@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Gauge, Activity, MapPin, GitBranch, ScanSearch, X, Info, Lock, Play } from "lucide-react";
 
 import { ScannerToolHome } from "../scanner/screens/ScannerToolHome";
+import { ScannerLabBackdrop } from "../scanner/components/ScannerLabBackdrop";
 import { MultimeterLabFull } from "../components/labs/MultimeterLabFull";
 import { OscilloscopeLabFull } from "../oscilloscope/components/OscilloscopeLabFull";
 import { LocationLabFull } from "../components/labs/LocationLabFull";
@@ -26,7 +27,7 @@ interface SimulatorUsage {
 
 const LABS: Record<string, { name: string; desc: string; bench: string }> = {
     scanner: { name: "Scanner Workstation", desc: "14-screen diagnostic bench — vehicle → network → DTC + tree → live 420ms → graph → ADAS → training → report. Coverage gate blocks uncovered tool/vehicle.", bench: "CAN-B/C/FD · UDS · 21 ECUs" },
-    multimeter: { name: "Multimeter Bench", desc: "11 components · 54 steps · 7 modes (OFF/VDC/OHM/mA/CONT). Rotary + drag probes → measurement → validation → scoring.", bench: "Fluke-class · guided procedure" },
+    multimeter: { name: "Multimeter Bench", desc: "Interactive HBTronics HBT-88V bench — orbit 360°, move and rotate the meter, turn the dial and drag the flexible leads. Measurements arrive next.", bench: "HBT-88V · true RMS · 3D" },
     oscilloscope: { name: "Oscilloscope Lab", desc: "7 exercises INJ/COIL/CAM/APP/MAP/KNK/O2 · fault model → waveform fn(ch,p) → trigger → ΔV/Δt cursors → persistence.", bench: "DSO 1052 · 100MHz" },
     location: { name: "Location Atlas", desc: "115 components · 58 presented groups · 6 views · Browse/Training/Quiz · % hotspots · search/filter/favourites.", bench: "Atlas · % positioning" },
     schematic: { name: "Schematic Workspace", desc: "E1-hub 57/133/111 · 3 traces inj6/ign7/can5 · Study/Trace/Training/Practice/Exam · pin table · layers.", bench: "R16 · 4016×1479 · netlist" },
@@ -235,15 +236,23 @@ export function SimulatorLabPage() {
     }
 
     const Icon = tool === "scanner" ? ScanSearch : tool === "multimeter" ? Gauge : tool === "oscilloscope" ? Activity : tool === "location" ? MapPin : GitBranch;
+    const hasBenchBackdrop = tool === "scanner" || tool === "multimeter" || tool === "oscilloscope";
 
     return (
-        <main className="min-h-full bg-[#F8F7F6] dark:bg-[#101013]">
+        <main
+            className={`relative isolate dark:bg-[#101013] ${
+                hasBenchBackdrop
+                    ? "min-h-[calc(100dvh-72px)] bg-[#F2F3F5]"
+                    : "min-h-full bg-[#F8F7F6]"
+            }`}
+        >
+            {hasBenchBackdrop ? <ScannerLabBackdrop /> : null}
             <div
-                className={
+                className={`relative z-10 ${
                     tool === "scanner"
                         ? "mx-auto max-w-full px-3 py-3 sm:px-4"
                         : "mx-auto max-w-[1440px] px-5 py-6 sm:px-8"
-                }
+                }`}
             >
                 {/* Back to labs + About this lab share one toolbar row. */}
                 <div className="flex w-full items-center justify-between gap-3">

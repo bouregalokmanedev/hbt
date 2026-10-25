@@ -20,6 +20,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     Role::findOrCreate('Instructor', 'web');
     Role::findOrCreate('Student', 'web');
+    Role::findOrCreate('Admin', 'web');
 });
 
 function progressionInstructor(): User
@@ -44,7 +45,7 @@ function progressionPublishableCourse(User $instructor): Course
 {
     $course = Course::factory()->create([
         'instructor_id' => $instructor->id,
-        'status' => CourseStatus::DRAFT,
+        'status' => CourseStatus::REVIEW,
         'thumbnail' => 'media/course-thumbnail.jpg',
     ]);
 
@@ -89,8 +90,11 @@ it('awards the course owner when the course is published', function () {
     $instructor = progressionInstructor();
     $course = progressionPublishableCourse($instructor);
 
-    $this->actingAs($instructor)
-        ->postJson("/api/v1/instructor/courses/{$course->id}/publish")
+    $admin = User::factory()->create();
+    $admin->assignRole('Admin');
+
+    $this->actingAs($admin)
+        ->postJson("/api/v1/courses/{$course->id}/publish")
         ->assertOk();
 
     $award = InstructorXpTransaction::where('user_id', $instructor->id)->first();

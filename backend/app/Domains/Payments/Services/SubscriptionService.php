@@ -30,7 +30,7 @@ class SubscriptionService
             'trial_ends_at' => $plan->trial_days > 0 ? now()->addDays($plan->trial_days) : null,
             'starts_at' => now(),
             'current_period_start' => now(),
-            'current_period_end' => $plan->interval === 'year' ? now()->addYear() : now()->addMonth(),
+            'current_period_ends_at' => $plan->interval === 'year' ? now()->addYear() : now()->addMonth(),
             'metadata' => ['idempotency_key' => $key],
         ]);
 
@@ -50,6 +50,7 @@ class SubscriptionService
             ));
             $subscription->update([
                 'provider_subscription_id' => $result->providerSubscriptionId,
+                'provider_customer_id' => $result->providerCustomerId,
                 'status' => $result->status === 'active' ? SubscriptionStatus::ACTIVE->value : SubscriptionStatus::PENDING->value,
                 'metadata' => array_merge($subscription->metadata ?? [], $result->raw),
             ]);
@@ -129,7 +130,7 @@ class SubscriptionService
             'customer.subscription.updated', 'BILLING.SUBSCRIPTION.ACTIVATED', 'invoice.paid' => $subscription->update([
                 'status' => SubscriptionStatus::ACTIVE->value,
                 'current_period_start' => now(),
-                'current_period_end' => $subscription->billing_interval === 'year' ? now()->addYear() : now()->addMonth(),
+                'current_period_ends_at' => $subscription->billing_interval === 'year' ? now()->addYear() : now()->addMonth(),
             ]),
             'invoice.payment_failed', 'BILLING.SUBSCRIPTION.PAYMENT.FAILED' => $subscription->update(['status' => SubscriptionStatus::PAST_DUE->value]),
             'customer.subscription.deleted', 'BILLING.SUBSCRIPTION.CANCELLED' => $subscription->update([
@@ -137,7 +138,7 @@ class SubscriptionService
                 'cancelled_at' => now(),
                 'ended_at' => now(),
             ]),
-            'customer.subscription.paused', 'BILLING.SUBSCRIPTION.SUSPENDED' => $subscription->update(['status' => SubscriptionStatus::PAUSED->value ?? 'paused']),
+            'customer.subscription.paused', 'BILLING.SUBSCRIPTION.SUSPENDED' => $subscription->update(['status' => SubscriptionStatus::PAUSED->value]),
             default => null,
         };
 

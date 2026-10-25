@@ -34,7 +34,7 @@ export function RightTabs({
 
   return (
     <aside className="flex w-72 shrink-0 flex-col overflow-auto border-s border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
-      <div className="flex items-center gap-0.5 overflow-x-auto border-b border-[#3A3A3A]/10 dark:border-white/10 px-2 py-2 dark:border-white/10">
+      <div className="grid grid-cols-3 gap-1 border-b border-[#3A3A3A]/10 dark:border-white/10 px-2 py-2">
         {TABS.map((r) => (
           <button
             key={r}
@@ -42,7 +42,7 @@ export function RightTabs({
             onClick={() => setTab(r)}
             aria-current={tab === r ? "page" : undefined}
             className={clsx(
-              "shrink-0 rounded-md px-2 py-1 font-mono text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20",
+              "w-full rounded-md px-1.5 py-1 text-center font-mono text-[11px] font-bold focus:outline-none focus:ring-2 focus:ring-[#0E9F6E]/20",
               tab === r ? "bg-[#0E9F6E]/10 text-[#0E9F6E]" : "text-[#3A3A3A]/40 dark:text-white/40 hover:text-[#3A3A3A] dark:text-white/40 dark:hover:text-white",
             )}
           >

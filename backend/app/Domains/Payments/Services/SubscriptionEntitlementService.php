@@ -59,7 +59,15 @@ class SubscriptionEntitlementService
     private function activeSubscription(User $user): ?Subscription
     {
         return Subscription::where('user_id', $user->id)
-            ->whereIn('status', [SubscriptionStatus::TRIAL->value, SubscriptionStatus::ACTIVE->value])
+            ->whereIn('status', [
+                SubscriptionStatus::TRIAL->value,
+                SubscriptionStatus::ACTIVE->value,
+                SubscriptionStatus::PAST_DUE->value,
+            ])
+            ->where(function ($query) {
+                $query->whereNull('current_period_ends_at')
+                    ->orWhere('current_period_ends_at', '>', now());
+            })
             ->latest()
             ->first();
     }

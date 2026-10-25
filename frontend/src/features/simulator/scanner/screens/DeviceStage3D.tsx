@@ -9,6 +9,9 @@ import {
 } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Rotate3d } from "lucide-react";
+
+import hbtLogo from "@/assets/brand/hbt-logo-full.png";
+
 import { getScannerMotion } from "../lib/scannerSettings";
 
 /* 3D device stage: wraps the tablet casing in a perspective scene so it can
@@ -553,18 +556,29 @@ export function DeviceStage3D({ label, cableConnected = false, onBackAtRest, chi
     );
 }
 
-/* Hand-built back plate: rubber bumper, vent slats, HBT badge, serial
-   sticker and a folded kickstand — drawn entirely in cqw so it scales. */
+/* Hand-built back plate: rubber bumper, vent slats, camera island, inlaid
+   HBT nameplate, product label and a folded kickstand — drawn entirely in
+   cqw so it scales. */
 function DeviceBackPanel() {
-    const screw = (pos: string) => (
+    const screw = (pos: string, angle: number) => (
         <span
             key={pos}
-            className={`absolute h-[1.1cqw] w-[1.1cqw] rounded-full ${pos}`}
+            className={`absolute h-[1.05cqw] w-[1.05cqw] rounded-full ${pos}`}
             style={{
-                background: "radial-gradient(circle at 35% 30%, #5a6270, #20242c 70%)",
-                boxShadow: "inset 0 -1px 1px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.06)",
+                background: "radial-gradient(circle at 34% 28%, #6a7280, #262b34 65%, #141820 100%)",
+                boxShadow:
+                    "inset 0 -1px 1px rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.09), 0 0 0 1px rgba(0,0,0,.35)",
             }}
-        />
+        >
+            <span
+                className="absolute left-1/2 top-1/2 h-[0.12cqw] w-[0.64cqw] rounded-full"
+                style={{
+                    background: "#0c0f13",
+                    transform: `translate(-50%,-50%) rotate(${angle}deg)`,
+                    boxShadow: "0 1px 0 rgba(255,255,255,.14)",
+                }}
+            />
+        </span>
     );
     return (
         <div
@@ -585,89 +599,216 @@ function DeviceBackPanel() {
                 }}
             />
 
-            {/* brushed back plate */}
+            {/* moulded rear shell */}
             <div
-                className="absolute inset-[2.3cqw] rounded-[2cqw]"
+                className="absolute inset-[2.3cqw] overflow-hidden rounded-[2cqw]"
                 style={{
                     background:
-                        "linear-gradient(165deg, #31363f 0%, #22262e 42%, #171a20 100%)",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,.07)",
+                        "radial-gradient(120% 82% at 20% -4%, rgba(255,255,255,.09) 0%, transparent 42%), repeating-linear-gradient(101deg, rgba(255,255,255,.014) 0 1px, transparent 1px 3px), linear-gradient(165deg, #343942 0%, #20242c 48%, #12151a 100%)",
+                    boxShadow:
+                        "inset 0 0 0 1px rgba(255,255,255,.045), inset 0 0 4.5cqw rgba(0,0,0,.42)",
                 }}
             >
-                {/* vent slats */}
-                <div className="absolute left-1/2 top-[5.5%] w-[44%] -translate-x-1/2 space-y-[0.55cqw]">
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                {/* speaker vent */}
+                <div className="absolute left-1/2 top-[6.7%] flex w-[26%] -translate-x-1/2 flex-col gap-[0.58cqw]">
+                    {[0, 1, 2, 3, 4].map((i) => (
                         <span
                             key={i}
-                            className="block h-[0.5cqw] rounded-full"
+                            className="block h-[0.42cqw] rounded-full"
                             style={{
-                                background: "linear-gradient(90deg, #0c0e12, #1d212a)",
-                                boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
+                                background:
+                                    "linear-gradient(180deg, #07090c 0%, #161a21 55%, #05070a 100%)",
+                                boxShadow:
+                                    "0 -1px 0 rgba(255,255,255,.07), inset 0 1px 0 rgba(0,0,0,.8)",
                             }}
                         />
                     ))}
                 </div>
 
-                {/* brand badge */}
+                {/* rear camera */}
                 <div
-                    className="absolute left-1/2 top-[33%] flex -translate-x-1/2 items-center gap-[1cqw] rounded-[1cqw] px-[2.4cqw] py-[1.1cqw]"
+                    aria-hidden="true"
+                    className="absolute right-[4.6%] top-[7.8%] h-[7.2cqw] w-[8.6cqw] rounded-[2cqw]"
                     style={{
-                        background: "linear-gradient(180deg, #3c4351, #232833)",
-                        border: "1px solid #4c5361",
-                        boxShadow: "0 0.5cqw 1.4cqw rgba(0,0,0,.45)",
+                        background:
+                            "radial-gradient(120% 100% at 22% 0%, #2c333e 0%, #151920 42%, #080a0e 100%)",
+                        border: "1px solid #404853",
+                        boxShadow:
+                            "inset 0 1px 0 rgba(255,255,255,.16), inset 0 -0.35cqw 0.8cqw rgba(0,0,0,.55), 0 0.4cqw 1.1cqw rgba(0,0,0,.5)",
                     }}
                 >
                     <span
-                        className="font-black tracking-wide text-[#e8edf4]"
-                        style={{ fontSize: "2cqw" }}
+                        className="absolute left-[0.95cqw] top-[1.15cqw] block h-[3.85cqw] w-[3.85cqw] rounded-full"
+                        style={{
+                            background:
+                                "radial-gradient(circle at 38% 32%, #3b4a5e 0%, #111923 42%, #05070a 72%)",
+                            border: "0.24cqw solid #4d5663",
+                            boxShadow:
+                                "inset 0 0.4cqw 0.8cqw rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.12)",
+                        }}
                     >
-                        HBTronics
-                    </span>
-                    <span
-                        className="rounded-full px-[1cqw] py-[0.25cqw] font-bold text-white"
-                        style={{ fontSize: "1cqw", background: "#F47822" }}
-                    >
-                        DT1500
-                    </span>
-                </div>
-
-                {/* serial sticker */}
-                <div
-                    className="absolute bottom-[17%] left-1/2 w-[50%] -translate-x-1/2 rounded-[0.6cqw] px-[1.2cqw] py-[0.8cqw] text-[#333944]"
-                    style={{ background: "#dfe3ea" }}
-                >
-                    <p className="font-semibold" style={{ fontSize: "1cqw" }}>
-                        S/N: A30M-WF3BXPQ
-                    </p>
-                    <p style={{ fontSize: "0.9cqw" }}>
-                        12V DC · CE · FCC · Made for HBT Learning Platform
-                    </p>
-                </div>
-
-                {/* kickstand */}
-                <div
-                    className="absolute bottom-[4.5%] left-1/2 h-[3.6cqw] w-[38%] -translate-x-1/2 rounded-[0.8cqw]"
-                    style={{
-                        background: "linear-gradient(180deg, #3c4351, #1e222a)",
-                        border: "1px solid #4c5361",
-                    }}
-                >
-                    {["left-[5%]", "right-[5%]"].map((pos) => (
                         <span
-                            key={pos}
-                            className={`absolute -top-[0.55cqw] ${pos} h-[1.5cqw] w-[1.5cqw] rounded-full`}
+                            className="absolute left-1/2 top-1/2 block h-[2cqw] w-[2cqw] -translate-x-1/2 -translate-y-1/2 rounded-full"
                             style={{
-                                background: "#14171d",
-                                border: "2px solid #4c5361",
+                                background:
+                                    "radial-gradient(circle at 36% 30%, #41617f 0%, #162438 32%, #06090e 68%)",
+                                boxShadow: "inset 0 0 0 1px rgba(126,176,220,.25)",
                             }}
                         />
-                    ))}
+                        <span
+                            className="absolute left-[23%] top-[19%] block h-[0.55cqw] w-[0.55cqw] rounded-full"
+                            style={{ background: "rgba(176,214,255,.32)", filter: "blur(1px)" }}
+                        />
+                    </span>
+                    <span
+                        className="absolute right-[1cqw] top-[1.1cqw] block h-[0.95cqw] w-[0.95cqw] rounded-full"
+                        style={{
+                            background: "radial-gradient(circle at 40% 35%, #fff6d9, #c99c45 70%)",
+                            border: "1px solid #5f4e2b",
+                            boxShadow: "0 0 0.45cqw rgba(255,214,130,.28)",
+                        }}
+                    />
+                    <span
+                        className="absolute bottom-[0.85cqw] right-[1.2cqw] block h-[0.32cqw] w-[0.32cqw] rounded-full bg-[#05070a]"
+                        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,.08)" }}
+                    />
                 </div>
 
-                {screw("left-[1.6cqw] top-[1.6cqw]")}
-                {screw("right-[1.6cqw] top-[1.6cqw]")}
-                {screw("left-[1.6cqw] bottom-[1.6cqw]")}
-                {screw("right-[1.6cqw] bottom-[1.6cqw]")}
+                {/* inlaid brand nameplate */}
+                <div
+                    className="absolute left-1/2 top-[38%] w-[34cqw] -translate-x-1/2 rounded-[1.05cqw] px-[1.7cqw] pb-[0.95cqw] pt-[1.1cqw]"
+                    style={{
+                        background:
+                            "linear-gradient(155deg, #f2f5f8 0%, #dfe4ea 44%, #c3cad3 100%)",
+                        border: "1px solid rgba(255,255,255,.9)",
+                        boxShadow:
+                            "0 0 0 0.32cqw rgba(5,7,10,.88), 0 0.8cqw 2.4cqw rgba(0,0,0,.52), inset 0 1px 0 #fff, inset 0 -1px 0 rgba(20,25,32,.2)",
+                    }}
+                >
+                    <img
+                        src={hbtLogo}
+                        alt=""
+                        aria-hidden="true"
+                        className="mx-auto block w-[24.5cqw] select-none object-contain"
+                        draggable={false}
+                    />
+                    <div className="mt-[0.75cqw] flex items-center justify-center gap-[1cqw] border-t border-[#aeb6c0]/70 pt-[0.7cqw]">
+                        <span
+                            className="rounded-full px-[0.8cqw] py-[0.18cqw] font-black tracking-[0.08em] text-white"
+                            style={{ fontSize: "0.95cqw", background: "#F47822" }}
+                        >
+                            DT1500
+                        </span>
+                        <span
+                            className="font-bold tracking-[0.22em] text-[#454d59]"
+                            style={{ fontSize: "0.88cqw" }}
+                        >
+                            DIAGNOSTIC TABLET
+                        </span>
+                    </div>
+                </div>
+
+                {/* product label */}
+                <div
+                    className="absolute bottom-[17.5%] right-[5.2%] w-[31%] rounded-[0.55cqw] px-[1.1cqw] py-[0.75cqw] text-[#2f3640]"
+                    style={{
+                        background:
+                            "linear-gradient(180deg, #dfe3e9 0%, #c9cfd8 100%)",
+                        border: "1px solid #eff2f5",
+                        boxShadow:
+                            "0 0.35cqw 0.9cqw rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(60,68,80,.18)",
+                    }}
+                >
+                    <div className="flex items-start justify-between gap-[0.8cqw]">
+                        <div>
+                            <p
+                                className="font-bold tracking-[0.08em]"
+                                style={{ fontSize: "0.8cqw" }}
+                            >
+                                MODEL DT1500
+                            </p>
+                            <p
+                                className="font-semibold"
+                                style={{ fontSize: "0.7cqw", color: "#454d59" }}
+                            >
+                                S/N A30M-WF3BXPQ
+                            </p>
+                            <p style={{ fontSize: "0.62cqw", color: "#4a525e" }}>
+                                12V DC 2A · CE · FCC · RoHS
+                            </p>
+                            <p style={{ fontSize: "0.58cqw", color: "#5d6672" }}>
+                                HBT LEARNING PLATFORM
+                            </p>
+                        </div>
+                        <div className="flex h-[2.65cqw] shrink-0 items-stretch gap-[0.1cqw] pt-[0.18cqw]">
+                            {[3, 1, 2, 1, 4, 1, 2, 3, 1, 2, 1, 3, 1, 2, 1].map(
+                                (w, i) => (
+                                    <span
+                                        key={i}
+                                        className="block rounded-[1px] bg-[#252b34]"
+                                        style={{ width: `${w * 0.1}cqw` }}
+                                    />
+                                ),
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* folded kickstand in its recess */}
+                <div
+                    className="absolute bottom-[4.1%] left-1/2 h-[5.15cqw] w-[40%] -translate-x-1/2 rounded-[1.15cqw]"
+                    style={{
+                        background: "linear-gradient(180deg, #06080b, #10141a 70%, #090b0f)",
+                        border: "1px solid #050608",
+                        boxShadow:
+                            "inset 0 0.35cqw 0.75cqw rgba(0,0,0,.8), inset 0 -1px 0 rgba(255,255,255,.06)",
+                    }}
+                >
+                    <div
+                        className="absolute inset-[0.48cqw] rounded-[0.78cqw]"
+                        style={{
+                            background:
+                                "linear-gradient(180deg, #414854 0%, #2b313a 46%, #1a1e25 100%)",
+                            border: "1px solid #545c69",
+                            boxShadow:
+                                "inset 0 1px 0 rgba(255,255,255,.18), 0 1px 0 rgba(0,0,0,.55)",
+                        }}
+                    >
+                        <span
+                            className="absolute left-1/2 top-[0.55cqw] h-[0.28cqw] w-[18%] -translate-x-1/2 rounded-full"
+                            style={{ background: "rgba(8,10,14,.65)" }}
+                        />
+                        {[
+                            { pos: "left-[4.2%]", angle: -24 },
+                            { pos: "right-[4.2%]", angle: 22 },
+                        ].map(({ pos, angle }) => (
+                            <span
+                                key={pos}
+                                className={`absolute ${pos} top-1/2 h-[1.55cqw] w-[1.55cqw] -translate-y-1/2 rounded-full`}
+                                style={{
+                                    background:
+                                        "radial-gradient(circle at 36% 30%, #59616e, #1c2027 68%)",
+                                    border: "0.16cqw solid #0d1014",
+                                    boxShadow:
+                                        "inset 0 1px 0 rgba(255,255,255,.16), 0 1px 0 rgba(0,0,0,.5)",
+                                }}
+                            >
+                                <span
+                                    className="absolute left-1/2 top-1/2 h-[0.13cqw] w-[0.72cqw] rounded-full"
+                                    style={{
+                                        background: "#0b0e12",
+                                        transform: `translate(-50%,-50%) rotate(${angle}deg)`,
+                                    }}
+                                />
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
+                {screw("left-[1.6cqw] top-[1.6cqw]", -26)}
+                {screw("right-[1.6cqw] top-[1.6cqw]", 31)}
+                {screw("left-[1.6cqw] bottom-[1.6cqw]", 14)}
+                {screw("right-[1.6cqw] bottom-[1.6cqw]", -37)}
             </div>
 
             {/* faint sheen so the back isn't flat */}
@@ -676,7 +817,7 @@ function DeviceBackPanel() {
                 className="pointer-events-none absolute inset-0 rounded-[3.2cqw]"
                 style={{
                     background:
-                        "linear-gradient(105deg, transparent 34%, rgba(255,255,255,.045) 50%, transparent 64%)",
+                        "linear-gradient(105deg, transparent 30%, rgba(255,255,255,.05) 47%, transparent 62%)",
                 }}
             />
         </div>

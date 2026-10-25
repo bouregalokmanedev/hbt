@@ -22,7 +22,7 @@ it('dispatches CoursePublished when a course is published', function () {
 
     $course = Course::factory()->create([
         'instructor_id' => $instructor->id,
-        'status' => CourseStatus::DRAFT,
+        'status' => CourseStatus::REVIEW,
         'title' => 'Laravel Backend',
         'description' => 'Complete Laravel backend course.',
         'duration_minutes' => 120,

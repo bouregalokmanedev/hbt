@@ -196,3 +196,10 @@ it('returns the course progress resource shape', function () {
             ],
         ]);
 });
+
+it('rejects syncing progress without an enrollment', function () {
+    $this
+        ->actingAs($this->user)
+        ->postJson("/api/courses/{$this->course->id}/progress/sync")
+        ->assertForbidden();
+});

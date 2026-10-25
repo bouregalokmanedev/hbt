@@ -3,15 +3,16 @@
 namespace App\Domains\Payments\Http\Controllers;
 
 use App\Domains\Payments\Models\PaymentProviderPlan;
+use App\Domains\Payments\Models\Plan;
 use App\Http\Controllers\Controller;
+use App\Services\Audit\AuditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PaymentProviderPlanController extends Controller
 {
-    public function index(string $planId): JsonResponse
+    public function index(Plan $plan): JsonResponse
     {
-        $plan = \App\Domains\Payments\Models\Plan::findOrFail($planId);
         $mappings = PaymentProviderPlan::where('subscription_plan_id', $plan->id)->get();
 
         return response()->json([
@@ -21,7 +22,7 @@ class PaymentProviderPlanController extends Controller
         ]);
     }
 
-    public function upsert(Request $request, string $planId): JsonResponse
+    public function upsert(Request $request, Plan $plan, AuditService $audit): JsonResponse
     {
         $data = $request->validate([
             'provider' => ['required', 'string', 'in:stripe,paypal'],
@@ -33,12 +34,14 @@ class PaymentProviderPlanController extends Controller
             'status' => ['sometimes', 'string', 'in:active,inactive'],
         ]);
 
-        $plan = \App\Domains\Payments\Models\Plan::findOrFail($planId);
-
         $mapping = PaymentProviderPlan::updateOrCreate(
             ['subscription_plan_id' => $plan->id, 'provider' => $data['provider']],
             $data,
         );
+
+        $audit->log('plan.provider_mapping.updated', $mapping, [], $mapping->only([
+            'provider', 'external_product_id', 'external_plan_id', 'external_price_id', 'status',
+        ]));
 
         return response()->json([
             'success' => true,

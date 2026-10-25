@@ -119,6 +119,15 @@ $exceptions->render(function (
     ], 422);
 });
 $exceptions->render(function (
+    \App\Domains\Enrollments\Exceptions\CoursePurchaseRequiredException $e
+) {
+    return response()->json([
+        'success' => false,
+        'message' => $e->getMessage(),
+        'code' => 'purchase_required',
+    ], 402);
+});
+$exceptions->render(function (
     DomainException $e,
     Request $request
 ) {

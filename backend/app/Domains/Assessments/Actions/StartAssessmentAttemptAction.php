@@ -70,7 +70,9 @@ final class StartAssessmentAttemptAction
             'started_at' => now(),
             'submitted_at' => null,
             'completed_at' => null,
-            'expires_at' => now()->addMinutes(30),
+            'expires_at' => now()->addMinutes(
+                max(1, (int) ($assessment->time_limit_minutes ?? 30))
+            ),
         ]);
     }
 }

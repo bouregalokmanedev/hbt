@@ -8,7 +8,6 @@ use App\Domains\Quizzes\Models\Quiz;
 use App\Domains\Quizzes\Models\QuizAttempt;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
-use RuntimeException;
 
 final class StartQuizAttemptAction
 {
@@ -63,22 +62,6 @@ final class StartQuizAttemptAction
                 'attempt' => 'You have reached the maximum number of attempts for this quiz.',
             ]);
         }
-
-        $attemptCount = QuizAttempt::query()
-    ->where('quiz_id', $quiz->id)
-    ->where('user_id', $user->id)
-    ->count();
-
-if (
-    $quiz->max_attempts !== null &&
-    $attemptCount >= $quiz->max_attempts
-) {
-    throw new RuntimeException(
-        'Maximum quiz attempts reached.'
-    );
-}
-
-$attemptNumber = $attemptCount + 1;
 
         return QuizAttempt::create([
             'quiz_id' => $quiz->id,

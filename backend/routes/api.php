@@ -97,7 +97,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/webhooks/paypal', [WebhookController::class, 'paypal']);
 
     // Certificate verification is intentionally public so QR scans work without a login.
-    Route::get('/certificates/verify/{certificateNumber}', [CertificateController::class, 'verify']);
+    // Throttled to stop certificate-number enumeration.
+    Route::get('/certificates/verify/{certificateNumber}', [CertificateController::class, 'verify'])
+        ->middleware('throttle:30,1');
 
     // Message attachments travel on temporary signed URLs (plain <a>/<img>
     // requests carry no Bearer token); participation is enforced in the controller.
@@ -202,6 +204,8 @@ Route::post('/phone/otp/verify', [PhoneVerificationController::class, 'verify'])
             Route::patch('courses/{course}/archive', [AdminCourseController::class, 'archive']);
             Route::patch('courses/{course}/restore', [AdminCourseController::class, 'restore']);
 
+            Route::post('certificates/{certificate}/revoke', [CertificateController::class, 'revoke']);
+
             Route::get('enrollments', [AdminEnrollmentController::class, 'index']);
             Route::get('enrollments/{enrollment}', [AdminEnrollmentController::class, 'show']);
 
@@ -288,6 +292,15 @@ Route::post('/phone/otp/verify', [PhoneVerificationController::class, 'verify'])
             Route::post('plans', [AdminPlanController::class, 'store']);
             Route::patch('plans/{plan}', [AdminPlanController::class, 'update']);
             Route::delete('plans/{plan}', [AdminPlanController::class, 'destroy']);
+
+            Route::get('plans/{plan}/provider-mappings', [
+                \App\Domains\Payments\Http\Controllers\PaymentProviderPlanController::class,
+                'index',
+            ])->name('admin.plans.provider-mappings.index');
+            Route::put('plans/{plan}/provider-mappings', [
+                \App\Domains\Payments\Http\Controllers\PaymentProviderPlanController::class,
+                'upsert',
+            ])->name('admin.plans.provider-mappings.upsert');
 
             Route::get('payments/orders', [AdminCanonicalPaymentsController::class, 'orders']);
             Route::get('payments/orders/{order}', [AdminCanonicalPaymentsController::class, 'showOrder']);
@@ -440,6 +453,11 @@ Route::get('/certificates', [CertificateController::class, 'index']);
         '/enrollments',
         [EnrollmentController::class, 'index']
     )->name('enrollments.index');
+
+    Route::get(
+        '/courses/{course}/gradebook',
+        [\App\Http\Controllers\Api\V1\GradebookController::class, 'show']
+    )->name('courses.gradebook');
 
     Route::post(
         '/enrollments',
@@ -910,6 +928,16 @@ Route::get('/revenue', [
     'index',
 ])->name('instructor.revenue');
 
+Route::get('/courses/{course}/gradebook', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorGradebookController::class,
+    'show',
+])->name('instructor.courses.gradebook');
+
+Route::get('/courses/{course}/readiness', [
+    \App\Http\Controllers\Api\V1\Instructor\CourseController::class,
+    'readiness',
+])->name('instructor.courses.readiness');
+
 Route::get('/diagnostics/analytics', [InstructorDiagnosticController::class, 'analytics'])->name('instructor.diagnostics.analytics');
 Route::get('/diagnostics/attempts', [InstructorDiagnosticController::class, 'attempts'])->name('instructor.diagnostics.attempts');
 Route::get('/diagnostics/attempts/{attempt}', [InstructorDiagnosticController::class, 'showAttempt'])->name('instructor.diagnostics.attempts.show');
@@ -1268,6 +1296,11 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
             AssessmentAttemptController::class,
             'show',
         ])->name('assessments.attempts.show');
+
+        Route::put('/{attempt}/answers/{question}', [
+            AssessmentAttemptController::class,
+            'saveAnswers',
+        ])->name('assessments.attempts.answers.save');
 
         Route::post('/{attempt}/submit', [
             AssessmentAttemptController::class,

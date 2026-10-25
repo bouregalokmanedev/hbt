@@ -29,6 +29,16 @@ final class AssessmentAttemptResource extends JsonResource
             'tab_switch_count' => $this->tab_switch_count,
             'blocked_at' => $this->blocked_at,
 
+            'answers' => $this->whenLoaded(
+                'answers',
+                fn () => $this->answers->map(fn ($answer) => [
+                    'question_id' => $answer->question_id,
+                    'selected_option_ids' => $answer->relationLoaded('selectedOptions')
+                        ? $answer->selectedOptions->pluck('option_id')->values()->all()
+                        : [],
+                ])->values()->all(),
+            ),
+
             'result' => $this->whenLoaded(
                 'result',
                 fn () => new AssessmentResultResource(
@@ -39,6 +49,7 @@ final class AssessmentAttemptResource extends JsonResource
                 'id' => $this->assessment->id,
                 'title' => $this->assessment->title,
                 'minimum_score' => $this->assessment->minimum_score,
+                'time_limit_minutes' => $this->assessment->time_limit_minutes,
                 'questions' => $this->assessment->questions->map(fn ($question) => [
                     'id' => $question->id,
                     'question' => $question->question,

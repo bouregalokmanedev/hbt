@@ -10,6 +10,7 @@ import { MeasurementRow } from "./MeasurementRow";
 import { ChannelControls } from "./ChannelControls";
 import { ProcedureSidebar } from "./ProcedureSidebar";
 import { RightTabs } from "./RightTabs";
+import { OscilloscopeTool } from "../tool/OscilloscopeTool";
 import type { ProbeKey } from "../data/oscilloscope.data";
 import type { Screen } from "../engine/scope.engine";
 
@@ -97,15 +98,18 @@ export function OscilloscopeView({ vehicleId = null, sessionId = null, focus = n
         {state.screen === "scope" ? (
           <>
             <ProcedureSidebar engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
-            <div className="min-w-0 flex-1 space-y-3 overflow-auto p-4">
-              <div className="rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] p-3 dark:border-white/10 dark:bg-[#1b1b20]">
-                <ScopeControls engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
-              </div>
-              <div className="overflow-hidden rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-[#0C1116] p-2 dark:border-white/10">
-                <WaveformCanvas engine={engine} state={state} />
-              </div>
+            <div className="min-w-0 flex-1 space-y-3 overflow-auto p-3 sm:p-4">
+              <OscilloscopeTool engine={engine} state={state} />
               <MeasurementRow engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
-              <ChannelControls engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
+              <details className="group rounded-xl border border-[#3A3A3A]/10 bg-white dark:border-white/10 dark:bg-[#1b1b20]">
+                <summary className="cursor-pointer list-none px-3 py-2 text-xs font-black text-[#3A3A3A] dark:text-white">
+                  {tr("simulator.oscilloscopeTool.advanced", "Advanced analysis controls")}
+                </summary>
+                <div className="space-y-3 border-t border-[#3A3A3A]/10 p-3 dark:border-white/10">
+                  <ScopeControls engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
+                  <ChannelControls engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
+                </div>
+              </details>
             </div>
             <RightTabs engine={engine} state={state} t={t as (k: string, o?: Record<string, unknown>) => string} />
           </>

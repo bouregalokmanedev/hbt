@@ -52,11 +52,15 @@ class PaymentAccessService
             }
         }
 
-        // Active subscription check (when subscription domain is live)
+        // Active subscription check (must still be inside its paid period)
         if (\Schema::hasTable('subscriptions')) {
             $active = \App\Domains\Payments\Models\Subscription::query()
                 ->where('user_id', $user->id)
                 ->whereIn('status', ['trial', 'active', 'past_due'])
+                ->where(function ($query) {
+                    $query->whereNull('current_period_ends_at')
+                        ->orWhere('current_period_ends_at', '>', now());
+                })
                 ->exists();
             if ($active) {
                 return true;

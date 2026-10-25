@@ -647,6 +647,123 @@ function PlanCard({
           }}
         />
       )}
+      <ProviderMappings planId={plan.id} onDone={onDone} />
+    </div>
+  );
+}
+
+function ProviderMappings({
+  planId,
+  onDone,
+}: {
+  planId: string;
+  onDone: (work: () => Promise<unknown>, success: string) => void;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [provider, setProvider] = useState<"stripe" | "paypal">("stripe");
+  const mappings = useQuery({
+    queryKey: ["admin", "provider-mappings", planId],
+    queryFn: () => adminApi.providerMappings(planId),
+  });
+  const current = mappings.data?.find((entry) => entry.provider === provider);
+  const configured = (entryProvider: string) => Boolean(mappings.data?.find((entry) => entry.provider === entryProvider)?.external_price_id);
+  const inputClass = "h-10 w-full rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3 text-xs outline-none transition focus:border-[#F47822]";
+
+  return (
+    <div className="mt-4 rounded-2xl border border-[#3A3A3A]/8 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-3.5">
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        className="flex w-full items-center justify-between gap-3 text-start"
+      >
+        <span>
+          <span className="block text-[11px] font-bold text-[#3A3A3A] dark:text-[#ececef]">{t("admin.commerce.plans.providerMappings.title")}</span>
+          <span className="mt-0.5 block text-[10px] text-[#3A3A3A]/45 dark:text-white/45">{t("admin.commerce.plans.providerMappings.desc")}</span>
+        </span>
+        <span className="flex shrink-0 items-center gap-1.5">
+          {(["stripe", "paypal"] as const).map((entry) => (
+            <span key={entry} className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${configured(entry) ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400" : "bg-[#3A3A3A]/8 text-[#3A3A3A]/40 dark:bg-white/8 dark:text-white/40"}`}>
+              {entry}
+            </span>
+          ))}
+          <span className="text-[10px] font-bold text-[#F47822]">{open ? t("admin.commerce.plans.close") : t("admin.commerce.plans.providerMappings.manage")}</span>
+        </span>
+      </button>
+
+      {open && (
+        <div className="mt-3.5 space-y-2.5 border-t border-[#3A3A3A]/7 dark:border-white/7 pt-3.5">
+          <div className="flex gap-1.5">
+            {(["stripe", "paypal"] as const).map((entry) => (
+              <button
+                key={entry}
+                type="button"
+                onClick={() => setProvider(entry)}
+                className={`rounded-lg px-3 py-1.5 text-[11px] font-bold capitalize transition ${provider === entry ? "bg-[#3A3A3A] text-white" : "bg-[#3A3A3A]/5 text-[#3A3A3A]/55 dark:bg-white/5 dark:text-white/55"}`}
+              >
+                {entry}
+              </button>
+            ))}
+          </div>
+          {mappings.isError && <p className="text-[11px] font-semibold text-red-600 dark:text-red-400">{t("admin.commerce.plans.providerMappings.loadFail")}</p>}
+          <ProviderMappingForm
+            key={`${provider}-${current?.id ?? "new"}-${current?.external_price_id ?? ""}-${current?.external_plan_id ?? ""}-${current?.status ?? ""}`}
+            provider={provider}
+            initial={current}
+            inputClass={inputClass}
+            onSave={(payload) => onDone(() => adminApi.saveProviderMapping(planId, payload), t("admin.commerce.notices.providerMappingSaved"))}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProviderMappingForm({
+  provider,
+  initial,
+  inputClass,
+  onSave,
+}: {
+  provider: "stripe" | "paypal";
+  initial?: Awaited<ReturnType<typeof adminApi.providerMappings>>[number];
+  inputClass: string;
+  onSave: (payload: { provider: "stripe" | "paypal"; external_price_id: string | null; external_product_id: string | null; external_plan_id: string | null; status: "active" | "inactive" }) => void;
+}) {
+  const { t } = useTranslation();
+  const [priceId, setPriceId] = useState(initial?.external_price_id ?? "");
+  const [productId, setProductId] = useState(initial?.external_product_id ?? "");
+  const [planId, setPlanId] = useState(initial?.external_plan_id ?? "");
+  const [status, setStatus] = useState<"active" | "inactive">(initial?.status === "inactive" ? "inactive" : "active");
+
+  return (
+    <div className="grid gap-2.5">
+      <input value={priceId} onChange={(event) => setPriceId(event.target.value)} placeholder={provider === "stripe" ? t("admin.commerce.plans.providerMappings.priceIdPh") : t("admin.commerce.plans.providerMappings.paypalPricePh")} className={inputClass} />
+      <div className="grid grid-cols-2 gap-2.5">
+        <input value={productId} onChange={(event) => setProductId(event.target.value)} placeholder={t("admin.commerce.plans.providerMappings.productIdPh")} className={inputClass} />
+        <input value={planId} onChange={(event) => setPlanId(event.target.value)} placeholder={t("admin.commerce.plans.providerMappings.planIdPh")} className={inputClass} />
+      </div>
+      <div className="flex items-center gap-2.5">
+        <select value={status} onChange={(event) => setStatus(event.target.value as "active" | "inactive")} className={inputClass}>
+          <option value="active">{t("admin.commerce.plans.providerMappings.active")}</option>
+          <option value="inactive">{t("admin.commerce.plans.providerMappings.inactive")}</option>
+        </select>
+        <button
+          type="button"
+          disabled={!priceId.trim() && !planId.trim()}
+          onClick={() => onSave({
+            provider,
+            external_price_id: priceId.trim() || null,
+            external_product_id: productId.trim() || null,
+            external_plan_id: planId.trim() || null,
+            status,
+          })}
+          className="h-10 shrink-0 rounded-xl bg-[#F47822] px-4 text-xs font-bold text-white transition hover:bg-[#e96916] disabled:opacity-50"
+        >
+          {t("admin.commerce.plans.providerMappings.save")}
+        </button>
+      </div>
+      <p className="text-[10px] leading-4 text-[#3A3A3A]/45 dark:text-white/45">{t("admin.commerce.plans.providerMappings.hint")}</p>
     </div>
   );
 }

@@ -11,6 +11,18 @@ class CompleteSimulatorSessionRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            if ($this->integer('score') > 0 && empty($this->input('steps'))) {
+                $validator->errors()->add(
+                    'steps',
+                    'A scored simulator session must include its procedure steps.',
+                );
+            }
+        });
+    }
+
     public function rules(): array
     {
         return [
@@ -37,12 +49,14 @@ class CompleteSimulatorSessionRequest extends FormRequest
                 'sometimes',
                 'integer',
                 'min:1',
+                'max:1000',
             ],
 
             'hints_used' => [
                 'sometimes',
                 'integer',
                 'min:0',
+                'max:1000',
             ],
 
             'duration_seconds' => [
@@ -62,6 +76,7 @@ class CompleteSimulatorSessionRequest extends FormRequest
             'steps' => [
                 'nullable',
                 'array',
+                'max:500',
             ],
 
             'metadata' => [

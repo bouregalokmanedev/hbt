@@ -36,9 +36,11 @@ final class IssueCertificateForPassedAssessment
 
         Certificate::query()->firstOrCreate(
             [
-                'assessment_result_id' => $result->id,
+                'user_id' => $result->user_id,
+                'course_id' => $result->assessment->course_id,
             ],
             [
+                'assessment_result_id' => $result->id,
                 'enrollment_id' => $enrollment->id,
                 'course_id' => $result->assessment->course_id,
                 'user_id' => $result->user_id,

@@ -390,3 +390,59 @@ it('cannot cancel a completed enrollment', function () {
     )
         ->assertStatus(422);
 });
+
+it('reuses a cancelled enrollment when the learner re-enrolls', function () {
+    Event::fake();
+
+    $user = User::factory()->create();
+
+    $course = Course::factory()->create([
+        'status' => CourseStatus::PUBLISHED,
+        'visibility' => Visibility::PUBLIC,
+    ]);
+
+    $existing = Enrollment::factory()->cancelled()->create([
+        'user_id' => $user->id,
+        'course_id' => $course->id,
+    ]);
+
+    Sanctum::actingAs($user);
+
+    $this->postJson('/api/v1/enrollments', [
+        'course_id' => $course->id,
+    ])
+        ->assertCreated()
+        ->assertJsonPath('data.id', $existing->id)
+        ->assertJsonPath('data.status', EnrollmentStatus::ACTIVE->value);
+
+    $existing->refresh();
+
+    expect($existing->status)->toBe(EnrollmentStatus::ACTIVE)
+        ->and($existing->cancelled_at)->toBeNull()
+        ->and($existing->completed_at)->toBeNull()
+        ->and(Enrollment::query()->count())->toBe(1);
+});
+
+it('rejects re-enrollment after a course was completed', function () {
+    $user = User::factory()->create();
+
+    $course = Course::factory()->create([
+        'status' => CourseStatus::PUBLISHED,
+        'visibility' => Visibility::PUBLIC,
+    ]);
+
+    Enrollment::factory()->completed()->create([
+        'user_id' => $user->id,
+        'course_id' => $course->id,
+    ]);
+
+    Sanctum::actingAs($user);
+
+    $this->postJson('/api/v1/enrollments', [
+        'course_id' => $course->id,
+    ])
+        ->assertStatus(422)
+        ->assertJsonPath('message', 'The student is already enrolled in this course.');
+
+    expect(Enrollment::query()->count())->toBe(1);
+});

@@ -96,6 +96,7 @@ it('does not include lessons from another section', function () {
 
     $section1 = Section::factory()->create([
         'course_id' => $course->id,
+        'position' => 1,
     ]);
 
     $section2 = Section::factory()->create([

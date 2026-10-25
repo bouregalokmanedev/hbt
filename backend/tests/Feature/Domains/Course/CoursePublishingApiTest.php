@@ -8,7 +8,6 @@ use App\Models\Section;
 use App\Models\Lesson;
 use App\Enums\SectionStatus;
 use App\Enums\LessonStatus;
-use App\Enums\UserRole;
 use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
@@ -18,14 +17,21 @@ beforeEach(function () {
     Role::findOrCreate('Instructor', 'web');
 });
 
-it('publishes a valid course through the API', function () {
-    $instructor = User::factory()->create();
+function coursePublishingAdmin(): User
+{
+    $admin = User::factory()->create();
+    $admin->assignRole('Admin');
 
+    return $admin;
+}
+
+it('does not allow an instructor to publish their own course', function () {
+    $instructor = User::factory()->create();
     $instructor->assignRole('Instructor');
 
     $course = Course::factory()->create([
         'instructor_id' => $instructor->id,
-        'status' => CourseStatus::DRAFT,
+        'status' => CourseStatus::REVIEW,
         'thumbnail' => 'media/course-thumbnail.jpg',
     ]);
 
@@ -38,83 +44,119 @@ it('publishes a valid course through the API', function () {
         'status' => LessonStatus::PUBLISHED,
     ]);
 
-    $response = $this
+    $this
         ->actingAs($instructor)
-        ->postJson("/api/v1/courses/{$course->id}/publish");
+        ->postJson("/api/v1/courses/{$course->id}/publish")
+        ->assertForbidden();
 
-    $response
+    expect($course->fresh()->status)->toBe(CourseStatus::REVIEW);
+});
+
+it('publishes a reviewed course as an admin', function () {
+    $admin = coursePublishingAdmin();
+
+    $course = Course::factory()->create([
+        'status' => CourseStatus::REVIEW,
+        'thumbnail' => 'media/course-thumbnail.jpg',
+    ]);
+
+    $section = Section::factory()->create([
+        'course_id' => $course->id,
+    ]);
+
+    Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => LessonStatus::PUBLISHED,
+    ]);
+
+    $this
+        ->actingAs($admin)
+        ->postJson("/api/v1/courses/{$course->id}/publish")
         ->assertOk()
         ->assertJsonPath('data.id', $course->id)
         ->assertJsonPath('data.status', CourseStatus::PUBLISHED->value);
 
-    $course->refresh();
-
-    expect($course->status)
-        ->toBe(CourseStatus::PUBLISHED);
+    expect($course->fresh()->status)->toBe(CourseStatus::PUBLISHED);
 });
-it('does not publish an invalid course through the API', function () {
-    $instructor = User::factory()->create();
+
+it('does not publish a draft course even for an admin', function () {
+    $admin = coursePublishingAdmin();
 
     $course = Course::factory()->create([
-        'instructor_id' => $instructor->id,
         'status' => CourseStatus::DRAFT,
-        'title' => 'Laravel Course',
-        'description' => 'A complete Laravel course.',
-        'duration_minutes' => 120,
+        'thumbnail' => 'media/course-thumbnail.jpg',
+    ]);
+
+    $section = Section::factory()->create(['course_id' => $course->id]);
+    Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => LessonStatus::PUBLISHED,
+    ]);
+
+    $this
+        ->actingAs($admin)
+        ->postJson("/api/v1/courses/{$course->id}/publish")
+        ->assertStatus(422);
+
+    expect($course->fresh()->status)->toBe(CourseStatus::DRAFT);
+});
+
+it('does not publish an invalid reviewed course', function () {
+    $admin = coursePublishingAdmin();
+
+    $course = Course::factory()->create([
+        'status' => CourseStatus::REVIEW,
         'thumbnail' => null,
         'published_at' => null,
     ]);
 
     $this
-        ->actingAs($instructor)
+        ->actingAs($admin)
         ->postJson("/api/v1/courses/{$course->id}/publish")
         ->assertStatus(422);
 
     expect($course->fresh()->status)
-        ->toBe(CourseStatus::DRAFT)
+        ->toBe(CourseStatus::REVIEW)
         ->and($course->fresh()->published_at)
         ->toBeNull();
 });
+
 it('cannot publish an already published course through the API', function () {
-    $instructor = User::factory()->create();
+    $admin = coursePublishingAdmin();
 
     $course = Course::factory()->create([
-        'instructor_id' => $instructor->id,
         'status' => CourseStatus::PUBLISHED,
         'published_at' => now()->subDay(),
         'thumbnail' => 'media/course-thumbnail.jpg',
     ]);
 
     $this
-        ->actingAs($instructor)
+        ->actingAs($admin)
         ->postJson("/api/v1/courses/{$course->id}/publish")
         ->assertStatus(409);
 
-    expect($course->fresh()->status)
-        ->toBe(CourseStatus::PUBLISHED);
+    expect($course->fresh()->status)->toBe(CourseStatus::PUBLISHED);
 });
 
 it('cannot publish an archived course through the API', function () {
-    $instructor = User::factory()->create();
+    $admin = coursePublishingAdmin();
 
     $course = Course::factory()->create([
-        'instructor_id' => $instructor->id,
         'status' => CourseStatus::ARCHIVED,
         'thumbnail' => 'media/course-thumbnail.jpg',
     ]);
 
     $this
-        ->actingAs($instructor)
+        ->actingAs($admin)
         ->postJson("/api/v1/courses/{$course->id}/publish")
         ->assertStatus(422);
 
-    expect($course->fresh()->status)
-        ->toBe(CourseStatus::ARCHIVED);
+    expect($course->fresh()->status)->toBe(CourseStatus::ARCHIVED);
 });
 
 it('requires authentication to publish a course', function () {
     $course = Course::factory()->create([
-        'status' => CourseStatus::DRAFT,
+        'status' => CourseStatus::REVIEW,
         'thumbnail' => 'media/course-thumbnail.jpg',
     ]);
 
@@ -122,6 +164,5 @@ it('requires authentication to publish a course', function () {
         ->postJson("/api/v1/courses/{$course->id}/publish")
         ->assertUnauthorized();
 
-    expect($course->fresh()->status)
-        ->toBe(CourseStatus::DRAFT);
+    expect($course->fresh()->status)->toBe(CourseStatus::REVIEW);
 });

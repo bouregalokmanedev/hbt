@@ -8,4 +8,5 @@ enum PaymentMethodType: string
     case APPLE_PAY = 'apple_pay';
     case PAYPAL = 'paypal';
     case TAMARA = 'tamara';
+    case FREE = 'free';
 }

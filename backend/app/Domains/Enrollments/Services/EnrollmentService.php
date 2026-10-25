@@ -30,7 +30,11 @@ final class EnrollmentService
     ): void {
         if (
             $enrollment !== null
-            && $enrollment->status === EnrollmentStatus::ACTIVE
+            && in_array(
+                $enrollment->status,
+                [EnrollmentStatus::ACTIVE, EnrollmentStatus::COMPLETED],
+                true,
+            )
         ) {
             throw new AlreadyEnrolledException();
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domains\Assessments\Actions\SaveAssessmentAttemptAnswersAction;
 use App\Domains\Assessments\Actions\StartAssessmentAttemptAction;
 use App\Domains\Assessments\Actions\SubmitAssessmentAttemptAction;
 use App\Domains\Assessments\Enums\AssessmentAttemptStatus;
@@ -26,6 +27,7 @@ final class AssessmentAttemptController extends Controller
     public function __construct(
         private readonly StartAssessmentAttemptAction $startAssessmentAttemptAction,
         private readonly SubmitAssessmentAttemptAction $submitAssessmentAttemptAction,
+        private readonly SaveAssessmentAttemptAnswersAction $saveAssessmentAttemptAnswersAction,
         private readonly AssessmentScoringService $assessmentScoringService,
         private readonly AssessmentAccessibleSpecification $accessibleSpec,
         private readonly IntegrityAnalysisService $integrityService,
@@ -72,7 +74,7 @@ final class AssessmentAttemptController extends Controller
             user: $user,
         );
 
-        $attempt->load('result', 'assessment.questions.options');
+        $attempt->load('result', 'assessment.questions.options', 'answers.selectedOptions');
 
         return new AssessmentAttemptResource($attempt);
     }
@@ -91,9 +93,47 @@ final class AssessmentAttemptController extends Controller
             $attempt,
         );
 
-        $attempt->load('result', 'assessment.questions.options');
+        $attempt->load('result', 'assessment.questions.options', 'answers.selectedOptions');
 
         return new AssessmentAttemptResource($attempt);
+    }
+
+    /**
+     * Autosave one question's selection while the attempt is running.
+     */
+    public function saveAnswers(
+        Request $request,
+        Assessment $assessment,
+        AssessmentAttempt $attempt,
+        string $question,
+    ): JsonResponse {
+        $this->ensureAttemptBelongsToUser(
+            $request,
+            $assessment,
+            $attempt,
+        );
+
+        $data = $request->validate([
+            'option_ids' => ['present', 'array'],
+            'option_ids.*' => ['uuid'],
+        ]);
+
+        $answer = $this->saveAssessmentAttemptAnswersAction->execute(
+            attempt: $attempt,
+            questionId: $question,
+            optionIds: $data['option_ids'],
+        );
+
+        return response()->json([
+            'data' => [
+                'saved' => true,
+                'question_id' => $question,
+                'selected_option_ids' => $answer->selectedOptions
+                    ->pluck('option_id')
+                    ->values()
+                    ->all(),
+            ],
+        ]);
     }
 
     /**

@@ -17,6 +17,7 @@ import type {
     InstructorCourseCertificates,
     InstructorCourseFeedback,
     InstructorCourseStudent,
+    InstructorGradebook,
     InstructorDashboard,
     InstructorProgression,
     InstructorCourseListResponse,
@@ -433,6 +434,14 @@ export async function getInstructorCourseCertificates(
 ): Promise<InstructorCourseCertificates> {
     return api<InstructorCourseCertificates>(
         `/v1/instructor/courses/${courseId}/certificates`,
+    );
+}
+
+export async function getInstructorGradebook(
+    courseId: string,
+): Promise<InstructorGradebook> {
+    return api<InstructorGradebook>(
+        `/v1/instructor/courses/${courseId}/gradebook`,
     );
 }
 

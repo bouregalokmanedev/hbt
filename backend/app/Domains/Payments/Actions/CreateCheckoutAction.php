@@ -2,8 +2,11 @@
 
 namespace App\Domains\Payments\Actions;
 
+use App\Domains\Payments\Enums\PaymentMethodType;
 use App\Domains\Payments\Enums\PaymentProvider;
+use App\Domains\Payments\Enums\PaymentStatus;
 use App\Domains\Payments\Models\Order;
+use App\Domains\Payments\Models\Payment;
 use App\Domains\Payments\Services\CheckoutService;
 use App\Domains\Payments\Services\PaymentService;
 use App\Models\Course;
@@ -75,25 +78,56 @@ final readonly class CreateCheckoutAction
         }
 
         $total = array_sum(array_map(fn ($item) => $item['unit_price'] * $item['quantity'], $resolved));
-        if ($total === 0) {
-            $existing = $resolved[0] ?? null;
-            if ($existing) {
-                $order = $this->orders->createOrder($resolved, $provider, $currency, $idempotencyKey, $userId);
-                $order->update(['status' => 'paid', 'paid_at' => now(), 'discount_amount' => $discountAmount]);
-                if ($order->wasRecentlyCreated) {
-                    $appliedCoupon?->increment('used_count');
-                }
-                return ['order' => $order->fresh(), 'payment' => null, 'free' => true];
-            }
-        }
+
+        $orderExisted = Order::query()
+            ->where('idempotency_key', $idempotencyKey)
+            ->exists();
 
         $order = $this->orders->createOrder($resolved, $provider, $currency, $idempotencyKey, $userId);
+
         if ($discountAmount > 0) {
             $order->update(['discount_amount' => $discountAmount]);
         }
-        if ($order->wasRecentlyCreated) {
+
+        if (! $orderExisted) {
             $appliedCoupon?->increment('used_count');
         }
+
+        // A retried checkout must not mint a second payment or re-run
+        // fulfillment — return the already-settled order as-is.
+        if ($order->status === 'paid') {
+            return [
+                'order' => $order->fresh(),
+                'payment' => $order->payments()->latest()->first(),
+                'free' => $total === 0,
+            ];
+        }
+
+        if ($total === 0) {
+            // Zero-total orders (free courses, 100% coupons) must still run
+            // the canonical fulfillment path so enrollment, invoices and
+            // notifications behave exactly like a paid order.
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'user_id' => $userId,
+                'provider' => $provider,
+                'payment_method_type' => PaymentMethodType::FREE->value,
+                'amount' => 0,
+                'currency' => $currency,
+                'status' => PaymentStatus::PENDING->value,
+                'idempotency_key' => (string) Str::uuid(),
+                'metadata' => ['order_id' => $order->id, 'free_checkout' => true],
+            ]);
+
+            $this->orders->markSucceeded($payment, ['free_checkout' => true]);
+
+            return [
+                'order' => $order->fresh(),
+                'payment' => $payment->fresh(),
+                'free' => true,
+            ];
+        }
+
         $payment = $this->checkout->createCheckout($order, $provider);
 
         return ['order' => $order, 'payment' => $payment, 'free' => false];

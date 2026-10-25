@@ -31,6 +31,7 @@ final class Assessment extends Model
         'required_quiz_score',
         'required_scenarios',
         'max_attempts',
+        'time_limit_minutes',
         'is_required',
         'status',
         'assessment_mode',
