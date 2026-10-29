@@ -5,6 +5,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Cpu,
+    GraduationCap,
     LayoutDashboard,
     LogOut,
     MessageCircle,
@@ -50,6 +51,11 @@ const navigationItems: NavigationItem[] = [
         labelKey: "instructor.sidebar.myCourses",
         to: "/instructor/courses",
         icon: BookOpen,
+    },
+    {
+        labelKey: "instructor.sidebar.bootcamps",
+        to: "/instructor/bootcamps",
+        icon: GraduationCap,
     },
     {
         labelKey: "instructor.sidebar.students",

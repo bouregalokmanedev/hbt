@@ -22,7 +22,7 @@ import { AuthInitializer } from "@/features/auth/AuthInitializer";
 
 import { AuthLanguageProvider } from "@/features/auth/i18n/auth-language";
 
-import { CookieConsentBanner } from "@/features/cookies/CookieConsentBanner";
+import { DeferredCookieConsent } from "@/features/cookies/DeferredCookieConsent";
 
 import { QueryProvider } from "@/providers/QueryProvider";
 
@@ -45,7 +45,7 @@ void initialLocaleReady.then(() => {
             <AuthInitializer>
               <QueryProvider>
                 <RouterProvider router={router} />
-                <CookieConsentBanner />
+                <DeferredCookieConsent />
                 <Toaster position="bottom-center" richColors closeButton />
               </QueryProvider>
             </AuthInitializer>

@@ -3,8 +3,10 @@ import { authStorage } from "@/lib/storage/auth-storage";
 
 import { ApiError } from "@/lib/api/errors";
 import { api } from "@/lib/api/client";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 
 import type { Course, CourseCurriculum, CourseGradebook } from "../types/course.types";
+import type { CourseJourney } from "../types/journey.types";
 
 export interface CourseListParams {
   search?: string;
@@ -65,6 +67,16 @@ export async function getCourseGradebook(
   courseId: string,
 ): Promise<CourseGradebook> {
   return api<CourseGradebook>(`/v1/courses/${courseId}/gradebook`);
+}
+
+export async function getCourseJourney(
+  courseId: string,
+): Promise<CourseJourney> {
+  const response = await api<{ pass: CourseJourney }>(
+    `/v1/courses/${courseId}/journey`,
+  );
+
+  return response.pass;
 }
 
 export interface CourseReviewsResponse {
@@ -169,6 +181,8 @@ async function paginatedApi<T>(endpoint: string): Promise<T> {
   }
 
   if (!response.ok) {
+    handleUnauthorizedResponse(response.status, Boolean(token));
+
     const message =
       typeof payload === "object" &&
       payload !== null &&
@@ -225,6 +239,8 @@ export const coursesApi = {
     }
 
     if (!response.ok) {
+      handleUnauthorizedResponse(response.status, Boolean(token));
+
       throw new ApiError(
         payload?.message ?? "Unable to load course.",
         response.status,
@@ -264,6 +280,8 @@ export const coursesApi = {
     }
 
     if (!response.ok) {
+      handleUnauthorizedResponse(response.status, Boolean(token));
+
       throw new ApiError(
         payload?.message ?? "Unable to load curriculum.",
         response.status,

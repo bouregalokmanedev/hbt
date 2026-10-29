@@ -15,6 +15,7 @@ use App\Domains\Courses\Events\CourseUpdated;
 use App\Domains\Courses\Events\CourseUnpublished;
 use App\Domains\Courses\Exceptions\CourseAlreadyPublishedException;
 use App\Domains\Courses\Exceptions\CourseArchivedException;
+use App\Domains\Courses\Exceptions\CourseReviewStateException;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
 use App\Domains\Progression\Services\InstructorProgressionService;
 use App\Enums\Courses\CourseStatus;

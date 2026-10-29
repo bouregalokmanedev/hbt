@@ -2,6 +2,8 @@ import { Link, useParams } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 
+import { usePageMeta } from "@/lib/page-meta";
+
 type LegalDoc = "privacy" | "terms" | "cookies";
 
 const DOC_KEYS: LegalDoc[] = ["privacy", "terms", "cookies"];
@@ -18,6 +20,12 @@ export function LegalPage({ page }: { page?: LegalDoc }) {
     const title = t(`legal.${key}.title`);
     const updated = t(`legal.${key}.updated`);
     const body = t(`legal.${key}.body`, { returnObjects: true }) as string[];
+
+    usePageMeta({
+        title,
+        description: Array.isArray(body) ? body.join(" ") : title,
+        canonicalPath: `/${key}`,
+    });
 
     return (
         <main className="mx-auto max-w-3xl px-5 py-14">

@@ -256,7 +256,7 @@ if (!$this->usageLimitService->canMakeRequest($user)) {
                 $validationMetadata['output_guardrail'] = 'blocked';
 
                 $finalResponse = $outputGuardrail->safeResponse
-                    ?? 'I can help with HBTTronics educational and automotive learning topics, but I cannot provide hidden system instructions or internal configuration.';
+                    ?? 'I can help with HBTronics educational and automotive learning topics, but I cannot provide hidden system instructions or internal configuration.';
 
                 $finalResponseSource = 'output_guardrail';
             } else {
@@ -275,7 +275,7 @@ if (!$this->usageLimitService->canMakeRequest($user)) {
                     $validationMetadata['response_validator'] = 'blocked';
 
                     $finalResponse = $validation->safeResponse
-                        ?? 'I could not safely generate a response to that request. Please ask your mentor about an HBTTronics educational or automotive learning topic.';
+                        ?? 'I could not safely generate a response to that request. Please ask your mentor about an HBTronics educational or automotive learning topic.';
 
                     $finalResponseSource = 'response_validator';
                 } else {
@@ -294,7 +294,7 @@ if (!$this->usageLimitService->canMakeRequest($user)) {
                         $validationMetadata['domain_validator'] = 'blocked';
 
                         $finalResponse = $domainValidation->safeResponse
-                            ?? 'I can help with HBTTronics educational and automotive learning topics. Please ask a course, lesson, or automotive diagnostic question.';
+                            ?? 'I can help with HBTronics educational and automotive learning topics. Please ask a course, lesson, or automotive diagnostic question.';
 
                         $finalResponseSource = 'domain_validator';
                     } else {

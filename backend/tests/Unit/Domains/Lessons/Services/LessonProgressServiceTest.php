@@ -6,11 +6,13 @@ use App\Enums\Courses\CourseStatus;
 use App\Enums\Courses\Visibility;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LessonStatus;
+use App\Enums\MediaType;
 use App\Enums\SectionStatus;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
+use App\Models\Media;
 use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -425,4 +427,70 @@ it('completes the lesson when progress reaches 100 percent', function () {
             return $event->progress->is($result);
         }
     );
+});
+it('requires watched evidence before completing a video lesson', function () {
+    enrollLessonProgressTestUser($this->user, $this->course);
+
+    $this->lesson->update(['duration_minutes' => 10]);
+
+    Media::factory()->create([
+        'mediable_type' => Lesson::class,
+        'mediable_id' => $this->lesson->id,
+        'type' => MediaType::VIDEO,
+        'mime_type' => 'video/mp4',
+    ]);
+
+    LessonProgress::factory()->create([
+        'user_id' => $this->user->id,
+        'lesson_id' => $this->lesson->id,
+        'time_spent' => 60,
+    ]);
+
+    expect(fn () => $this->service->complete($this->user, $this->lesson))
+        ->toThrow(LessonCannotBeCompletedException::class);
+});
+
+it('completes a video lesson once enough playback time is watched', function () {
+    enrollLessonProgressTestUser($this->user, $this->course);
+
+    $this->lesson->update(['duration_minutes' => 10]);
+
+    Media::factory()->create([
+        'mediable_type' => Lesson::class,
+        'mediable_id' => $this->lesson->id,
+        'type' => MediaType::VIDEO,
+        'mime_type' => 'video/mp4',
+    ]);
+
+    $progress = LessonProgress::factory()->create([
+        'user_id' => $this->user->id,
+        'lesson_id' => $this->lesson->id,
+        'time_spent' => 480,
+    ]);
+
+    $result = $this->service->complete($this->user, $this->lesson);
+
+    expect($result->is($progress))->toBeTrue()
+        ->and($result->completed_at)->not->toBeNull();
+});
+
+it('keeps a video lesson open at 95 percent until the watch requirement is met', function () {
+    enrollLessonProgressTestUser($this->user, $this->course);
+
+    $this->lesson->update(['duration_minutes' => 10]);
+
+    Media::factory()->create([
+        'mediable_type' => Lesson::class,
+        'mediable_id' => $this->lesson->id,
+        'type' => MediaType::VIDEO,
+        'mime_type' => 'video/mp4',
+    ]);
+
+    $result = $this->service->updateProgress($this->user, $this->lesson, [
+        'progress_percentage' => 100,
+        'time_spent' => 60,
+    ]);
+
+    expect($result->progress_percentage)->toBe(95)
+        ->and($result->completed_at)->toBeNull();
 });

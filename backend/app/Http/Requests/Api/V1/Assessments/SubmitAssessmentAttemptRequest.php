@@ -26,14 +26,31 @@ final class SubmitAssessmentAttemptRequest extends FormRequest
         ],
 
         'answers.*.option_ids' => [
-            'required',
+            'sometimes',
             'array',
         ],
 
         'answers.*.option_ids.*' => [
-            'required',
             'uuid',
         ],
+
+        'answers.*.selected_option_ids' => [
+            'sometimes',
+            'array',
+        ],
+
+        'answers.*.selected_option_ids.*' => [
+            'uuid',
+        ],
+
+        // Text, numeric, ordering and matching payloads.
+        'answers.*.answer' => ['sometimes', 'nullable'],
+        'answers.*.value' => ['sometimes', 'nullable'],
+        'answers.*.text' => ['sometimes', 'nullable', 'string'],
+        'answers.*.ordered_ids' => ['sometimes', 'array'],
+        'answers.*.ordered_ids.*' => ['uuid'],
+        'answers.*.matches' => ['sometimes', 'array'],
+        'answers.*.confidence_level' => ['sometimes', 'nullable', 'string', 'max:32'],
     ];
 }
 }

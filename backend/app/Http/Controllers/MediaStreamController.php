@@ -2,13 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Domains\Courses\Services\CourseAccessService;
+use App\Domains\Lessons\Services\LessonAccessService;
+use App\Models\Course;
+use App\Models\Lesson;
 use App\Models\Media;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 final class MediaStreamController extends Controller
 {
+    public function __construct(
+        private readonly CourseAccessService $courseAccess,
+        private readonly LessonAccessService $lessonAccess,
+    ) {
+    }
+
     public function __invoke(
         Request $request,
         Media $media
@@ -195,7 +206,7 @@ final class MediaStreamController extends Controller
                         'bytes',
 
                     'Cache-Control' =>
-                        'public, max-age=3600',
+                        'private, max-age=0, must-revalidate',
 
                     'Content-Disposition' =>
                             'inline; filename="' .
@@ -234,7 +245,7 @@ final class MediaStreamController extends Controller
             }, 200, [
                 'Content-Type' => $media->mime_type,
                 'Content-Length' => (string) $size,
-                'Cache-Control' => 'private, max-age=3600',
+                'Cache-Control' => 'private, max-age=0, must-revalidate',
                 'Content-Disposition' => 'inline; filename="' . addslashes($media->filename) . '"',
             ]);
         }
@@ -297,7 +308,7 @@ final class MediaStreamController extends Controller
                     'bytes',
 
                 'Cache-Control' =>
-                    'public, max-age=3600',
+                    'private, max-age=0, must-revalidate',
 
                 'Content-Disposition' =>
                         'inline; filename="' .
@@ -309,7 +320,7 @@ final class MediaStreamController extends Controller
         );
     }
 
-    private function canStream(\App\Models\User $user, Media $media): bool
+    private function canStream(User $user, Media $media): bool
     {
         if ($user->hasAnyRole(['Admin', 'Super Admin'])) {
             return true;
@@ -317,29 +328,27 @@ final class MediaStreamController extends Controller
 
         $mediable = $media->mediable;
 
-        $course = match (true) {
-            $mediable instanceof \App\Models\Course => $mediable,
-            $mediable instanceof \App\Models\Lesson => $mediable->section?->course,
-            default => null,
-        };
+        /*
+         * Signed URLs already proved access when the parent payload was
+         * rendered. For direct authenticated requests we re-use the exact
+         * same gates as the lesson player so a guessed media id can never
+         * expose content from a draft lesson or another learner's course.
+         */
+        if ($mediable instanceof Lesson) {
+            $mediable->loadMissing('section.course');
 
-        if (! $course) {
-            return false;
+            if ($mediable->section?->course?->instructor_id === $user->id) {
+                return true;
+            }
+
+            return $this->lessonAccess->canAccess($user, $mediable);
         }
 
-        if ($course->instructor_id === $user->id) {
-            return true;
+        if ($mediable instanceof Course) {
+            return $mediable->instructor_id === $user->id
+                || $this->courseAccess->canBrowse($user, $mediable);
         }
 
-        // Preview lessons stay accessible; full content needs an enrollment.
-        if ($mediable instanceof \App\Models\Lesson && $mediable->is_preview) {
-            return true;
-        }
-
-        return \App\Models\Enrollment::query()
-            ->where('user_id', $user->id)
-            ->where('course_id', $course->id)
-            ->whereIn('status', ['active', 'completed'])
-            ->exists();
+        return false;
     }
 }

@@ -94,6 +94,6 @@ it('provides a safe response when the domain validation fails', function () {
         ->toBeFalse()
         ->and($result->safeResponse)
         ->toBe(
-            'I can help with HBTTronics educational and automotive learning topics. Please ask a course, lesson, or automotive diagnostic question.'
+            'I can help with HBTronics educational and automotive learning topics. Please ask a course, lesson, or automotive diagnostic question.'
         );
 });

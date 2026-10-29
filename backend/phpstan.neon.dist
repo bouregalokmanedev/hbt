@@ -1,0 +1,12 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+    level: 0
+    # Models in this project define casts with a casts() method rather than a
+    # $casts property. Larastan only understands the property form unless this
+    # flag is enabled, which made enum casts look like plain strings and caused
+    # false "always true" branches (for example Course::unpublish()).
+    parseModelCastsMethod: true

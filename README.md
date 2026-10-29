@@ -12,6 +12,7 @@ Start here: `docs/01-project-overview.md` → `docs/03-development-setup.md`.
 | `docs/03-development-setup.md` | local setup + env matrix |
 | `docs/04-database-design.md` | seeder runbook + ERD + table inventory |
 | `docs/05-api-standards.md` | conventions, routes, webhook lifecycle |
+| `docs/06-learning-completion-and-certification.md` | canonical pass rule, certificates, journey, server-side gates |
 
 ## Roadmap (next lifecycle gaps)
 

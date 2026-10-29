@@ -9,6 +9,11 @@ use App\Domains\Quizzes\Models\Quiz;
 use App\Domains\Quizzes\Models\QuizAttempt;
 use App\Domains\Quizzes\Models\QuizQuestion;
 use App\Domains\Quizzes\Models\QuizQuestionOption;
+use App\Enums\Courses\CourseStatus;
+use App\Enums\SectionStatus;
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,11 +22,34 @@ final class QuizAttemptApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Quizzes live inside a published section/course and require an
+     * enrollment now that attempts are gated server-side.
+     */
+    private function publishedQuizFor(User $user, array $attributes = []): Quiz
+    {
+        $course = Course::factory()->create(['status' => CourseStatus::PUBLISHED]);
+        $section = Section::factory()->create([
+            'course_id' => $course->id,
+            'status' => SectionStatus::PUBLISHED,
+        ]);
+
+        Enrollment::factory()->create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+        ]);
+
+        return Quiz::factory()->create([
+            ...$attributes,
+            'section_id' => $section->id,
+        ]);
+    }
+
     public function test_authenticated_user_can_start_quiz(): void
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 3,
         ]);
@@ -75,7 +103,7 @@ final class QuizAttemptApiTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 3,
         ]);

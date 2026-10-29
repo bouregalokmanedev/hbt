@@ -5,12 +5,16 @@ namespace App\Domains\Payments\Actions;
 use App\Domains\Payments\Enums\PaymentMethodType;
 use App\Domains\Payments\Enums\PaymentProvider;
 use App\Domains\Payments\Enums\PaymentStatus;
+use App\Domains\Payments\Exceptions\UnsupportedCurrencyException;
 use App\Domains\Payments\Models\Order;
 use App\Domains\Payments\Models\Payment;
 use App\Domains\Payments\Services\CheckoutService;
+use App\Domains\Payments\Services\PaymentGatewayRegistry;
 use App\Domains\Payments\Services\PaymentService;
+use App\Enums\Courses\CourseStatus;
+use App\Enums\Courses\Visibility;
 use App\Models\Course;
-use Illuminate\Support\Str;
+use App\Support\Money;
 use Illuminate\Validation\ValidationException;
 
 final readonly class CreateCheckoutAction
@@ -18,19 +22,64 @@ final readonly class CreateCheckoutAction
     public function __construct(
         private PaymentService $orders,
         private CheckoutService $checkout,
+        private PaymentGatewayRegistry $gateways,
     ) {}
 
     /**
+     * The checkout currency is always derived from the courses being bought.
+     * Any currency supplied by the client is intentionally ignored.
+     *
      * @param list<array{course_id: string, quantity?: int}> $items
      */
-    public function execute(int $userId, array $items, string $provider, string $currency, string $idempotencyKey, ?string $couponCode = null): array
-    {
+    public function execute(
+        int $userId,
+        array $items,
+        ?string $provider,
+        string $idempotencyKey,
+        ?string $couponCode = null,
+    ): array {
+        $existing = Order::query()
+            ->where('user_id', $userId)
+            ->where('idempotency_key', $idempotencyKey)
+            ->with('items')
+            ->first();
+
+        if ($existing) {
+            return $this->resume($existing);
+        }
+
+        $ids = array_map(fn (array $item) => $item['course_id'], $items);
+        if (count($ids) !== count(array_unique($ids))) {
+            throw ValidationException::withMessages([
+                'items' => ['Each course may only appear once in a checkout.'],
+            ]);
+        }
+
+        $courses = Course::query()->whereIn('id', $ids)->get()->keyBy('id');
         $resolved = [];
+        $currencies = [];
+
         foreach ($items as $item) {
-            $course = Course::query()->find($item['course_id']);
+            $course = $courses->get($item['course_id']);
+
             if (! $course) {
-                throw ValidationException::withMessages(['items' => ["Course {$item['course_id']} not found."]]);
+                throw ValidationException::withMessages([
+                    'items' => ["Course {$item['course_id']} not found."],
+                ]);
             }
+
+            if ($course->status !== CourseStatus::PUBLISHED || $course->visibility !== Visibility::PUBLIC) {
+                throw ValidationException::withMessages([
+                    'items' => ["Course {$course->title} is not available for purchase."],
+                ]);
+            }
+
+            $currency = Money::normalizeCurrency($course->currency, config('app.currency', 'DZD'));
+            if (! Money::isSupported($currency)) {
+                throw new UnsupportedCurrencyException("Currency {$currency} is not supported by this platform.");
+            }
+            $currencies[$currency] = true;
+
             $unitPrice = $course->is_free ? 0 : (int) ($course->discount_price ?? $course->price ?? 0);
             $resolved[] = [
                 'course_id' => $course->id,
@@ -41,6 +90,14 @@ final readonly class CreateCheckoutAction
                 'metadata' => ['course_title' => $course->title],
             ];
         }
+
+        if (count($currencies) > 1) {
+            throw ValidationException::withMessages([
+                'items' => ['All courses in a checkout must use the same currency.'],
+            ]);
+        }
+
+        $currency = (string) array_key_first($currencies);
 
         $discountAmount = 0;
         $appliedCoupon = null;
@@ -79,47 +136,66 @@ final readonly class CreateCheckoutAction
 
         $total = array_sum(array_map(fn ($item) => $item['unit_price'] * $item['quantity'], $resolved));
 
-        $orderExisted = Order::query()
-            ->where('idempotency_key', $idempotencyKey)
-            ->exists();
-
-        $order = $this->orders->createOrder($resolved, $provider, $currency, $idempotencyKey, $userId);
-
-        if ($discountAmount > 0) {
-            $order->update(['discount_amount' => $discountAmount]);
+        // Free checkouts need no provider at all. Paid checkouts must resolve
+        // a provider that can actually charge the derived currency.
+        if ($total === 0) {
+            $provider = PaymentProvider::MANUAL->value;
+        } else {
+            $provider ??= $this->gateways->defaultProviderFor($currency);
+            $this->gateways->assertCanProcess($provider, $currency);
         }
 
-        if (! $orderExisted) {
+        $order = $this->orders->createOrder(
+            $resolved,
+            $provider,
+            $currency,
+            $idempotencyKey,
+            $userId,
+        );
+
+        if ($order->wasRecentlyCreated) {
+            if ($discountAmount > 0) {
+                $order->update(['discount_amount' => $discountAmount]);
+            }
             $appliedCoupon?->increment('used_count');
         }
 
-        // A retried checkout must not mint a second payment or re-run
+        return $this->resume($order);
+    }
+
+    private function resume(Order $order): array
+    {
+        $order = $order->fresh(['items']);
+        $free = (int) $order->total === 0;
+
+        // A retried checkout must never mint a second payment or re-run
         // fulfillment — return the already-settled order as-is.
         if ($order->status === 'paid') {
             return [
-                'order' => $order->fresh(),
+                'order' => $order,
                 'payment' => $order->payments()->latest()->first(),
-                'free' => $total === 0,
+                'free' => $free,
             ];
         }
 
-        if ($total === 0) {
-            // Zero-total orders (free courses, 100% coupons) must still run
-            // the canonical fulfillment path so enrollment, invoices and
-            // notifications behave exactly like a paid order.
-            $payment = Payment::create([
-                'order_id' => $order->id,
-                'user_id' => $userId,
-                'provider' => $provider,
-                'payment_method_type' => PaymentMethodType::FREE->value,
-                'amount' => 0,
-                'currency' => $currency,
-                'status' => PaymentStatus::PENDING->value,
-                'idempotency_key' => (string) Str::uuid(),
-                'metadata' => ['order_id' => $order->id, 'free_checkout' => true],
-            ]);
+        if ($free) {
+            $payment = Payment::query()->createOrFirst(
+                ['idempotency_key' => 'free:'.$order->id],
+                [
+                    'order_id' => $order->id,
+                    'user_id' => $order->user_id,
+                    'provider' => $order->provider,
+                    'payment_method_type' => PaymentMethodType::FREE->value,
+                    'amount' => 0,
+                    'currency' => $order->currency,
+                    'status' => PaymentStatus::PENDING->value,
+                    'metadata' => ['order_id' => $order->id, 'free_checkout' => true],
+                ],
+            );
 
-            $this->orders->markSucceeded($payment, ['free_checkout' => true]);
+            if ($payment->status !== PaymentStatus::SUCCEEDED) {
+                $this->orders->markSucceeded($payment, ['free_checkout' => true]);
+            }
 
             return [
                 'order' => $order->fresh(),
@@ -128,7 +204,7 @@ final readonly class CreateCheckoutAction
             ];
         }
 
-        $payment = $this->checkout->createCheckout($order, $provider);
+        $payment = $this->checkout->createCheckout($order, $order->provider);
 
         return ['order' => $order, 'payment' => $payment, 'free' => false];
     }

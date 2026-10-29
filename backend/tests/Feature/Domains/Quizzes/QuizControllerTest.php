@@ -348,4 +348,51 @@ class QuizControllerTest extends TestCase
                 'data.questions.0.options'
             );
     }
+
+    public function test_hides_draft_quizzes_from_other_instructors(): void
+    {
+        $quiz = Quiz::factory()->draft()->create([
+            'section_id' => $this->ownedSection()->id,
+        ]);
+
+        $otherInstructor = User::factory()->create();
+        $otherInstructor->assignRole('Instructor');
+
+        // Heading a different course must not expose another instructor's
+        // unpublished questions and answer keys.
+        $this
+            ->actingAs($otherInstructor)
+            ->getJson("/api/v1/quizzes/{$quiz->id}")
+            ->assertNotFound();
+    }
+
+    public function test_owner_instructor_can_still_read_their_draft_quiz(): void
+    {
+        $quiz = Quiz::factory()->draft()->create([
+            'section_id' => $this->ownedSection()->id,
+        ]);
+
+        $this
+            ->actingAs($this->instructor)
+            ->getJson("/api/v1/quizzes/{$quiz->id}")
+            ->assertOk()
+            ->assertJsonPath('data.id', $quiz->id);
+    }
+
+    public function test_admin_can_read_any_draft_quiz(): void
+    {
+        $quiz = Quiz::factory()->draft()->create([
+            'section_id' => $this->ownedSection()->id,
+        ]);
+
+        $admin = User::factory()->create();
+        Role::findOrCreate('Admin', 'web');
+        $admin->assignRole('Admin');
+
+        $this
+            ->actingAs($admin)
+            ->getJson("/api/v1/quizzes/{$quiz->id}")
+            ->assertOk()
+            ->assertJsonPath('data.id', $quiz->id);
+    }
 }

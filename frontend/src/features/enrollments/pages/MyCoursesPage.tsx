@@ -3,10 +3,13 @@ import {
   Award,
   BookOpen,
   CheckCircle2,
+  Circle,
+  ClipboardCheck,
   Clock3,
   Layers,
   PlayCircle,
   RotateCcw,
+  Target,
   Trophy,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -348,6 +351,38 @@ function EnrollmentCard({
   const lessonsTotal = enrollment.total_lessons ?? 0;
   const displayProgress = completed ? 100 : progress;
 
+  const journey = enrollment.journey;
+  const step = journey?.next_step;
+  const hasCertificate = Boolean(journey?.certificate);
+  const certificateReady = Boolean(journey?.certificate_ready || hasCertificate);
+  const nextType = step?.type ?? (journey?.passed ? "completed" : null);
+
+  const primaryPath = certificateReady
+    ? "/certificates"
+    : step?.path ?? `/courses/${enrollment.course_id}`;
+
+  const primaryLabel = certificateReady
+    ? t("myCourses.journey.cta.certificate")
+    : nextType
+      ? t(`myCourses.journey.cta.${nextType}`)
+      : completed
+        ? t("myCourses.card.reviewCourse")
+        : t("myCourses.card.continueLearning");
+
+  const PrimaryIcon = certificateReady
+    ? Award
+    : nextType === "quiz"
+      ? ClipboardCheck
+      : nextType === "assessment"
+        ? Target
+        : nextType === "completed"
+          ? RotateCcw
+          : PlayCircle;
+
+  const activeRequirements = (journey?.requirements ?? []).filter(
+    (requirement) => requirement.required > 0,
+  );
+
   return (
     <article
       data-testid="my-courses-card"
@@ -414,7 +449,11 @@ function EnrollmentCard({
                     : "text-[#F47822]",
                 ].join(" ")}
               >
-                {completed ? t("myCourses.card.certEligible") : t("myCourses.card.continueCourse")}
+                {hasCertificate
+                  ? t("myCourses.card.certificateEarned")
+                  : completed
+                    ? t("myCourses.card.certEligible")
+                    : t("myCourses.card.continueCourse")}
               </p>
               <h2
                 className="mt-1.5 line-clamp-2 text-base font-semibold leading-snug text-[#3A3A3A] dark:text-white"
@@ -470,22 +509,56 @@ function EnrollmentCard({
             </span>
           </div>
 
+          {activeRequirements.length > 0 ? (
+            <div className="mt-3.5 rounded-2xl border border-[#3A3A3A]/8 bg-[#F7F7F7] p-3 dark:border-white/8 dark:bg-[#101013]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#3A3A3A]/45 dark:text-white/45">
+                {t("myCourses.journey.checklist")}
+              </p>
+
+              <ul className="mt-2 flex flex-wrap gap-1.5">
+                {activeRequirements.map((requirement) => (
+                  <li
+                    key={requirement.key}
+                    className={[
+                      "inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold",
+                      requirement.passed
+                        ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-700 dark:text-emerald-400"
+                        : "border-[#3A3A3A]/10 bg-white text-[#3A3A3A]/55 dark:border-white/10 dark:bg-white/5 dark:text-white/55",
+                    ].join(" ")}
+                  >
+                    {requirement.passed ? (
+                      <CheckCircle2 className="h-3 w-3" />
+                    ) : (
+                      <Circle className="h-3 w-3" />
+                    )}
+                    {t(`myCourses.journey.requirements.${requirement.key}`, {
+                      defaultValue: requirement.label,
+                    })}
+                    <span className="font-bold">
+                      {requirement.completed}/{requirement.required}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {step && !certificateReady && step.type !== "completed" ? (
+            <p className="mt-3 line-clamp-1 text-[11px] text-[#3A3A3A]/45 dark:text-white/45">
+              {t("myCourses.journey.nextStep")}:{" "}
+              <span className="font-semibold text-[#3A3A3A]/70 dark:text-white/70">
+                {step.title}
+              </span>
+            </p>
+          ) : null}
+
           <div className="mt-auto flex flex-col gap-2 pt-5 sm:flex-row">
             <Link
-              to={`/courses/${enrollment.course_id}`}
+              to={primaryPath}
               className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#F47822] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(244,120,34,0.18)] transition hover:bg-[#df6817]"
             >
-              {completed ? (
-                <>
-                  <RotateCcw className="h-4 w-4" />
-                  {t("myCourses.card.reviewCourse")}
-                </>
-              ) : (
-                <>
-                  <PlayCircle className="h-4 w-4" />
-                  {t("myCourses.card.continueLearning")}
-                </>
-              )}
+              <PrimaryIcon className="h-4 w-4" />
+              {primaryLabel}
               <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
             </Link>
           </div>

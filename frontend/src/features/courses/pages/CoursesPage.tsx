@@ -13,9 +13,16 @@ import { CourseGridSkeleton } from "../components/CourseGridSkeleton";
 import { CoursePagination } from "../components/CoursePagination";
 import { CourseSearch } from "../components/CourseSearch";
 import { useCourses } from "../hooks/useCourses";
+import { usePageMeta } from "@/lib/page-meta";
 
 export function CoursesPage() {
   const { t } = useTranslation();
+
+  usePageMeta({
+    title: `${t("catalogPage.hero.titleA")} ${t("catalogPage.hero.titleMid")}`,
+    description: t("catalogPage.hero.description"),
+    canonicalPath: "/catalog",
+  });
 
   const [filters, setFilters] = useState<CourseListParams>({
     per_page: 12,

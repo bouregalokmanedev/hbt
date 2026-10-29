@@ -63,6 +63,7 @@ describe("LoginPage 2FA challenge", () => {
                     message:
                         "Two-factor verification is required. A six-digit code was sent to your email.",
                     requires_two_factor: true,
+                    challenge_token: "challenge-token-123",
                 },
             ),
         );
@@ -94,5 +95,81 @@ describe("LoginPage 2FA challenge", () => {
             screen.queryByRole("button", { name: /^sign in$/i }),
         ).not.toBeInTheDocument();
         expect(authApi.login).toHaveBeenCalledTimes(1);
+        expect(sessionStorage.getItem("hbt:mfa-challenge")).toBe(
+            "challenge-token-123",
+        );
+    });
+
+    it("passes the password-backed challenge token to verification", async () => {
+        const challengeToken = "a".repeat(64);
+
+        vi.mocked(authApi.login).mockRejectedValue(
+            new ApiError(
+                "Two-factor verification is required.",
+                423,
+                undefined,
+                {
+                    success: false,
+                    message: "Two-factor verification is required.",
+                    requires_two_factor: true,
+                    challenge_token: challengeToken,
+                },
+            ),
+        );
+
+        vi.mocked(authApi.verifyTwoFactorLogin).mockResolvedValue({
+            token: "api-token",
+            token_type: "Bearer",
+            expires_at: null,
+            user: {
+                id: "user-1",
+                first_name: "Sara",
+                last_name: "Benali",
+                username: "sara",
+                email: "student@example.com",
+                email_verified_at: null,
+                phone: null,
+                avatar: null,
+                bio: null,
+                country: null,
+                language: null,
+                timezone: null,
+                status: "active",
+                roles: ["Student"],
+                created_at: "2026-01-01T00:00:00Z",
+                updated_at: "2026-01-01T00:00:00Z",
+            },
+        });
+
+        renderLogin();
+
+        fireEvent.change(screen.getByLabelText(/email/i), {
+            target: { value: "student@example.com" },
+        });
+        fireEvent.change(screen.getByLabelText(/^password$/i), {
+            target: { value: "secret-pass" },
+        });
+        fireEvent.click(screen.getByRole("button", { name: /^sign in$/i }));
+
+        await waitFor(() => {
+            expect(
+                screen.getByLabelText("Verification digit 1"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByLabelText("Verification digit 1"), {
+            target: { value: "123456" },
+        });
+        fireEvent.click(
+            screen.getByRole("button", { name: /verify and sign in/i }),
+        );
+
+        await waitFor(() => {
+            expect(authApi.verifyTwoFactorLogin).toHaveBeenCalledWith(
+                "student@example.com",
+                "123456",
+                challengeToken,
+            );
+        });
     });
 });

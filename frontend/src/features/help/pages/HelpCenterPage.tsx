@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { usePageMeta } from "@/lib/page-meta";
 import {
     ArrowRight,
     BadgeCheck,
@@ -24,6 +25,12 @@ export function HelpCenterPage() {
     const { t, i18n } = useTranslation();
     const locale = i18n.language || "en";
     const { user } = useAuth();
+
+    usePageMeta({
+        title: t("help.title"),
+        description: t("help.subtitle"),
+        canonicalPath: "/help",
+    });
 
     const [query, setQuery] = useState("");
     const [category, setCategory] = useState<HelpCategoryId | "all">("all");

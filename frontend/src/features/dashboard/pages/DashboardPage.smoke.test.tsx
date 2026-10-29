@@ -39,6 +39,14 @@ vi.mock("../components/BadgeUnlockedModal", () => ({
   BadgeUnlockedModal: () => null,
 }));
 
+vi.mock("@/features/assignments/components/HomeworkCard", () => ({
+  HomeworkCard: () => (
+    <a data-testid="homework-card" href="/courses/c1/assignments/a1">
+      Homework
+    </a>
+  ),
+}));
+
 import { useDashboard } from "../hooks/useDashboard";
 
 function buildDashboard(userId = "u1"): DashboardData {
@@ -149,7 +157,7 @@ describe("DashboardPage personalization", () => {
     expect(screen.getByTestId("dashboard-fixed-footer")).toBeInTheDocument();
   });
 
-  it("shows homework as disabled coming soon", async () => {
+  it("renders homework as a live card in the learner flow", async () => {
     renderPage();
 
     await waitFor(() => {
@@ -157,10 +165,9 @@ describe("DashboardPage personalization", () => {
     });
 
     const card = screen.getByTestId("homework-card");
-    expect(card).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByTestId("homework-coming-soon")).toBeInTheDocument();
-    expect(card.querySelector("a")).toBeNull();
-    expect(card.querySelector("button")).toBeNull();
+    expect(card).not.toHaveAttribute("aria-disabled", "true");
+    expect(card).toHaveAttribute("href", "/courses/c1/assignments/a1");
+    expect(screen.queryByTestId("homework-coming-soon")).not.toBeInTheDocument();
   });
 
   it("keeps always-visible cards and hides optional new cards by default", async () => {

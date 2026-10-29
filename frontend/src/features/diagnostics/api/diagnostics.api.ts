@@ -2,6 +2,7 @@ import { env } from "@/config/env";
 import { errorMessage } from "@/lib/api/safe-error";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { authStorage } from "@/lib/storage/auth-storage";
 
 import type {
@@ -47,6 +48,8 @@ async function rawApi<T>(endpoint: string, init?: RequestInit, body?: unknown): 
     }
 
     if (!response.ok) {
+        handleUnauthorizedResponse(response.status, Boolean(token));
+
         const message =
             typeof payload === "object" && payload !== null && "message" in payload && typeof payload.message === "string"
                 ? payload.message

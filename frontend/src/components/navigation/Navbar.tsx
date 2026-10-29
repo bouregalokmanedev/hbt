@@ -18,6 +18,9 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { NotificationMenu } from "@/features/notifications/components/NotificationMenu";
 import { UserAvatar } from "@/components/ui";
+import { BootcampsMegaMenu } from "./BootcampsMegaMenu";
+import { CoursesMegaMenu } from "./CoursesMegaMenu";
+import { SimulatorMegaMenu } from "./SimulatorMegaMenu";
 
 const navigation = [
   {
@@ -31,6 +34,10 @@ const navigation = [
   {
     key: "courses",
     href: "/catalog",
+  },
+  {
+    key: "bootcamps",
+    href: "/bootcamps",
   },
   {
     key: "simulator",
@@ -288,55 +295,38 @@ export function Navbar() {
                         DESKTOP NAVIGATION
                     ====================================================== */}
 
-          <div className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) =>
-              item.key === "courses" || item.key === "simulator" ? (
-                <div key={item.key} className="group relative">
-                  <NavLink to={item.href} className={navLinkClass}>
-                    {({ isActive }) => (
-                      <>
-                        <span className="inline-flex items-center gap-1.5">
-                          {t(`navigation.${item.key}`)}
-                          <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
-                        </span>
-                        <span
-                          className={[
-                            "absolute bottom-0 left-3 right-3",
-                            "h-[2px] rounded-full bg-hbt-orange transition-all duration-200",
-                            isActive
-                              ? "scale-x-100 opacity-100"
-                              : "scale-x-0 opacity-0",
-                          ].join(" ")}
-                        />
-                      </>
-                    )}
-                  </NavLink>
-                  <div className="pointer-events-none absolute left-0 top-full min-w-52 pt-2 opacity-0 transition duration-200 group-hover:pointer-events-auto group-hover:opacity-100">
-                    <div className="rounded-2xl border border-black/5 dark:border-white/8 bg-white dark:bg-[#1b1b20] p-2 shadow-[0_16px_38px_rgba(15,23,42,.12)]">
-                      {item.key === "courses" && (
-                        <Link
-                          to={item.href}
-                          className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] dark:bg-[#F47822]/10 hover:text-hbt-orange"
-                        >
-                          {t("navigation.exploreCourses")}
-                        </Link>
-                      )}
-                      <Link
-                        to={
-                          item.key === "courses"
-                            ? "/verify-certificate"
-                            : mentorHref
-                        }
-                        className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-hbt-dark/80 transition hover:bg-[#FFF4EC] dark:bg-[#F47822]/10 hover:text-hbt-orange"
-                      >
-                        {item.key === "courses"
-                          ? t("navigation.verifyCertificate")
-                          : t("navigation.aiMentor")}
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ) : (
+          <div className="hidden items-center gap-1 xl:flex">
+            {navItems.map((item) => {
+              if (item.key === "courses") {
+                return (
+                  <CoursesMegaMenu
+                    key={item.key}
+                    navLinkClass={navLinkClass}
+                  />
+                );
+              }
+
+              if (item.key === "bootcamps") {
+                return (
+                  <BootcampsMegaMenu
+                    key={item.key}
+                    navLinkClass={navLinkClass}
+                  />
+                );
+              }
+
+              if (item.key === "simulator") {
+                return (
+                  <SimulatorMegaMenu
+                    key={item.key}
+                    navLinkClass={navLinkClass}
+                    simulatorHref={item.href}
+                    mentorHref={mentorHref}
+                  />
+                );
+              }
+
+              return (
                 <NavLink
                   key={item.key}
                   to={item.href}
@@ -361,8 +351,8 @@ export function Navbar() {
                     </>
                   )}
                 </NavLink>
-              ),
-            )}
+              );
+            })}
           </div>
 
           {/* =====================================================
@@ -633,7 +623,7 @@ export function Navbar() {
               "text-hbt-dark dark:text-[#ececef]",
               "transition-colors",
               "hover:bg-hbt-gray",
-              "lg:hidden",
+              "xl:hidden",
             ].join(" ")}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
@@ -656,7 +646,7 @@ export function Navbar() {
               "border-t border-slate-100 dark:border-white/8",
               "bg-white dark:bg-[#1b1b20]",
               "px-4 pb-5 pt-3",
-              "lg:hidden",
+              "xl:hidden",
             ].join(" ")}
           >
             <div className="space-y-1">

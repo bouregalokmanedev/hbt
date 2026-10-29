@@ -17,7 +17,7 @@ class Invoice extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'user_id', 'subscription_id', 'order_id', 'provider', 'provider_invoice_id',
+        'user_id', 'subscription_id', 'order_id', 'provider', 'provider_invoice_id', 'idempotency_key',
         'number', 'currency', 'subtotal', 'discount_amount', 'tax_amount', 'total',
         'status', 'issued_at', 'due_at', 'paid_at', 'period_start', 'period_end', 'metadata',
     ];

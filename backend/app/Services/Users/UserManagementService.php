@@ -30,14 +30,9 @@ final readonly class UserManagementService
     ) {}
 
     public function create(CreateUserData $dto): ActionResult
-{
-    $user = $this->createUser->execute($dto);
-
-    return ActionResult::success(
-        $user,
-        'User created successfully'
-    );
-}
+    {
+        return $this->createUser->execute($dto);
+    }
 
 
     public function update(User $user, UpdateUserData $dto): ActionResult

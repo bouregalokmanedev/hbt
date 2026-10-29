@@ -3,6 +3,7 @@
 namespace App\Domains\Enrollments\Repositories;
 
 use App\Models\Enrollment;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 interface EnrollmentRepositoryInterface
@@ -19,6 +20,11 @@ interface EnrollmentRepositoryInterface
     public function findByUser(
         int $userId
     ): Collection;
+
+    public function paginateByUser(
+        int $userId,
+        int $perPage = 100,
+    ): LengthAwarePaginator;
 
     public function findByCourse(
         string $courseId

@@ -1,3 +1,5 @@
+import type { CourseJourney } from "../../courses/types/journey.types";
+
 export type EnrollmentStatus =
     | "active"
     | "completed"
@@ -33,4 +35,7 @@ export interface Enrollment {
 
     completed_lessons?: number;
     total_lessons?: number;
+
+    /** Canonical course-pass state and next action from the backend. */
+    journey?: CourseJourney | null;
 }

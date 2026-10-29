@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\DB;
  * Checks, in order:
  * - assessment published
  * - course published
- * - active enrollment for the course
+ * - active or completed enrollment for the course
+ *
+ * A completed enrollment still grants access: the final course assessment is
+ * normally taken after the last lesson, which used to flip the enrollment to
+ * "completed" and lock the learner out of the very assessment they needed.
  *
  * Does NOT duplicate eligibility logic — lessons, quizzes and scenarios
  * stay in AssessmentEligibilityService.
@@ -45,13 +49,16 @@ final class AssessmentAccessibleSpecification
             return 'The course for this assessment is not available.';
         }
 
-        $hasActiveEnrollment = DB::table('enrollments')
+        $hasEnrollment = DB::table('enrollments')
             ->where('user_id', $user->id)
             ->where('course_id', $assessment->course_id)
-            ->where('status', EnrollmentStatus::ACTIVE->value)
+            ->whereIn('status', [
+                EnrollmentStatus::ACTIVE->value,
+                EnrollmentStatus::COMPLETED->value,
+            ])
             ->exists();
 
-        if (! $hasActiveEnrollment) {
+        if (! $hasEnrollment) {
             return 'An active enrollment is required to take this assessment.';
         }
 

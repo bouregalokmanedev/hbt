@@ -8,6 +8,8 @@ import {
     useForm,
 } from "react-hook-form";
 
+import { useState } from "react";
+
 import {
     AuthShell,
 } from "../components/AuthShell";
@@ -51,6 +53,9 @@ import {
     isValidName,
     localAuthErrorMessage,
 } from "../utils/auth-errors";
+import { HoneypotField } from "@/features/security/HoneypotField";
+import { TurnstileWidget } from "@/features/security/TurnstileWidget";
+import { BOT_HONEYPOT_FIELD } from "@/features/security/botProtection";
 
 
 interface RegisterForm {
@@ -59,6 +64,7 @@ interface RegisterForm {
     email: string;
     password: string;
     passwordConfirmation: string;
+    website: string;
 }
 
 function safeNextPath(value: string | null): string | null {
@@ -93,6 +99,7 @@ export function RegisterPage() {
             email: "",
             password: "",
             passwordConfirmation: "",
+            website: "",
         },
         mode: "onChange",
     });
@@ -102,6 +109,8 @@ export function RegisterPage() {
         error,
         errorCode,
     } = useAuth();
+
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     const password = watch("password");
 
@@ -136,6 +145,8 @@ export function RegisterPage() {
                     values.passwordConfirmation,
                 ...(ref ? { ref } : {}),
                 visitor_id: visitorId(),
+                [BOT_HONEYPOT_FIELD]: values.website,
+                ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
             });
 
             sessionStorage.removeItem("hbt:auth-return-to");
@@ -368,6 +379,9 @@ export function RegisterPage() {
                             {bannerMessage}
                         </div>
                     )}
+
+                    <HoneypotField {...registerField("website")} />
+                    <TurnstileWidget onToken={setTurnstileToken} />
 
 
                     {/* Terms */}

@@ -5,6 +5,7 @@ namespace App\Domains\Courses\Services;
 use App\Domains\Courses\Events\SectionProgressUpdated;
 use App\Domains\Courses\Repositories\SectionProgressRepositoryInterface;
 use App\Domains\Lessons\Repositories\LessonProgressRepositoryInterface;
+use App\Enums\LessonStatus;
 use App\Models\Section;
 use App\Models\SectionProgress;
 use App\Models\User;
@@ -22,6 +23,7 @@ final class SectionProgressService
         Section $section
     ): SectionProgress {
         $lessons = $section->lessons()
+            ->where('status', LessonStatus::PUBLISHED->value)
             ->orderBy('position')
             ->get();
 

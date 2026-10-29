@@ -83,7 +83,7 @@ final class MentorDomainResponseValidatorService
     ];
 
     private const SAFE_RESPONSE =
-        'I can help with HBTTronics educational and automotive learning topics. Please ask a course, lesson, or automotive diagnostic question.';
+        'I can help with HBTronics educational and automotive learning topics. Please ask a course, lesson, or automotive diagnostic question.';
 
     public function validate(
         string $response,
@@ -123,7 +123,7 @@ final class MentorDomainResponseValidatorService
         }
 
         /*
-         * Require at least one recognizable HBTTronics educational
+         * Require at least one recognizable HBTronics educational
          * or automotive concept.
          */
         foreach (self::DOMAIN_PATTERNS as $pattern) {
@@ -133,7 +133,7 @@ final class MentorDomainResponseValidatorService
         }
 
         return $this->reject(
-            'The response does not appear to be related to an HBTTronics educational or automotive topic.'
+            'The response does not appear to be related to an HBTronics educational or automotive topic.'
         );
     }
 

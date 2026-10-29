@@ -2,12 +2,16 @@
 
 use App\Domains\Assessments\Models\Assessment;
 use App\Domains\Assessments\Models\AssessmentQuestion;
+use App\Domains\Assessments\Models\AssessmentResult;
+use App\Domains\Progression\Models\StudentXpTransaction;
 use App\Domains\Quizzes\Models\QuizQuestion;
 use App\Domains\Quizzes\Models\QuizQuestionOption;
 use App\Domains\StudentAssessments\DTOs\SaveResponseData;
 use App\Domains\StudentAssessments\Services\ResponseService;
 use App\Domains\StudentAssessments\Actions\StartAssessmentAction;
 use App\Domains\StudentAssessments\Actions\SubmitAssessmentAction;
+use App\Domains\StudentAssessments\Exceptions\AttemptAlreadySubmittedException;
+use App\Domains\StudentAssessments\Models\StudentAssessmentResult;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -186,4 +190,33 @@ it('student routes enforce auth->id as student_id', function () {
     // Other user cannot resume
     expect(fn () => app(\App\Domains\StudentAssessments\Actions\ResumeAssessmentAction::class)->execute($attempt, $other))
         ->toThrow(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+});
+
+it('rejects a duplicate assessment submission without grading twice', function () {
+    $user = User::factory()->create();
+    $assessment = accessibleAssessment($user, ['minimum_score' => 0]);
+    $attempt = app(StartAssessmentAction::class)->execute($assessment, $user);
+
+    $first = app(SubmitAssessmentAction::class)->execute($attempt, $user);
+
+    expect($first['assessment_result'])->not->toBeNull()
+        ->and($first['scoring']['passed'])->toBeTrue();
+
+    /*
+     * The second request still holds the pre-submission model, exactly like
+     * a double-click whose first response has not reached the browser yet.
+     */
+    expect(fn () => app(SubmitAssessmentAction::class)->execute($attempt, $user))
+        ->toThrow(AttemptAlreadySubmittedException::class);
+
+    expect(AssessmentResult::query()
+        ->where('assessment_attempt_id', $attempt->id)
+        ->count())->toBe(1)
+        ->and(StudentAssessmentResult::query()
+            ->where('attempt_id', $attempt->id)
+            ->count())->toBe(1)
+        ->and(StudentXpTransaction::query()
+            ->where('user_id', $user->id)
+            ->where('event', 'assessment_passed')
+            ->count())->toBe(1);
 });

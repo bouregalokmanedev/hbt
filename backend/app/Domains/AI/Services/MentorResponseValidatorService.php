@@ -55,6 +55,6 @@ final class MentorResponseValidatorService
 
     private function safeResponse(): string
     {
-        return 'I could not safely generate a response to that request. Please ask your mentor about an HBTTronics educational or automotive learning topic.';
+        return 'I could not safely generate a response to that request. Please ask your mentor about an HBTronics educational or automotive learning topic.';
     }
 }

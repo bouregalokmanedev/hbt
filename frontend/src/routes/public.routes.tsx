@@ -25,6 +25,14 @@ export const publicRoutes: RouteObject[] = [
                 lazy: () => import("@/features/courses/pages/CoursesPage").then((m) => ({ Component: m.CoursesPage })),
             },
             {
+                path: "/bootcamps",
+                lazy: () => import("@/features/bootcamps/pages/BootcampsPage").then((m) => ({ Component: m.BootcampsPage })),
+            },
+            {
+                path: "/bootcamps/:bootcampId",
+                lazy: () => import("@/features/bootcamps/pages/BootcampDetailsPage").then((m) => ({ Component: m.BootcampDetailsPage })),
+            },
+            {
                 path:"/courses/:id",
                 lazy: () => import("@/features/courses/pages/CourseDetailsPage").then((m) => ({ Component: m.CourseDetailsPage }))
             },
@@ -33,6 +41,14 @@ export const publicRoutes: RouteObject[] = [
                 lazy: () => import("@/features/lessons/pages/LessonPlayerPage").then((m) => ({ Component: m.LessonPlayerPage }))
             },
             { path: "/courses/:courseId/quizzes/:quizId", lazy: () => import("@/features/lessons/pages/QuizPlayerPage").then((m) => ({ Component: m.QuizPlayerPage })) },
+            {
+                path: "/courses/:courseId/assignments",
+                lazy: () => import("@/features/assignments/pages/CourseAssignmentsPage").then((m) => ({ Component: m.CourseAssignmentsPage }))
+            },
+            {
+                path: "/courses/:courseId/assignments/:assignmentId",
+                lazy: () => import("@/features/assignments/pages/AssignmentDetailPage").then((m) => ({ Component: m.AssignmentDetailPage }))
+            },
             {
                 path:"/company",
                 lazy: () => import("@/features/company/CompanyPage").then((m) => ({ Component: m.CompanyPage }))

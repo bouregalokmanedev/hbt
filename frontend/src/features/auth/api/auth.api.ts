@@ -10,6 +10,9 @@ export interface LoginPayload {
     email: string;
     password: string;
     remember?: boolean;
+    /** Hidden honeypot — bots fill it, humans never see it. */
+    website?: string;
+    turnstile_token?: string;
 }
 
 
@@ -28,11 +31,17 @@ export interface RegisterPayload {
     ref?: string;
     /** Anonymous browser id for stitching pre-signup analytics and leads. */
     visitor_id?: string;
+    /** Hidden honeypot — bots fill it, humans never see it. */
+    website?: string;
+    turnstile_token?: string;
 }
 
 
 export interface ForgotPasswordPayload {
     email: string;
+    /** Hidden honeypot — bots fill it, humans never see it. */
+    website?: string;
+    turnstile_token?: string;
 }
 
 
@@ -71,12 +80,29 @@ export const authApi = {
         );
     },
 
-    async verifyTwoFactorLogin(email: string, code: string): Promise<AuthData> {
-        return api<AuthData>("/v1/auth/two-factor/login/verify", { method: "POST", body: { email, code } });
+    async verifyTwoFactorLogin(
+        email: string,
+        code: string,
+        challengeToken: string,
+    ): Promise<AuthData> {
+        return api<AuthData>("/v1/auth/two-factor/login/verify", {
+            method: "POST",
+            body: {
+                email,
+                code,
+                challenge_token: challengeToken,
+            },
+        });
     },
 
-    async resendTwoFactorLogin(email: string): Promise<{ resent: boolean }> {
-        return api<{ resent: boolean }>("/v1/auth/two-factor/login/resend", { method: "POST", body: { email } });
+    async resendTwoFactorLogin(
+        email: string,
+        challengeToken: string,
+    ): Promise<{ resent: boolean }> {
+        return api<{ resent: boolean }>("/v1/auth/two-factor/login/resend", {
+            method: "POST",
+            body: { email, challenge_token: challengeToken },
+        });
     },
 
 

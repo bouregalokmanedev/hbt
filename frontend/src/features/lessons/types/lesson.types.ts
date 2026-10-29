@@ -6,6 +6,9 @@ export interface LessonProgress {
     started_at: string | null;
     completed_at: string | null;
     is_completed: boolean;
+    /** Resume position in seconds (not accumulated watch time). */
+    video_position?: number | null;
+    last_position?: number | null;
 }
 
 export interface LessonMedia {

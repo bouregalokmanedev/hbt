@@ -26,13 +26,18 @@ import type {
     Lesson,
     LessonProgress,
 } from "../types/lesson.types";
+import {
+    accumulateWatchedSeconds,
+    watchedSecondsForLesson,
+} from "../utils/watch-evidence";
 
 interface LessonVideoPlayerProps {
     lesson: Lesson;
     progress?: LessonProgress | null;
     onProgress?: (
         percentage: number,
-        timeSpent: number,
+        watchedSeconds: number,
+        positionSeconds: number,
     ) => void;
     onComplete?: () => void;
     onPreviousLesson?: () => void;
@@ -114,6 +119,16 @@ export function LessonVideoPlayer({
     // Keep a local checkpoint as a safety net for refreshes, route changes,
     // and sign-out flows where the final network request may be interrupted.
     const latestTime = useRef(0);
+
+    /**
+     * Cumulative seconds the learner actually watched. Rewinds and seeks do
+     * not add time; this is the evidence the server checks before completion.
+     */
+    const watchedSeconds = useRef(
+        watchedSecondsForLesson(progress, lesson.id),
+    );
+    const lastTimeUpdate = useRef(0);
+
     const positionStorageKey = `hbt:lesson-position:${lesson.id}`;
 
     const [
@@ -411,7 +426,11 @@ export function LessonVideoPlayer({
             localTime = 0;
         }
 
-        const serverTime = Number(progress?.time_spent ?? 0);
+        const serverTime = Number(
+            progress?.video_position ??
+                progress?.last_position ??
+                0,
+        );
         const savedTime = Math.max(
             Number.isFinite(serverTime) ? serverTime : 0,
             Number.isFinite(localTime) ? localTime : 0,
@@ -457,6 +476,22 @@ export function LessonVideoPlayer({
     }, [positionStorageKey, progress]);
 
     /**
+     * Keep the local watch counter in sync with server evidence. It only
+     * grows: a stale response must never erase watched seconds.
+     */
+    useEffect(() => {
+        if (progress?.lesson_id !== lesson.id) {
+            return;
+        }
+
+        const serverWatched = watchedSecondsForLesson(progress, lesson.id);
+
+        if (serverWatched > watchedSeconds.current) {
+            watchedSeconds.current = serverWatched;
+        }
+    }, [progress?.lesson_id, progress?.time_spent, lesson.id]);
+
+    /**
      * Reset state when lesson changes.
      */
     useEffect(() => {
@@ -471,6 +506,12 @@ export function LessonVideoPlayer({
 
         lastSavedTime.current =
             0;
+
+        lastTimeUpdate.current =
+            0;
+
+        watchedSeconds.current =
+            watchedSecondsForLesson(progress, lesson.id);
 
         latestTime.current = 0;
 
@@ -502,6 +543,7 @@ export function LessonVideoPlayer({
             if (Number.isFinite(videoDuration) && videoDuration > 0) {
                 onProgress?.(
                     Math.min(100, Math.round((time / videoDuration) * 100)),
+                    Math.floor(watchedSeconds.current),
                     Math.floor(time),
                 );
             }
@@ -566,7 +608,11 @@ export function LessonVideoPlayer({
                         localTime = 0;
                     }
 
-                    const serverTime = Number(progress?.time_spent ?? 0);
+                    const serverTime = Number(
+            progress?.video_position ??
+                progress?.last_position ??
+                0,
+        );
                     const savedTime = Math.max(
                         Number.isFinite(serverTime) ? serverTime : 0,
                         Number.isFinite(localTime) ? localTime : 0,
@@ -648,6 +694,20 @@ export function LessonVideoPlayer({
                 }
 
                 /**
+                 * Accumulate real playback time. Seek jumps are ignored, so
+                 * dragging the scrubber cannot fake watch evidence.
+                 */
+                watchedSeconds.current = accumulateWatchedSeconds(
+                    watchedSeconds.current,
+                    lastTimeUpdate.current,
+                    time,
+                    !videoElement.paused,
+                    isSeeking.current,
+                );
+
+                lastTimeUpdate.current = time;
+
+                /**
                  * Save every 5 seconds.
                  */
                 if (
@@ -670,6 +730,7 @@ export function LessonVideoPlayer({
 
                     onProgress?.(
                         percentage,
+                        Math.floor(watchedSeconds.current),
                         Math.floor(time),
                     );
                 }
@@ -708,9 +769,8 @@ export function LessonVideoPlayer({
 
                 onProgress?.(
                     100,
-                    Math.floor(
-                        finalDuration,
-                    ),
+                    Math.floor(watchedSeconds.current),
+                    Math.floor(finalDuration),
                 );
 
                 onComplete?.();
@@ -829,6 +889,8 @@ export function LessonVideoPlayer({
             const time =
                 videoElement.currentTime;
 
+            lastTimeUpdate.current = time;
+
             const videoDuration =
                 videoElement.duration;
 
@@ -856,6 +918,7 @@ export function LessonVideoPlayer({
 
             onProgress?.(
                 percentage,
+                Math.floor(watchedSeconds.current),
                 Math.floor(time),
             );
         }, [onProgress]);

@@ -27,7 +27,7 @@ final class MentorOutputGuardrailService
             if (str_contains($normalizedResponse, $pattern)) {
                 return MentorGuardrailResult::block(
                     reason: 'Unsafe mentor output detected.',
-                    safeResponse: 'I can help with HBTTronics educational and automotive learning topics, but I cannot provide hidden system instructions or internal configuration.',
+                    safeResponse: 'I can help with HBTronics educational and automotive learning topics, but I cannot provide hidden system instructions or internal configuration.',
                 );
             }
         }

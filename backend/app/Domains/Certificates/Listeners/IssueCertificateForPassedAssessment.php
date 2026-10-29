@@ -3,10 +3,18 @@
 namespace App\Domains\Certificates\Listeners;
 
 use App\Domains\Assessments\Events\AssessmentPassed;
-use App\Models\Certificate;
+use App\Domains\Certificates\Actions\IssueCertificateAction;
+use App\Domains\Courses\Services\CoursePassService;
+use App\Enums\EnrollmentStatus;
 
 final class IssueCertificateForPassedAssessment
 {
+    public function __construct(
+        private readonly CoursePassService $coursePass,
+        private readonly IssueCertificateAction $issueCertificate,
+    ) {
+    }
+
     public function handle(AssessmentPassed $event): void
     {
         $result = $event->result->loadMissing(
@@ -18,15 +26,28 @@ final class IssueCertificateForPassedAssessment
             return;
         }
 
+        $assessment = $result->assessment;
+
         // Low-stakes assessments (diagnostic/formative/practice) never
         // earn certificates — only summative/final do.
-        if (! $result->assessment->assessment_mode->isHighStakes()) {
+        if (! $assessment->assessment_mode->isHighStakes()) {
+            return;
+        }
+
+        // A section or lesson assessment can be summative, but it cannot
+        // certify the whole course. Only a course-scoped final/summative
+        // assessment may do that.
+        if ($assessment->scope() !== 'course') {
             return;
         }
 
         $enrollment = $result->user
             ->enrollments()
-            ->where('course_id', $result->assessment->course_id)
+            ->where('course_id', $assessment->course_id)
+            ->whereIn('status', [
+                EnrollmentStatus::ACTIVE->value,
+                EnrollmentStatus::COMPLETED->value,
+            ])
             ->latest('created_at')
             ->first();
 
@@ -34,20 +55,12 @@ final class IssueCertificateForPassedAssessment
             return;
         }
 
-        Certificate::query()->firstOrCreate(
-            [
-                'user_id' => $result->user_id,
-                'course_id' => $result->assessment->course_id,
-            ],
-            [
-                'assessment_result_id' => $result->id,
-                'enrollment_id' => $enrollment->id,
-                'course_id' => $result->assessment->course_id,
-                'user_id' => $result->user_id,
-                'recipient_name' => $result->user->full_name,
-                'course_title' => $result->assessment->course->title,
-                'issued_at' => $result->completed_at ?? now(),
-            ],
-        );
+        // Passing the final assessment is necessary but not sufficient:
+        // lessons, required quizzes and practicals must be complete too.
+        if (! $this->coursePass->hasPassed($assessment->course, $result->user)) {
+            return;
+        }
+
+        $this->issueCertificate->execute($result);
     }
 }

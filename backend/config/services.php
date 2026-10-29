@@ -47,6 +47,30 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Bot protection
+    |--------------------------------------------------------------------------
+    |
+    | Every public auth/contact form carries a hidden honeypot field. When
+    | Cloudflare Turnstile is configured the middleware also verifies the
+    | widget token before the request reaches the controller.
+    |
+    */
+    'bot_protection' => [
+        'honeypot_field' => env('BOT_HONEYPOT_FIELD', 'website'),
+
+        'turnstile' => [
+            'enabled' => (bool) env('TURNSTILE_ENABLED', false),
+            'site_key' => env('TURNSTILE_SITE_KEY'),
+            'secret_key' => env('TURNSTILE_SECRET_KEY'),
+            'verify_url' => env(
+                'TURNSTILE_VERIFY_URL',
+                'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            ),
+        ],
+    ],
+
     'paypal' => [
         'client_id' => env('PAYPAL_CLIENT_ID'),
         'secret' => env('PAYPAL_CLIENT_SECRET'),

@@ -23,11 +23,15 @@ import {
   applyServerFieldErrors,
   localAuthErrorMessage,
 } from "../utils/auth-errors";
+import { HoneypotField } from "@/features/security/HoneypotField";
+import { TurnstileWidget } from "@/features/security/TurnstileWidget";
+import { BOT_HONEYPOT_FIELD } from "@/features/security/botProtection";
 
 interface LoginForm {
   email: string;
   password: string;
   remember: boolean;
+  website: string;
 }
 
 function isMfaChallenge(caught: unknown): boolean {
@@ -53,6 +57,14 @@ function isMfaChallenge(caught: unknown): boolean {
     caught instanceof Error &&
     caught.message.toLowerCase().includes("two-factor")
   );
+}
+
+function mfaChallengeToken(caught: unknown): string {
+  if (typeof caught !== "object" || caught === null) return "";
+  const data = "data" in caught ? (caught as { data?: unknown }).data : undefined;
+  if (!data || typeof data !== "object" || !("challenge_token" in data)) return "";
+  const token = (data as { challenge_token?: unknown }).challenge_token;
+  return typeof token === "string" ? token : "";
 }
 
 export function LoginPage() {
@@ -111,7 +123,24 @@ export function LoginPage() {
     }
   };
   const [mfaCode, setMfaCode] = useState("");
+  const [mfaChallenge, setMfaChallengeState] = useState<string | null>(() => {
+    try {
+      return sessionStorage.getItem("hbt:mfa-challenge");
+    } catch {
+      return null;
+    }
+  });
+  const setMfaChallenge = (token: string | null) => {
+    setMfaChallengeState(token);
+    try {
+      if (token) sessionStorage.setItem("hbt:mfa-challenge", token);
+      else sessionStorage.removeItem("hbt:mfa-challenge");
+    } catch {
+      // Storage unavailable — the challenge still works this render cycle.
+    }
+  };
   const [lastLoginEmail, setLastLoginEmail] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   /*
    * Once the learner abandons the challenge ("Use a different account"),
    * latch it so no lingering two-factor store error, rehydrating
@@ -152,6 +181,8 @@ export function LoginPage() {
     try {
       const stored = sessionStorage.getItem("hbt:mfa-email");
       if (stored) setMfaEmailState(stored);
+      const storedToken = sessionStorage.getItem("hbt:mfa-challenge");
+      if (storedToken) setMfaChallengeState(storedToken);
     } catch {
       // Storage unavailable — lastLoginEmail path above still applies.
     }
@@ -175,6 +206,7 @@ export function LoginPage() {
       email: "",
       password: "",
       remember: false,
+      website: "",
     },
     mode: "onTouched",
   });
@@ -225,6 +257,8 @@ export function LoginPage() {
         email: values.email,
         password: values.password,
         remember: values.remember,
+        [BOT_HONEYPOT_FIELD]: values.website,
+        ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
       });
 
       /*
@@ -239,6 +273,7 @@ export function LoginPage() {
        */
       const authenticatedUser = useAuthStore.getState().user;
       setMfaEmail(null);
+      setMfaChallenge(null);
       continueAfterAuthentication(authenticatedUser ?? { roles: [] });
     } catch (caught) {
       /*
@@ -250,6 +285,7 @@ export function LoginPage() {
        */
       if (isMfaChallenge(caught) && !mfaAbandonedRef.current) {
         setMfaEmail(values.email.trim());
+        setMfaChallenge(mfaChallengeToken(caught));
         clearError();
       }
     }
@@ -259,8 +295,9 @@ export function LoginPage() {
     event.preventDefault();
     if (!challengeEmail || mfaCode.length !== 6) return;
     try {
-      await verifyTwoFactorLogin(challengeEmail, mfaCode);
+      await verifyTwoFactorLogin(challengeEmail, mfaCode, mfaChallenge ?? "");
       setMfaEmail(null);
+      setMfaChallenge(null);
       continueAfterAuthentication(
         useAuthStore.getState().user ?? { roles: [] },
       );
@@ -273,7 +310,7 @@ export function LoginPage() {
     setResentNote(false);
     setResendFailed(false);
     try {
-      await authApi.resendTwoFactorLogin(challengeEmail);
+      await authApi.resendTwoFactorLogin(challengeEmail, mfaChallenge ?? "");
       setResentNote(true);
       setMfaCode("");
     } catch {
@@ -355,6 +392,7 @@ export function LoginPage() {
               onClick={() => {
                 mfaAbandonedRef.current = true;
                 setMfaEmail(null);
+                setMfaChallenge(null);
                 setMfaCode("");
                 setLastLoginEmail("");
                 setResentNote(false);
@@ -492,6 +530,9 @@ export function LoginPage() {
                 )}
               </div>
             )}
+
+            <HoneypotField {...register("website")} />
+            <TurnstileWidget onToken={setTurnstileToken} />
 
             <button
               type="submit"

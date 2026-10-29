@@ -2,50 +2,74 @@
 
 namespace App\Domains\Payments\Services;
 
-use App\Domains\Payments\Contracts\PaymentGatewayInterface;
 use App\Domains\Payments\DTOs\CreatePaymentData;
-use App\Domains\Payments\Enums\PaymentProvider;
 use App\Domains\Payments\Enums\PaymentStatus;
 use App\Domains\Payments\Models\Order;
 use App\Domains\Payments\Models\Payment;
-use Illuminate\Support\Str;
+use Throwable;
 
 class CheckoutService
 {
     public function __construct(
-        private PaymentService $payments,
+        private PaymentGatewayRegistry $gateways,
     ) {}
 
     public function createCheckout(Order $order, string $provider, ?string $paymentMethodId = null): Payment
     {
-        $gateway = $this->gateway($provider);
+        $this->gateways->assertCanProcess($provider, $order->currency);
 
-        $payment = Payment::create([
-            'order_id' => $order->id,
-            'user_id' => $order->user_id,
-            'provider' => $provider,
-            'payment_method_type' => 'card',
-            'amount' => $order->total,
-            'currency' => $order->currency,
-            'status' => PaymentStatus::PENDING->value,
-            'idempotency_key' => (string) Str::uuid(),
-            'metadata' => ['order_id' => $order->id],
-        ]);
+        // The key is deterministic so a retried request can never create a
+        // second provider charge for the same order.
+        $key = 'checkout:'.$order->id.':'.$provider;
 
-        $result = $gateway->createPayment(new CreatePaymentData(
-            orderId: $order->id,
-            userId: (string) $order->user_id,
-            amount: $order->total,
-            currency: $order->currency,
-            provider: $provider,
-            paymentMethodType: 'card',
-            idempotencyKey: $payment->idempotency_key,
-            paymentMethodId: $paymentMethodId,
-        ));
+        $payment = Payment::query()->createOrFirst(
+            ['idempotency_key' => $key],
+            [
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'provider' => $provider,
+                'payment_method_type' => 'card',
+                'amount' => $order->total,
+                'currency' => $order->currency,
+                'status' => PaymentStatus::PENDING->value,
+                'metadata' => ['order_id' => $order->id],
+            ],
+        );
+
+        if ($payment->provider_payment_id) {
+            return $payment;
+        }
+
+        try {
+            $result = $this->gateways
+                ->gateway($provider)
+                ->createPayment(new CreatePaymentData(
+                    orderId: $order->id,
+                    userId: (string) $order->user_id,
+                    amount: $order->total,
+                    currency: $order->currency,
+                    provider: $provider,
+                    paymentMethodType: 'card',
+                    idempotencyKey: $key,
+                    paymentMethodId: $paymentMethodId,
+                ));
+        } catch (Throwable $exception) {
+            $payment->update([
+                'status' => PaymentStatus::FAILED->value,
+                'failed_at' => now(),
+                'failure_code' => 'gateway_error',
+                'failure_message' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
 
         $metadata = array_merge($payment->metadata ?? [], $result->raw);
         if ($result->clientSecret) {
             $metadata['client_secret'] = $result->clientSecret;
+        }
+        if ($result->checkoutUrl) {
+            $metadata['checkout_url'] = $result->checkoutUrl;
         }
 
         $payment->update([
@@ -55,15 +79,5 @@ class CheckoutService
         ]);
 
         return $payment->fresh();
-    }
-
-    private function gateway(string $provider): PaymentGatewayInterface
-    {
-        return match ($provider) {
-            PaymentProvider::STRIPE->value => app(\App\Domains\Payments\Gateways\Stripe\StripePaymentGateway::class),
-            PaymentProvider::PAYPAL->value => app(\App\Domains\Payments\Gateways\PayPal\PayPalPaymentGateway::class),
-            PaymentProvider::MANUAL->value => app(\App\Domains\Payments\Gateways\PayPal\PayPalPaymentGateway::class),
-            default => throw new \App\Domains\Payments\Exceptions\InvalidPaymentProviderException("Unknown provider: {$provider}"),
-        };
     }
 }

@@ -23,6 +23,12 @@ class DatabaseSeeder extends Seeder
             AutomotiveAssessmentSeeder::class,
             // Demo course + users for local dev only:
             // php artisan db:seed --class=ExampleCourseSeeder
+            // Public demo bootcamps and their authored curriculum/schedules.
+            ExampleBootcampsSeeder::class,
+            // One active login per role, plus three published demo courses
+            // authored by the demo instructor and enrolled for the demo student.
+            DemoAccountsSeeder::class,
+            DemoCoursesSeeder::class,
             // Daily challenge definitions (idempotent, action-driven board).
             DailyChallengeSeeder::class,
         ]);

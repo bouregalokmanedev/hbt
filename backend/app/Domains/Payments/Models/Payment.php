@@ -5,6 +5,7 @@ namespace App\Domains\Payments\Models;
 use App\Domains\Payments\Enums\PaymentMethodType;
 use App\Domains\Payments\Enums\PaymentProvider;
 use App\Domains\Payments\Enums\PaymentStatus;
+use App\Domains\Payments\Enums\TransactionType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -55,9 +56,28 @@ class Payment extends Model
         return $this->hasMany(PaymentTransaction::class);
     }
 
+    public function refundedAmount(): int
+    {
+        return (int) $this->transactions()
+            ->whereIn('type', [
+                TransactionType::REFUND->value,
+                TransactionType::PARTIAL_REFUND->value,
+            ])
+            ->where('status', 'succeeded')
+            ->sum('amount');
+    }
+
+    public function refundableAmount(): int
+    {
+        return max(0, (int) $this->amount - $this->refundedAmount());
+    }
+
     public function canBeRefunded(): bool
     {
-        return $this->status === PaymentStatus::SUCCEEDED;
+        return in_array($this->status, [
+            PaymentStatus::SUCCEEDED,
+            PaymentStatus::PARTIALLY_REFUNDED,
+        ], true) && $this->refundableAmount() > 0;
     }
 
     public function canBeCancelled(): bool

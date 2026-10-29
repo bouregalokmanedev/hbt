@@ -373,6 +373,7 @@ export interface InstructorAssessment {
     is_required?: boolean;
     questions?: Array<{
         question_id: string;
+        question?: string;
         points: number;
         competency_id?: string | null;
     }>;

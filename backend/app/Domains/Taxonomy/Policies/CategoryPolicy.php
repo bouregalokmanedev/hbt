@@ -68,18 +68,4 @@ class CategoryPolicy
 ): bool {
     return $user->hasRole('Admin');
 }
-
-    public function destroy(
-    Category $category,
-    DeleteCategoryAction $action
-): JsonResponse {
-
-    $this->authorize('delete', $category);
-
-    $action->execute($category->id);
-
-    return response()->json([
-        'message' => 'Category deleted.',
-    ]);
-}
 }

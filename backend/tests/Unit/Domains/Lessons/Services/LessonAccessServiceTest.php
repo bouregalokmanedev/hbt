@@ -9,6 +9,7 @@ use App\Enums\SectionStatus;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\LessonProgress;
 use App\Models\Section;
 use App\Models\User;
 
@@ -142,4 +143,44 @@ it('denies a lesson in an unpublished course', function () {
             $this->lesson
         )
     )->toBeFalse();
+});
+
+it('unlocks the next lesson only after the previous one is complete', function () {
+    Enrollment::factory()->create([
+        'user_id' => $this->user->id,
+        'course_id' => $this->course->id,
+        'status' => EnrollmentStatus::ACTIVE,
+    ]);
+
+    $next = Lesson::factory()->create([
+        'section_id' => $this->section->id,
+        'status' => LessonStatus::PUBLISHED,
+        'position' => 2,
+    ]);
+
+    expect($this->service->canAccess($this->user, $next))->toBeFalse();
+
+    LessonProgress::factory()->completed()->create([
+        'user_id' => $this->user->id,
+        'lesson_id' => $this->lesson->id,
+    ]);
+
+    expect($this->service->canAccess($this->user, $next))->toBeTrue();
+});
+
+it('lets a completed enrollment review every lesson even with legacy gaps', function () {
+    Enrollment::factory()->create([
+        'user_id' => $this->user->id,
+        'course_id' => $this->course->id,
+        'status' => EnrollmentStatus::COMPLETED,
+    ]);
+
+    $next = Lesson::factory()->create([
+        'section_id' => $this->section->id,
+        'status' => LessonStatus::PUBLISHED,
+        'position' => 2,
+    ]);
+
+    // No LessonProgress rows at all: the enrollment is the authority.
+    expect($this->service->canAccess($this->user, $next))->toBeTrue();
 });

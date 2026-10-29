@@ -16,72 +16,124 @@ use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Section;
 use App\Models\User;
+use Illuminate\Support\Collection;
 
 final class CourseGradeService
 {
+    public function __construct(
+        private readonly CoursePassService $coursePass,
+    ) {
+    }
+
     /**
      * @return array<string, mixed>
      */
     public function forStudent(Course $course, User $user): array
     {
+        return $this->forUsers($course, collect([$user]))[(int) $user->id];
+    }
+
+    /**
+     * Grade many learners with a fixed number of queries.
+     *
+     * @param  iterable<User>  $users
+     * @return array<int, array<string, mixed>> Keyed by user id.
+     */
+    public function forUsers(Course $course, iterable $users): array
+    {
+        $userCollection = collect($users)->unique('id')->values();
+
+        if ($userCollection->isEmpty()) {
+            return [];
+        }
+
         $weights = (array) config('lms.gradebook.weights', []);
         $threshold = (int) config('lms.gradebook.pass_threshold', 70);
 
-        $components = [];
+        $lessonData = $this->lessonData($course, $userCollection);
+        $assessmentData = $this->assessmentData($course, $userCollection);
+        $practicalData = $this->practicalData($course, $userCollection);
 
-        $lessons = $this->lessonComponent($course, $user);
-        if ($lessons['total'] > 0) {
-            $lessons['weight'] = (int) ($weights['lessons'] ?? 0);
-            $components['lessons'] = $lessons;
-        }
+        $coursePass = $this->coursePass->evaluateForUsers($course, $userCollection);
 
-        $assessments = $this->assessmentComponent($course, $user);
-        if ($assessments['total'] > 0) {
-            $assessments['weight'] = (int) ($weights['assessments'] ?? 0);
-            $components['assessments'] = $assessments;
-        }
-
-        $practicals = $this->practicalComponent($course, $user);
-        if ($practicals['total'] > 0) {
-            $practicals['weight'] = (int) ($weights['practicals'] ?? 0);
-            $components['practicals'] = $practicals;
-        }
-
-        $weightTotal = array_sum(array_column($components, 'weight'));
-        $weighted = 0.0;
-
-        foreach ($components as $key => $component) {
-            $share = $weightTotal > 0 ? $component['weight'] / $weightTotal : 0;
-            $components[$key]['weight_percent'] = (int) round($share * 100);
-            $weighted += $component['score'] * $share;
-        }
-
-        $score = (int) round($weighted);
-        $lessonsPassed = ! isset($components['lessons']) || $components['lessons']['passed'];
-        $requiredPassed = collect($components)
-            ->flatMap(fn ($component) => $component['items'])
-            ->filter(fn ($item) => $item['required'])
-            ->every(fn ($item) => $item['passed']);
-
-        $enrollment = Enrollment::query()
-            ->where('user_id', $user->id)
+        $enrollmentStatus = Enrollment::query()
             ->where('course_id', $course->id)
+            ->whereIn('user_id', $userCollection->pluck('id'))
             ->latest('created_at')
-            ->first();
+            ->get()
+            ->unique('user_id')
+            ->keyBy('user_id');
 
-        return [
-            'course_id' => $course->id,
-            'course_title' => $course->title,
-            'user_id' => $user->id,
-            'components' => array_values($components),
-            'overall_score' => $score,
-            'letter_grade' => $this->letter($score),
-            'pass_threshold' => $threshold,
-            'required_passed' => $requiredPassed,
-            'passed' => $components !== [] && $lessonsPassed && $requiredPassed && $score >= $threshold,
-            'enrollment_status' => $enrollment?->status?->value,
-            'completed_at' => $enrollment?->completed_at?->toISOString(),
-        ];
+        return $userCollection
+            ->mapWithKeys(function (User $user) use (
+                $course,
+                $weights,
+                $threshold,
+                $lessonData,
+                $assessmentData,
+                $practicalData,
+                $coursePass,
+                $enrollmentStatus,
+            ): array {
+                $components = [];
+
+                if ($lessonData['total'] > 0) {
+                    $lessons = $this->lessonComponent($lessonData, $user);
+                    $lessons['weight'] = (int) ($weights['lessons'] ?? 0);
+                    $components['lessons'] = $lessons;
+                }
+
+                if ($assessmentData['assessments']->isNotEmpty()) {
+                    $assessments = $this->assessmentComponent($assessmentData, $user);
+                    $assessments['weight'] = (int) ($weights['assessments'] ?? 0);
+                    $components['assessments'] = $assessments;
+                }
+
+                if ($practicalData['assignments']->isNotEmpty()) {
+                    $practicals = $this->practicalComponent($practicalData, $user);
+                    $practicals['weight'] = (int) ($weights['practicals'] ?? 0);
+                    $components['practicals'] = $practicals;
+                }
+
+                $weightTotal = array_sum(array_column($components, 'weight'));
+                $weighted = 0.0;
+
+                foreach ($components as $key => $component) {
+                    $share = $weightTotal > 0 ? $component['weight'] / $weightTotal : 0;
+                    $components[$key]['weight_percent'] = (int) round($share * 100);
+                    $weighted += $component['score'] * $share;
+                }
+
+                $score = (int) round($weighted);
+                $lessonsPassed = ! isset($components['lessons']) || $components['lessons']['passed'];
+                $requiredPassed = collect($components)
+                    ->flatMap(fn ($component) => $component['items'])
+                    ->filter(fn ($item) => $item['required'])
+                    ->every(fn ($item) => $item['passed']);
+
+                $pass = $coursePass[(int) $user->id] ?? null;
+                $enrollment = $enrollmentStatus->get($user->id);
+
+                return [
+                    (int) $user->id => [
+                        'course_id' => $course->id,
+                        'course_title' => $course->title,
+                        'user_id' => $user->id,
+                        'components' => array_values($components),
+                        'overall_score' => $score,
+                        'letter_grade' => $this->letter($score),
+                        'pass_threshold' => $threshold,
+                        'required_passed' => $requiredPassed,
+                        'passed' => $components !== [] && $lessonsPassed && $requiredPassed && $score >= $threshold,
+                        'course_passed' => (bool) ($pass['passed'] ?? false),
+                        'certificate_ready' => (bool) ($pass['certificate_ready'] ?? false),
+                        'requirements' => $pass['requirements'] ?? [],
+                        'enrollment_status' => $enrollment?->status?->value,
+                        'completed_at' => $enrollment?->completed_at?->toISOString(),
+                    ],
+                ];
+            })
+            ->all();
     }
 
     /**
@@ -89,12 +141,22 @@ final class CourseGradeService
      */
     public function roster(Course $course): array
     {
-        return Enrollment::query()
+        $enrollments = Enrollment::query()
             ->where('course_id', $course->id)
             ->whereIn('status', ['active', 'completed'])
             ->with('user')
             ->orderBy('created_at')
-            ->get()
+            ->get();
+
+        $users = $enrollments
+            ->pluck('user')
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        $grades = $this->forUsers($course, $users);
+
+        return $enrollments
             ->map(fn (Enrollment $enrollment) => [
                 'enrollment_id' => $enrollment->id,
                 'enrollment_status' => $enrollment->status->value,
@@ -103,16 +165,17 @@ final class CourseGradeService
                     'name' => $enrollment->user->full_name,
                     'email' => $enrollment->user->email,
                 ],
-                'grade' => $this->forStudent($course, $enrollment->user),
+                'grade' => $grades[(int) $enrollment->user_id] ?? null,
             ])
             ->values()
             ->all();
     }
 
     /**
-     * @return array<string, mixed>
+     * @param  Collection<int, User>  $users
+     * @return array{total: int, completed: Collection<int, int>}
      */
-    private function lessonComponent(Course $course, User $user): array
+    private function lessonData(Course $course, Collection $users): array
     {
         $sectionIds = Section::query()
             ->where('course_id', $course->id)
@@ -122,17 +185,84 @@ final class CourseGradeService
         $lessons = Lesson::query()
             ->whereIn('section_id', $sectionIds)
             ->where('status', LessonStatus::PUBLISHED->value)
-            ->get(['id', 'title']);
+            ->get(['id']);
 
-        $completedIds = LessonProgress::query()
-            ->where('user_id', $user->id)
+        $completed = LessonProgress::query()
+            ->whereIn('user_id', $users->pluck('id'))
             ->whereIn('lesson_id', $lessons->pluck('id'))
             ->whereNotNull('completed_at')
-            ->pluck('lesson_id')
-            ->all();
+            ->get(['user_id'])
+            ->groupBy('user_id')
+            ->map(fn (Collection $rows) => $rows->count());
 
-        $total = $lessons->count();
-        $completed = count($completedIds);
+        return [
+            'total' => $lessons->count(),
+            'completed' => $completed,
+        ];
+    }
+
+    /**
+     * @param  Collection<int, User>  $users
+     * @return array{assessments: Collection<int, Assessment>, results: Collection<int, Collection<string, AssessmentResult>>}
+     */
+    private function assessmentData(Course $course, Collection $users): array
+    {
+        $assessments = Assessment::query()
+            ->where('course_id', $course->id)
+            ->where('status', AssessmentStatus::PUBLISHED->value)
+            ->get(['id', 'title', 'is_required', 'minimum_score']);
+
+        $results = AssessmentResult::query()
+            ->whereIn('user_id', $users->pluck('id'))
+            ->whereIn('assessment_id', $assessments->pluck('id'))
+            ->orderByDesc('score')
+            ->get()
+            ->groupBy('user_id')
+            ->map(fn (Collection $rows) => $rows->unique('assessment_id')->keyBy('assessment_id'));
+
+        return [
+            'assessments' => $assessments,
+            'results' => $results,
+        ];
+    }
+
+    /**
+     * @param  Collection<int, User>  $users
+     * @return array{assignments: Collection<int, CourseDiagnosticScenario>, progress: Collection<int, Collection<string, CourseDiagnosticProgress>>}
+     */
+    private function practicalData(Course $course, Collection $users): array
+    {
+        $assignments = CourseDiagnosticScenario::query()
+            ->where('course_id', $course->id)
+            ->with('scenario')
+            ->orderBy('position')
+            ->get()
+            ->filter(fn (CourseDiagnosticScenario $assignment) => $assignment->scenario !== null
+                && $assignment->scenario->status === DiagnosticScenarioStatus::PUBLISHED)
+            ->values();
+
+        $progress = CourseDiagnosticProgress::query()
+            ->where('course_id', $course->id)
+            ->whereIn('user_id', $users->pluck('id'))
+            ->whereIn('diagnostic_scenario_id', $assignments->pluck('diagnostic_scenario_id'))
+            ->get()
+            ->groupBy('user_id')
+            ->map(fn (Collection $rows) => $rows->keyBy('diagnostic_scenario_id'));
+
+        return [
+            'assignments' => $assignments,
+            'progress' => $progress,
+        ];
+    }
+
+    /**
+     * @param  array{total: int, completed: Collection<int, int>}  $data
+     * @return array<string, mixed>
+     */
+    private function lessonComponent(array $data, User $user): array
+    {
+        $total = $data['total'];
+        $completed = (int) ($data['completed']->get($user->id) ?? 0);
         $score = $total > 0 ? (int) round($completed / $total * 100) : 0;
 
         return [
@@ -148,27 +278,14 @@ final class CourseGradeService
     }
 
     /**
+     * @param  array{assessments: Collection<int, Assessment>, results: Collection<int, Collection<string, AssessmentResult>>}  $data
      * @return array<string, mixed>
      */
-    private function assessmentComponent(Course $course, User $user): array
+    private function assessmentComponent(array $data, User $user): array
     {
-        $assessments = Assessment::query()
-            ->where('course_id', $course->id)
-            ->where('status', AssessmentStatus::PUBLISHED->value)
-            ->get(['id', 'title', 'is_required', 'minimum_score']);
+        $results = $data['results']->get($user->id, collect());
 
-        if ($assessments->isEmpty()) {
-            return $this->emptyComponent('assessments', 'Assessments');
-        }
-
-        $results = AssessmentResult::query()
-            ->where('user_id', $user->id)
-            ->whereIn('assessment_id', $assessments->pluck('id'))
-            ->orderByDesc('score')
-            ->get()
-            ->keyBy('assessment_id');
-
-        $items = $assessments->map(function (Assessment $assessment) use ($results) {
+        $items = $data['assessments']->map(function (Assessment $assessment) use ($results) {
             $result = $results->get($assessment->id);
             $score = $result !== null ? (int) round((float) $result->score) : 0;
 
@@ -196,30 +313,14 @@ final class CourseGradeService
     }
 
     /**
+     * @param  array{assignments: Collection<int, CourseDiagnosticScenario>, progress: Collection<int, Collection<string, CourseDiagnosticProgress>>}  $data
      * @return array<string, mixed>
      */
-    private function practicalComponent(Course $course, User $user): array
+    private function practicalComponent(array $data, User $user): array
     {
-        $assignments = CourseDiagnosticScenario::query()
-            ->where('course_id', $course->id)
-            ->with('scenario')
-            ->orderBy('position')
-            ->get()
-            ->filter(fn (CourseDiagnosticScenario $assignment) => $assignment->scenario !== null
-                && $assignment->scenario->status === DiagnosticScenarioStatus::PUBLISHED);
+        $progress = $data['progress']->get($user->id, collect());
 
-        if ($assignments->isEmpty()) {
-            return $this->emptyComponent('practicals', 'Practical assessments');
-        }
-
-        $progress = CourseDiagnosticProgress::query()
-            ->where('course_id', $course->id)
-            ->where('user_id', $user->id)
-            ->whereIn('diagnostic_scenario_id', $assignments->pluck('diagnostic_scenario_id'))
-            ->get()
-            ->keyBy('diagnostic_scenario_id');
-
-        $items = $assignments->map(function (CourseDiagnosticScenario $assignment) use ($progress) {
+        $items = $data['assignments']->map(function (CourseDiagnosticScenario $assignment) use ($progress) {
             $row = $progress->get($assignment->diagnostic_scenario_id);
             $minimum = (int) ($assignment->min_score ?? $assignment->scenario->passing_score ?? 70);
             $score = $row !== null ? (int) $row->best_score : 0;
@@ -245,23 +346,6 @@ final class CourseGradeService
             'passed' => $items->every(fn ($item) => $item['passed']),
             'required' => $items->contains('required', true),
             'items' => $items->all(),
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function emptyComponent(string $key, string $label): array
-    {
-        return [
-            'key' => $key,
-            'label' => $label,
-            'score' => 0,
-            'completed' => 0,
-            'total' => 0,
-            'passed' => false,
-            'required' => false,
-            'items' => [],
         ];
     }
 

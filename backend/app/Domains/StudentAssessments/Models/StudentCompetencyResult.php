@@ -2,6 +2,7 @@
 
 namespace App\Domains\StudentAssessments\Models;
 
+use App\Domains\Assessments\Models\Competency;
 use App\Domains\StudentAssessments\Enums\ProficiencyLevel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,11 @@ final class StudentCompetencyResult extends Model
             'proficiency_level' => ProficiencyLevel::class,
             'evidence_count' => 'integer',
         ];
+    }
+
+    public function competency(): BelongsTo
+    {
+        return $this->belongsTo(Competency::class);
     }
 
     public function attempt(): BelongsTo

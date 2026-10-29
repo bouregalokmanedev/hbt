@@ -22,6 +22,8 @@ final class SubmitQuizAttemptAction
         QuizAttempt $attempt,
         SubmitQuizAttemptData $data,
     ): QuizAttempt {
+        $attempt = $attempt->fresh() ?? $attempt;
+
         $attempt->load([
             'quiz.questions.options',
         ]);
@@ -76,7 +78,40 @@ final class SubmitQuizAttemptAction
             );
         }
 
-        return DB::transaction(function () use ($attempt, $data) {
+        $result = DB::transaction(function () use ($attempt, $data) {
+            /*
+             * A double-click sends two requests that both passed the checks
+             * above before either committed. Claim the attempt row and
+             * re-check under the lock so only the first request grades it and
+             * awards XP; the second fails without creating duplicate answers.
+             */
+            $attempt = QuizAttempt::query()
+                ->whereKey($attempt->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($attempt->status === QuizAttemptStatus::SUBMITTED) {
+                throw new RuntimeException(
+                    'This quiz attempt has already been submitted.'
+                );
+            }
+
+            if ($attempt->status === QuizAttemptStatus::EXPIRED) {
+                throw new RuntimeException(
+                    'This quiz attempt has expired.'
+                );
+            }
+
+            if ($attempt->status !== QuizAttemptStatus::IN_PROGRESS) {
+                throw new RuntimeException(
+                    'This quiz attempt cannot be submitted.'
+                );
+            }
+
+            $attempt->load([
+                'quiz.questions.options',
+            ]);
+
             $score = 0;
             $totalPoints = 0;
 
@@ -174,8 +209,22 @@ foreach ($submittedOptionIds as $optionId) {
             ]);
 
             if ($passed) {
-                app(StudentProgressionService::class)->award($attempt->user, 'quiz_passed', 20, 35, "quiz-attempt:{$attempt->id}", ['label' => 'Quiz passed']);
-                app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($attempt->user, 'quiz_complete', ['title' => $attempt->quiz->title ?? 'Quiz', 'score' => $percentage]);
+                /*
+                 * Award XP for the first pass only. Replaying a passed quiz
+                 * must not become an XP farm.
+                 */
+                $alreadyPassed = QuizAttempt::query()
+                    ->where('quiz_id', $attempt->quiz_id)
+                    ->where('user_id', $attempt->user_id)
+                    ->where('id', '!=', $attempt->id)
+                    ->where('status', QuizAttemptStatus::SUBMITTED->value)
+                    ->where('passed', true)
+                    ->exists();
+
+                if (! $alreadyPassed) {
+                    app(StudentProgressionService::class)->award($attempt->user, 'quiz_passed', 20, 35, "quiz-passed:{$attempt->quiz_id}:{$attempt->user_id}", ['label' => 'Quiz passed']);
+                    app(\App\Domains\Challenges\Services\DailyChallengeService::class)->trackAction($attempt->user, 'quiz_complete', ['title' => $attempt->quiz->title ?? 'Quiz', 'score' => $percentage]);
+                }
             }
 
             return $attempt->fresh([
@@ -183,6 +232,20 @@ foreach ($submittedOptionIds as $optionId) {
                 'answers.selectedOptions',
             ]);
         });
+
+        /*
+         * A required quiz can be the last outstanding course requirement.
+         * Re-evaluate the course now so completion/certificates do not wait
+         * for an unrelated lesson event.
+         */
+        $course = $attempt->quiz?->section?->course;
+
+        if ($result->passed && $course !== null) {
+            app(\App\Domains\Courses\Services\CourseProgressService::class)
+                ->sync($attempt->user, $course);
+        }
+
+        return $result;
     }
 
     /**

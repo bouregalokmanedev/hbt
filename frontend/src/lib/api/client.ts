@@ -3,6 +3,7 @@ import { authStorage } from "@/lib/storage/auth-storage";
 import { ApiError } from "./errors";
 import { errorMessage } from "./safe-error";
 import type { ApiResponse } from "./types";
+import { handleUnauthorizedResponse } from "./unauthorized";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
@@ -56,6 +57,8 @@ export async function api<T>(
   }
 
   if (!response.ok) {
+    handleUnauthorizedResponse(response.status, Boolean(token));
+
     const errorPayload = payload as ApiResponse<T> | null;
 
     throw new ApiError(

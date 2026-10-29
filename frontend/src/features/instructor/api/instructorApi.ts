@@ -5,6 +5,10 @@ import { authStorage } from "@/lib/storage/auth-storage";
 import type {
     Course,
 } from "@/features/courses/types/course.types";
+import type {
+    InstructorAssignment,
+    InstructorAssignmentSubmission,
+} from "@/features/assignments/types/assignment.types";
 
 import type {
     AssessmentMode,
@@ -1006,5 +1010,86 @@ export async function getFlaggedAssessmentAttempts(
 ): Promise<FlaggedAttempt[]> {
     return api<FlaggedAttempt[]>(
         `/v1/instructor/courses/${courseId}/assessments/attempts/flagged`,
+    );
+}
+
+export interface InstructorAssignmentPayload {
+    title: string;
+    slug?: string;
+    instructions: string;
+    due_at: string | null;
+    max_points: number;
+    allow_late_submissions: boolean;
+}
+
+export async function getInstructorAssignments(
+    courseId: string,
+): Promise<InstructorAssignment[]> {
+    const assignments = await api<InstructorAssignment[]>(
+        `/v1/instructor/courses/${courseId}/assignments`,
+    );
+
+    return assignments ?? [];
+}
+
+export async function createInstructorAssignment(
+    courseId: string,
+    payload: InstructorAssignmentPayload,
+): Promise<InstructorAssignment> {
+    return api<InstructorAssignment>(
+        `/v1/instructor/courses/${courseId}/assignments`,
+        { method: "POST", body: payload },
+    );
+}
+
+export async function updateInstructorAssignment(
+    assignmentId: string,
+    payload: Partial<InstructorAssignmentPayload>,
+): Promise<InstructorAssignment> {
+    return api<InstructorAssignment>(
+        `/v1/instructor/assignments/${assignmentId}`,
+        { method: "PATCH", body: payload },
+    );
+}
+
+export async function deleteInstructorAssignment(
+    assignmentId: string,
+): Promise<void> {
+    await api<{ message: string }>(
+        `/v1/instructor/assignments/${assignmentId}`,
+        { method: "DELETE" },
+    );
+}
+
+export type InstructorAssignmentAction = "publish" | "unpublish";
+
+export async function runInstructorAssignmentAction(
+    assignmentId: string,
+    action: InstructorAssignmentAction,
+): Promise<InstructorAssignment> {
+    return api<InstructorAssignment>(
+        `/v1/instructor/assignments/${assignmentId}/${action}`,
+        { method: "POST" },
+    );
+}
+
+export async function getInstructorAssignmentSubmissions(
+    assignmentId: string,
+): Promise<InstructorAssignmentSubmission[]> {
+    const submissions = await api<InstructorAssignmentSubmission[]>(
+        `/v1/instructor/assignments/${assignmentId}/submissions`,
+    );
+
+    return submissions ?? [];
+}
+
+export async function gradeInstructorAssignmentSubmission(
+    assignmentId: string,
+    submissionId: string,
+    payload: { grade: number; feedback: string | null },
+): Promise<InstructorAssignmentSubmission> {
+    return api<InstructorAssignmentSubmission>(
+        `/v1/instructor/assignments/${assignmentId}/submissions/${submissionId}/grade`,
+        { method: "POST", body: payload },
     );
 }

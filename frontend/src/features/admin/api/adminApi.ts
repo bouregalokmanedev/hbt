@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { ApiError } from "@/lib/api/errors";
 import { api } from "@/lib/api/client";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { authStorage } from "@/lib/storage/auth-storage";
 
 import type {
@@ -68,7 +69,10 @@ async function getJson<T extends object>(path: string, query?: Query): Promise<T
         headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     });
     const payload = await response.json().catch(() => null) as T | { message?: string } | null;
-    if (!response.ok) throw new ApiError(payload && "message" in payload && payload.message ? payload.message : "Unable to load administration data.", response.status);
+    if (!response.ok) {
+        handleUnauthorizedResponse(response.status, Boolean(token));
+        throw new ApiError(payload && "message" in payload && payload.message ? payload.message : "Unable to load administration data.", response.status);
+    }
     return payload as T;
 }
 
@@ -108,7 +112,7 @@ export const adminApi = {
     enrollments: (query?: Query) => paginated<AdminEnrollment>("/v1/admin/enrollments", query),
     activity: (query?: Query) => paginated<AdminActivity>("/v1/admin/activity", query),
     broadcasts: (query?: Query) => paginated<AdminBroadcast>("/v1/admin/notifications/broadcasts", query),
-    analytics: (kind: "users" | "courses" | "enrollments" | "learning", query?: Query) => api<AnalyticsResponse>(`/v1/admin/analytics/${kind}${queryString(query)}`),
+    analytics: (kind: "overview" | "users" | "courses" | "enrollments" | "learning" | "assignments", query?: Query) => api<AnalyticsResponse>(`/v1/admin/analytics/${kind}${queryString(query)}`),
     crmStats: (range: CrmRange) => api<CrmStats>(`/v1/admin/crm/stats${queryString({ range })}`),
     systemHealth: () => api<SystemHealth>("/v1/admin/system/health"),
     systemStatistics: () => api<SystemStatistics>("/v1/admin/system/statistics"),

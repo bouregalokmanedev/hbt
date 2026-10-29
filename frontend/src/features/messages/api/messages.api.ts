@@ -1,5 +1,6 @@
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { authStorage } from "@/lib/storage/auth-storage";
 import { env } from "@/config/env";
 
@@ -132,6 +133,7 @@ async function postMultipart<T>(endpoint: string, form: FormData, fallbackError:
     });
     const payload = await response.json().catch(() => null) as { data?: T; message?: string } | null;
     if (!response.ok) {
+        handleUnauthorizedResponse(response.status, Boolean(token));
         throw new ApiError(payload?.message ?? fallbackError, response.status);
     }
     return (payload && typeof payload === "object" && "data" in payload ? payload.data : payload) as T;
@@ -178,6 +180,7 @@ export const messagesApi = {
         });
         const payload = await response.json().catch(() => null) as { data?: MessageItem[]; meta?: { has_more?: boolean }; message?: string } | null;
         if (!response.ok) {
+            handleUnauthorizedResponse(response.status, Boolean(token));
             throw new ApiError(payload?.message ?? "Unable to load messages.", response.status);
         }
         return { data: payload?.data ?? [], meta: { has_more: payload?.meta?.has_more ?? false } };

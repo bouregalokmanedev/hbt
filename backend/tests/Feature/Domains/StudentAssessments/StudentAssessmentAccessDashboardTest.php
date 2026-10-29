@@ -80,8 +80,14 @@ it('returns eligibility evidence with 422 for failing prerequisites', function (
     $user = User::factory()->create();
     $course = accessCourse($user);
     // Uncompleted lesson blocks eligibility while access passes.
-    $section = \App\Models\Section::factory()->create(['course_id' => $course->id]);
-    \App\Models\Lesson::factory()->create(['section_id' => $section->id]);
+    $section = \App\Models\Section::factory()->create([
+        'course_id' => $course->id,
+        'status' => \App\Enums\SectionStatus::PUBLISHED,
+    ]);
+    \App\Models\Lesson::factory()->create([
+        'section_id' => $section->id,
+        'status' => \App\Enums\LessonStatus::PUBLISHED,
+    ]);
     $assessment = accessAssessment($course);
 
     $this->actingAs($user)

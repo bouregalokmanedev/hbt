@@ -46,13 +46,18 @@ final class AdminSecurityQuery
 
         $lockedAccounts = 0;
         if (Schema::hasTable('authentication_logs')) {
-            $lockedAccounts = AuthenticationLog::query()
-                ->where('event', 'login.failed')
-                ->where('created_at', '>=', $weekAgo)
-                ->select('email')
-                ->groupBy('email')
-                ->havingRaw('COUNT(*) >= 5')
-                ->get()
+            // Count the grouped rows in the database. Counting the hydrated
+            // collection would load every locked email just to discard it.
+            $lockedAccounts = (int) DB::query()
+                ->fromSub(
+                    AuthenticationLog::query()
+                        ->select('email')
+                        ->where('event', 'login.failed')
+                        ->where('created_at', '>=', $weekAgo)
+                        ->groupBy('email')
+                        ->havingRaw('COUNT(*) >= 5'),
+                    'locked_accounts',
+                )
                 ->count();
         }
 

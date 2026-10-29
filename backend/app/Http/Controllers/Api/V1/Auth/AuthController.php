@@ -13,15 +13,19 @@ use App\Http\Requests\Api\V1\LoginRequest;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Actions\Auth\ForgotPasswordAction;
 use App\Http\Requests\Api\V1\ForgotPasswordRequest;
-use App\Http\Requests\Api\V1\resetPasswordRequest;
+use App\Http\Requests\Api\V1\ResetPasswordRequest;
 use App\Models\User;
 use App\Actions\Users\UpdateUserAction;
 use App\Http\Requests\Api\V1\Auth\UpdateProfileRequest;
 use Illuminate\Http\Request;
 use App\Services\Security\OtpService;
+use App\Services\Security\TwoFactorChallengeService;
+use App\Services\Security\TwoFactorDeliveryService;
 use App\Services\Session\SessionService;
 use App\Services\Security\AuthenticationLogService;
+use App\Enums\UserStatus;
 use App\DTOs\Auth\Results\AuthenticationResult;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -73,6 +77,8 @@ public function login(LoginRequest $request): JsonResponse
             'message' => $result->message,
             'requires_two_factor' => true,
             'code' => $code ?? 'requires_two_factor',
+            'challenge_token' => $result->data['challenge_token'] ?? null,
+            'expires_in' => $result->data['expires_in'] ?? null,
             'errors' => [],
         ], 423);
     }
@@ -101,26 +107,88 @@ public function login(LoginRequest $request): JsonResponse
     );
 }
 
-public function verifyTwoFactorLogin(Request $request, OtpService $otp, SessionService $sessions, AuthenticationLogService $logs): JsonResponse
+public function verifyTwoFactorLogin(Request $request, OtpService $otp, TwoFactorChallengeService $challenges, SessionService $sessions, AuthenticationLogService $logs): JsonResponse
 {
-    $data = $request->validate(['email' => ['required', 'email'], 'code' => ['required', 'digits:6']]);
+    $data = $request->validate([
+        'email' => ['required', 'email'],
+        'code' => ['required', 'digits:6'],
+        'challenge_token' => ['required', 'string', 'size:64'],
+    ]);
+
     $user = User::where('email', strtolower($data['email']))->first();
-    abort_unless($user && $user->studentSecuritySetting?->two_factor_enabled, 422, 'Two-factor authentication is not enabled for this account.');
-    abort_unless($otp->verify($user, 'two_factor_login', $data['code']), 422, 'That verification code is invalid or expired.');
+
+    /*
+     * A valid OTP must never be enough on its own. The challenge token is
+     * only issued after the password check and is bound to this account.
+     * All failure modes share one message to avoid account enumeration.
+     */
+    abort_unless(
+        $user
+        && $user->status === UserStatus::ACTIVE->value
+        && $user->hasVerifiedEmail()
+        && $user->studentSecuritySetting?->two_factor_enabled,
+        422,
+        'That verification code is invalid or expired.',
+    );
+
+    $challenge = $challenges->findActiveFor($user, $data['challenge_token']);
+
+    abort_unless(
+        $challenge,
+        422,
+        'Your verification session has expired. Please sign in again.',
+    );
+
+    $verified = DB::transaction(function () use ($challenges, $otp, $user, $challenge, $data): bool {
+        $locked = $challenges->lockActive($challenge);
+
+        if (! $locked) {
+            return false;
+        }
+
+        if (! $otp->verify($user, 'two_factor_login', $data['code'])) {
+            $challenges->recordFailure($locked);
+
+            return false;
+        }
+
+        return $challenges->consume($locked);
+    });
+
+    abort_unless($verified, 422, 'That verification code is invalid or expired.');
+
     $token = $user->createToken('auth_token');
     $sessions->create($user, $token->accessToken, $request);
     $logs->log('login.success', true, $user, $user->email, $request, metadata: ['mfa' => true]);
     return $this->success(new AuthResource(new AuthenticationResult($user, $token->plainTextToken)), 'Two-factor verification successful.');
 }
 
-public function resendTwoFactorLogin(Request $request, OtpService $otp, AuthenticationLogService $logs): JsonResponse
+public function resendTwoFactorLogin(Request $request, OtpService $otp, TwoFactorChallengeService $challenges, TwoFactorDeliveryService $delivery, AuthenticationLogService $logs): JsonResponse
 {
-    $data = $request->validate(['email' => ['required', 'email']]);
+    $data = $request->validate([
+        'email' => ['required', 'email'],
+        'challenge_token' => ['required', 'string', 'size:64'],
+    ]);
+
     $user = User::where('email', strtolower($data['email']))->first();
+    $challenge = $user
+        ? $challenges->findActiveFor($user, $data['challenge_token'])
+        : null;
     $security = $user?->studentSecuritySetting;
-    abort_unless($user && $security?->two_factor_enabled && $security->two_factor_verified_at, 422, 'Two-factor authentication is not enabled for this account.');
-    $otp = $otp->generate($user, 'two_factor_login');
-    app(\App\Services\Security\TwoFactorDeliveryService::class)->send($user, $otp['code'], $security->two_factor_method ?? 'email');
+
+    abort_unless(
+        $user
+        && $challenge
+        && $user->status === UserStatus::ACTIVE->value
+        && $user->hasVerifiedEmail()
+        && $security?->two_factor_enabled
+        && $security->two_factor_verified_at,
+        422,
+        'Your verification session has expired. Please sign in again.',
+    );
+
+    $generated = $otp->generate($user, 'two_factor_login');
+    $delivery->send($user, $generated['code'], $security->two_factor_method ?? 'email');
     $logs->log('login.mfa_challenge', true, $user, $user->email, $request);
     return $this->success(['resent' => true], 'A new six-digit code was sent.');
 }

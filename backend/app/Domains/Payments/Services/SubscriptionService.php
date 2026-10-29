@@ -2,20 +2,35 @@
 
 namespace App\Domains\Payments\Services;
 
-use App\Domains\Payments\Contracts\SubscriptionGatewayInterface;
 use App\Domains\Payments\DTOs\ChangeSubscriptionPlanData;
 use App\Domains\Payments\DTOs\CreateSubscriptionData;
 use App\Domains\Payments\Enums\SubscriptionStatus;
+use App\Domains\Payments\Exceptions\PaymentException;
+use App\Domains\Payments\Exceptions\PaymentProviderUnavailableException;
+use App\Domains\Payments\Models\Plan;
 use App\Domains\Payments\Models\Subscription;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Support\Str;
+use Throwable;
 
 class SubscriptionService
 {
+    public function __construct(
+        private PaymentGatewayRegistry $gateways,
+    ) {}
+
     public function create(User $user, string $planId, string $provider): Subscription
     {
-        $gateway = $this->gateway($provider);
-        $plan = \App\Domains\Payments\Models\Plan::findOrFail($planId);
+        $provider = strtolower(trim($provider));
+        $plan = Plan::findOrFail($planId);
+        $currency = Money::normalizeCurrency($plan->currency);
+
+        // Resolve and validate before creating anything, so a disabled or
+        // unsupported provider can never leave a fake pending subscription.
+        $this->gateways->assertCanProcess($provider, $currency);
+        $gateway = $this->gateways->subscriptionGateway($provider);
+
         $key = (string) Str::uuid();
 
         $subscription = Subscription::create([
@@ -23,7 +38,7 @@ class SubscriptionService
             'plan_id' => $plan->id,
             'provider' => $provider,
             'status' => $plan->trial_days > 0 ? SubscriptionStatus::TRIAL->value : SubscriptionStatus::PENDING->value,
-            'currency' => $plan->currency,
+            'currency' => $currency,
             'amount' => $plan->price,
             'billing_interval' => $plan->interval,
             'trial_starts_at' => $plan->trial_days > 0 ? now() : null,
@@ -38,7 +53,7 @@ class SubscriptionService
             'subscription_plan_id' => $plan->id,
             'quantity' => 1,
             'unit_amount' => $plan->price,
-            'currency' => $plan->currency,
+            'currency' => $currency,
         ]);
 
         try {
@@ -48,31 +63,53 @@ class SubscriptionService
                 provider: $provider,
                 idempotencyKey: $key,
             ));
+        } catch (Throwable $exception) {
             $subscription->update([
-                'provider_subscription_id' => $result->providerSubscriptionId,
-                'provider_customer_id' => $result->providerCustomerId,
-                'status' => $result->status === 'active' ? SubscriptionStatus::ACTIVE->value : SubscriptionStatus::PENDING->value,
-                'metadata' => array_merge($subscription->metadata ?? [], $result->raw),
+                'status' => SubscriptionStatus::CANCELLED->value,
+                'cancelled_at' => now(),
+                'ended_at' => now(),
+                'metadata' => array_merge($subscription->metadata ?? [], [
+                    'gateway_error' => $exception->getMessage(),
+                ]),
             ]);
-        } catch (\Throwable $e) {
-            $subscription->update(['metadata' => array_merge($subscription->metadata ?? [], ['gateway_error' => $e->getMessage()])]);
+
+            throw $this->gatewayFailure('start', $exception);
         }
+
+        $subscription->update([
+            'provider_subscription_id' => $result->providerSubscriptionId,
+            'provider_customer_id' => $result->providerCustomerId,
+            'status' => match ($result->status) {
+                'active' => SubscriptionStatus::ACTIVE->value,
+                'trialing' => SubscriptionStatus::TRIAL->value,
+                default => SubscriptionStatus::PENDING->value,
+            },
+            'metadata' => array_merge($subscription->metadata ?? [], $result->raw),
+        ]);
 
         return $subscription->fresh();
     }
 
     public function cancel(Subscription $subscription, bool $atPeriodEnd = true): Subscription
     {
-        if ($atPeriodEnd) {
-            $subscription->update(['cancel_at_period_end' => true]);
-            return $subscription;
+        $gateway = $this->gateways->subscriptionGateway((string) $subscription->provider);
+
+        try {
+            if ($subscription->provider_subscription_id) {
+                if ($atPeriodEnd) {
+                    $gateway->cancelAtPeriodEnd($subscription->provider_subscription_id);
+                } else {
+                    $gateway->cancel($subscription->provider_subscription_id);
+                }
+            }
+        } catch (Throwable $exception) {
+            throw $this->gatewayFailure('cancel', $exception);
         }
 
-        $gateway = $this->gateway($subscription->provider);
-        try {
-            $gateway->cancel($subscription->provider_subscription_id ?? $subscription->id);
-        } catch (\Throwable $e) {
-            \Log::warning('Subscription gateway cancel failed', ['id' => $subscription->id, 'error' => $e->getMessage()]);
+        if ($atPeriodEnd) {
+            $subscription->update(['cancel_at_period_end' => true]);
+
+            return $subscription->fresh();
         }
 
         $subscription->update([
@@ -81,22 +118,31 @@ class SubscriptionService
             'ended_at' => now(),
         ]);
 
-        return $subscription;
+        return $subscription->fresh();
     }
 
     public function changePlan(Subscription $subscription, string $newPlanId): Subscription
     {
-        $gateway = $this->gateway($subscription->provider);
-        $gateway->changePlan(new ChangeSubscriptionPlanData(
-            providerSubscriptionId: $subscription->provider_subscription_id ?? $subscription->id,
-            newPlanId: $newPlanId,
-        ));
+        $plan = Plan::findOrFail($newPlanId);
+        $currency = Money::normalizeCurrency($plan->currency);
+        $provider = (string) $subscription->provider;
 
-        $plan = \App\Domains\Payments\Models\Plan::findOrFail($newPlanId);
+        $this->gateways->assertCanProcess($provider, $currency);
+        $gateway = $this->gateways->subscriptionGateway($provider);
+
+        try {
+            $gateway->changePlan(new ChangeSubscriptionPlanData(
+                providerSubscriptionId: $subscription->provider_subscription_id ?? $subscription->id,
+                newPlanId: $newPlanId,
+            ));
+        } catch (Throwable $exception) {
+            throw $this->gatewayFailure('change', $exception);
+        }
+
         $subscription->update([
             'plan_id' => $plan->id,
             'amount' => $plan->price,
-            'currency' => $plan->currency,
+            'currency' => $currency,
         ]);
 
         $subscription->subscriptionItems()->delete();
@@ -104,7 +150,7 @@ class SubscriptionService
             'subscription_plan_id' => $plan->id,
             'quantity' => 1,
             'unit_amount' => $plan->price,
-            'currency' => $plan->currency,
+            'currency' => $currency,
         ]);
 
         return $subscription->fresh();
@@ -150,12 +196,16 @@ class SubscriptionService
         }
     }
 
-    private function gateway(string $provider): SubscriptionGatewayInterface
+    private function gatewayFailure(string $operation, Throwable $exception): PaymentException
     {
-        return match ($provider) {
-            'stripe' => app(\App\Domains\Payments\Gateways\Stripe\StripeSubscriptionGateway::class),
-            'paypal' => app(\App\Domains\Payments\Gateways\PayPal\PayPalSubscriptionGateway::class),
-            default => app(\App\Domains\Payments\Gateways\PayPal\PayPalSubscriptionGateway::class),
-        };
+        if ($exception instanceof PaymentException) {
+            return $exception;
+        }
+
+        return new PaymentProviderUnavailableException(
+            "Unable to {$operation} the subscription with the payment provider.",
+            0,
+            $exception,
+        );
     }
 }

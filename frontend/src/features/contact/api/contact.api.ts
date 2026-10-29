@@ -9,6 +9,9 @@ export interface ContactFormPayload {
     inquiry: string;
     subject: string;
     message: string;
+    /** Hidden honeypot — bots fill it, humans never see it. */
+    website?: string;
+    turnstileToken?: string | null;
 }
 
 /** UTM params from the landing URL, kept for lead attribution. */
@@ -44,6 +47,10 @@ export async function sendContactMessage(payload: ContactFormPayload): Promise<v
             utm_campaign: utm.utm_campaign,
             utm_term: utm.utm_term,
             utm_content: utm.utm_content,
+            ...(payload.website ? { website: payload.website } : {}),
+            ...(payload.turnstileToken
+                ? { turnstile_token: payload.turnstileToken }
+                : {}),
         },
     });
 }

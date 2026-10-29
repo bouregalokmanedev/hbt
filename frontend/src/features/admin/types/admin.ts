@@ -87,15 +87,59 @@ export interface AdminActivity {
     occurred_at: string | null;
 }
 
+export interface AnalyticsDelta {
+    current: number;
+    previous: number;
+    change: number;
+    change_percent: number;
+}
+
+export interface CourseAnalyticsRow {
+    course_id: string;
+    course_title: string;
+    learners_count: number;
+    average_progress: number;
+    completions_count: number;
+    completion_rate: number;
+    time_spent_seconds: number;
+}
+
+export interface AssignmentAnalyticsRow {
+    course_id: string;
+    course_title: string;
+    assignments_count: number;
+    published_count: number;
+    submissions_count: number;
+    pending_grading: number;
+    graded_count: number;
+    overdue_count: number;
+    average_grade: number;
+}
+
 export interface AnalyticsResponse {
     period?: { from: string; to: string };
+    previous_period?: { from: string; to: string };
     summary?: Record<string, number>;
+    comparison?: Record<string, AnalyticsDelta>;
     series?: Array<Record<string, string | number>>;
     created_series?: Array<Record<string, string | number>>;
     published_series?: Array<Record<string, string | number>>;
     enrollment_series?: Array<Record<string, string | number>>;
     completion_series?: Array<Record<string, string | number>>;
-    by_course?: Array<{ course_id: string; course_title: string; learners_count: number; average_progress: number; completions_count: number }>;
+    growth_series?: Array<{
+        date: string;
+        new_users: number;
+        new_enrollments: number;
+        completions: number;
+    }>;
+    engagement_series?: Array<{ date: string; active_learners: number }>;
+    submission_series?: Array<{ date: string; submissions: number }>;
+    grading_series?: Array<{ date: string; graded: number }>;
+    top_courses?: CourseAnalyticsRow[];
+    by_course?: CourseAnalyticsRow[];
+    assignment_by_course?: AssignmentAnalyticsRow[];
+    operations?: Record<string, number>;
+    generated_at?: string;
 }
 
 export type CrmRange = "week" | "month" | "6months" | "year" | "2years";

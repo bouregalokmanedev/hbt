@@ -14,14 +14,23 @@ class WebhookEvent extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'provider', 'event_id', 'event_type', 'payload', 'status',
+        'provider', 'event_id', 'event_type', 'payload', 'status', 'claimed_at',
         'processed_at', 'failed_at', 'attempts', 'error_message',
     ];
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_PROCESSING = 'processing';
+
+    public const STATUS_PROCESSED = 'processed';
+
+    public const STATUS_FAILED = 'failed';
 
     protected function casts(): array
     {
         return [
             'payload' => 'array',
+            'claimed_at' => 'datetime',
             'processed_at' => 'datetime',
             'failed_at' => 'datetime',
         ];
@@ -29,16 +38,22 @@ class WebhookEvent extends Model
 
     public function markProcessed(): void
     {
-        $this->update(['status' => 'processed', 'processed_at' => now()]);
+        self::query()->whereKey($this->getKey())->update([
+            'status' => self::STATUS_PROCESSED,
+            'processed_at' => now(),
+            'claimed_at' => null,
+            'failed_at' => null,
+            'error_message' => null,
+        ]);
     }
 
     public function markFailed(string $error): void
     {
-        $this->update([
-            'status' => 'failed',
+        self::query()->whereKey($this->getKey())->update([
+            'status' => self::STATUS_FAILED,
             'failed_at' => now(),
+            'claimed_at' => null,
             'error_message' => $error,
-            'attempts' => $this->attempts + 1,
         ]);
     }
 

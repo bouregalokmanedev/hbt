@@ -2,36 +2,58 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Domains\Assessments\Models\Assessment;
-use App\Domains\Assessments\Services\AssessmentEligibilityService;
+use App\Domains\StudentAssessments\Services\StudentAssessmentService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 final class AssessmentController extends Controller
 {
-    public function __construct(private readonly AssessmentEligibilityService $eligibility) {}
+    public function __construct(
+        private readonly StudentAssessmentService $studentAssessments,
+    ) {
+    }
 
-    public function index(): JsonResponse
+    /**
+     * List every published assessment the learner can see, together with
+     * eligibility and their own attempt history. The catalogue used to
+     * re-derive these fields here; now it reads the same service as the
+     * student dashboard so the two responses cannot drift.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $user = auth()->user();
-        $assessments = Assessment::query()
-            ->with('course:id,title')
-            ->where('status', 'published')
-            ->whereHas('course.enrollments', fn ($query) => $query->where('user_id', $user->id))
-            ->withCount('questions')
-            ->orderBy('published_at')
-            ->get()
-            ->map(fn (Assessment $assessment) => [
-                'id' => $assessment->id,
-                'title' => $assessment->title,
-                'description' => $assessment->description,
-                'course_title' => $assessment->course?->title,
-                'minimum_score' => $assessment->minimum_score,
-                'max_attempts' => $assessment->max_attempts,
-                'questions_count' => $assessment->questions_count,
-                'eligibility' => $this->eligibility->evaluate($assessment, $user),
-            ]);
+        $user = $request->user();
 
-        return response()->json(['data' => $assessments]);
+        $perPage = min(max((int) $request->integer('per_page', 50), 1), 100);
+        $page = max((int) $request->integer('page', 1), 1);
+
+        $all = $this->studentAssessments->listAvailable($user);
+        $total = $all->count();
+
+        $assessments = $all
+            ->slice(($page - 1) * $perPage, $perPage)
+            ->map(fn (array $item) => [
+                'id' => $item['assessment']->id,
+                'title' => $item['assessment']->title,
+                'description' => $item['assessment']->description,
+                'course_title' => $item['assessment']->course?->title,
+                'minimum_score' => $item['assessment']->minimum_score,
+                'max_attempts' => $item['assessment']->max_attempts,
+                'time_limit_minutes' => $item['assessment']->time_limit_minutes,
+                'questions_count' => $item['assessment']->questions_count,
+                'eligibility' => $item['eligibility'],
+                'attempt_history' => $item['attempt_history'],
+            ])
+            ->values();
+
+        return response()->json([
+            'data' => $assessments,
+            'meta' => [
+                'current_page' => $page,
+                'last_page' => max((int) ceil($total / $perPage), 1),
+                'per_page' => $perPage,
+                'total' => $total,
+            ],
+        ]);
     }
 }

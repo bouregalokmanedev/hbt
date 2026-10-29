@@ -22,6 +22,8 @@ import { Link } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
 
+import { usePageMeta } from "@/lib/page-meta";
+
 import { Footer } from "../landingpage/components/FooterSection";
 import { Navbar } from "./../../components/navigation/Navbar";
 import { StatsSection } from "./StatsSection";
@@ -51,6 +53,12 @@ import {
 
 export function CompanyPage() {
     const { t } = useTranslation();
+
+    usePageMeta({
+        title: `${t("companyPage.hero.titleA")} ${t("companyPage.hero.titleMid")} ${t("companyPage.hero.titleB")}`,
+        description: t("companyPage.hero.description"),
+        canonicalPath: "/company",
+    });
 
     const principles = (
         t("companyPage.principles.items", { returnObjects: true }) as Array<{

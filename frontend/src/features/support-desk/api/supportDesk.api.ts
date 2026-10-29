@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { authStorage } from "@/lib/storage/auth-storage";
 import { errorMessage } from "@/lib/api/safe-error";
 
@@ -249,6 +250,7 @@ async function rawDesk<T>(endpoint: string, init: RequestInit = {}, body?: unkno
     });
     const payload = (await response.json().catch(() => null)) as { message?: string } | null;
     if (!response.ok) {
+        handleUnauthorizedResponse(response.status, Boolean(token));
         throw new ApiError(errorMessage(payload?.message), response.status);
     }
     return payload as T;

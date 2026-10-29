@@ -16,7 +16,7 @@ class PaymentTransaction extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'payment_id', 'type', 'provider_transaction_id', 'amount', 'currency', 'status', 'metadata',
+        'idempotency_key', 'payment_id', 'type', 'provider_transaction_id', 'amount', 'currency', 'status', 'metadata',
     ];
 
     protected function casts(): array

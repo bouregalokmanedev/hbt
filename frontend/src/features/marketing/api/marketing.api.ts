@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { api } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { authStorage } from "@/lib/storage/auth-storage";
 
 export interface MarketingOverview {
@@ -240,6 +241,7 @@ async function raw<T>(endpoint: string, init: RequestInit = {}, body?: unknown):
     });
     const payload = (await response.json().catch(() => null)) as { message?: string } | null;
     if (!response.ok) {
+        handleUnauthorizedResponse(response.status, Boolean(token));
         throw new ApiError(
             (payload && typeof payload.message === "string" && payload.message) || "Request failed.",
             response.status,

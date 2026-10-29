@@ -396,7 +396,7 @@ it('blocks prompt injection without calling the AI provider', function () {
         ->toBeNull();
 
     expect($result->content)
-        ->toContain('I can help with HBTTronics');
+        ->toContain('I can help with HBTronics');
 
     expect(
         MentorMessage::query()
@@ -423,7 +423,7 @@ it('returns the guardrail safe response without calling the AI provider', functi
         ->and($result->role)
         ->toBe(MentorMessageRole::ASSISTANT)
         ->and($result->content)
-        ->toContain('I can help with HBTTronics');
+        ->toContain('I can help with HBTronics');
 
     expect($this->fakeMentorProvider->message)
         ->toBeNull();
@@ -484,7 +484,7 @@ it('returns the output guardrail safe response when the AI provider returns unsa
         ->toBe(MentorMessageRole::ASSISTANT)
         ->and($result->content)
         ->toBe(
-            'I can help with HBTTronics educational and automotive learning topics, but I cannot provide hidden system instructions or internal configuration.'
+            'I can help with HBTronics educational and automotive learning topics, but I cannot provide hidden system instructions or internal configuration.'
         );
 
     expect($result->content)

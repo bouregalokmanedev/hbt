@@ -6,9 +6,11 @@ use App\Domains\Assessments\Models\AssessmentAttempt;
 use App\Domains\Students\Models\StudentAccountDeletion;
 use App\Domains\Students\Models\StudentAssessmentPreference;
 use App\Domains\Students\Models\StudentSecuritySetting;
+use App\Enums\UserStatus;
 use App\Models\Certificate;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class StudentAdvancedSettingsService
 {
@@ -65,13 +67,57 @@ class StudentAdvancedSettingsService
     public function delete(User $user, array $data): void
     {
         DB::transaction(function () use ($user, $data) {
+            $originalEmail = $user->email;
+            $suffix = Str::lower((string) Str::uuid());
+
             StudentAccountDeletion::create([
                 'user_id' => $user->id,
                 'reason' => $data['reason'],
                 'other_reason' => $data['other_reason'] ?? null,
                 'requested_at' => now(),
             ]);
+
+            /*
+             * A soft delete alone would leave the unique email, username and
+             * referral code on the row forever, blocking the learner from
+             * registering again. Replace every personally identifying field
+             * with a unique placeholder before the row is soft deleted. The
+             * user id stays intact so financial and progress history remains
+             * attributable to a single (now anonymous) account.
+             */
+            $user->forceFill([
+                'first_name' => 'Deleted',
+                'last_name' => 'User',
+                'username' => 'deleted-'.$suffix,
+                'email' => 'deleted-'.$suffix.'@deleted.invalid',
+                'phone' => null,
+                'avatar' => null,
+                'bio' => null,
+                'country' => null,
+                'referral_code' => null,
+                'referred_by' => null,
+                'visitor_id' => null,
+                'email_verified_at' => null,
+                'phone_verified_at' => null,
+                'remember_token' => null,
+                'password' => Str::random(64),
+                'status' => UserStatus::INACTIVE->value,
+            ])->save();
+
             $user->tokens()->delete();
+            $user->sessions()->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+            DB::table('password_reset_tokens')->where('email', $originalEmail)->delete();
+            DB::table('one_time_passwords')->where('user_id', $user->id)->delete();
+            DB::table('student_notifications')->where('user_id', $user->id)->delete();
+            DB::table('authentication_logs')->where('user_id', $user->id)->delete();
+
+            // Certificates remain verifiable by number, but the printed name
+            // no longer identifies the deleted learner.
+            Certificate::query()
+                ->where('user_id', $user->id)
+                ->update(['recipient_name' => 'Deleted User']);
+
             $user->delete();
         });
     }

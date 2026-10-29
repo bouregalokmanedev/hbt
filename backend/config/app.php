@@ -127,7 +127,28 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173'),
 
-    // Default billing currency for checkout orders.
+    /*
+    |--------------------------------------------------------------------------
+    | Reverse proxy and host trust
+    |--------------------------------------------------------------------------
+    |
+    | Production runs behind a load balancer or reverse proxy. Only list
+    | proxies you control here; never use "*" in production. TRUSTED_HOSTS is
+    | a comma-separated list of host patterns (for example "hbtronics.dz").
+    |
+    */
+
+    'trusted_proxies' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('TRUSTED_PROXIES', '')),
+    ))),
+
+    'trusted_hosts' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('TRUSTED_HOSTS', '')),
+    ))),
+
+    // Default billing currency used only when a course/plan has no currency.
     // Stripe supports: USD, EUR, GBP, AED, SAR… (NOT DZD).
     'currency' => env('APP_CURRENCY', 'USD'),
 

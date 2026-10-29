@@ -33,6 +33,36 @@ it('returns a published lesson to draft when its content is updated', function (
         ->toBe('Updated content');
 });
 
+it('keeps a published lesson live when only its preview flag changes', function () {
+    $lesson = Lesson::factory()->create([
+        'status' => LessonStatus::PUBLISHED,
+        'title' => 'Original title',
+        'slug' => 'original-title',
+        'description' => null,
+        'content' => 'Original content',
+        'duration_minutes' => 30,
+        'is_preview' => false,
+        'position' => 1,
+    ]);
+
+    $updated = app(UpdateLessonAction::class)->execute(
+        $lesson,
+        [
+            'title' => 'Original title',
+            'slug' => 'original-title',
+            'description' => null,
+            'content' => 'Original content',
+            'duration_minutes' => 30,
+            'is_preview' => true,
+        ]
+    );
+
+    expect($updated->status)
+        ->toBe(LessonStatus::PUBLISHED)
+        ->and($updated->is_preview)
+        ->toBeTrue();
+});
+
 it('keeps a draft lesson as draft when updated', function () {
     $lesson = Lesson::factory()->create([
         'status' => LessonStatus::DRAFT,

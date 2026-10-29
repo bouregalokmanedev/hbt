@@ -72,7 +72,7 @@ class StudentAdvancedSettingsController extends Controller
             'security.account.deleted',
             $request->user(),
             [],
-            ['email' => $request->user()->email],
+            ['user_uuid' => $request->user()->uuid, 'reason' => $request->validated('reason')],
         );
         $this->service->delete($request->user(), $request->validated());
         return response()->json(['message' => 'Your account has been deleted. We are sorry to see you go.']);

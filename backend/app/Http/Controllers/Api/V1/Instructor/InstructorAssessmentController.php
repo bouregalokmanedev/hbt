@@ -41,7 +41,19 @@ final class InstructorAssessmentController extends Controller
             abort(403);
         }
 
-        $assessments = Assessment::with(['course:id,title'])
+        /*
+         * The authoring workspace edits the attached question and
+         * competency sets, so the list must hydrate them. Without these
+         * relations the editor starts empty and the next sync would wipe
+         * the existing attachments.
+         */
+        $assessments = Assessment::with([
+            'course:id,title',
+            'section:id,title,course_id',
+            'lesson:id,title,section_id',
+            'competencies',
+            'questions.options',
+        ])
             ->where('course_id', $course->id)
             ->when($request->input('status'), fn ($q, $s) => $q->where('status', $s))
             ->when($request->input('search'), fn ($q, $s) => $q->where('title', 'like', "%{$s}%"))

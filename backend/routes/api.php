@@ -68,6 +68,7 @@ use App\Domains\Messaging\Controllers\StaffHubController;
 use App\Http\Controllers\Api\V1\LocaleController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ConfigController;
+use App\Http\Controllers\HealthController;
 use App\Domains\Payments\Controllers\SubscriptionController;
 use App\Domains\Payments\Http\Controllers\BillingController;
 use App\Domains\Payments\Http\Controllers\CheckoutController;
@@ -83,7 +84,10 @@ use App\Domains\Simulator\Controllers\AdminSimulatorActivityController;
 Route::prefix('v1')->group(function () {
 
     // Public contact form + public config/plans so landing pages work without login.
-    Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:10,1');
+    Route::get('/health', HealthController::class)->name('health');
+    Route::post('/contact', [ContactController::class, 'store'])
+        ->middleware(['throttle:10,1', 'bot']);
+    Route::get('/config/bot-protection', [ConfigController::class, 'botProtection']);
     // Public ticket status lookup (ticket UUID + the address it was filed with).
     Route::get('/support/tickets/{ticket}/status', [\App\Domains\Support\Controllers\TicketController::class, 'status'])
         ->middleware('throttle:10,1');
@@ -119,18 +123,18 @@ Route::prefix('v1')->group(function () {
      Route::post(
             '/register',
             [AuthController::class, 'register']
-        )->middleware('throttle:auth');
+        )->middleware(['throttle:auth', 'bot']);
 
 Route::post(
     '/login',
     [AuthController::class, 'login']
-)->middleware('throttle:auth');
+)->middleware(['throttle:auth', 'bot']);
 Route::post('/two-factor/login/verify', [AuthController::class, 'verifyTwoFactorLogin'])->middleware('throttle:two-factor-verify');
 Route::post('/two-factor/login/resend', [AuthController::class, 'resendTwoFactorLogin'])->middleware('throttle:5,1');
 Route::post(
     '/forgot-password',
     [AuthController::class, 'forgotPassword']
-)->middleware('throttle:password-reset');
+)->middleware(['throttle:password-reset', 'bot']);
 Route::post(
     '/reset-password',
     [AuthController::class, 'resetPassword']
@@ -215,6 +219,7 @@ Route::post('/phone/otp/verify', [PhoneVerificationController::class, 'verify'])
                 Route::get('courses', [AdminAnalyticsController::class, 'courses']);
                 Route::get('enrollments', [AdminAnalyticsController::class, 'enrollments']);
                 Route::get('learning', [AdminAnalyticsController::class, 'learning']);
+                Route::get('assignments', [AdminAnalyticsController::class, 'assignments']);
             });
 
             Route::get('crm/stats', [AdminCrmController::class, 'stats']);
@@ -458,6 +463,11 @@ Route::get('/certificates', [CertificateController::class, 'index']);
         '/courses/{course}/gradebook',
         [\App\Http\Controllers\Api\V1\GradebookController::class, 'show']
     )->name('courses.gradebook');
+
+    Route::get(
+        '/courses/{course}/journey',
+        [\App\Http\Controllers\Api\V1\CourseJourneyController::class, 'show']
+    )->name('courses.journey');
 
     Route::post(
         '/enrollments',
@@ -729,6 +739,105 @@ Route::middleware([
             'reorderLesson',
         ])->name('instructor.lessons.reorder');
 
+        /*
+         * Bootcamps are authored and scheduled by the owning instructor.
+         * Student registrations are deliberately stored separately from
+         * course enrollments: they are lead records confirmed by the school,
+         * not LMS entitlements.
+         */
+        Route::get('/bootcamps', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'index',
+        ])->name('instructor.bootcamps.index');
+
+        Route::post('/bootcamps', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'store',
+        ])->name('instructor.bootcamps.store');
+
+        Route::get('/bootcamps/{bootcamp}', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'show',
+        ])->name('instructor.bootcamps.show');
+
+        Route::match(['put', 'patch'], '/bootcamps/{bootcamp}', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'update',
+        ])->name('instructor.bootcamps.update');
+
+        Route::delete('/bootcamps/{bootcamp}', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'destroy',
+        ])->name('instructor.bootcamps.destroy');
+
+        Route::post('/bootcamps/{bootcamp}/publish', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'publish',
+        ])->name('instructor.bootcamps.publish');
+
+        Route::post('/bootcamps/{bootcamp}/unpublish', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'unpublish',
+        ])->name('instructor.bootcamps.unpublish');
+
+        Route::post('/bootcamps/{bootcamp}/brochure', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'uploadBrochure',
+        ])->name('instructor.bootcamps.brochure');
+
+        Route::post('/bootcamps/{bootcamp}/media/{type}', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'uploadMedia',
+        ])->whereIn('type', [
+            'thumbnail',
+            'cover_image',
+            'preview_video',
+        ])->name('instructor.bootcamps.media.upload');
+
+        Route::delete('/bootcamps/{bootcamp}/media/{type}', [
+            \App\Domains\Bootcamps\Controllers\InstructorBootcampController::class,
+            'deleteMedia',
+        ])->whereIn('type', [
+            'thumbnail',
+            'cover_image',
+            'preview_video',
+        ])->name('instructor.bootcamps.media.destroy');
+
+        Route::get('/bootcamps/{bootcamp}/curriculum', [
+            \App\Domains\Bootcamps\Controllers\BootcampCurriculumController::class,
+            'show',
+        ])->name('instructor.bootcamps.curriculum');
+
+        Route::put('/bootcamps/{bootcamp}/curriculum', [
+            \App\Domains\Bootcamps\Controllers\BootcampCurriculumController::class,
+            'sync',
+        ])->name('instructor.bootcamps.curriculum.sync');
+
+        Route::post('/bootcamps/{bootcamp}/schedules', [
+            \App\Domains\Bootcamps\Controllers\BootcampScheduleController::class,
+            'store',
+        ])->name('instructor.bootcamps.schedules.store');
+
+        Route::patch('/bootcamps/{bootcamp}/schedules/{schedule}', [
+            \App\Domains\Bootcamps\Controllers\BootcampScheduleController::class,
+            'update',
+        ])->name('instructor.bootcamps.schedules.update');
+
+        Route::delete('/bootcamps/{bootcamp}/schedules/{schedule}', [
+            \App\Domains\Bootcamps\Controllers\BootcampScheduleController::class,
+            'destroy',
+        ])->name('instructor.bootcamps.schedules.destroy');
+
+        Route::get('/bootcamps/{bootcamp}/registrations', [
+            \App\Domains\Bootcamps\Controllers\BootcampRegistrationController::class,
+            'index',
+        ])->name('instructor.bootcamps.registrations.index');
+
+        Route::patch('/bootcamps/{bootcamp}/registrations/{registration}', [
+            \App\Domains\Bootcamps\Controllers\BootcampRegistrationController::class,
+            'updateStatus',
+        ])->name('instructor.bootcamps.registrations.update');
+
         Route::get('/courses/{course}/quizzes', [
             \App\Http\Controllers\Api\V1\Instructor\QuizController::class,
             'index',
@@ -922,6 +1031,51 @@ Route::post('/courses/{course}/assessments/attempts/{attempt}/regrade', [
     \App\Http\Controllers\Api\V1\Instructor\InstructorAssessmentController::class,
     'regrade',
 ])->name('instructor.courses.assessments.attempts.regrade');
+
+Route::get('/courses/{course}/assignments', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'index',
+])->name('instructor.assignments.index');
+
+Route::post('/courses/{course}/assignments', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'store',
+])->name('instructor.assignments.store');
+
+Route::get('/assignments/{assignment}', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'show',
+])->name('instructor.assignments.show');
+
+Route::patch('/assignments/{assignment}', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'update',
+])->name('instructor.assignments.update');
+
+Route::delete('/assignments/{assignment}', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'destroy',
+])->name('instructor.assignments.destroy');
+
+Route::post('/assignments/{assignment}/publish', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'publish',
+])->name('instructor.assignments.publish');
+
+Route::post('/assignments/{assignment}/unpublish', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'unpublish',
+])->name('instructor.assignments.unpublish');
+
+Route::get('/assignments/{assignment}/submissions', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'submissions',
+])->name('instructor.assignments.submissions.index');
+
+Route::post('/assignments/{assignment}/submissions/{submission}/grade', [
+    \App\Http\Controllers\Api\V1\Instructor\InstructorAssignmentController::class,
+    'grade',
+])->name('instructor.assignments.submissions.grade');
 
 Route::get('/revenue', [
     \App\Http\Controllers\Api\V1\Instructor\InstructorRevenueController::class,
@@ -1131,7 +1285,7 @@ Route::post(
 
 
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get(
         '/courses/{course}/progress',
         [CourseProgressController::class, 'show']
@@ -1187,6 +1341,52 @@ Route::prefix('v1')->group(function () {
         ]
     )->name('catalog.courses.show');
 
+    /*
+     * Public bootcamp catalog, calendar, brochure and registration.
+     * Registration is throttled and honeypot/Turnstile protected because it
+     * writes a lead-like record without requiring a learner account.
+     */
+    Route::get(
+        '/catalog/bootcamps/calendar',
+        [
+            \App\Domains\Bootcamps\Controllers\BootcampCatalogController::class,
+            'calendar',
+        ]
+    )->name('catalog.bootcamps.calendar');
+
+    Route::get(
+        '/catalog/bootcamps',
+        [
+            \App\Domains\Bootcamps\Controllers\BootcampCatalogController::class,
+            'index',
+        ]
+    )->name('catalog.bootcamps');
+
+    Route::get(
+        '/catalog/bootcamps/{bootcamp}',
+        [
+            \App\Domains\Bootcamps\Controllers\BootcampCatalogController::class,
+            'show',
+        ]
+    )->name('catalog.bootcamps.show');
+
+    Route::get(
+        '/bootcamps/{bootcamp}/brochure',
+        [
+            \App\Domains\Bootcamps\Controllers\BootcampCatalogController::class,
+            'brochure',
+        ]
+    )->name('bootcamps.brochure');
+
+    Route::post(
+        '/bootcamps/{bootcamp}/registrations',
+        [
+            \App\Domains\Bootcamps\Controllers\BootcampCatalogController::class,
+            'register',
+        ]
+    )->middleware(['throttle:10,1', 'bot'])
+        ->name('bootcamps.registrations.store');
+
     Route::get(
     '/media/{media}/stream',
     MediaStreamController::class
@@ -1195,12 +1395,12 @@ Route::prefix('v1')->group(function () {
 
 Route::middleware(['auth:sanctum', 'verified', 'role:Instructor|Admin|Super Admin'])
     ->post('/quizzes', [QuizController::class, 'store']);
-Route::middleware('auth:sanctum')
+Route::middleware(['auth:sanctum', 'verified'])
     ->get('/quizzes/{quiz}', [QuizController::class, 'show']);
 
 
 
-Route::middleware('auth:sanctum')
+Route::middleware(['auth:sanctum', 'verified'])
     ->prefix('mentor')
     ->group(function () {
         Route::get(
@@ -1250,11 +1450,31 @@ Route::get(
     });
 });
 
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->prefix('v1')->group(function () {
     Route::post('/mentor/practice-quiz', [\App\Domains\AI\Http\Controllers\MentorPracticeQuizController::class, 'generate']);
     // Existing authenticated routes...
     Route::get('/assessments', [AssessmentController::class, 'index']);
     Route::get('/courses/{course}/quizzes', [QuizController::class, 'courseQuizzes']);
+
+    Route::get('/assignments', [
+        \App\Http\Controllers\Api\V1\AssignmentController::class,
+        'index',
+    ])->name('assignments.index');
+
+    Route::get('/courses/{course}/assignments', [
+        \App\Http\Controllers\Api\V1\AssignmentController::class,
+        'courseAssignments',
+    ])->name('courses.assignments.index');
+
+    Route::get('/courses/{course}/assignments/{assignment}', [
+        \App\Http\Controllers\Api\V1\AssignmentController::class,
+        'show',
+    ])->name('courses.assignments.show');
+
+    Route::post('/courses/{course}/assignments/{assignment}/submission', [
+        \App\Http\Controllers\Api\V1\AssignmentController::class,
+        'submit',
+    ])->name('courses.assignments.submit');
 
     Route::prefix('quizzes/{quiz}/attempts')
         ->controller(QuizAttemptController::class)

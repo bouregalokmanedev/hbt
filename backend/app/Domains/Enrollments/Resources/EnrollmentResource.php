@@ -42,6 +42,8 @@ final class EnrollmentResource extends JsonResource
 
             'completed_lessons' => $this->completed_lessons,
             'total_lessons' => $this->total_lessons,
+
+            'journey' => $this->journey ?? null,
         ];
     }
 }

@@ -1,5 +1,6 @@
 import { env } from "@/config/env";
 import { authStorage } from "@/lib/storage/auth-storage";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 
 import { authedFetch } from "./api";
 
@@ -114,7 +115,10 @@ export async function downloadInvoice(invoice: BillingInvoice): Promise<void> {
     },
   );
 
-  if (!res.ok) throw new Error("Invoice download failed.");
+  if (!res.ok) {
+    handleUnauthorizedResponse(res.status, Boolean(token));
+    throw new Error("Invoice download failed.");
+  }
 
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);

@@ -17,19 +17,23 @@ import type { TFunction } from "i18next";
 import { env } from "@/config/env";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
+import { CourseAssignmentsPanel } from "@/features/assignments/components/CourseAssignmentsPanel";
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import { ContinueLearningCard } from "../components/ContinueLearningCard";
+import { CourseJourneyCard } from "../components/CourseJourneyCard";
 import { CourseCertificate } from "../components/CourseCertificate";
 import { CourseCurriculum } from "../components/CourseCurriculum";
 import { CourseDiagnostics } from "../components/CourseDiagnostics";
 import { CourseGradebook } from "../components/CourseGradebook";
 import { CourseInstructor } from "../components/CourseInstructor";
 import { CourseQuizzes } from "../components/CourseQuizzes";
-import { CourseThumbnail } from "../components/CourseThumbnail";
+import { CourseThumbnail, resolveCourseImage } from "../components/CourseThumbnail";
 import { useCourse } from "../hooks/useCourse";
 import { useCourseCurriculum } from "../hooks/useCourseCurriculum";
 import { useCourseEnrollment } from "../hooks/useCourseEnrollment";
+import { useCourseJourney } from "../hooks/useCourseJourney";
 import { submitCourseFeedback } from "@/features/lessons/api/feedback.api";
+import { usePageMeta } from "@/lib/page-meta";
 import {
   getCourseReviews,
   type CourseReviewsResponse,
@@ -101,6 +105,17 @@ export function CourseDetailsPage() {
   const { user, isInitialized } = useAuth();
   const { course, isLoading, error, reload } = useCourse(id);
 
+  usePageMeta({
+    title: course?.title ?? t("courseDetails.page.overviewEyebrow"),
+    description:
+      course?.short_description ||
+      course?.description ||
+      t("courseDetails.page.errorFallback"),
+    image: course ? resolveCourseImage(course.title, course.thumbnail) : null,
+    imageAlt: course?.title,
+    canonicalPath: course ? `/courses/${course.id}` : null,
+  });
+
   const {
     enrollment,
     isEnrolling,
@@ -165,6 +180,8 @@ export function CourseDetailsPage() {
     error: curriculumError,
     reload: reloadCurriculum,
   } = useCourseCurriculum(id);
+
+  const { journey } = useCourseJourney(id, hasFullAccess);
 
   const handleStartLearning = async () => {
     if (!course?.id || isEnrolling) {
@@ -674,6 +691,7 @@ export function CourseDetailsPage() {
               courseId={course.id}
               courseTitle={course.title}
               authenticated={Boolean(user)}
+              journey={journey}
               className="order-5"
             />
 
@@ -734,10 +752,14 @@ export function CourseDetailsPage() {
               ) : curriculum ? (
                 <div className="space-y-6">
                   {hasFullAccess && (
-                    <ContinueLearningCard
-                      curriculum={curriculum}
-                      isCourseCompleted={isCompleted}
-                    />
+                    journey ? (
+                      <CourseJourneyCard journey={journey} courseId={course.id} />
+                    ) : (
+                      <ContinueLearningCard
+                        curriculum={curriculum}
+                        isCourseCompleted={isCompleted}
+                      />
+                    )
                   )}
 
                   {hasFullAccess && (
@@ -746,6 +768,11 @@ export function CourseDetailsPage() {
                       enrolled={hasFullAccess}
                     />
                   )}
+
+                  <CourseAssignmentsPanel
+                    courseId={course.id}
+                    enabled={hasFullAccess}
+                  />
 
                   <CourseCurriculum
                     curriculum={curriculum}
@@ -762,8 +789,34 @@ export function CourseDetailsPage() {
                     ====================================================== */}
 
           <aside className="h-fit lg:sticky lg:top-28">
-            <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
+            <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-[0_12px_40px_rgba(15,23,42,0.08)] lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin]">
               <div className="h-1.5 bg-[#F47822]" />
+
+              {/* Course preview thumbnail keeps the purchase card visual. */}
+              <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                <img
+                  src={resolveCourseImage(
+                    course.title,
+                    course.thumbnail || course.cover_image,
+                  )}
+                  alt={course.title}
+                  decoding="async"
+                  data-testid="course-price-thumbnail"
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = resolveCourseImage(
+                      course.title,
+                      null,
+                    );
+                  }}
+                  className="h-full w-full object-cover"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
+                />
+              </div>
 
               <div className="p-6 sm:p-7">
                 <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">

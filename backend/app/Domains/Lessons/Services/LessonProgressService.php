@@ -16,6 +16,7 @@ final class LessonProgressService
     public function __construct(
         private LessonAccessService $accessService,
         private LessonProgressRepositoryInterface $repository,
+        private LessonWatchEvidenceService $watchEvidence,
     ) {
     }
 
@@ -63,6 +64,12 @@ final class LessonProgressService
                 $user->id,
                 $lesson->id
             );
+
+        if (! $this->watchEvidence->satisfied($progress, $lesson)) {
+            throw new LessonCannotBeCompletedException(
+                $this->watchEvidence->message($lesson)
+            );
+        }
 
         if ($progress === null) {
             $progress = $this->repository->create([
@@ -146,9 +153,18 @@ final class LessonProgressService
                 ...$data,
             ];
 
+            $requiredWatch = $this->watchEvidence->requiredSeconds($lesson);
+            $watchSatisfied = $requiredWatch === null
+                || (int) ($data['time_spent'] ?? 0) >= $requiredWatch;
+
             if (($data['progress_percentage'] ?? 0) >= 100) {
-                $data['progress_percentage'] = 100;
-                $data['completed_at'] = now();
+                if ($watchSatisfied) {
+                    $data['progress_percentage'] = 100;
+                    $data['completed_at'] = now();
+                } else {
+                    // Keep the lesson open until the watch requirement is met.
+                    $data['progress_percentage'] = 95;
+                }
             }
 
             $progress = $this->repository->create($data);
@@ -184,12 +200,20 @@ final class LessonProgressService
             );
         }
 
+        $requiredWatch = $this->watchEvidence->requiredSeconds($lesson);
+        $watchSatisfied = $requiredWatch === null
+            || (int) ($data['time_spent'] ?? $progress->time_spent) >= $requiredWatch;
+
         if (
             ($data['progress_percentage'] ?? $progress->progress_percentage) >= 100
             && ! $wasCompleted
         ) {
-            $data['progress_percentage'] = 100;
-            $data['completed_at'] = now();
+            if ($watchSatisfied) {
+                $data['progress_percentage'] = 100;
+                $data['completed_at'] = now();
+            } else {
+                $data['progress_percentage'] = 95;
+            }
         }
 
         $result = $this->repository->update(

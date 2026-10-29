@@ -9,6 +9,7 @@ import {
   ClipboardCheck,
   Clock3,
   Cpu,
+  GraduationCap,
   Plus,
   RefreshCw,
   RotateCcw,
@@ -536,6 +537,17 @@ export function InstructorDashboardPage() {
                 <Plus className="h-4 w-4" />
               </span>
               {t("instructor.dashboard.hero.create")}
+            </Link>
+
+            <Link
+              to="/instructor/bootcamps"
+              data-testid="instructor-hero-bootcamps"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/[0.1] px-5 text-sm font-bold tracking-wide text-white backdrop-blur-md transition duration-200 hover:border-white/40 hover:bg-white/[0.18] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 active:scale-[0.98]"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-[#F47822] text-white transition group-hover:brightness-110">
+                <GraduationCap className="h-4 w-4" />
+              </span>
+              {t("instructor.sidebar.bootcamps")}
             </Link>
 
             <Link

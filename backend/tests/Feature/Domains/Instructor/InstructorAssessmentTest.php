@@ -134,6 +134,29 @@ it('instructor can sync questions with competency mapping', function () {
         ->assertJsonCount(2, 'data.questions');
 });
 
+it('assessment list hydrates attached questions and competencies for authoring', function () {
+    $instructor = User::factory()->create();
+    $instructor->assignRole('Instructor');
+    $course = Course::factory()->create(['instructor_id' => $instructor->id]);
+    $assessment = Assessment::factory()->create(['course_id' => $course->id]);
+
+    $question = QuizQuestion::factory()->create();
+    QuizQuestionOption::factory()->create(['quiz_question_id' => $question->id]);
+    $assessment->questions()->attach($question->id, ['position' => 1, 'points' => 10]);
+
+    $competency = Competency::factory()->create(['code' => 'QA-1', 'name' => 'QA competency']);
+    $assessment->competencies()->attach($competency->id, ['position' => 1, 'weight' => 2]);
+
+    $response = $this->actingAs($instructor)
+        ->getJson("/api/v1/instructor/courses/{$course->id}/assessments");
+
+    $response->assertOk()
+        ->assertJsonPath('0.questions_count', 1)
+        ->assertJsonPath('0.questions.0.question_id', $question->id)
+        ->assertJsonCount(1, '0.questions.0.options')
+        ->assertJsonPath('0.competencies.0.id', $competency->id);
+});
+
 it('instructor can get available questions for course', function () {
     $instructor = User::factory()->create();
     $instructor->assignRole('Instructor');

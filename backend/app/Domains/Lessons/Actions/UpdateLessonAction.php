@@ -18,12 +18,28 @@ final class UpdateLessonAction
     }
 
     private function containsSubstantiveChanges(
+        Lesson $lesson,
         array $data
     ): bool {
-        return array_key_exists('title', $data)
-            || array_key_exists('slug', $data)
-            || array_key_exists('description', $data)
-            || array_key_exists('content', $data);
+        foreach (['title', 'slug', 'description', 'content'] as $field) {
+            if (!array_key_exists($field, $data)) {
+                continue;
+            }
+
+            if (
+                $this->normalize($data[$field])
+                !== $this->normalize($lesson->{$field})
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function normalize(mixed $value): string
+    {
+        return trim((string) ($value ?? ''));
     }
 
     public function execute(
@@ -39,20 +55,22 @@ final class UpdateLessonAction
             );
         }
 
+        if (array_key_exists('content', $data) && is_string($data['content'])) {
+            $data['content'] = app(LessonContentSanitizer::class)->sanitize($data['content']);
+        }
+
         /*
          * Published lessons return to draft when
-         * substantive content changes are made.
+         * substantive content actually changes. Saves that only
+         * touch duration, preview access, or re-send identical
+         * fields keep the lesson live.
          */
         $shouldReturnToDraft =
             $lesson->status === LessonStatus::PUBLISHED
-            && $this->containsSubstantiveChanges($data);
+            && $this->containsSubstantiveChanges($lesson, $data);
 
         if ($shouldReturnToDraft) {
             $data['status'] = LessonStatus::DRAFT;
-        }
-
-        if (array_key_exists('content', $data) && is_string($data['content'])) {
-            $data['content'] = app(LessonContentSanitizer::class)->sanitize($data['content']);
         }
 
         $lesson = $this->repository->update(

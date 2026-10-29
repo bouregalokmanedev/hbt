@@ -7,13 +7,11 @@ use App\Enums\Courses\CourseStatus;
 use App\Enums\Courses\Difficulty;
 use App\Enums\Courses\Visibility;
 
-class CourseQuery extends Query
+final class CourseQuery extends Query
 {
-
-
-    public static function make(): static
+    public static function make(): self
     {
-        return new static();
+        return new self();
     }
 
     public function status(string $status): static

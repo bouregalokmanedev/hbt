@@ -4,6 +4,7 @@ import { Crown, Check, X, AlertTriangle, CreditCard, Calendar, Zap, ArrowRight, 
 import { useTranslation } from "react-i18next";
 import { env } from "@/config/env";
 import { authStorage } from "@/lib/storage/auth-storage";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toast } from "sonner";
 import { errorMessage } from "@/lib/api/safe-error";
@@ -42,7 +43,10 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     },
   });
   const body = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(errorMessage(body?.message, "Request failed"));
+  if (!res.ok) {
+    handleUnauthorizedResponse(res.status, Boolean(token));
+    throw new Error(errorMessage(body?.message, "Request failed"));
+  }
   return (body?.data ?? body) as T;
 }
 

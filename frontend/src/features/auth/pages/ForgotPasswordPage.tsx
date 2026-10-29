@@ -29,9 +29,13 @@ import {
 import {
     authApi,
 } from "../api/auth.api";
+import { HoneypotField } from "@/features/security/HoneypotField";
+import { TurnstileWidget } from "@/features/security/TurnstileWidget";
+import { BOT_HONEYPOT_FIELD } from "@/features/security/botProtection";
 
 interface ForgotPasswordForm {
     email: string;
+    website: string;
 }
 
 export function ForgotPasswordPage() {
@@ -40,6 +44,9 @@ export function ForgotPasswordPage() {
 
     const [sent, setSent] =
         useState(false);
+
+    const [turnstileToken, setTurnstileToken] =
+        useState<string | null>(null);
 
     const {
         register,
@@ -51,6 +58,7 @@ export function ForgotPasswordPage() {
     } = useForm<ForgotPasswordForm>({
         defaultValues: {
             email: "",
+            website: "",
         },
     });
 
@@ -59,6 +67,8 @@ export function ForgotPasswordPage() {
     ) => {
         await authApi.forgotPassword({
             email: values.email,
+            [BOT_HONEYPOT_FIELD]: values.website,
+            ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
         });
 
         setSent(true);
@@ -121,6 +131,9 @@ export function ForgotPasswordPage() {
                                         ?.message
                                 }
                             />
+
+                            <HoneypotField {...register("website")} />
+                            <TurnstileWidget onToken={setTurnstileToken} />
 
                             <button
                                 type="submit"

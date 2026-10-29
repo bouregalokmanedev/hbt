@@ -30,7 +30,8 @@ final class DiagnosticAnalyticsQuery
             ->where('a.status', DiagnosticScenarioAttemptStatus::SUBMITTED->value)
             ->select('s.title as step_title', DB::raw('AVG(CASE WHEN r.is_correct THEN 1 ELSE 0 END) * 100 as accuracy'), DB::raw('COUNT(*) as attempts'))
             ->groupBy('s.id', 's.title')
-            ->having('attempts', '>=', 3)
+            // PostgreSQL cannot reference a SELECT alias inside HAVING.
+            ->havingRaw('COUNT(*) >= 3')
             ->orderBy('accuracy')
             ->limit(5)
             ->get()

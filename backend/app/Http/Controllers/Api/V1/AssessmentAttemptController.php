@@ -114,24 +114,53 @@ final class AssessmentAttemptController extends Controller
         );
 
         $data = $request->validate([
-            'option_ids' => ['present', 'array'],
+            'option_ids' => ['sometimes', 'array'],
             'option_ids.*' => ['uuid'],
+            'selected_option_ids' => ['sometimes', 'array'],
+            'selected_option_ids.*' => ['uuid'],
+            'selected_option_id' => ['sometimes', 'uuid'],
+            'value' => ['sometimes', 'nullable'],
+            'text' => ['sometimes', 'nullable', 'string'],
+            'answer' => ['sometimes', 'nullable'],
+            'ordered_ids' => ['sometimes', 'array'],
+            'ordered_ids.*' => ['uuid'],
+            'matches' => ['sometimes', 'array'],
+            'confidence_level' => ['sometimes', 'nullable', 'string', 'max:32'],
         ]);
+
+        $hasAnswer = collect([
+            'option_ids',
+            'selected_option_ids',
+            'selected_option_id',
+            'value',
+            'text',
+            'answer',
+            'ordered_ids',
+            'matches',
+        ])->contains(fn (string $key) => $request->exists($key));
+
+        if (! $hasAnswer) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'answer' => 'An answer payload is required.',
+            ]);
+        }
 
         $answer = $this->saveAssessmentAttemptAnswersAction->execute(
             attempt: $attempt,
             questionId: $question,
-            optionIds: $data['option_ids'],
+            payload: $data,
         );
 
         return response()->json([
             'data' => [
                 'saved' => true,
                 'question_id' => $question,
+                'answer' => $answer->answer,
                 'selected_option_ids' => $answer->selectedOptions
                     ->pluck('option_id')
                     ->values()
                     ->all(),
+                'confidence_level' => $answer->confidence_level,
             ],
         ]);
     }
@@ -155,10 +184,38 @@ final class AssessmentAttemptController extends Controller
         abort(422, 'Time expired. You can retake this assessment twelve hours after the timeout.');
     }
 
+    $submittedAnswers = $request->validated('answers');
+
+    // Optional questions may be skipped, but a required question without an
+    // answer would silently score zero. Refuse the submission instead.
+    $assessment->loadMissing('questions.options');
+    $answersByQuestion = collect($submittedAnswers)
+        ->keyBy(fn (array $answer) => (string) ($answer['question_id'] ?? ''));
+
+    $unanswered = [];
+
+    foreach ($assessment->questions as $question) {
+        if (! (bool) ($question->required ?? true)) {
+            continue;
+        }
+
+        $answer = $answersByQuestion->get((string) $question->id);
+
+        if ($answer === null || ! $this->answerHasContent($question, $answer)) {
+            $unanswered[] = (string) $question->id;
+        }
+    }
+
+    if ($unanswered !== []) {
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            'answers' => 'Answer every required question before submitting.',
+        ]);
+    }
+
     $scoring = $this->assessmentScoringService->calculate(
         attempt: $attempt,
         user: $request->user(),
-        submittedAnswers: $request->validated('answers'),
+        submittedAnswers: $submittedAnswers,
     );
 
     $result = $this->submitAssessmentAttemptAction->execute(
@@ -244,6 +301,29 @@ if ($attempt->result === null) {
 }
 
 return new AssessmentResultResource($attempt->result);
+    }
+
+    /**
+     * A required question needs an answer with actual content, not merely a
+     * key in the payload. Empty choices and blank text are treated as
+     * unanswered.
+     */
+    private function answerHasContent(mixed $question, array $answer): bool
+    {
+        $type = $question->type?->value ?? (string) $question->type;
+
+        return match ($type) {
+            'single_choice', 'multiple_choice', 'true_false' => count(
+                $answer['option_ids']
+                    ?? $answer['selected_option_ids']
+                    ?? (isset($answer['selected_option_id']) ? [$answer['selected_option_id']] : [])
+            ) > 0,
+            'ordering' => count($answer['ordered_ids'] ?? $answer['option_ids'] ?? [])
+                >= $question->options->count(),
+            'matching' => count($answer['matches'] ?? [])
+                >= count(array_keys((array) (($question->answer_key ?? [])['pairs'] ?? []))),
+            default => trim((string) ($answer['value'] ?? $answer['text'] ?? $answer['answer'] ?? '')) !== '',
+        };
     }
 
     /**

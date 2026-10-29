@@ -26,6 +26,10 @@ import { Link } from "react-router-dom";
 
 import { Navbar } from "@/components/navigation/Navbar";
 import { Footer } from "@/features/landingpage/components/FooterSection";
+import { HoneypotField } from "@/features/security/HoneypotField";
+import { TurnstileWidget } from "@/features/security/TurnstileWidget";
+import { BOT_HONEYPOT_FIELD } from "@/features/security/botProtection";
+import { usePageMeta } from "@/lib/page-meta";
 import { sendContactMessage } from "./api/contact.api";
 
 
@@ -67,6 +71,12 @@ const COMPANY = {
 
 export function ContactPage() {
     const { t, i18n } = useTranslation();
+
+    usePageMeta({
+        title: `${t("contactPage.hero.titleA")} ${t("contactPage.hero.titleB")}`,
+        description: t("contactPage.hero.description"),
+        canonicalPath: "/contact",
+    });
 
     const inquiryTypes = [
         t("contactPage.inquiry.general"),
@@ -121,7 +131,10 @@ export function ContactPage() {
         inquiry: "",
         subject: "",
         message: "",
+        website: "",
     });
+
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
 
     function updateField(
@@ -167,7 +180,10 @@ export function ContactPage() {
         setSubmitError(null);
 
         try {
-            await sendContactMessage(form);
+            await sendContactMessage({
+                ...form,
+                turnstileToken,
+            });
             setSubmitted(true);
         } catch (error) {
                     setSubmitError(
@@ -1264,6 +1280,14 @@ export function ContactPage() {
 
 
                                 {/* Submit */}
+
+                                <HoneypotField
+                                    value={form.website}
+                                    onChange={(event) =>
+                                        updateField(BOT_HONEYPOT_FIELD, event.target.value)
+                                    }
+                                />
+                                <TurnstileWidget onToken={setTurnstileToken} />
 
                                 {submitError && (
                                     <p

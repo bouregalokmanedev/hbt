@@ -16,6 +16,7 @@ import {
 
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 import {
@@ -43,7 +44,7 @@ import { LessonFeedback } from "../components/LessonFeedback";
 import { LessonDiagnostics } from "../components/LessonDiagnostics";
 import { LessonInstructor } from "../components/LessonInstructor";
 import { LessonQuickActions } from "../components/LessonQuickActions";
-import { sanitizeHtml } from "@/lib/sanitize-html";
+import { LessonContent } from "../components/LessonContent";
 
 export function LessonPlayerPage() {
   const { t } = useTranslation();
@@ -160,11 +161,12 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
   }, []);
 
   const handleProgress = useCallback(
-    async (percentage: number, timeSpent: number) => {
+    async (percentage: number, watchedSeconds: number, position: number) => {
       try {
         const serverProgress = await updateLessonProgress(lessonId, {
           progress_percentage: percentage,
-          time_spent: timeSpent,
+          time_spent: watchedSeconds,
+          video_position: position,
         });
         // Keep the session header live — the player only reports, the
         // server response is the source of truth.
@@ -205,10 +207,15 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
       }
     } catch (error) {
       console.error("Failed to complete lesson:", error);
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("lessonPlayer.nav.completeFail"),
+      );
     } finally {
       setIsCompleting(false);
     }
-  }, [courseId, lessonId, navigate, reload, reloadCurriculum, applyProgress, isCompleting]);
+  }, [courseId, lessonId, navigate, reload, reloadCurriculum, applyProgress, isCompleting, t]);
 
   // Next-step preview for the overview actions + last-lesson fallback.
   const overviewStep = curriculum ? resolveNextStep(curriculum, lessonId) : null;
@@ -521,14 +528,7 @@ function LessonPlayerContent({ lessonId, courseId }: LessonPlayerContentProps) {
                         </p>
                       )}
 
-                      {lesson.content && (
-                        <div
-                          className="prose prose-sm mt-6 max-w-none text-gray-700 dark:text-gray-300 prose-headings:text-[#3A3A3A] dark:prose-headings:text-[#ececef] prose-a:text-[#F47822] prose-strong:text-[#3A3A3A] sm:prose-base"
-                          dangerouslySetInnerHTML={{
-                            __html: lesson.content,
-                          }}
-                        />
-                      )}
+                      <LessonContent html={lesson.content} media={lesson.media} className="mt-6" />
                     </div>
 
                     {/* Inline actions — no need to scroll for the basics. */}

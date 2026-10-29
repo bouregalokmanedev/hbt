@@ -25,6 +25,7 @@ import { useTranslation } from "react-i18next";
 import { Footer } from "@/features/landingpage/components/FooterSection";
 
 import { verifyCertificate } from "../api/verify-certificate.api";
+import { usePageMeta } from "@/lib/page-meta";
 import { VerificationPopup, type VerificationPopupState } from "../components/VerificationPopup";
 import { normalizeCertificateNumber, VerifyCertificateError, type VerifiedCertificate } from "../types";
 
@@ -94,6 +95,12 @@ export function VerifyCertificatePage() {
     const { t } = useTranslation();
     const { certificateNumber: routeNumber } = useParams<{ certificateNumber?: string }>();
     const [searchParams] = useSearchParams();
+
+    usePageMeta({
+        title: `${t("verifyPage.hero.titleA")} ${t("verifyPage.hero.titleB")}`,
+        description: t("verifyPage.hero.description"),
+        noIndex: true,
+    });
 
     const VERIFY_STAGES = t("verifyPage.stages", { returnObjects: true }) as string[];
     const STEPS = t("verifyPage.steps", { returnObjects: true }) as string[];

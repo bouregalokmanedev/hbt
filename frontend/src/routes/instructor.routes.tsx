@@ -40,6 +40,18 @@ export const instructorRoutes: RouteObject[] = [
                                 lazy: () => import("@/features/instructor/pages/InstructorCoursePage").then((m) => ({ Component: m.InstructorCoursePage })),
                             },
                             {
+                                path: "/instructor/bootcamps",
+                                lazy: () => import("@/features/bootcamps/pages/InstructorBootcampsPage").then((m) => ({ Component: m.InstructorBootcampsPage })),
+                            },
+                            {
+                                path: "/instructor/bootcamps/new",
+                                lazy: () => import("@/features/bootcamps/pages/InstructorBootcampEditorPage").then((m) => ({ Component: m.InstructorBootcampEditorPage })),
+                            },
+                            {
+                                path: "/instructor/bootcamps/:bootcampId",
+                                lazy: () => import("@/features/bootcamps/pages/InstructorBootcampEditorPage").then((m) => ({ Component: m.InstructorBootcampEditorPage })),
+                            },
+                            {
                                 path: "/instructor/courses/new",
                                 lazy: () => import("@/features/instructor/pages/InstructorCourseEditorPage").then((m) => ({ Component: m.InstructorCourseEditorPage })),
                             },
@@ -58,6 +70,10 @@ export const instructorRoutes: RouteObject[] = [
                             {
                                 path: "/instructor/courses/:courseId/assessments",
                                 lazy: () => import("@/features/instructor/pages/InstructorAssessmentWorkspacePage").then((m) => ({ Component: m.InstructorAssessmentWorkspacePage })),
+                            },
+                            {
+                                path: "/instructor/courses/:courseId/assignments",
+                                lazy: () => import("@/features/instructor/pages/InstructorAssignmentsPage").then((m) => ({ Component: m.InstructorAssignmentsPage })),
                             },
                             {
                                 path: "/instructor/courses/:courseId/analytics",

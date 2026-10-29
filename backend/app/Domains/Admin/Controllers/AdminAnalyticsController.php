@@ -3,7 +3,6 @@
 namespace App\Domains\Admin\Controllers;
 
 use App\Domains\Admin\Queries\AdminAnalyticsQuery;
-use App\Domains\Admin\Queries\AdminDashboardQuery;
 use App\Domains\Admin\Resources\AdminAnalyticsResource;
 use App\Http\Controllers\Controller;
 use Carbon\CarbonImmutable;
@@ -13,9 +12,7 @@ final class AdminAnalyticsController extends Controller
 {
     public function overview(Request $request): AdminAnalyticsResource
     {
-        return new AdminAnalyticsResource([
-            'statistics' => AdminDashboardQuery::for($request->user())->overview()['statistics'],
-        ]);
+        return new AdminAnalyticsResource($this->query($request)->overview());
     }
 
     public function users(Request $request): AdminAnalyticsResource
@@ -36,6 +33,11 @@ final class AdminAnalyticsController extends Controller
     public function learning(Request $request): AdminAnalyticsResource
     {
         return new AdminAnalyticsResource($this->query($request)->learning());
+    }
+
+    public function assignments(Request $request): AdminAnalyticsResource
+    {
+        return new AdminAnalyticsResource($this->query($request)->assignments());
     }
 
     private function query(Request $request): AdminAnalyticsQuery

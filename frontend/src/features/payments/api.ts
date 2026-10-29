@@ -1,6 +1,7 @@
 import { env } from "@/config/env";
 import { authStorage } from "@/lib/storage/auth-storage";
 import { errorMessage } from "@/lib/api/safe-error";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 
 export interface CheckoutPayload {
   items: Array<{ course_id: string }>;
@@ -33,7 +34,10 @@ export async function authedFetch<T>(path: string, init: RequestInit = {}): Prom
     },
   });
   const body = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(errorMessage(body?.message));
+  if (!res.ok) {
+    handleUnauthorizedResponse(res.status, Boolean(token));
+    throw new Error(errorMessage(body?.message));
+  }
   return (body?.data ?? body) as T;
 }
 

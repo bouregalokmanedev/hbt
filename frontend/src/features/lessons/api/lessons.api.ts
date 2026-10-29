@@ -30,6 +30,7 @@ export async function updateLessonProgress(
     data: {
         progress_percentage?: number;
         time_spent?: number;
+        video_position?: number;
     },
 ): Promise<LessonProgress> {
     return api<LessonProgress>(
@@ -51,7 +52,6 @@ export async function completeLesson(
         },
     );
 }
-
 export async function getLearningCurriculum(
     courseId: string,
 ): Promise<CourseCurriculum> {

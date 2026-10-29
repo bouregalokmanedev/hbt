@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Courses\Services\CourseProgressService;
+use App\Enums\SectionStatus;
 use App\Models\Course;
 use App\Models\CourseProgress;
 use App\Models\Section;
@@ -20,19 +21,27 @@ beforeEach(function () {
 
     $this->course = Course::factory()->create();
 
+    /*
+     * Only published sections count towards course progress. Draft
+     * sections are invisible to learners, so they must not dilute the
+     * percentage either.
+     */
     $this->sectionOne = Section::factory()->create([
         'course_id' => $this->course->id,
         'position' => 1,
+        'status' => SectionStatus::PUBLISHED,
     ]);
 
     $this->sectionTwo = Section::factory()->create([
         'course_id' => $this->course->id,
         'position' => 2,
+        'status' => SectionStatus::PUBLISHED,
     ]);
 
     $this->sectionThree = Section::factory()->create([
         'course_id' => $this->course->id,
         'position' => 3,
+        'status' => SectionStatus::PUBLISHED,
     ]);
 });
 

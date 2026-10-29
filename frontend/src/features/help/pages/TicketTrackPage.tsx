@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { supportApi, type SupportTicket } from "@/features/support/api/support.api";
+import { usePageMeta } from "@/lib/page-meta";
 
 type TrackState =
     | { kind: "idle" }
@@ -21,6 +22,13 @@ type TrackState =
 
 export function TicketTrackPage() {
     const { t } = useTranslation();
+
+    usePageMeta({
+        title: t("help.track.title"),
+        description: t("help.track.subtitle"),
+        canonicalPath: "/help/track",
+        noIndex: true,
+    });
 
     const [reference, setReference] = useState("");
     const [email, setEmail] = useState("");

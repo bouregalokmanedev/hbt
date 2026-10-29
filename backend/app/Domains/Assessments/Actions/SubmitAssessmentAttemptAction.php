@@ -6,7 +6,6 @@ use App\Domains\Assessments\Enums\AssessmentAttemptStatus;
 use App\Domains\Assessments\Events\AssessmentPassed;
 use App\Domains\Assessments\Models\AssessmentAttempt;
 use App\Domains\Assessments\Models\AssessmentResult;
-use App\Domains\Certificates\Actions\IssueCertificateAction;
 use App\Models\User;
 use App\Domains\Notifications\Services\StudentNotificationService;
 use App\Domains\Progression\Services\StudentProgressionService;
@@ -46,6 +45,14 @@ final class SubmitAssessmentAttemptAction
             $evidence,
             $results,
         ): AssessmentResult {
+            // Serialise concurrent submissions. The outer evaluation service
+            // also locks, but direct callers of this action still need the
+            // guard against double-grading.
+            $attempt = AssessmentAttempt::query()
+                ->whereKey($attempt->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
             $attempt->loadMissing('assessment');
 
             if ($attempt->user_id !== $user->id) {
@@ -100,12 +107,9 @@ final class SubmitAssessmentAttemptAction
                 app(StudentProgressionService::class)->award($user, 'assessment_passed', 45, 65, "assessment-attempt:{$attempt->id}", ['label' => 'Assessment passed']);
             }
 
-            // Certificates are only issued for high-stakes assessments
-            // (summative/final). Low-stakes modes skip issuance entirely.
-            if ($result->passed && $attempt->assessment->assessment_mode->isHighStakes()) {
-                app(IssueCertificateAction::class)
-                    ->execute($result);
-            }
+            // Certificate issuance is owned by IssueCertificateForPassedAssessment,
+            // which checks course scope, enrollment and course pass before
+            // minting anything.
 
             // Always land on the assessment itself: the result belongs to the
             // Assessments badge. Certificates now announce themselves through

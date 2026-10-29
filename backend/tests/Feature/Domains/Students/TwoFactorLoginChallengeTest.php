@@ -2,11 +2,15 @@
 
 use App\Domains\Students\Models\StudentSecuritySetting;
 use App\Models\User;
+use App\Notifications\TwoFactorCodeNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 
 uses(RefreshDatabase::class);
 
 it('returns a machine-readable two-factor challenge on login when 2fa is verified', function () {
+    Notification::fake();
+
     $user = User::factory()->create();
     StudentSecuritySetting::updateOrCreate(
         ['user_id' => $user->id],
@@ -20,7 +24,10 @@ it('returns a machine-readable two-factor challenge on login when 2fa is verifie
 
     $response->assertStatus(423);
     expect($response->json('message'))->toContain('Two-factor')
-        ->and($response->json('requires_two_factor'))->toBeTrue();
+        ->and($response->json('requires_two_factor'))->toBeTrue()
+        ->and($response->json('challenge_token'))->toBeString()->toHaveLength(64);
+
+    Notification::assertSentTo($user, TwoFactorCodeNotification::class);
 });
 
 it('logs straight in when 2fa is not verified', function () {
@@ -32,7 +39,9 @@ it('logs straight in when 2fa is not verified', function () {
     ])->assertOk();
 });
 
-it('resends login codes only for verified accounts', function () {
+it('resends login codes only for an active password-backed challenge', function () {
+    Notification::fake();
+
     $verified = User::factory()->create();
     StudentSecuritySetting::updateOrCreate(
         ['user_id' => $verified->id],
@@ -40,10 +49,21 @@ it('resends login codes only for verified accounts', function () {
     );
     $plain = User::factory()->create();
 
-    $this->postJson('/api/v1/auth/two-factor/login/resend', ['email' => $verified->email])
+    $login = $this->postJson('/api/v1/auth/login', [
+        'email' => $verified->email,
+        'password' => 'password',
+    ])->assertStatus(423);
+
+    $this->postJson('/api/v1/auth/two-factor/login/resend', [
+        'email' => $verified->email,
+        'challenge_token' => $login->json('challenge_token'),
+    ])
         ->assertOk()
         ->assertJsonPath('data.resent', true);
 
-    $this->postJson('/api/v1/auth/two-factor/login/resend', ['email' => $plain->email])
-        ->assertStatus(422);
+    // An account without 2FA has no valid challenge to resend against.
+    $this->postJson('/api/v1/auth/two-factor/login/resend', [
+        'email' => $plain->email,
+        'challenge_token' => str_repeat('a', 64),
+    ])->assertStatus(422);
 });

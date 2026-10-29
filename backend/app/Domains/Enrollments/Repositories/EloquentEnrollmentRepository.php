@@ -3,6 +3,7 @@
 namespace App\Domains\Enrollments\Repositories;
 
 use App\Models\Enrollment;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 final class EloquentEnrollmentRepository implements EnrollmentRepositoryInterface
@@ -34,6 +35,16 @@ final class EloquentEnrollmentRepository implements EnrollmentRepositoryInterfac
             ->where('user_id', $userId)
             ->latest('enrolled_at')
             ->get();
+    }
+
+    public function paginateByUser(
+        int $userId,
+        int $perPage = 100,
+    ): LengthAwarePaginator {
+        return Enrollment::query()
+            ->where('user_id', $userId)
+            ->latest('enrolled_at')
+            ->paginate($perPage);
     }
 
     public function findByCourse(

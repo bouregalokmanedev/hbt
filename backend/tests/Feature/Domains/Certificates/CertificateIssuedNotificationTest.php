@@ -34,10 +34,22 @@ it('notifies the student when a certificate is issued', function () {
         'status' => EnrollmentStatus::ACTIVE,
     ]);
 
+    // A certificate requires a fully passed course, not only a passed final.
+    $section = \App\Models\Section::factory()->published()->create([
+        'course_id' => $course->id,
+    ]);
+    \App\Models\SectionProgress::factory()->create([
+        'user_id' => $user->id,
+        'section_id' => $section->id,
+        'progress_percentage' => 100,
+        'completed_at' => now(),
+    ]);
+
     $assessment = Assessment::factory()->create([
         'course_id' => $course->id,
         'assessment_mode' => AssessmentMode::SUMMATIVE,
         'minimum_score' => 50,
+        'status' => 'published',
     ]);
 
     $attempt = AssessmentAttempt::factory()->create([

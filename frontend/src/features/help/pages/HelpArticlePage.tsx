@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, ChevronRight, Home, LifeBuoy, Send } from "lucide-react";
 
 import { NotFound } from "@/components/feedback";
+import { usePageMeta } from "@/lib/page-meta";
 
 import {
     HELP_ARTICLES,
@@ -27,6 +28,14 @@ export function HelpArticlePage() {
             (entry) => entry.category === article.category && entry.slug !== article.slug,
         ).slice(0, 3);
     }, [article]);
+
+    usePageMeta({
+        title: article ? localized(article.title, locale) : t("errors.notFoundTitle"),
+        description: article ? localized(article.summary, locale) : t("help.subtitle"),
+        canonicalPath: article ? `/help/${article.slug}` : null,
+        type: "article",
+        noIndex: !article,
+    });
 
     if (!article) return <NotFound />;
 

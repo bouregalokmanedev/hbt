@@ -100,11 +100,26 @@ it('still issues certificates for high-stakes passes', function () {
     $assessment = Assessment::factory()->create([
         'assessment_mode' => 'summative',
         'minimum_score' => 0,
+        'status' => 'published',
     ]);
     \App\Models\Enrollment::factory()->create([
         'user_id' => $user->id,
         'course_id' => $assessment->course_id,
     ]);
+
+    // Certificates now require the whole course to pass, not just the
+    // final assessment. This course has one published section (no lessons),
+    // so a fully completed section is the course-pass evidence.
+    $section = \App\Models\Section::factory()->published()->create([
+        'course_id' => $assessment->course_id,
+    ]);
+    \App\Models\SectionProgress::factory()->create([
+        'user_id' => $user->id,
+        'section_id' => $section->id,
+        'progress_percentage' => 100,
+        'completed_at' => now(),
+    ]);
+
     $attempt = AssessmentAttempt::factory()->create([
         'assessment_id' => $assessment->id,
         'user_id' => $user->id,

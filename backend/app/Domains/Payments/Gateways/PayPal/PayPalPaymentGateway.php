@@ -7,9 +7,14 @@ use App\Domains\Payments\Contracts\PaymentResult;
 use App\Domains\Payments\Contracts\RefundResult;
 use App\Domains\Payments\DTOs\CreatePaymentData;
 use App\Domains\Payments\DTOs\RefundPaymentData;
+use App\Domains\Payments\Exceptions\PaymentProviderUnavailableException;
 use App\Domains\Payments\Models\Payment;
-use Illuminate\Support\Facades\Log;
 
+/**
+ * PayPal has no production integration yet. It must never return fake
+ * successes or fake checkout URLs: until a real implementation exists, every
+ * operation fails closed.
+ */
 class PayPalPaymentGateway implements PaymentGatewayInterface
 {
     public function provider(): string
@@ -19,28 +24,28 @@ class PayPalPaymentGateway implements PaymentGatewayInterface
 
     public function createPayment(CreatePaymentData $data): PaymentResult
     {
-        Log::info('PayPal gateway stub — createPayment called.', ['order' => $data->orderId]);
-
-        return new PaymentResult(
-            providerPaymentId: 'PAYPAL-STUB-'.substr($data->idempotencyKey, 0, 8),
-            status: 'requires_action',
-            checkoutUrl: null,
-            raw: ['stub' => true, 'provider' => 'paypal'],
-        );
+        throw $this->unavailable();
     }
 
     public function capture(Payment $payment): PaymentResult
     {
-        return new PaymentResult(
-            providerPaymentId: $payment->provider_payment_id ?? $payment->id,
-            status: 'succeeded',
-        );
+        throw $this->unavailable();
     }
 
     public function refund(Payment $payment, RefundPaymentData $data): RefundResult
     {
-        return new RefundResult(providerRefundId: 'PAYPAL-RE-'.substr($data->idempotencyKey, 0, 8), status: 'succeeded', raw: ['stub' => true]);
+        throw $this->unavailable();
     }
 
-    public function cancel(Payment $payment): void {}
+    public function cancel(Payment $payment): void
+    {
+        throw $this->unavailable();
+    }
+
+    private function unavailable(): PaymentProviderUnavailableException
+    {
+        return new PaymentProviderUnavailableException(
+            'PayPal payments are not available yet. Please choose another payment method.'
+        );
+    }
 }

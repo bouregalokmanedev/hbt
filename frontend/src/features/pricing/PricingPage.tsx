@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { track } from "@/lib/track";
+import { usePageMeta } from "@/lib/page-meta";
 import { PaymentMethodsSection } from "@/features/pricing/PaymentMethodsSection";
 
 type BillingPeriod = "monthly" | "yearly";
@@ -24,6 +25,12 @@ interface PricingPlan {
 export function PricingPage() {
   const { t } = useTranslation();
   const [billing, setBilling] = useState<BillingPeriod>("monthly");
+
+  usePageMeta({
+    title: t("pricing.hero.title"),
+    description: t("pricing.hero.description"),
+    canonicalPath: "/pricing",
+  });
 
   const plans: PricingPlan[] = [
     {

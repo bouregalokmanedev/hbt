@@ -2,14 +2,20 @@
 
 namespace App\Providers;
 
-use App\Domains\Enrollments\Repositories\EnrollmentRepository;
 use App\Domains\Enrollments\Repositories\EnrollmentRepositoryInterface;
 use App\Domains\Enrollments\Repositories\EloquentEnrollmentRepository;
 use App\Domains\Enrollments\Policies\EnrollmentPolicy;
 use App\Models\Enrollment;
 use App\Domains\Courses\Events\CourseCompleted;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticAttemptStarted;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticAttemptSubmitted;
 use App\Domains\DiagnosticScenarios\Events\DiagnosticFailed;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticHintUsed;
 use App\Domains\DiagnosticScenarios\Events\DiagnosticPassed;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticResponseSubmitted;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticResultGenerated;
+use App\Domains\DiagnosticScenarios\Events\DiagnosticStepCompleted;
+use App\Domains\DiagnosticScenarios\Listeners\RecordDiagnosticAudit;
 use App\Domains\DiagnosticScenarios\Listeners\UpdateDiagnosticProgress;
 use App\Domains\Enrollments\Listeners\CompleteEnrollmentWhenCourseCompleted;
 use App\Domains\Payments\Events\PaymentFailed;
@@ -26,14 +32,16 @@ use App\Repositories\UserRepository;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
-use App\Events\ModelChanged;
-use App\Listeners\WriteAuditLog;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Http\Middleware\TrustHosts;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Models\Bootcamp;
 use App\Models\Course;
+use App\Domains\Bootcamps\Policies\BootcampPolicy;
 use App\Domains\Courses\Policies\CoursePolicy;
 use App\Domains\Courses\Repositories\CourseRepositoryInterface;
 use App\Domains\Courses\Repositories\CourseRepository;
@@ -55,8 +63,6 @@ use App\Domains\Taxonomy\Listeners\RecordCategoryAttachedAudit;
 use App\Domains\Taxonomy\Listeners\RecordCategoryDetachedAudit;
 use App\Domains\Taxonomy\Listeners\InvalidateCategoryCache;
 use App\Domains\Taxonomy\Listeners\InvalidateCourseCategoryCache;
-use App\Domains\Taxonomy\Listeners\IndexCategory;
-use App\Domains\Taxonomy\Listeners\RemoveCategoryFromSearch;
 use App\Models\Category;
 use App\Domains\Taxonomy\Policies\CategoryPolicy;
 use App\Domains\Courses\Repositories\EloquentSectionRepository;
@@ -129,6 +135,8 @@ use App\Domains\Courses\Listeners\SyncCourseProgress;
 
 use App\Domains\Assessments\Events\AssessmentPassed;
 use App\Domains\Certificates\Listeners\IssueCertificateForPassedAssessment;
+use App\Domains\Courses\Listeners\SyncCourseProgressAfterAssessment;
+use App\Domains\Courses\Listeners\SyncCourseProgressAfterPractical;
 
 use App\Domains\AI\Contracts\MentorAIProvider;
 use App\Domains\AI\Providers\OpenAIMentorAIProvider;
@@ -148,44 +156,6 @@ class AppServiceProvider extends ServiceProvider
 {
 
 
-protected $listen = [
-
-
-     LessonProgressUpdated::class => [
-        SyncSectionProgress::class,
-    ],
-
-    CategoryCreated::class => [
-        RecordCategoryAudit::class,
-        InvalidateCategoryCache::class,
-        IndexCategory::class,
-    ],
-
-    CategoryUpdated::class => [
-        RecordCategoryUpdatedAudit::class,
-        InvalidateCategoryCache::class,
-        IndexCategory::class,
-    ],
-
-    CategoryDeleted::class => [
-        RecordCategoryDeletedAudit::class,
-        InvalidateCategoryCache::class,
-        RemoveCategoryFromSearch::class,
-    ],
-
-    CategoryAttachedToCourse::class => [
-        RecordCategoryAttachedAudit::class,
-        InvalidateCourseCategoryCache::class,
-    ],
-
-    CategoryDetachedFromCourse::class => [
-        RecordCategoryDetachedAudit::class,
-        InvalidateCourseCategoryCache::class,
-    ],
-    AssessmentPassed::class => [
-    IssueCertificateForPassedAssessment::class,
-],
-];
     /**
      * Register any application services.
      */
@@ -265,6 +235,16 @@ $this->app->bind(
      */
    public function boot(): void
 {
+    $trustedProxies = (array) config('app.trusted_proxies', []);
+    if ($trustedProxies !== []) {
+        TrustProxies::at($trustedProxies);
+    }
+
+    $trustedHosts = (array) config('app.trusted_hosts', []);
+    if ($trustedHosts !== []) {
+        TrustHosts::at($trustedHosts);
+    }
+
     Password::defaults(fn () => Password::min(8)->mixedCase()->numbers()->symbols());
 
     RateLimiter::for('api', function (Request $request) {
@@ -289,6 +269,11 @@ $this->app->bind(
     Gate::policy(
         Course::class,
         CoursePolicy::class
+    );
+
+    Gate::policy(
+        Bootcamp::class,
+        BootcampPolicy::class
     );
 
    Gate::policy(
@@ -325,10 +310,25 @@ Gate::policy(
     \App\Models\SimulatorDataPack::class,
     \App\Domains\Simulator\Policies\SimulatorDataPackPolicy::class
 );
-    Event::listen(
-        ModelChanged::class,
-        WriteAuditLog::class,
-    );
+    // WriteAuditLog is discovered automatically from app/Listeners by the
+    // framework's EventServiceProvider. Registering ModelChanged here as
+    // well queued every audit entry twice.
+
+    // Taxonomy events were previously listed on a $listen property that
+    // Laravel never reads outside EventServiceProvider, so category audits
+    // and cache invalidation silently never ran. Register them explicitly
+    // alongside every other listener.
+    Event::listen(CategoryCreated::class, RecordCategoryAudit::class);
+    Event::listen(CategoryCreated::class, InvalidateCategoryCache::class);
+    Event::listen(CategoryUpdated::class, RecordCategoryUpdatedAudit::class);
+    Event::listen(CategoryUpdated::class, InvalidateCategoryCache::class);
+    Event::listen(CategoryDeleted::class, RecordCategoryDeletedAudit::class);
+    Event::listen(CategoryDeleted::class, InvalidateCategoryCache::class);
+    Event::listen(CategoryAttachedToCourse::class, RecordCategoryAttachedAudit::class);
+    Event::listen(CategoryAttachedToCourse::class, InvalidateCourseCategoryCache::class);
+    Event::listen(CategoryDetachedFromCourse::class, RecordCategoryDetachedAudit::class);
+    Event::listen(CategoryDetachedFromCourse::class, InvalidateCourseCategoryCache::class);
+
    Event::listen(
 CourseCreated::class,
 RecordCourseCreatedAudit::class,
@@ -430,8 +430,50 @@ Event::listen(
     IssueCertificateForPassedAssessment::class,
 );
 Event::listen(
+    AssessmentPassed::class,
+    SyncCourseProgressAfterAssessment::class,
+);
+// Diagnostic events were dispatched but this listener was never registered,
+// so no diagnostic audit trail was ever written.
+Event::listen(
+    DiagnosticAttemptStarted::class,
+    [RecordDiagnosticAudit::class, 'handleAttemptStarted'],
+);
+Event::listen(
+    DiagnosticAttemptSubmitted::class,
+    [RecordDiagnosticAudit::class, 'handleAttemptSubmitted'],
+);
+Event::listen(
+    DiagnosticResponseSubmitted::class,
+    [RecordDiagnosticAudit::class, 'handleResponseSubmitted'],
+);
+Event::listen(
+    DiagnosticStepCompleted::class,
+    [RecordDiagnosticAudit::class, 'handleStepCompleted'],
+);
+Event::listen(
+    DiagnosticHintUsed::class,
+    [RecordDiagnosticAudit::class, 'handleHintUsed'],
+);
+Event::listen(
+    DiagnosticResultGenerated::class,
+    [RecordDiagnosticAudit::class, 'handleResultGenerated'],
+);
+Event::listen(
+    DiagnosticPassed::class,
+    [RecordDiagnosticAudit::class, 'handlePassed'],
+);
+Event::listen(
+    DiagnosticFailed::class,
+    [RecordDiagnosticAudit::class, 'handleFailed'],
+);
+Event::listen(
     DiagnosticPassed::class,
     [UpdateDiagnosticProgress::class, 'handlePassed'],
+);
+Event::listen(
+    DiagnosticPassed::class,
+    SyncCourseProgressAfterPractical::class,
 );
 Event::listen(
     DiagnosticFailed::class,

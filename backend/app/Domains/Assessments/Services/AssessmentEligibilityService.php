@@ -5,12 +5,20 @@ namespace App\Domains\Assessments\Services;
 use App\Domains\Assessments\Models\Assessment;
 use App\Domains\DiagnosticScenarios\Enums\DiagnosticScenarioAttemptStatus;
 use App\Domains\Quizzes\Enums\QuizAttemptStatus;
+use App\Enums\LessonStatus;
+use App\Enums\SectionStatus;
 use App\Models\Lesson;
 use App\Models\User;
 use App\Models\LessonProgress;
 
 final class AssessmentEligibilityService
 {
+    /** @var array<string, int> */
+    private array $completedLessonCounts = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private array $sectionAssessmentEvidence = [];
+
     /**
      * Evaluate whether a user is eligible to start an assessment.
      *
@@ -36,10 +44,15 @@ final class AssessmentEligibilityService
             'lesson' => collect($assessment->lesson ? [$assessment->lesson] : []),
             'section' => $assessment->section
                 ? $assessment->section->lessons
+                    ->where('status', LessonStatus::PUBLISHED)
+                    ->values()
                 : collect(),
             default => $assessment->course
                 ->sections
-                ->flatMap(fn ($section) => $section->lessons),
+                ->where('status', SectionStatus::PUBLISHED)
+                ->flatMap(fn ($section) => $section->lessons
+                    ->where('status', LessonStatus::PUBLISHED))
+                ->values(),
         };
 
         if ($scope === 'lesson') {
@@ -122,16 +135,23 @@ final class AssessmentEligibilityService
             ];
         }
 
+        $cacheKey = $user->id.':'.$assessment->course_id;
+
+        if (isset($this->sectionAssessmentEvidence[$cacheKey])) {
+            return $this->sectionAssessmentEvidence[$cacheKey];
+        }
+
         $required = Assessment::query()
             ->where('course_id', $assessment->course_id)
             ->whereNotNull('section_id')
             ->whereNull('lesson_id')
             ->where('is_required', true)
             ->where('status', 'published')
+            ->whereHas('section', fn ($query) => $query->where('status', SectionStatus::PUBLISHED->value))
             ->get();
 
         if ($required->isEmpty()) {
-            return [
+            return $this->sectionAssessmentEvidence[$cacheKey] = [
                 'required' => 0,
                 'completed' => 0,
                 'eligible' => true,
@@ -148,7 +168,7 @@ final class AssessmentEligibilityService
 
         $completed = count($passedIds);
 
-        return [
+        return $this->sectionAssessmentEvidence[$cacheKey] = [
             'required' => $required->count(),
             'completed' => $completed,
             'eligible' => $completed >= $required->count(),
@@ -183,11 +203,19 @@ final class AssessmentEligibilityService
         return 0;
     }
 
-    return LessonProgress::query()
-        ->whereIn('lesson_id', $lessons->pluck('id'))
-        ->where('user_id', $user->id)
-        ->whereNotNull('completed_at')
-        ->count();
+    $cacheKey = $user->id.':'.md5(
+        $lessons->pluck('id')->sort()->values()->implode(','),
+    );
+
+    if (! array_key_exists($cacheKey, $this->completedLessonCounts)) {
+        $this->completedLessonCounts[$cacheKey] = LessonProgress::query()
+            ->whereIn('lesson_id', $lessons->pluck('id'))
+            ->where('user_id', $user->id)
+            ->whereNotNull('completed_at')
+            ->count();
+    }
+
+    return $this->completedLessonCounts[$cacheKey];
 }
 
     /**
@@ -218,11 +246,14 @@ final class AssessmentEligibilityService
             $user,
             $requiredScore
         ) {
-            $attempt = $quiz->attempts()
-                ->where('user_id', $user->id)
-                ->where('status', QuizAttemptStatus::SUBMITTED)
-                ->orderByDesc('attempt_number')
-                ->first();
+            $attempt = $quiz->relationLoaded('attempts')
+                ? $quiz->attempts->first()
+                : $quiz->attempts()
+                    ->where('user_id', $user->id)
+                    ->where('status', QuizAttemptStatus::SUBMITTED)
+                    ->orderByDesc('percentage')
+                    ->orderByDesc('attempt_number')
+                    ->first();
 
             $score = $attempt?->percentage !== null
                 ? (int) $attempt->percentage
@@ -274,15 +305,17 @@ final class AssessmentEligibilityService
         $scenarios = $assessment->diagnosticScenarios;
 
         $items = $scenarios->map(function ($scenario) use ($user) {
-            $attempt = $scenario->attempts()
-                ->where('user_id', $user->id)
-                ->where(
-                    'status',
-                    DiagnosticScenarioAttemptStatus::SUBMITTED
-                )
-                ->where('passed', true)
-                ->orderByDesc('attempt_number')
-                ->first();
+            $attempt = $scenario->relationLoaded('attempts')
+                ? $scenario->attempts->first()
+                : $scenario->attempts()
+                    ->where('user_id', $user->id)
+                    ->where(
+                        'status',
+                        DiagnosticScenarioAttemptStatus::SUBMITTED
+                    )
+                    ->where('passed', true)
+                    ->orderByDesc('attempt_number')
+                    ->first();
 
             return [
                 'scenario_id' => $scenario->id,

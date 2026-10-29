@@ -6,7 +6,6 @@ use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
-use App\DTOs\Users\CreateUserData;
 
 class CreateUserRequest extends FormRequest
 {

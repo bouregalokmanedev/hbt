@@ -3,18 +3,21 @@
 namespace App\Domains\Payments\Http\Controllers;
 
 use App\Domains\Payments\Actions\HandleWebhookAction;
-use App\Domains\Payments\Models\Payment;
-use App\Domains\Payments\Services\PaymentService;
+use App\Domains\Payments\Actions\ProcessWebhookEventAction;
+use App\Domains\Payments\Models\WebhookEvent;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class WebhookController extends Controller
 {
-    public function stripe(Request $request, HandleWebhookAction $webhooks, PaymentService $payments): \Illuminate\Http\JsonResponse
-    {
+    public function stripe(
+        Request $request,
+        HandleWebhookAction $webhooks,
+        ProcessWebhookEventAction $processor,
+    ): JsonResponse {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature', '');
         $secret = config('services.stripe.webhook_secret');
@@ -40,20 +43,33 @@ class WebhookController extends Controller
             }
         }
 
-        $data = json_decode($payload, true) ?? $request->all();
-        $eventId = $data['id'] ?? (string) Str::uuid();
-        $eventType = $data['type'] ?? 'unknown';
-        $event = $webhooks->execute('stripe', $eventId, $eventType, $data);
+        $data = json_decode($payload, true);
+        if (! is_array($data)) {
+            return response()->json(['success' => false, 'message' => 'Invalid webhook payload.'], 400);
+        }
 
-        if ($event->wasRecentlyCreated === false && $event->status === 'processed') {
-            return response()->json(['success' => true, 'message' => 'Already processed.']);
+        $eventId = $data['id'] ?? null;
+        if (! is_string($eventId) || $eventId === '') {
+            return response()->json(['success' => false, 'message' => 'Missing webhook event id.'], 400);
+        }
+
+        $eventType = (string) ($data['type'] ?? 'unknown');
+        $claim = $webhooks->claim('stripe', $eventId, $eventType, $data);
+
+        if (! $claim['claimed']) {
+            return $this->claimConflict($claim['event']);
         }
 
         try {
-            $this->handleStripeEvent($eventType, $data, $payments);
-            $webhooks->markProcessed($event);
+            $processor->execute('stripe', $eventType, $data);
+            $webhooks->markProcessed($claim['event']);
         } catch (\Throwable $exception) {
-            $webhooks->markFailed($event, $exception->getMessage());
+            $webhooks->markFailed($claim['event'], $exception->getMessage());
+            Log::error('Stripe webhook processing failed.', [
+                'event_id' => $eventId,
+                'event_type' => $eventType,
+                'error' => $exception->getMessage(),
+            ]);
 
             return response()->json(['success' => false, 'message' => 'Webhook processing failed.'], 422);
         }
@@ -61,46 +77,55 @@ class WebhookController extends Controller
         return response()->json(['success' => true, 'message' => 'Webhook processed.']);
     }
 
-    public function paypal(Request $request, HandleWebhookAction $webhooks): \Illuminate\Http\JsonResponse
-    {
+    public function paypal(
+        Request $request,
+        HandleWebhookAction $webhooks,
+        ProcessWebhookEventAction $processor,
+    ): JsonResponse {
         if (! $this->paypalSignatureIsValid($request)) {
             return response()->json(['success' => false, 'message' => 'Invalid PayPal webhook signature.'], 400);
         }
 
         $data = $request->all();
-        $eventId = $data['id'] ?? (string) Str::uuid();
-        $eventType = $data['event_type'] ?? 'unknown';
-        $event = $webhooks->execute('paypal', $eventId, $eventType, $data);
+        $eventId = $data['id'] ?? null;
+        if (! is_string($eventId) || $eventId === '') {
+            return response()->json(['success' => false, 'message' => 'Missing webhook event id.'], 400);
+        }
 
-        if ($event->wasRecentlyCreated === false && $event->status === 'processed') {
-            return response()->json(['success' => true, 'message' => 'Already processed.']);
+        $eventType = (string) ($data['event_type'] ?? 'unknown');
+        $claim = $webhooks->claim('paypal', $eventId, $eventType, $data);
+
+        if (! $claim['claimed']) {
+            return $this->claimConflict($claim['event']);
         }
 
         try {
-            $object = $data['resource'] ?? $data['data']['object'] ?? [];
-            $paypalId = $object['id'] ?? $data['resource']['id'] ?? null;
-            if ($paypalId) {
-                $payment = Payment::where('provider_payment_id', $paypalId)->first();
-                if ($payment) {
-                    if (str_contains($eventType, 'COMPLETED')) {
-                        app(PaymentService::class)->markSucceeded($payment, ['webhook' => $eventType]);
-                    } elseif (str_contains($eventType, 'FAILED')) {
-                        app(PaymentService::class)->markFailed($payment, 'paypal_failed', 'PayPal payment failed.');
-                    }
-                } else {
-                    app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('paypal', $eventType, $data);
-                }
-            } else {
-                app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('paypal', $eventType, $data);
-            }
-            $webhooks->markProcessed($event);
+            $processor->execute('paypal', $eventType, $data);
+            $webhooks->markProcessed($claim['event']);
         } catch (\Throwable $exception) {
-            $webhooks->markFailed($event, $exception->getMessage());
+            $webhooks->markFailed($claim['event'], $exception->getMessage());
+            Log::error('PayPal webhook processing failed.', [
+                'event_id' => $eventId,
+                'event_type' => $eventType,
+                'error' => $exception->getMessage(),
+            ]);
 
             return response()->json(['success' => false, 'message' => 'Webhook processing failed.'], 422);
         }
 
         return response()->json(['success' => true, 'message' => 'PayPal webhook recorded.']);
+    }
+
+    private function claimConflict(WebhookEvent $event): JsonResponse
+    {
+        if ($event->status === WebhookEvent::STATUS_PROCESSED) {
+            return response()->json(['success' => true, 'message' => 'Already processed.']);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Webhook is already being processed.',
+        ], 409);
     }
 
     /**
@@ -172,30 +197,5 @@ class WebhookController extends Controller
 
             return false;
         }
-    }
-
-    private function handleStripeEvent(string $type, array $data, PaymentService $payments): void
-    {
-        $object = $data['data']['object'] ?? $data['object'] ?? [];
-
-        $providerPaymentId = $object['id'] ?? null;
-        if (! $providerPaymentId) {
-            app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('stripe', $type, $data);
-
-            return;
-        }
-
-        $payment = Payment::where('provider_payment_id', $providerPaymentId)->first();
-        if (! $payment) {
-            app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('stripe', $type, $data);
-
-            return;
-        }
-
-        match ($type) {
-            'payment_intent.succeeded', 'checkout.session.completed', 'charge.succeeded' => $payments->markSucceeded($payment, ['webhook' => $type]),
-            'payment_intent.payment_failed', 'charge.failed' => $payments->markFailed($payment, 'payment_failed', $object['failure_message'] ?? 'Payment failed.'),
-            default => app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('stripe', $type, $data),
-        };
     }
 }

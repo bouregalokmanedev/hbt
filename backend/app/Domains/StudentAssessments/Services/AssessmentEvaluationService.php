@@ -47,6 +47,21 @@ final class AssessmentEvaluationService
         }
 
         return DB::transaction(function () use ($attempt, $user, $submittedAnswers) {
+            /*
+             * A double-click sends two requests that both saw IN_PROGRESS
+             * before either committed. Claim the attempt with a row lock and
+             * re-check the status so only the first request grades it; the
+             * loser gets the same idempotent 409 as a retry after success.
+             */
+            $attempt = AssessmentAttempt::query()
+                ->whereKey($attempt->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($attempt->status !== AssessmentAttemptStatus::IN_PROGRESS) {
+                throw new AttemptAlreadySubmittedException();
+            }
+
             $attempt->loadMissing('assessment');
 
             // Adaptive assessments score by final ability estimate (θ);

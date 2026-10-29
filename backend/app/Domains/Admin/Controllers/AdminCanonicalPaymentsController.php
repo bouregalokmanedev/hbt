@@ -2,6 +2,9 @@
 
 namespace App\Domains\Admin\Controllers;
 
+use App\Domains\Payments\Actions\HandleWebhookAction;
+use App\Domains\Payments\Actions\ProcessWebhookEventAction;
+use App\Domains\Payments\Enums\PaymentStatus;
 use App\Domains\Payments\Models\Invoice;
 use App\Domains\Payments\Models\Order;
 use App\Domains\Payments\Models\Payment;
@@ -147,36 +150,34 @@ class AdminCanonicalPaymentsController extends Controller
         ]);
     }
 
-    public function replayWebhook(WebhookEvent $webhookEvent): JsonResponse
-    {
-        if ($webhookEvent->status === 'processed') {
+    public function replayWebhook(
+        WebhookEvent $webhookEvent,
+        HandleWebhookAction $webhooks,
+        ProcessWebhookEventAction $processor,
+    ): JsonResponse {
+        if ($webhookEvent->status === WebhookEvent::STATUS_PROCESSED) {
             return response()->json(['success' => false, 'message' => 'Event already processed.'], 422);
         }
 
-        $webhookEvent->update(['status' => 'pending', 'attempts' => 0, 'error_message' => null, 'failed_at' => null]);
+        if (! $webhooks->claimExisting($webhookEvent)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Webhook is already being processed. Try again after its claim lease expires.',
+            ], 409);
+        }
 
-        // Re-dispatch via the same webhook handler — provider-aware
-        $payload = $webhookEvent->payload;
-        $type = $webhookEvent->event_type;
+        $event = $webhookEvent->fresh();
 
         try {
-            if ($webhookEvent->provider === 'stripe') {
-                $payment = Payment::where('provider_payment_id', $payload['data']['object']['id'] ?? null)->first();
-                if ($payment) {
-                    app(\App\Domains\Payments\Services\PaymentService::class)->markSucceeded($payment, ['replay' => true]);
-                } else {
-                    app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('stripe', $type, $payload);
-                }
-            } else {
-                app(\App\Domains\Payments\Services\SubscriptionService::class)->handleWebhook('paypal', $type, $payload);
-            }
-            $webhookEvent->markProcessed();
+            $processor->execute($event->provider, $event->event_type, $event->payload ?? []);
+            $webhooks->markProcessed($event);
         } catch (\Throwable $e) {
-            $webhookEvent->markFailed($e->getMessage());
+            $webhooks->markFailed($event, $e->getMessage());
+
             return response()->json(['success' => false, 'message' => 'Webhook replay failed. See the stored error for details.'], 422);
         }
 
-        return response()->json(['success' => true, 'message' => 'Webhook replayed.', 'data' => ['id' => $webhookEvent->id]]);
+        return response()->json(['success' => true, 'message' => 'Webhook replayed.', 'data' => ['id' => $event->id]]);
     }
 
     public function failedPayments(): JsonResponse
@@ -212,15 +213,21 @@ class AdminCanonicalPaymentsController extends Controller
         $data = $request->validate([
             'amount' => ['sometimes', 'integer', 'min:1'],
             'reason' => ['nullable', 'string', 'max:1000'],
+            'idempotency_key' => ['sometimes', 'string', 'max:120'],
         ]);
 
-        $amount = $data['amount'] ?? $payment->amount;
-        $payment = app(\App\Domains\Payments\Services\PaymentService::class)->refund($payment, $amount, $data['reason'] ?? 'Admin refund');
+        $amount = $data['amount'] ?? $payment->refundableAmount();
+        $payment = app(\App\Domains\Payments\Services\PaymentService::class)->refund(
+            $payment,
+            $amount,
+            $data['reason'] ?? 'Admin refund',
+            $data['idempotency_key'] ?? null,
+        );
         $audit->log('payment.refunded', $payment, [], ['amount' => $amount, 'reason' => $data['reason'] ?? null]);
 
         return response()->json([
             'success' => true,
-            'message' => $amount < $payment->amount ? 'Partial refund processed.' : 'Payment refunded.',
+            'message' => $payment->status === PaymentStatus::REFUNDED ? 'Payment refunded.' : 'Partial refund processed.',
             'data' => ['id' => $payment->id, 'status' => $payment->status->value],
         ]);
     }

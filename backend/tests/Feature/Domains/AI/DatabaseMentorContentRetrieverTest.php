@@ -209,6 +209,9 @@ it('returns an empty array when nothing matches', function () {
 
     ragLesson($section, [
         'title' => 'Cooling System',
+        // Keep the fixture deterministic: the factory's random paragraph can
+        // legitimately contain query terms such as "can".
+        'description' => null,
         'content' => 'Thermostat and coolant fundamentals.',
     ]);
 

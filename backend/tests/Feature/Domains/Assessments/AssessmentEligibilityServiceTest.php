@@ -10,6 +10,8 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Section;
 use App\Models\User;
+use App\Enums\LessonStatus;
+use App\Enums\SectionStatus;
 
 function assessmentEligibilityService(): AssessmentEligibilityService
 {
@@ -55,12 +57,14 @@ it('requires all course lessons to be completed', function () {
 
     $section = Section::factory()->create([
         'course_id' => $course->id,
+        'status' => SectionStatus::PUBLISHED,
     ]);
 
    $lessons = collect(range(1, 3))->map(
     fn (int $position) => Lesson::factory()->create([
         'section_id' => $section->id,
         'position' => $position,
+        'status' => LessonStatus::PUBLISHED,
     ])
 );
 
@@ -86,12 +90,14 @@ it('allows eligibility when all course lessons are completed', function () {
 
     $section = Section::factory()->create([
         'course_id' => $course->id,
+        'status' => SectionStatus::PUBLISHED,
     ]);
 
   $lessons = collect(range(1, 3))->map(
     fn (int $position) => Lesson::factory()->create([
         'section_id' => $section->id,
         'position' => $position,
+        'status' => LessonStatus::PUBLISHED,
     ])
 );
 

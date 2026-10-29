@@ -69,11 +69,26 @@ final class StudentAssessmentController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        $perPage = min(max((int) $request->integer('per_page', 50), 1), 100);
+        $page = max((int) $request->integer('page', 1), 1);
+
         $assessments = $this->listAvailable->execute($request->user());
+        $total = $assessments->count();
 
-        $data = $assessments->map(fn ($item) => (new StudentAssessmentResource($item))->toArray($request))->values();
+        $data = $assessments
+            ->slice(($page - 1) * $perPage, $perPage)
+            ->map(fn ($item) => (new StudentAssessmentResource($item))->toArray($request))
+            ->values();
 
-        return response()->json(['data' => $data]);
+        return response()->json([
+            'data' => $data,
+            'meta' => [
+                'current_page' => $page,
+                'last_page' => max((int) ceil($total / $perPage), 1),
+                'per_page' => $perPage,
+                'total' => $total,
+            ],
+        ]);
     }
 
     /**

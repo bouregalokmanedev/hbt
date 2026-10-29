@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { env } from "@/config/env";
+import { handleUnauthorizedResponse } from "@/lib/api/unauthorized";
 import { authStorage } from "@/lib/storage/auth-storage";
 
 import type { CourseGradebook as CourseGradebookData } from "../types/course.types";
@@ -20,14 +21,21 @@ export function CourseGradebook({ courseId, enrolled }: { courseId: string; enro
     if (!enrolled) return;
 
     let active = true;
+    const token = authStorage.getToken();
 
     void fetch(`${env.apiUrl}/v1/courses/${courseId}/gradebook`, {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${authStorage.getToken() ?? ""}`,
+        Authorization: `Bearer ${token ?? ""}`,
       },
     })
-      .then(async (response) => (response.ok ? ((await response.json()) as { data: CourseGradebookData }) : null))
+      .then(async (response) => {
+        if (!response.ok) {
+          handleUnauthorizedResponse(response.status, Boolean(token));
+          return null;
+        }
+        return (await response.json()) as { data: CourseGradebookData };
+      })
       .then((payload) => {
         if (active) setGradebook(payload?.data ?? null);
       })

@@ -27,10 +27,11 @@ final readonly class ActionResult
         string $message,
         ?array $errors = null,
         ?string $code = null,
+        mixed $data = null,
     ): self {
         return new self(
             success: false,
-            data: null,
+            data: $data,
             message: $message,
             errors: $errors,
             code: $code,

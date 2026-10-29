@@ -194,6 +194,7 @@ public function updateProgress(
         $request->validate([
             'progress_percentage' => ['sometimes', 'integer', 'min:0', 'max:100'],
             'time_spent' => ['sometimes', 'integer', 'min:0'],
+            'video_position' => ['sometimes', 'integer', 'min:0'],
         ])
     );
 

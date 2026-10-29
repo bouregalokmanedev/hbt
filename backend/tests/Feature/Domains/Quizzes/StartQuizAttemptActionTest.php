@@ -7,6 +7,11 @@ use App\Domains\Quizzes\Enums\QuizAttemptStatus;
 use App\Domains\Quizzes\Enums\QuizStatus;
 use App\Domains\Quizzes\Models\Quiz;
 use App\Domains\Quizzes\Models\QuizAttempt;
+use App\Enums\Courses\CourseStatus;
+use App\Enums\SectionStatus;
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
@@ -25,11 +30,34 @@ class StartQuizAttemptActionTest extends TestCase
         $this->action = app(StartQuizAttemptAction::class);
     }
 
+    /**
+     * A quiz can only be attempted inside a published section of a
+     * published course the learner is enrolled in.
+     */
+    private function publishedQuizFor(User $user, array $attributes = []): Quiz
+    {
+        $course = Course::factory()->create(['status' => CourseStatus::PUBLISHED]);
+        $section = Section::factory()->create([
+            'course_id' => $course->id,
+            'status' => SectionStatus::PUBLISHED,
+        ]);
+
+        Enrollment::factory()->create([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+        ]);
+
+        return Quiz::factory()->create([
+            ...$attributes,
+            'section_id' => $section->id,
+        ]);
+    }
+
     public function test_creates_first_attempt(): void
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 3,
         ]);
@@ -80,7 +108,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 3,
         ]);
@@ -118,7 +146,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 2,
         ]);
@@ -153,7 +181,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 1,
         ]);
@@ -185,7 +213,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::DRAFT,
             'max_attempts' => 3,
         ]);
@@ -209,7 +237,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => 2,
         ]);
@@ -244,7 +272,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'max_attempts' => null,
         ]);
@@ -277,7 +305,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'time_limit' => 20,
             'max_attempts' => null,
@@ -302,7 +330,7 @@ class StartQuizAttemptActionTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $quiz = Quiz::factory()->create([
+        $quiz = $this->publishedQuizFor($user, [
             'status' => QuizStatus::PUBLISHED,
             'time_limit' => null,
             'max_attempts' => null,

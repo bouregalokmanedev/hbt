@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Authenticated application areas. These routes render for signed-in users
+# only and have no value in search results.
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /instructor
+Disallow: /marketing
+Disallow: /support
+Disallow: /profile
+Disallow: /settings
+Disallow: /checkout
+Disallow: /messages
+Disallow: /notifications
+Disallow: /sessions
+
+Sitemap: https://hbtronics.dz/sitemap.xml

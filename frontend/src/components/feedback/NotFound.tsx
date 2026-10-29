@@ -3,9 +3,16 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui";
+import { usePageMeta } from "@/lib/page-meta";
 
 export function NotFound() {
     const { t } = useTranslation();
+
+    usePageMeta({
+        title: t("errors.notFoundTitle"),
+        description: t("errors.notFoundBody"),
+        noIndex: true,
+    });
 
     return (
         <main className="grid min-h-screen place-items-center px-6">

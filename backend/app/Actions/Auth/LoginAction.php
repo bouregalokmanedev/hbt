@@ -5,13 +5,14 @@ namespace App\Actions\Auth;
 use App\DTOs\Auth\LoginData;
 use App\DTOs\Auth\Results\AuthenticationResult;
 use App\Models\User;
+use App\Models\TwoFactorChallenge;
 use App\Support\ActionResult;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\UserStatus;
 use App\Services\Session\SessionService;
 use App\Services\Security\AuthenticationLogService;
 use App\Services\Security\OtpService;
-use App\Notifications\TwoFactorCodeNotification;
+use App\Services\Security\TwoFactorChallengeService;
 use App\Services\Security\TwoFactorDeliveryService;
 
 
@@ -21,6 +22,9 @@ final readonly class LoginAction
     public function __construct(
     private SessionService $sessionService,
     private AuthenticationLogService $authenticationLogService,
+    private OtpService $otp,
+    private TwoFactorDeliveryService $twoFactorDelivery,
+    private TwoFactorChallengeService $twoFactorChallenges,
 ) {}
 
     public function execute(LoginData $dto): ActionResult
@@ -127,13 +131,22 @@ final readonly class LoginAction
 }
         $security = $user->studentSecuritySetting()->first();
         if ($security?->two_factor_enabled && $security->two_factor_verified_at) {
-            $otp = app(OtpService::class)->generate($user, 'two_factor_login');
+            /*
+             * The challenge token proves this request passed the password
+             * step. The OTP alone is never enough to mint a token.
+             */
+            $challenge = $this->twoFactorChallenges->issue($user, request());
+            $otp = $this->otp->generate($user, 'two_factor_login');
             $method = $security->two_factor_method ?? 'email';
-            app(TwoFactorDeliveryService::class)->send($user, $otp['code'], $method);
+            $this->twoFactorDelivery->send($user, $otp['code'], $method);
             $this->authenticationLogService->log('login.mfa_challenge', true, $user, $dto->email, request());
             return ActionResult::failure(
                 'Two-factor verification is required. A six-digit code was sent to your '.($method === 'phone' ? 'phone number' : 'email').'.',
-                code: 'requires_two_factor'
+                code: 'requires_two_factor',
+                data: [
+                    'challenge_token' => $challenge['token'],
+                    'expires_in' => TwoFactorChallenge::TTL_MINUTES * 60,
+                ],
             );
         }
         

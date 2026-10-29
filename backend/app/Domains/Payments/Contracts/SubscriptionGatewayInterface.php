@@ -13,5 +13,7 @@ interface SubscriptionGatewayInterface
 
     public function cancel(string $providerSubscriptionId): void;
 
+    public function cancelAtPeriodEnd(string $providerSubscriptionId): void;
+
     public function changePlan(ChangeSubscriptionPlanData $data): void;
 }

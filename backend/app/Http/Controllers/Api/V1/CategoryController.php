@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Domains\Taxonomy\Repositories\CategoryRepositoryInterface;
 use App\Domains\Taxonomy\Actions\UpdateCategoryAction;
 use App\Domains\Taxonomy\Requests\UpdateCategoryRequest;
+use App\Domains\Taxonomy\Services\CategoryCacheService;
 use App\Domains\Taxonomy\Services\TreeService;
 use App\Domains\Taxonomy\Resources\CategoryTreeResource;
 use App\Domains\Taxonomy\Resources\BreadcrumbResource;
@@ -116,21 +117,21 @@ public function roots(
 public function active()
 {
     return CategoryResource::collection(
-        $this->cachedList('categories.active', true)
+        $this->cachedList(CategoryCacheService::ACTIVE_KEY, true)
     );
 }
 
 public function inactive()
 {
     return CategoryResource::collection(
-        $this->cachedList('categories.inactive', false)
+        $this->cachedList(CategoryCacheService::INACTIVE_KEY, false)
     );
 }
 
 public function leaves()
 {
     return CategoryResource::collection(
-        Cache::remember('categories.leaves', now()->addMinutes(30), fn () => Category::query()
+        Cache::remember(CategoryCacheService::LEAVES_KEY, now()->addMinutes(30), fn () => Category::query()
             ->whereDoesntHave('children')
             ->orderBy('name')
             ->get())
@@ -151,9 +152,7 @@ private function cachedList(string $key, bool $isActive)
 
 private function forgetCategoryCaches(): void
 {
-    Cache::forget('categories.active');
-    Cache::forget('categories.inactive');
-    Cache::forget('categories.leaves');
+    app(CategoryCacheService::class)->forget();
 }
   public function tree(
     TreeService $tree

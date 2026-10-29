@@ -6,6 +6,7 @@ use App\Domains\Payments\Contracts\SubscriptionGatewayInterface;
 use App\Domains\Payments\Contracts\SubscriptionResult;
 use App\Domains\Payments\DTOs\ChangeSubscriptionPlanData;
 use App\Domains\Payments\DTOs\CreateSubscriptionData;
+use App\Domains\Payments\Exceptions\PaymentGatewayConfigurationException;
 use App\Domains\Payments\Models\PaymentProviderPlan;
 use App\Domains\Payments\Models\Plan;
 use App\Models\User;
@@ -22,6 +23,8 @@ class StripeSubscriptionGateway implements SubscriptionGatewayInterface
     public function createSubscription(CreateSubscriptionData $data): SubscriptionResult
     {
         if (! config('services.stripe.secret')) {
+            $this->assertConfigured();
+
             Log::warning('Stripe secret missing — returning stub subscription.');
 
             return new SubscriptionResult(
@@ -76,6 +79,8 @@ class StripeSubscriptionGateway implements SubscriptionGatewayInterface
     public function cancel(string $providerSubscriptionId): void
     {
         if (! config('services.stripe.secret')) {
+            $this->assertConfigured();
+
             return;
         }
 
@@ -83,9 +88,25 @@ class StripeSubscriptionGateway implements SubscriptionGatewayInterface
         $stripe->subscriptions->cancel($providerSubscriptionId);
     }
 
+    public function cancelAtPeriodEnd(string $providerSubscriptionId): void
+    {
+        if (! config('services.stripe.secret')) {
+            $this->assertConfigured();
+
+            return;
+        }
+
+        $stripe = new StripeClient(config('services.stripe.secret'));
+        $stripe->subscriptions->update($providerSubscriptionId, [
+            'cancel_at_period_end' => true,
+        ]);
+    }
+
     public function changePlan(ChangeSubscriptionPlanData $data): void
     {
         if (! config('services.stripe.secret')) {
+            $this->assertConfigured();
+
             return;
         }
 
@@ -109,6 +130,19 @@ class StripeSubscriptionGateway implements SubscriptionGatewayInterface
             'proration_behavior' => 'create_prorations',
             'metadata' => ['plan_id' => $data->newPlanId],
         ]);
+    }
+
+    private function assertConfigured(): void
+    {
+        if (filled(config('services.stripe.secret'))) {
+            return;
+        }
+
+        if (app()->environment('production')) {
+            throw new PaymentGatewayConfigurationException(
+                'Stripe is not configured; cannot manage subscriptions.'
+            );
+        }
     }
 
     private function priceIdFor(string $planId): ?string

@@ -41,11 +41,13 @@ final class DiagnosticScenarioAttemptFactory extends Factory
     public function completed(): static
     {
         return $this->state(fn (): array => [
-            'status' => DiagnosticScenarioAttemptStatus::COMPLETED,
+            'status' => DiagnosticScenarioAttemptStatus::SUBMITTED,
 
             'score' => fake()->numberBetween(0, 100),
 
             'passed' => true,
+
+            'submitted_at' => now(),
 
             'completed_at' => now(),
         ]);
@@ -54,11 +56,13 @@ final class DiagnosticScenarioAttemptFactory extends Factory
     public function passed(): static
     {
         return $this->state(fn (): array => [
-            'status' => DiagnosticScenarioAttemptStatus::COMPLETED,
+            'status' => DiagnosticScenarioAttemptStatus::SUBMITTED,
 
             'score' => fake()->numberBetween(70, 100),
 
             'passed' => true,
+
+            'submitted_at' => now(),
 
             'completed_at' => now(),
         ]);
@@ -67,11 +71,13 @@ final class DiagnosticScenarioAttemptFactory extends Factory
     public function failed(): static
     {
         return $this->state(fn (): array => [
-            'status' => DiagnosticScenarioAttemptStatus::COMPLETED,
+            'status' => DiagnosticScenarioAttemptStatus::SUBMITTED,
 
             'score' => fake()->numberBetween(0, 69),
 
             'passed' => false,
+
+            'submitted_at' => now(),
 
             'completed_at' => now(),
         ]);

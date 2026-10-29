@@ -12,6 +12,7 @@ use App\Domains\Quizzes\Models\QuizAttemptAnswer;
 use App\Domains\Quizzes\Models\QuizAttemptAnswerOption;
 use App\Domains\Quizzes\Models\QuizQuestion;
 use App\Domains\Quizzes\Models\QuizQuestionOption;
+use App\Domains\Progression\Models\StudentXpTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
@@ -1104,6 +1105,83 @@ class SubmitQuizAttemptActionTest extends TestCase
             new SubmitQuizAttemptData([
                 $question->id => [$correctOption->id],
             ]),
+        );
+    }
+
+    public function test_duplicate_submission_grades_once_and_awards_xp_once(): void
+    {
+        $quiz = Quiz::factory()->create([
+            'pass_percentage' => 70,
+        ]);
+
+        $question = QuizQuestion::factory()->create([
+            'quiz_id' => $quiz->id,
+            'type' => QuizQuestionType::SINGLE_CHOICE,
+            'points' => 10,
+            'required' => true,
+            'position' => 1,
+        ]);
+
+        $correctOption = QuizQuestionOption::factory()->create([
+            'quiz_question_id' => $question->id,
+            'is_correct' => true,
+            'position' => 1,
+        ]);
+
+        $attempt = QuizAttempt::factory()->create([
+            'quiz_id' => $quiz->id,
+            'user_id' => $this->user->id,
+            'status' => QuizAttemptStatus::IN_PROGRESS,
+        ]);
+
+        $answers = new SubmitQuizAttemptData([
+            $question->id => [$correctOption->id],
+        ]);
+
+        $first = $this->action->execute($attempt, $answers);
+
+        $this->assertSame(QuizAttemptStatus::SUBMITTED, $first->status);
+
+        /*
+         * The second request still holds the pre-submission model, exactly
+         * like a double-click whose first response has not reached the
+         * browser yet. It must be rejected instead of regrading.
+         */
+        try {
+            $this->action->execute($attempt, $answers);
+            $this->fail('A duplicate submission must be rejected.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame(
+                'This quiz attempt has already been submitted.',
+                $exception->getMessage(),
+            );
+        }
+
+        $this->assertSame(
+            1,
+            QuizAttemptAnswer::query()
+                ->where('attempt_id', $attempt->id)
+                ->count(),
+        );
+
+        $this->assertSame(
+            1,
+            QuizAttemptAnswerOption::query()
+                ->whereHas(
+                    'answer',
+                    fn ($query) => $query->where('attempt_id', $attempt->id),
+                )
+                ->count(),
+        );
+
+        // XP is awarded by a dedupe key, so even a replayed submission can
+        // never farm additional points.
+        $this->assertSame(
+            1,
+            StudentXpTransaction::query()
+                ->where('user_id', $this->user->id)
+                ->where('event', 'quiz_passed')
+                ->count(),
         );
     }
 }

@@ -6,6 +6,7 @@ use App\Domains\Payments\Actions\CreateCheckoutAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
@@ -15,21 +16,20 @@ class CheckoutController extends Controller
             'items' => ['required', 'array', 'min:1', 'max:10'],
             'items.*.course_id' => ['required', 'uuid', 'exists:courses,id'],
             'items.*.quantity' => ['sometimes', 'integer', 'min:1', 'max:1'],
-            'provider' => ['sometimes', 'string', 'in:stripe,paypal,manual'],
+            'provider' => ['sometimes', 'nullable', 'string', 'in:stripe,paypal,manual'],
+            // Accepted for backwards compatibility but deliberately ignored:
+            // the checkout currency is derived from the courses themselves.
             'currency' => ['sometimes', 'string', 'size:3'],
             'idempotency_key' => ['sometimes', 'string', 'max:80'],
             'coupon_code' => ['sometimes', 'nullable', 'string', 'max:40'],
         ]);
 
-        $provider = $data['provider'] ?? 'stripe';
-        $currency = strtoupper($data['currency'] ?? config('app.currency', 'DZD'));
-        $key = $data['idempotency_key'] ?? (string) \Illuminate\Support\Str::uuid();
+        $key = $data['idempotency_key'] ?? (string) Str::uuid();
 
         $result = $checkout->execute(
             userId: $request->user()->id,
             items: $data['items'],
-            provider: $provider,
-            currency: $currency,
+            provider: $data['provider'] ?? null,
             idempotencyKey: $key,
             couponCode: $data['coupon_code'] ?? null,
         );
@@ -47,6 +47,18 @@ class CheckoutController extends Controller
         }
 
         $payment = $result['payment'];
+
+        if (! $payment) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Order retrieved.',
+                'data' => [
+                    'order_id' => $result['order']->id,
+                    'status' => $result['order']->status,
+                    'free' => false,
+                ],
+            ]);
+        }
 
         return response()->json([
             'success' => true,

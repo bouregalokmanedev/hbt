@@ -59,6 +59,8 @@ export interface LessonProgress {
   started_at: string | null;
   completed_at: string | null;
   is_completed: boolean;
+  video_position?: number | null;
+  last_position?: number | null;
 }
 
 export interface CourseLesson {

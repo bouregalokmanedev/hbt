@@ -6,6 +6,7 @@ use App\Models\CourseProgress;
 use App\Models\SectionProgress;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Enums\LessonStatus;
+use App\Enums\SectionStatus;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\User;
@@ -20,6 +21,7 @@ beforeEach(function () {
 
     $this->section = Section::factory()->create([
         'course_id' => $this->course->id,
+        'status' => SectionStatus::PUBLISHED,
     ]);
 
     $this->lessonOne = Lesson::factory()->create([

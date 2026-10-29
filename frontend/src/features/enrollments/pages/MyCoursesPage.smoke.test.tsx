@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { I18nextProvider } from "react-i18next";
 
 import i18n from "@/i18n";
+import type { CourseJourney } from "@/features/courses/types/journey.types";
 import { MyCoursesPage } from "./MyCoursesPage";
 import type { Enrollment } from "../types/enrollment.types";
 
@@ -48,6 +49,36 @@ function renderPage() {
       </MemoryRouter>
     </I18nextProvider>,
   );
+}
+
+function journey(overrides: Partial<CourseJourney> = {}): CourseJourney {
+  return {
+    passed: false,
+    certificate_ready: false,
+    certificate: null,
+    requirements: [
+      { key: "lessons", label: "Lessons", required: 5, completed: 2, passed: false },
+      { key: "quizzes", label: "Checkpoints", required: 1, completed: 0, passed: false },
+    ],
+    lessons: {
+      required: 5,
+      completed: 2,
+      passed: false,
+      next: { id: "l3", title: "Read live data", section_id: "s1" },
+    },
+    sections: [],
+    assessments: [],
+    quizzes: [],
+    practicals: [],
+    final_assessment: null,
+    next_step: {
+      type: "quiz",
+      id: "quiz-1",
+      title: "Checkpoint 1",
+      path: "/courses/c1/quizzes/quiz-1",
+    },
+    ...overrides,
+  };
 }
 
 function mockHook(
@@ -162,5 +193,63 @@ describe("MyCoursesPage", () => {
     mockHook({ isLoading: true });
     renderPage();
     expect(screen.getByTestId("my-courses-loading")).toBeInTheDocument();
+  });
+
+  it("drives the card CTA and checklist from the course journey", async () => {
+    mockHook({ enrollments: [buildEnrollment({ journey: journey() })] });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("my-courses-card")).toBeInTheDocument();
+    });
+
+    const cta = screen.getByRole("link", { name: /continue checkpoint/i });
+    expect(cta).toHaveAttribute("href", "/courses/c1/quizzes/quiz-1");
+
+    expect(screen.getByText("Course journey")).toBeInTheDocument();
+    expect(screen.getByText("Lessons")).toBeInTheDocument();
+    expect(screen.getByText("2/5")).toBeInTheDocument();
+    expect(screen.getByText("Checkpoints")).toBeInTheDocument();
+    expect(screen.getByText("0/1")).toBeInTheDocument();
+
+    expect(screen.getByText(/Next step:/)).toBeInTheDocument();
+    expect(screen.getByText("Checkpoint 1")).toBeInTheDocument();
+  });
+
+  it("keeps the certificate CTA authoritative when the course is complete", async () => {
+    mockHook({
+      enrollments: [
+        buildEnrollment({
+          status: "completed",
+          journey: journey({
+            passed: true,
+            certificate_ready: true,
+            certificate: {
+              id: "cert-1",
+              certificate_number: "HBT-2026-0009",
+              issued_at: "2026-10-20T10:00:00Z",
+            },
+            next_step: {
+              type: "certificate",
+              id: "cert-1",
+              title: "Your certificate is ready",
+              path: "/certificates",
+            },
+          }),
+        }),
+      ],
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("my-courses-card")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Certificate earned")).toBeInTheDocument();
+
+    const cta = screen.getByRole("link", { name: /view certificate/i });
+    expect(cta).toHaveAttribute("href", "/certificates");
   });
 });

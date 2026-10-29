@@ -115,6 +115,19 @@ it('files a passed result under Assessments and the minted certificate under Cer
         'course_id' => $course->id,
     ]);
 
+    // Since certificates now require a completed course, give the learner a
+    // published section whose only lesson is already complete.
+    $section = Section::factory()->published()->create([
+        'course_id' => $course->id,
+    ]);
+    $lesson = Lesson::factory()->published()->create([
+        'section_id' => $section->id,
+    ]);
+    \App\Models\LessonProgress::factory()->completed()->create([
+        'user_id' => $user->id,
+        'lesson_id' => $lesson->id,
+    ]);
+
     $attempt = AssessmentAttempt::factory()->create([
         'assessment_id' => $assessment->id,
         'user_id' => $user->id,

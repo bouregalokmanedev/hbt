@@ -156,7 +156,7 @@ it('points the QR and verify link at the branded frontend page', function () {
     expect($html)
         ->toContain('/verify/'.$certificate->certificate_number)
         ->toContain('Certificate of Achievement')
-        ->toContain($certificate->recipient_name)
-        ->toContain($certificate->course_title)
+        ->toContain(e($certificate->recipient_name))
+        ->toContain(e($certificate->course_title))
         ->not->toContain('backend:');
 });

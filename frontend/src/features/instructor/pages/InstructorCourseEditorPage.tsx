@@ -3,6 +3,7 @@ import {
     Archive,
     ArrowLeft,
     Award,
+    BookOpenCheck,
     CheckCircle2,
     ClipboardCheck,
     ExternalLink,
@@ -48,6 +49,7 @@ import {
     createInstructorCourse,
     deleteInstructorCourse,
     getInstructorAssessments,
+    getInstructorAssignments,
     getInstructorCourse,
     getInstructorCurriculum,
     getInstructorQuizzes,
@@ -152,6 +154,7 @@ export function InstructorCourseEditorPage() {
     const [notice, setNotice] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+    const [leaveTo, setLeaveTo] = useState<string | null>(null);
 
     const courseQuery = useQuery({
         queryKey: ["instructor", "course", courseId],
@@ -203,9 +206,7 @@ export function InstructorCourseEditorPage() {
             setLastSavedAt(new Date().toISOString());
             await refreshInstructorData();
             if (isNew) {
-                navigate(`/instructor/courses/${savedCourse.id}`, {
-                    replace: true,
-                });
+                setLeaveTo(`/instructor/courses/${savedCourse.id}`);
                 return;
             }
             queryClient.setQueryData(
@@ -241,7 +242,7 @@ export function InstructorCourseEditorPage() {
         mutationFn: () => deleteInstructorCourse(courseId!),
         onSuccess: async () => {
             await refreshInstructorData();
-            navigate("/instructor/courses", { replace: true });
+            setLeaveTo("/instructor/courses");
         },
         onError: (requestError) => setError(readError(requestError, t("instructor.editor.actionFail"))),
     });
@@ -260,7 +261,18 @@ export function InstructorCourseEditorPage() {
     });
 
     // Guard against losing unsaved edits through sidebar/back navigation.
-    const blocker = useBlocker(dirty && !saveMutation.isPending);
+    const blocker = useBlocker(dirty && leaveTo === null);
+
+    // Deliberate exits (after create or delete) must bypass the dirty guard.
+    useEffect(() => {
+        if (!leaveTo) return;
+        navigate(leaveTo, { replace: true });
+        setLeaveTo(null);
+    }, [leaveTo, navigate]);
+
+    // Lifecycle changes must never act on content the instructor cannot see
+    // yet: wait for the debounced autosave (or a manual save) first.
+    const lifecycleBlocked = dirty || saveMutation.isPending;
 
     const lifecycleActions = useMemo(() => {
         if (!course) {
@@ -355,6 +367,9 @@ export function InstructorCourseEditorPage() {
                         </Link>
                         <Link to={`/instructor/courses/${course.id}/assessments`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3.5 text-xs font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                             <ClipboardCheck className="h-3.5 w-3.5" /> {t("instructor.editor.assessments")}
+                        </Link>
+                        <Link to={`/instructor/courses/${course.id}/assignments`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#F47822]/25 bg-[#FFF8F4] dark:bg-[#F47822]/10 px-3.5 text-xs font-bold text-[#F47822] shadow-sm transition hover:bg-[#F47822] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
+                            <BookOpenCheck className="h-3.5 w-3.5" /> {t("instructor.editor.assignments")}
                         </Link>
                         <Link to={`/instructor/courses/${course.id}/analytics`} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-[#3A3A3A]/10 dark:border-white/10 bg-white dark:bg-[#1b1b20] px-3.5 text-xs font-bold text-[#3A3A3A]/65 dark:text-white/65 shadow-sm transition hover:border-[#F47822]/35 hover:bg-[#FFF8F4] dark:bg-[#F47822]/10 hover:text-[#F47822] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F47822]/35">
                             <Activity className="h-3.5 w-3.5" /> {t("instructor.editor.analytics")}
@@ -497,7 +512,12 @@ export function InstructorCourseEditorPage() {
                         <h2 className="mt-3 text-lg font-semibold capitalize">{statusText(course.status)}</h2>
                         <p className="mt-2 text-xs leading-5 text-white/60">{t("instructor.editor.publishHint")}</p>
                         <div className="mt-5 space-y-2">
-                            {lifecycleActions.map(({ action, label, icon: Icon }) => <button key={action} type="button" disabled={isWorking} onClick={() => lifecycleMutation.mutate(action)} className="flex w-full items-center justify-between rounded-xl bg-white dark:bg-[#1b1b20] px-3.5 py-3 text-start text-xs font-bold text-[#3A3A3A] transition hover:bg-[#F47822] hover:text-white disabled:opacity-60"><span>{label}</span><Icon className={`h-4 w-4 ${action === "submit-review" ? "rtl:-scale-x-100" : ""}`} /></button>)}
+                            {lifecycleActions.map(({ action, label, icon: Icon }) => <button key={action} type="button" data-testid={`course-lifecycle-${action}`} disabled={isWorking || lifecycleBlocked} title={lifecycleBlocked ? t("instructor.editor.saveBeforeLifecycle") : undefined} onClick={() => lifecycleMutation.mutate(action)} className="flex w-full items-center justify-between rounded-xl bg-white dark:bg-[#1b1b20] px-3.5 py-3 text-start text-xs font-bold text-[#3A3A3A] transition hover:bg-[#F47822] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"><span>{label}</span><Icon className={`h-4 w-4 ${action === "submit-review" ? "rtl:-scale-x-100" : ""}`} /></button>)}
+                            {lifecycleBlocked && (
+                                <p data-testid="course-lifecycle-blocked" className="rounded-lg bg-amber-50 px-3 py-2 text-[11px] font-semibold text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+                                    {t("instructor.editor.saveBeforeLifecycle")}
+                                </p>
+                            )}
                         </div>
                     </section>
 
@@ -549,6 +569,10 @@ function SetupChecklist({ courseId, form }: { courseId: string; form: CourseForm
         queryKey: ["instructor", "assessments", courseId, "checklist"],
         queryFn: () => getInstructorAssessments(courseId),
     });
+    const assignments = useQuery({
+        queryKey: ["instructor", "assignments", courseId, "checklist"],
+        queryFn: () => getInstructorAssignments(courseId),
+    });
 
     const sections = curriculum.data?.sections ?? [];
     const publishedLessons = sections.flatMap((section) => section.lessons).filter((lesson) => lesson.status === "published").length;
@@ -591,6 +615,12 @@ function SetupChecklist({ courseId, form }: { courseId: string; form: CourseForm
             label: t("instructor.editor.checklistAssessment"),
             hint: t("instructor.editor.checklistAssessmentHint"),
             to: `/instructor/courses/${courseId}/assessments`,
+        },
+        {
+            done: (assignments.data?.length ?? 0) > 0,
+            label: t("instructor.editor.checklistAssignment"),
+            hint: t("instructor.editor.checklistAssignmentHint"),
+            to: `/instructor/courses/${courseId}/assignments`,
         },
     ];
 

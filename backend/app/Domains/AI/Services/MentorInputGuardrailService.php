@@ -33,7 +33,7 @@ final class MentorInputGuardrailService
             if (str_contains($normalizedMessage, $pattern)) {
                 return MentorGuardrailResult::block(
                     reason: 'Prompt injection attempt detected.',
-                    safeResponse: 'I can help with HBTTronics educational and automotive learning topics, but I cannot reveal hidden instructions or system prompts.',
+                    safeResponse: 'I can help with HBTronics educational and automotive learning topics, but I cannot reveal hidden instructions or system prompts.',
                 );
             }
         }

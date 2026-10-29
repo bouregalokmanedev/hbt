@@ -32,7 +32,11 @@ interface AuthState {
     login: (
         payload: LoginPayload,
     ) => Promise<void>;
-    verifyTwoFactorLogin: (email: string, code: string) => Promise<void>;
+    verifyTwoFactorLogin: (
+        email: string,
+        code: string,
+        challengeToken: string,
+    ) => Promise<void>;
 
     register: (
         payload: RegisterPayload,
@@ -212,10 +216,14 @@ export const useAuthStore =
             }
         },
 
-        verifyTwoFactorLogin: async (email, code) => {
+        verifyTwoFactorLogin: async (email, code, challengeToken) => {
             set({ isLoading: true, error: null, errorCode: null, fieldErrors: null });
             try {
-                const result = await authApi.verifyTwoFactorLogin(email, code);
+                const result = await authApi.verifyTwoFactorLogin(
+                    email,
+                    code,
+                    challengeToken,
+                );
                 authStorage.setToken(result.token);
                 set({ user: result.user, isLoading: false, isInitialized: true, isAuthenticated: true, isInitializing: false, error: null, errorCode: null, fieldErrors: null });
             } catch (error) {

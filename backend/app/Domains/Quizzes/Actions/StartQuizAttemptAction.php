@@ -3,21 +3,28 @@
 namespace App\Domains\Quizzes\Actions;
 
 use App\Domains\Quizzes\Enums\QuizAttemptStatus;
-use App\Domains\Quizzes\Enums\QuizStatus;
 use App\Domains\Quizzes\Models\Quiz;
 use App\Domains\Quizzes\Models\QuizAttempt;
+use App\Domains\Quizzes\Services\QuizAccessService;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 final class StartQuizAttemptAction
 {
+    public function __construct(
+        private readonly QuizAccessService $access,
+    ) {
+    }
+
     public function execute(
         Quiz $quiz,
         User $user,
     ): QuizAttempt {
-        if ($quiz->status !== QuizStatus::PUBLISHED) {
+        $reason = $this->access->reason($quiz, $user);
+
+        if ($reason !== null) {
             throw ValidationException::withMessages([
-                'quiz' => 'This quiz is not available for attempts.',
+                'quiz' => $reason,
             ]);
         }
 

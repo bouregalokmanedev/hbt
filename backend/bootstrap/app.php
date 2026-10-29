@@ -38,13 +38,20 @@ return Application::configure(basePath: dirname(__DIR__))
         'role' => RoleMiddleware::class,
         'permission' => PermissionMiddleware::class,
         'role_or_permission' => RoleOrPermissionMiddleware::class,
+        'bot' => \App\Http\Middleware\ProtectAgainstBots::class,
     ]);
 
     $middleware->appendToGroup('api', [
+        \App\Http\Middleware\AssignRequestId::class,
         SetLocale::class,
         UpdateSessionActivity::class,
         SecurityHeaders::class,
     ]);
+
+    // Only trust forwarding headers from proxies we explicitly configure.
+    // The actual values are applied in AppServiceProvider::boot(), where the
+    // configuration repository is available even when config is cached.
+    $middleware->trustHosts();
 
     // Global API throttle — per-route throttles can still be stricter.
     $middleware->throttleApi();
@@ -126,6 +133,17 @@ $exceptions->render(function (
         'message' => $e->getMessage(),
         'code' => 'purchase_required',
     ], 402);
+});
+$exceptions->render(function (
+    \App\Domains\Payments\Exceptions\PaymentException $e,
+    Request $request
+) {
+    if ($request->is('api/*')) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ], 422);
+    }
 });
 $exceptions->render(function (
     DomainException $e,

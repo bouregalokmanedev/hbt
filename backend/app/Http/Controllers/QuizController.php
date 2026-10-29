@@ -9,6 +9,7 @@ use App\Domains\Quizzes\Enums\QuizQuestionType;
 use App\Domains\Quizzes\Http\Requests\CreateQuizRequest;
 use App\Domains\Quizzes\Http\Resources\QuizResource;
 use App\Domains\Quizzes\Services\CreateQuizService;
+use App\Domains\Quizzes\Services\QuizAccessService;
 use App\Domains\Quizzes\Models\Quiz;
 use App\Models\Course;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,7 @@ final class QuizController
 {
     public function __construct(
         private CreateQuizService $createQuizService,
+        private QuizAccessService $quizAccess,
     ) {
     }
 
@@ -78,17 +80,32 @@ public function show(Quiz $quiz): QuizResource
 
     $course = $quiz->section?->course;
 
+    $isAdmin = $user?->hasAnyRole([
+        \App\Enums\UserRole::ADMIN->value,
+        \App\Enums\UserRole::SUPER_ADMIN->value,
+    ]) ?? false;
+    $isOwner = $user && $course && $course->instructor_id === $user->id;
+    $isStaff = $isAdmin || $isOwner;
+
     $isPublished = $quiz->status === QuizStatus::PUBLISHED;
 
-    // Published quizzes: any authenticated learner may preview the structure
-    // (options never expose is_correct). Drafts stay restricted to the course
-    // instructor and admins.
+    // Drafts stay restricted to the owning instructor and administrators.
+    // Being an instructor on a different course must never expose another
+    // instructor's unpublished questions.
     if (! $isPublished) {
         abort_unless($user, 401);
-        $canManage = $course
-            && ($course->instructor_id === $user->id
-                || $user->hasAnyRole(['Admin', 'Super Admin', 'Instructor']));
-        abort_unless($canManage, 404);
+        abort_unless($isStaff, 404);
+    }
+
+    // Published quiz structure is part of the paid course. Staff may always
+    // inspect it; learners need an active/completed enrollment.
+    if (! $isStaff) {
+        abort_unless($user, 401);
+        abort_unless(
+            $this->quizAccess->canAccess($quiz, $user),
+            403,
+            $this->quizAccess->reason($quiz, $user) ?? 'Access denied.',
+        );
     }
 
     return new QuizResource($quiz);

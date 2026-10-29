@@ -22,7 +22,18 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
-        $response->headers->set('Cross-Origin-Resource-Policy', 'same-site');
+
+        /*
+         * Signed media stream URLs are capability URLs: the signature is
+         * the authorization, and the SPA may legitimately be served from a
+         * different origin (for example localhost vs 127.0.0.1 in local
+         * development, or a separate asset host). Allow those responses to
+         * be embedded while keeping same-site protection on JSON APIs.
+         */
+        $response->headers->set(
+            'Cross-Origin-Resource-Policy',
+            $request->routeIs('media.stream') ? 'cross-origin' : 'same-site',
+        );
 
         if ($request->secure()) {
             $response->headers->set(

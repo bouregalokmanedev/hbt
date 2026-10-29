@@ -11,6 +11,7 @@ final class StudentAssessmentResource extends JsonResource
     {
         $assessment = $this['assessment'] ?? $this->resource;
         $eligibility = $this['eligibility'] ?? null;
+        $attemptHistory = $this['attempt_history'] ?? null;
 
         if (is_array($assessment)) {
             return $assessment;
@@ -26,9 +27,11 @@ final class StudentAssessmentResource extends JsonResource
             'lesson' => $assessment->lesson ? ['id' => $assessment->lesson->id, 'title' => $assessment->lesson->title] : null,
             'minimum_score' => $assessment->minimum_score,
             'max_attempts' => $assessment->max_attempts,
+            'time_limit_minutes' => $assessment->time_limit_minutes,
             'status' => $assessment->status->value ?? $assessment->status,
             'questions_count' => $assessment->questions_count ?? $assessment->questions?->count(),
             'eligibility' => $eligibility,
+            'attempt_history' => $attemptHistory,
             'created_at' => $assessment->created_at,
             'updated_at' => $assessment->updated_at,
         ];
